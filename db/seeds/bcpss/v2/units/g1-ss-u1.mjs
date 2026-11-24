@@ -1,0 +1,268 @@
+// BCPSS Language Studio v2 — g1-ss-u1 (Grade 1 Social Studies, Studies Weekly). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do leaders and helpers make our neighborhood a better place to live?",
+  can_do: {
+    content: "I can name leaders and helpers in Baltimore and tell what each one does.",
+    language: "I can say who is important and give a reason with because.",
+  },
+  mentor: {
+    text: "A crossing guard is a helper we need because she keeps kids safe. She stops the cars so we can cross.",
+    gist: "The speaker names a helper, gives a reason with because, and then shows how the helper does the job.",
+    chunks: [
+      { text: "A crossing guard is a helper we need", role: "The claim: who is important", tone: "concept", ask: "Which helper does the speaker say we need?" },
+      { text: "because", role: "The reason word", tone: "connector", ask: "Which little word tells us a reason is coming?" },
+      { text: "she keeps kids safe.", role: "The reason", tone: "evidence", ask: "Why does the speaker say we need the helper?" },
+      { text: "She stops the cars", role: "The action", tone: "precision", ask: "What does the crossing guard do with the cars?" },
+      { text: "so we can cross.", role: "The result", tone: "evidence", ask: "What can kids do when the cars stop?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "A [helper] helps us.",
+      "The [helper] can [action].",
+      "We need the [helper].",
+    ],
+    l3_4: [
+      "A [leader / helper] is important because [reason].",
+      "The [helper] [action] so that [result].",
+      "We [vote / work together] to [goal].",
+    ],
+    l5_6: [
+      "A [leader / helper] is important to our community because [reason].",
+      "For example, the [helper] [action], so [result].",
+      "When people cooperate, they can [solve a problem], and that is fair because [reason].",
+    ],
+  },
+  connectors: ["because", "so", "and", "for example", "also", "when"],
+  vocab: [
+    { term: "leader", tier: 2, pos: "noun", icon: "🧭", def: "a person who guides a group and helps it make choices", example: "The principal is the leader of our school.", nonexample: "A person who never helps the group is not a leader.", es: "líder", es_note: "Cognate-like: líder. Also 'jefe' or 'jefa' for a boss.", family: ["leaders", "lead"], cue: "One child at the front of a line pointing the way forward." },
+    { term: "community", tier: 2, pos: "noun", icon: "🏘️", def: "a place and the people who live and work there together", example: "Our community has a library, a park, and a fire station.", nonexample: "One lonely house far away is not a community.", es: "comunidad", es_note: "Cognate: comunidad. Sounds and means almost the same.", family: ["communities"], cue: "A drawing of rowhouses, a school, a store, and neighbors waving." },
+    { term: "helper", tier: 2, pos: "noun", icon: "🧑‍🚒", def: "a person whose job is to help people in a community", example: "A firefighter is a community helper.", nonexample: "A bully is not a helper.", es: "ayudante", es_note: "Say 'trabajador de la comunidad' for a community helper.", family: ["helpers", "help"], cue: "A firefighter, a nurse, and a bus driver standing in a row." },
+    { term: "mayor", tier: 3, pos: "noun", icon: "🏛️", def: "the leader of a city", example: "The mayor of Baltimore works at City Hall.", nonexample: "A mayor does not lead a whole country.", es: "alcalde / alcaldesa", es_note: "False friend: 'mayor' in Spanish means 'older' or 'bigger'. The city leader is 'alcalde'.", family: ["mayors"], cue: "A person in front of a big building with a dome, shaking hands." },
+    { term: "vote", tier: 3, pos: "verb", icon: "🗳️", def: "to show your choice so a group can decide fairly", example: "We vote to pick a class pet.", nonexample: "Shouting your choice over everyone is not voting.", es: "votar", es_note: "Cognate-like: votar. The noun is 'el voto'.", family: ["votes", "voted", "voting"], cue: "A hand dropping a paper into a box with a star on it." },
+    { term: "rule", tier: 2, pos: "noun", icon: "📜", def: "something everyone must do to keep people safe and fair", example: "A school rule says walk in the hall.", nonexample: "A game you make up alone is not a rule for everyone.", es: "regla", es_note: "Rule = regla. Also 'norma' in a school or city.", family: ["rules"], cue: "A sign that shows a child walking, not running." },
+    { term: "fair", tier: 2, pos: "adjective", icon: "⚖️", def: "treating everyone in the same good way", example: "It is fair when every child gets a turn.", nonexample: "Letting only one child play is not fair.", es: "justo", es_note: "Fair = justo. Do not confuse with 'feria' (a fair with rides).", family: ["fairly", "unfair"], cue: "A balanced scale with a cookie on each side." },
+    { term: "cooperate", tier: 2, pos: "verb", icon: "🤝", def: "to work together to reach one goal", example: "We cooperate to clean up the playground.", nonexample: "Doing a job alone is not cooperating.", es: "cooperar", es_note: "Cognate: cooperar. Sounds and means almost the same.", family: ["cooperates", "cooperated", "cooperation"], cue: "Two children carrying one big box together." },
+    { term: "problem", tier: 2, pos: "noun", icon: "🚧", def: "something that is hard and needs a fix", example: "A broken streetlight is a problem on our block.", nonexample: "A sunny day at the park is not a problem.", es: "problema", es_note: "Cognate: problema. Sounds and means almost the same.", family: ["problems", "solve"], cue: "A big hole in the road with orange cones around it." },
+    { term: "safe", tier: 2, pos: "adjective", icon: "🦺", def: "not in danger and not going to get hurt", example: "A crossing guard helps kids stay safe.", nonexample: "Running into the street is not safe.", es: "seguro", es_note: "Safe = seguro (also means 'sure' in Spanish).", family: ["safely", "safety"], cue: "A child in a seat belt on a school bus." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Harbor City Helpers", minutes: 10, grouping: "Partners",
+      mission: "Listen to Jada's walk twice. Tell it back!",
+      tip: "Read slowly twice at normal pace; children jot picture words, then rebuild the story with a partner.",
+      materials: ["Paper for quick drawings"],
+      support: { l1_2: "Draw one helper and say who it is.", l3_4: "Say what each helper does in a short sentence.", l5_6: "Retell all the helpers and tell why each one matters." },
+      payload: {
+        text: "Jada walks to school in Baltimore. A crossing guard stops the cars. A bus driver waves hello. A librarian hands her a new book. Jada says thank you to the helpers.",
+        key_words: ["Baltimore", "crossing guard", "bus driver", "librarian", "helpers"],
+        frame: "Jada walks to ___. A ___ stops the cars. A ___ waves hello. A ___ hands her a book.",
+        checks: ["Jada walks to school in Baltimore", "a crossing guard stops the cars", "a bus driver waves hello", "a librarian gives her a book"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Helper Match-Up", minutes: 8, grouping: "Solo",
+      mission: "Match each word to its meaning.",
+      tip: "Have children say each word and act it out before they tap.",
+      materials: [],
+      support: { l1_2: "Match the words with pictures first.", l3_4: "Match all pairs, then say a sentence for two.", l5_6: "Match all pairs and add a new example for each." },
+      payload: {
+        left_label: "Word", right_label: "Meaning",
+        pairs: [
+          { l: "leader", r: "🧭 guides a group" },
+          { l: "community", r: "🏘️ people and places together" },
+          { l: "mayor", r: "🏛️ the leader of a city" },
+          { l: "vote", r: "🗳️ show your choice" },
+          { l: "rule", r: "📜 something everyone must do" },
+          { l: "fair", r: "⚖️ the same good way for all" },
+          { l: "cooperate", r: "🤝 work together" },
+          { l: "problem", r: "🚧 something that needs a fix" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Who Does This Job?", minutes: 8, grouping: "Partners",
+      mission: "Sort each job by the helper who does it.",
+      tip: "Listen for 'The ___ can ___' when partners explain a sort.",
+      materials: [],
+      support: { l1_2: "Sort the jobs you know and act them out.", l3_4: "Sort all jobs and say 'The ___ can ___.'", l5_6: "Sort all jobs, then add one new job to each group." },
+      payload: {
+        categories: [{ name: "🚒 Firefighter" }, { name: "📚 Librarian" }, { name: "🗑️ Trash collector" }],
+        items: [
+          { text: "puts out fires", cat: 0 }, { text: "drives a big truck with a ladder", cat: 0 }, { text: "rescues people", cat: 0 }, { text: "wears a helmet", cat: 0 },
+          { text: "lends books", cat: 1 }, { text: "reads stories aloud", cat: 1 }, { text: "helps you find a book", cat: 1 }, { text: "works at Pratt Library", cat: 1 },
+          { text: "empties cans on our street", cat: 2 }, { text: "keeps the block clean", cat: 2 }, { text: "drives a loud truck at dawn", cat: 2 }, { text: "picks up bags", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Who Am I?", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the helper or leader!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think.",
+      materials: [],
+      support: { l1_2: "Use the picture cards to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "firefighter", clues: ["I wear a big helmet.", "I ride in a red truck.", "I run toward fires to help people."] },
+          { term: "mayor", clues: ["I lead a city.", "My office is at City Hall.", "Voters in Baltimore choose me."] },
+          { term: "crossing guard", clues: ["I wear a bright vest.", "I hold up a sign near the school.", "I stop cars so kids can walk across."] },
+          { term: "nurse", clues: ["I work with doctors.", "I help sick people feel better.", "I can work at a hospital or a school."] },
+          { term: "principal", clues: ["I am the leader at school.", "I know every class.", "My office is near the front door."] },
+          { term: "bus driver", clues: ["I drive a big vehicle.", "I stop at many corners.", "I take people along North Avenue and more."] },
+          { term: "governor", clues: ["I lead the whole state.", "My home is in Annapolis.", "I do not lead only one city."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Why We Need Them", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner who is important and why.",
+      tip: "Model one turn first; listen for the word because and one reason.",
+      materials: ["Picture talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add because.", l5_6: "Give two reasons and say what would happen without the helper." },
+      payload: {
+        roles: { a: "Speaker", b: "Listener" },
+        cards: [
+          { prompt: "Who helps when there is a fire?", starter: "A firefighter is important because ___.", follow_up: "What tools does a firefighter use?" },
+          { prompt: "Who helps you at the library?", starter: "A librarian is a helper because ___.", follow_up: "What book would you ask for?" },
+          { prompt: "Who leads our school?", starter: "The principal is a leader because ___.", follow_up: "What rule does the principal care about?" },
+          { prompt: "Who keeps our streets clean?", starter: "A trash collector is important because ___.", follow_up: "What would our street look like without one?" },
+          { prompt: "Who helps you cross the street?", starter: "A crossing guard keeps me safe because ___.", follow_up: "What should we do when the guard holds up the sign?" },
+          { prompt: "Which helper would you like to be?", starter: "I would like to be a ___ because ___.", follow_up: "Who could you help?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Give a reason", stem: "Why is that important?" },
+          { label: "Me too", stem: "I also think ___ because ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Town Helper Detectives", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to find the secret facts.",
+      tip: "Partners keep cards hidden and ask and answer aloud.",
+      materials: ["Helper cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up, like 'Why does the helper do that?'" },
+      payload: {
+        goal: "Find out what the nurse, the bus driver, and the mayor do.",
+        a: { title: "Detective A", has: [{ k: "Nurse job", v: "helps sick people feel better" }, { k: "Nurse place", v: "a hospital or a school" }, { k: "Mayor place", v: "City Hall" }], needs: ["Bus driver job", "Bus driver tool", "Mayor job"] },
+        b: { title: "Detective B", has: [{ k: "Bus driver job", v: "takes people where they need to go" }, { k: "Bus driver tool", v: "a big bus" }, { k: "Mayor job", v: "leads the city" }], needs: ["Nurse job", "Nurse place", "Mayor place"] },
+        ask_frames: ["What does the ___ do?", "Where does the ___ work?"],
+        tell_frames: ["The ___ ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Class Vote Day", minutes: 10, grouping: "Whole Class",
+      mission: "Read about the class vote. Find the proof words!",
+      tip: "Read aloud twice; children circle action words and underline the reason on chart paper.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the word vote.", l3_4: "Find the vote words and the reason.", l5_6: "Find both, then write one new sentence about the vote." },
+      payload: {
+        text: "Room 12 needs a class pet. Mr. Lee is the leader of the class. He says, \"Let us vote!\" Each child votes for a fish or a turtle. The turtle gets nine votes. The fish gets six votes. Everyone agrees because the vote was fair.",
+        marks: [
+          { label: "Vote words", instruction: "Circle the words about voting.", targets: ["vote", "votes"] },
+          { label: "Reason words", instruction: "Underline the reason it was fair.", targets: ["because the vote was fair", "Everyone agrees"] },
+        ],
+        questions: [
+          { q: "Who is the leader of the class?", options: ["Mr. Lee", "The turtle", "The fish"], answer: 0, why: "The story says Mr. Lee is the leader of the class." },
+          { q: "Which pet gets the most votes?", options: ["The fish", "The turtle", "A bird"], answer: 1, why: "The turtle gets nine votes and the fish gets six votes." },
+          { q: "Why does everyone agree?", options: ["The teacher picks alone", "The vote was fair", "Nobody wants a pet"], answer: 1, why: "The story says everyone agrees because the vote was fair." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Reason", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts with a capital letter and where the word because goes.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that has because.", l5_6: "After building, add one more reason of your own." },
+      payload: {
+        items: [
+          { parts: ["A firefighter", "is important", "because", "she saves people."] },
+          { parts: ["The mayor", "is a leader", "because", "he guides the city."] },
+          { parts: ["We vote", "so every", "child has", "a say."] },
+          { parts: ["The librarian", "is a helper", "because", "she lends books."] },
+          { parts: ["Neighbors cooperate", "to clean", "the park."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Neighborhood Clean-Up Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap in the story.",
+      tip: "Two bank words are extras; children must decide which ones do not fit.",
+      materials: [],
+      support: { l1_2: "Read the sentence aloud and listen for the word that fits.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
+      payload: {
+        text: "Our block has a {1}. Trash is on the sidewalk. Neighbors {2} to pick it up. A {3} says, \"Let us make a plan.\" Everyone does a job. That is {4}. Now our community is clean!",
+        answers: ["problem", "cooperate", "leader", "fair"],
+        bank: ["problem", "cooperate", "leader", "fair", "mayor", "vote"],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Reason", minutes: 10, grouping: "Partners",
+      mission: "Find the best way to fix each sentence.",
+      tip: "Ask partners to say why the fix is better; listen for because and the helper's job.",
+      materials: [],
+      support: { l1_2: "Look for the sentence with a reason.", l3_4: "Pick the fix and say it aloud.", l5_6: "Pick the fix and explain what was missing." },
+      payload: {
+        items: [
+          { wrong: "A nurse is important.", options: ["A nurse is important because she helps sick people.", "A nurse is important and happy.", "A nurse is a big job."], answer: 0, why: "The first sentence adds a reason after because." },
+          { wrong: "The mayor lead the city.", options: ["The mayor leading the city.", "The mayor leads the city.", "The mayor lead cities."], answer: 1, why: "One mayor, so the verb needs an s: leads." },
+          { wrong: "We voting for a class pet yesterday.", options: ["We voted for a class pet yesterday.", "We votes for a class pet yesterday.", "We vote for a class pet yesterday."], answer: 0, why: "Yesterday is in the past, so we say voted." },
+          { wrong: "A crossing guard keep kids safe.", options: ["A crossing guard keeping kids safe.", "A crossing guard keeps kids safe.", "A crossing guards keep kids safe."], answer: 1, why: "One crossing guard, so keeps." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Join It Up", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one; more than one answer can work.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["The firefighter is a helper.", "She saves people."], connector: "because", model: "The firefighter is a helper because she saves people." },
+          { sentences: ["The class votes.", "Every child gets a say."], connector: "so", model: "The class votes so every child gets a say." },
+          { sentences: ["Neighbors work together.", "They clean the park."], connector: "and", model: "Neighbors work together and they clean the park." },
+          { sentences: ["The mayor is a leader.", "The principal is a leader."], connector: "and", model: "The mayor is a leader and the principal is a leader." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Helper Page", minutes: 15, grouping: "Solo",
+      mission: "Draw a helper. Write who it is and why we need them.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Page template"],
+      support: { l1_2: "Draw it. Copy the first frame and label your picture.", l3_4: "Write who the helper is and one reason.", l5_6: "Write who the helper is, what they do, and a reason with because." },
+      payload: {
+        prompt: "Pick a helper or leader in your community. Draw a page for a class book. Write why we need them.",
+        structure: [
+          { part: "Who", frame: "A [helper] is important to our community." },
+          { part: "What they do", frame: "The [helper] [action]." },
+          { part: "Why", frame: "We need the [helper] because [reason]." },
+        ],
+        word_bank: ["firefighter", "nurse", "librarian", "mayor", "leader", "helper", "safe", "fair", "vote", "cooperate", "because", "community"],
+        checklist: ["I drew my helper.", "I wrote who the helper is.", "I wrote what they do.", "I used the word because."],
+        model: "A nurse is important to our community. The nurse helps sick people. We need the nurse because she helps us feel better.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Pick one helper or leader. Tell why we need them.",
+    frame: "A [helper or leader] is important because [reason].",
+    model: "A firefighter is important because she saves people from fires.",
+    rubric: {
+      emerging: "Names a helper with a picture and says what the helper does in a few words.",
+      developing: "Uses the frame to name a helper and give one reason.",
+      proficient: "Names a helper, says what they do, and gives a clear reason with because.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "The word mayor sounds like Spanish 'mayor' (older, bigger), so children may mix up the meaning.", fix: "Pair 'mayor' with the picture of City Hall and say 'alcalde' once, then keep practicing the English word with the picture." },
+    { group: "All multilingual learners", issue: "Children name a helper but skip the reason, so the sentence stops after 'is important.'", fix: "Use the frame 'is important because ___' and have children point to the helper's tool before they say the reason." },
+  ],
+  misconception: {
+    pattern: "Children think a leader is only the boss who gives orders, or that a helper is only a firefighter or police officer.",
+    redirect: "Ask 'Who helps you at school or on your block?' and add librarians, nurses, bus drivers and neighbors to the list of helpers and leaders.",
+  },
+};

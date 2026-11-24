@@ -1,0 +1,262 @@
+// BCPSS Language Studio v2 — gk-ss-u3 (Kindergarten Social Studies, Studies Weekly). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How is life today like and not like life long ago?",
+  can_do: {
+    content: "I can put events in order and tell how families lived long ago and today.",
+    language: "I can compare two times with both, and, and but.",
+  },
+  mentor: {
+    text: "Long ago, people rode horse carts, but today people ride buses.",
+    gist: "The speaker tells how life was long ago, then uses 'but' to show how it is different today.",
+    chunks: [
+      { text: "Long ago,", role: "The past", tone: "concept", ask: "Which words tell us about the past?" },
+      { text: "people rode horse carts,", role: "Past detail", tone: "evidence", ask: "How did people travel long ago?" },
+      { text: "but", role: "The contrast word", tone: "connector", ask: "Which little word shows something is different?" },
+      { text: "today people ride buses.", role: "Present detail", tone: "evidence", ask: "How do people travel today?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "Long ago, people [action].",
+      "Today, people [action].",
+      "It is the [same / different].",
+    ],
+    l3_4: [
+      "Long ago, families [past detail], but today families [present detail].",
+      "We [celebrate] with a [tradition].",
+      "First, [event]. Then, [event].",
+    ],
+    l5_6: [
+      "Both [then] and [now] [shared feature], but [then] [difference].",
+      "Long ago, families [past detail]. In contrast, today families [present detail].",
+      "A tradition is [definition] that my family [action].",
+    ],
+  },
+  connectors: ["but", "and", "both", "then", "now", "also"],
+  vocab: [
+    { term: "past", tier: 2, pos: "noun", icon: "⏪", def: "the time that already happened", example: "Yesterday is in the past.", nonexample: "What is happening right now is not the past.", es: "pasado", es_note: "Past = pasado. Cognate-like.", family: ["long ago"], cue: "An old black-and-white photo of a streetcar." },
+    { term: "present", tier: 2, pos: "noun", icon: "📅", def: "the time that is happening now", example: "Today is the present.", nonexample: "Last year is not the present.", es: "presente", es_note: "Present = presente. A birthday present is 'un regalo'.", family: ["now", "today"], cue: "A child at a desk with today's date on the board." },
+    { term: "tradition", tier: 3, pos: "noun", icon: "🎉", def: "something a family or group does again and again, year after year", example: "Eating pie on Thanksgiving is our family tradition.", nonexample: "Eating a snack once is not a tradition.", es: "tradición", es_note: "Cognate: tradición.", family: ["traditions"], cue: "A family around a table with a big cake and candles." },
+    { term: "timeline", tier: 3, pos: "noun", icon: "📏", def: "a line that shows what happened first, next, and last", example: "My birthday timeline shows when I learned to walk.", nonexample: "A pile of photos with no order is not a timeline.", es: "línea de tiempo", es_note: "Timeline = línea de tiempo.", family: ["timelines"], cue: "A line with a baby picture, a toddler, and a kindergartener." },
+    { term: "celebrate", tier: 2, pos: "verb", icon: "🎊", def: "to do something special and fun on a happy day", example: "We celebrate with music and food.", nonexample: "Doing homework alone is not a celebration.", es: "celebrar", es_note: "Cognate: celebrar.", family: ["celebrates", "celebration"], cue: "Children with streamers and balloons." },
+    { term: "community", tier: 3, pos: "noun", icon: "🏘️", def: "a group of people who live and work in the same place", example: "Our community has a library and a park.", nonexample: "One lonely house far away is not a community.", es: "comunidad", es_note: "Cognate: comunidad.", family: ["communities"], cue: "Rowhouses, a corner store, and neighbors waving." },
+    { term: "change", tier: 2, pos: "verb", icon: "🔄", def: "to become not the same as before", example: "Cities change over time.", nonexample: "A rock that stays the same does not change.", es: "cambiar", es_note: "Change = cambiar. The noun 'a change' = un cambio.", family: ["changes", "changed"], cue: "A small plant, then a big tree, with an arrow between." },
+    { term: "same", tier: 2, pos: "adjective", icon: "🟰", def: "just like another one in every way", example: "We have the same hat.", nonexample: "A red hat and a blue hat are not the same.", es: "igual", es_note: "Same = igual or el mismo.", family: ["alike"], cue: "Two identical red balls with an equal sign." },
+    { term: "different", tier: 2, pos: "adjective", icon: "↔️", def: "not like another one", example: "A bike is different from a car.", nonexample: "Two identical cups are not different.", es: "diferente", es_note: "Cognate: diferente.", family: ["difference"], cue: "A bike and a car side by side." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Grandma's Baltimore", minutes: 10, grouping: "Partners",
+      mission: "Listen twice. Tell how Grandma and Sam are alike and different!",
+      tip: "Read slowly twice; children point to the picture clues, then retell with a partner using both and but.",
+      materials: ["Picture cards: Grandma, Sam, bus, park"],
+      support: { l1_2: "Point to the picture cards as you hear each word.", l3_4: "Say one sentence about Grandma and one about Sam.", l5_6: "Retell all the ideas and use both and but." },
+      payload: {
+        text: "Long ago, Grandma was a girl. She walked to school. Today, Sam rides a bus. Both go to school. Grandma played in the street. Sam plays at the park.",
+        key_words: ["Grandma", "walked", "today", "bus", "both", "park"],
+        frame: "Long ago, Grandma ___ to school. Today, Sam ___ a bus. Both ___ to school.",
+        checks: ["long ago Grandma walked to school", "today Sam rides a bus", "both go to school", "Grandma played in the street but Sam plays at the park"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Time Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each word to its picture clue.",
+      tip: "Have children say each word and show it with a gesture before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match the picture words first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "past", r: "⏪ time that already happened" },
+          { l: "present", r: "📅 time that is now" },
+          { l: "tradition", r: "🎉 a family does it every year" },
+          { l: "timeline", r: "📏 events in order" },
+          { l: "celebrate", r: "🎊 a special, fun day" },
+          { l: "community", r: "🏘️ people in one place" },
+          { l: "change", r: "🔄 not the same as before" },
+          { l: "same", r: "🟰 just like another one" },
+          { l: "different", r: "↔️ not like another one" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Long Ago or Today?", minutes: 8, grouping: "Partners",
+      mission: "Sort each thing. Is it from long ago or today?",
+      tip: "Ask 'How do you know?' and listen for because when partners explain a sort.",
+      materials: [],
+      support: { l1_2: "Sort the pictures you know first.", l3_4: "Sort all words and say 'It is from ___ because ___.'", l5_6: "Sort all words, then add one new thing to each group." },
+      payload: {
+        categories: [{ name: "⏪ Long ago" }, { name: "📅 Today" }],
+        items: [
+          { text: "horse and carriage", cat: 0 }, { text: "candle light", cat: 0 }, { text: "feather pen", cat: 0 }, { text: "washing clothes by hand", cat: 0 }, { text: "oil lamp", cat: 0 },
+          { text: "cell phone", cat: 1 }, { text: "video call", cat: 1 }, { text: "light switch", cat: 1 }, { text: "washing machine", cat: 1 }, { text: "tablet", cat: 1 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Tradition", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the mystery word!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think.",
+      materials: [],
+      support: { l1_2: "Use the picture cards to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "birthday candles", clues: ["You blow me out.", "I sit on a cake.", "You make a wish first."] },
+          { term: "fireworks", clues: ["I go boom in the night sky.", "Baltimore has me over the Inner Harbor on July 4.", "I make colorful sparkles."] },
+          { term: "photo album", clues: ["I hold old pictures.", "Grandparents show me.", "I help us remember the past."] },
+          { term: "family recipe", clues: ["I tell how to make a food.", "Grandma wrote me on a card.", "We cook me every year."] },
+          { term: "parade", clues: ["Bands play and people march.", "Floats move down the street.", "People wave from the sidewalk."] },
+          { term: "timeline", clues: ["I show events in order.", "I go from first to last.", "I can have dates and pictures."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Then and Now Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner about then and now.",
+      tip: "Model one turn first; listen for long ago, today, both, and but.",
+      materials: ["Picture talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add one detail.", l5_6: "Say how it is the same and how it is different." },
+      payload: {
+        roles: { a: "Storyteller", b: "Listener" },
+        cards: [
+          { prompt: "How did people get light long ago?", starter: "Long ago, people used ___.", follow_up: "How do we get light today?" },
+          { prompt: "Name a family tradition you have.", starter: "My family ___ every year.", follow_up: "Who does it with you?" },
+          { prompt: "What did you do first today?", starter: "First, I ___.", follow_up: "What did you do next?" },
+          { prompt: "How is your day like a grown-up's day long ago?", starter: "Both of us ___.", follow_up: "How is it different?" },
+          { prompt: "How do you celebrate your birthday?", starter: "I celebrate with ___.", follow_up: "Is that the same every year?" },
+          { prompt: "What has changed in our neighborhood?", starter: "Long ago ___, but today ___.", follow_up: "Do you like the change?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you draw it?" },
+          { label: "Me too", stem: "We both ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Family Tradition Swap", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions about their family tradition.",
+      tip: "Partners keep cards hidden and ask and answer aloud.",
+      materials: ["Tradition cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'How are they alike?'" },
+      payload: {
+        goal: "Find out what each family does and when.",
+        a: { title: "Ben", has: [{ k: "Ben's tradition", v: "baking bread" }, { k: "Ben's day", v: "every Sunday" }], needs: ["Lila's tradition", "Lila's day"] },
+        b: { title: "Lila", has: [{ k: "Lila's tradition", v: "a walk at the harbor" }, { k: "Lila's day", v: "every Saturday" }], needs: ["Ben's tradition", "Ben's day"] },
+        ask_frames: ["What is ___ family tradition?", "When does ___ family do it?"],
+        tell_frames: ["The tradition is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Ben's Bread Timeline", minutes: 10, grouping: "Whole Class",
+      mission: "Listen to Ben's story. Find the order words!",
+      tip: "Read aloud twice; children circle order words and underline tradition words on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the order words.", l3_4: "Find order words and tradition words.", l5_6: "Find both, then write one new sentence about Ben." },
+      payload: {
+        text: "Ben's family bakes bread. First, Dad picks a recipe. Next, Ben mixes the dough. Then, Mom bakes it. Last, the family eats together. This is their tradition. They do it every year.",
+        marks: [
+          { label: "Order words", instruction: "Circle the words that show order.", targets: ["First", "Next", "Then", "Last"] },
+          { label: "Tradition words", instruction: "Underline the words about the tradition.", targets: ["tradition", "every year"] },
+        ],
+        questions: [
+          { q: "What does Ben do next?", options: ["He eats the bread", "He mixes the dough", "He picks a recipe"], answer: 1, why: "Next, Ben mixes the dough." },
+          { q: "Who bakes the bread?", options: ["Mom", "Dad", "Ben"], answer: 0, why: "Then, Mom bakes it." },
+          { q: "Why is baking a tradition?", options: ["They do it one time", "They do it every year", "They never do it"], answer: 1, why: "A tradition is something a family does again and again." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Then-Now Sentence", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts with a capital letter and how children know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add but and a new idea." },
+      payload: {
+        items: [
+          { parts: ["Long ago,", "people", "rode carts."] },
+          { parts: ["Today,", "we ride", "buses."] },
+          { parts: ["Both", "families", "celebrate."] },
+          { parts: ["A timeline", "shows", "events in order."] },
+          { parts: ["First,", "I woke", "up."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Past and Present Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap.",
+      tip: "Two bank words are extras; children must decide which ones do not fit.",
+      materials: [],
+      support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
+      payload: {
+        text: "Yesterday is the {1}. Today is the {2}. A {3} shows events in order. A birthday party can be a family {4}.",
+        answers: ["past", "present", "timeline", "tradition"],
+        bank: ["past", "present", "timeline", "tradition", "change", "celebrate"],
+      },
+    },
+    {
+      kind: "sequence", domain: "Reading", title: "My Birthday Timeline", minutes: 8, grouping: "Small Group",
+      mission: "Put the steps in order. Build a timeline!",
+      tip: "Use real baby and school photos if families share them; children place each one on a paper line.",
+      materials: ["Paper strip"],
+      support: { l1_2: "Look at the pictures and say first, next, then.", l3_4: "Order the steps and say each one with its signal word.", l5_6: "Order the steps, then add one more event of your own." },
+      payload: {
+        title: "How I grew up",
+        steps: ["First, I was a baby.", "Next, I learned to walk.", "Then, I started school.", "Now, I am in Kindergarten."],
+        signals: ["First", "Next", "Then", "Now"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Compare With But", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one. More than one answer can work.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["Long ago, people used candles.", "Today, people use light bulbs."], connector: "but", model: "Long ago, people used candles, but today people use light bulbs." },
+          { sentences: ["Grandma walked to school.", "Sam rides a bus."], connector: "but", model: "Grandma walked to school but Sam rides a bus." },
+          { sentences: ["Both families eat together.", "Both families sing."], connector: "and", model: "Both families eat together and sing." },
+          { sentences: ["Long ago, people wrote letters.", "Today, people send texts."], connector: "but", model: "Long ago, people wrote letters, but today people send texts." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Then and Now Page", minutes: 15, grouping: "Solo",
+      mission: "Draw long ago and today. Write how they are different.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Two-column page"],
+      support: { l1_2: "Draw it. Copy the first frame and label your picture.", l3_4: "Write one thing long ago and one thing today.", l5_6: "Write both, a difference with but, and a tradition." },
+      payload: {
+        prompt: "Pick one thing, like how people travel or get light. Draw it long ago and today. Write how they are different.",
+        structure: [
+          { part: "Long ago", frame: "Long ago, people [past detail]." },
+          { part: "Today", frame: "Today, people [present detail]." },
+          { part: "Compare", frame: "Both [shared feature], but [difference]." },
+        ],
+        word_bank: ["long ago", "today", "past", "present", "both", "but", "same", "different", "change", "tradition", "timeline", "family"],
+        checklist: ["I drew both pictures.", "I wrote about long ago.", "I wrote about today.", "I used but."],
+        model: "Long ago, people used candles for light. Today, people use light bulbs. Both give light, but a light bulb is brighter.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Tell one way life was different long ago. Use the word but.",
+    frame: "Long ago, people [past detail], but today people [present detail].",
+    model: "Long ago, people used candles, but today people use light bulbs.",
+    rubric: {
+      emerging: "Points to a long ago picture and a today picture.",
+      developing: "Uses the frame to say one thing long ago and one thing today.",
+      proficient: "Uses but to contrast, and adds a way the two times are the same with both.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Present and 'presente' are close, but a birthday present is a gift, so children may mix up time and gift.", fix: "Show a calendar for the time word and a wrapped box for the gift, and say 'present means now' with the calendar." },
+    { group: "All multilingual learners", issue: "Children state long ago or today but not both, so the contrast is missing.", fix: "Use the frame 'Long ago ___, but today ___' and have children point first to the old picture and then to the new one." },
+  ],
+  misconception: {
+    pattern: "Children say people long ago were not smart or that everything was always black and white like old photos.",
+    redirect: "Ask 'How did people solve the problem?' and talk about how people used the tools they had, like carts before buses.",
+  },
+};

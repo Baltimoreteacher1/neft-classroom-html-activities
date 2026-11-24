@@ -1,0 +1,266 @@
+// BCPSS Language Studio v2 — g2-math-u5. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can time, money, and a line plot give proof for what you say?",
+  can_do: {
+    content: "I can tell time to 5 minutes, add coins and dollars, and read a line plot.",
+    language: "I can make a claim and prove it with evidence using because and according to.",
+  },
+  mentor: {
+    text: "Six inches is most common because it has four Xs.",
+    gist: "The speaker makes a claim and gives proof from a line plot.",
+    chunks: [
+      { text: "Six inches is most common", role: "The claim", tone: "concept", ask: "What does the speaker say is most common?" },
+      { text: "because", role: "The proof signal", tone: "connector", ask: "Which word tells you proof is coming?" },
+      { text: "it has four Xs.", role: "The evidence", tone: "evidence", ask: "What do you count to check the claim?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "It is [time].",
+      "A [coin] is worth [number] cents.",
+      "There are [number] Xs above [number].",
+    ],
+    l3_4: [
+      "According to the line plot, [number] inches has [number] Xs.",
+      "I know the value is [number] cents because [reason].",
+      "The clock shows [time] [AM / PM] because [reason].",
+    ],
+    l5_6: [
+      "Since [number] has the tallest stack, it is the most common [length].",
+      "The evidence is [data], so my claim is [claim].",
+      "I counted by [fives / tens / twenty-fives], so the total is [number] cents.",
+    ],
+  },
+  connectors: ["because", "according to", "so", "since", "as shown by", "therefore"],
+  vocab: [
+    { term: "minute", tier: 3, pos: "noun", icon: "⏱️", def: "a small amount of time; 60 of them make an hour", example: "The long hand moves 5 spaces in 5 minutes.", nonexample: "An hour is longer than a minute.", es: "minuto", es_note: "Cognate: sounds and means almost the same.", family: ["minutes", "hour"], cue: "A clock with the long hand pointing at the 6." },
+    { term: "AM", tier: 3, pos: "noun", icon: "🌅", def: "the hours from midnight until noon", example: "School starts at 8:00 AM, so I am there in the morning.", nonexample: "Dinner at 6:00 is not in the AM.", es: "a. m.", es_note: "Spanish also writes 'a. m.' for the morning hours.", family: ["morning"], cue: "A sunrise over a clock showing 7:00." },
+    { term: "PM", tier: 3, pos: "noun", icon: "🌙", def: "the hours from noon until midnight", example: "We eat dinner at 6:00 PM.", nonexample: "Breakfast at 7:00 is not in the PM.", es: "p. m.", es_note: "Spanish also writes 'p. m.' for the afternoon and night hours.", family: ["afternoon", "evening"], cue: "A moon over a clock showing 9:00." },
+    { term: "coin", tier: 2, pos: "noun", icon: "🪙", def: "a small round piece of metal money", example: "A dime is a coin worth 10 cents.", nonexample: "A paper bill is money, but it is not a coin.", es: "moneda", es_note: "Not a cognate. 'Moneda' means coin, and 'dinero' means money.", family: ["coins", "money"], cue: "A penny, nickel, dime, and quarter in a row." },
+    { term: "value", tier: 2, pos: "noun", icon: "🏷️", def: "how much a coin or a number is worth", example: "The value of a quarter is 25 cents.", nonexample: "The size of a coin does not tell its value.", es: "valor", es_note: "Cognate: sounds and means almost the same.", family: ["worth"], cue: "A price tag on a coin." },
+    { term: "dollar", tier: 2, pos: "noun", icon: "💵", def: "money that is worth 100 cents", example: "One dollar is the same as 100 cents.", nonexample: "A single dime is not a dollar; it is only 10 cents.", es: "dólar", es_note: "Cognate. In Spanish it has an accent.", family: ["dollars", "cents"], cue: "A bill with 4 quarters stacked beside it." },
+    { term: "line plot", tier: 3, pos: "noun", icon: "📈", def: "a number line with Xs above it that shows how many of each measurement", example: "The line plot shows 4 Xs above 6 inches.", nonexample: "A bar graph uses bars, not Xs on a number line.", es: "diagrama de puntos", es_note: "Not a cognate. Some books say 'gráfica de puntos'.", family: ["plot", "graph"], cue: "A number line with stacks of Xs above some numbers." },
+    { term: "data", tier: 2, pos: "noun", icon: "🗂️", def: "numbers or facts you collect to answer a question", example: "Our data shows that most pencils are 6 inches long.", nonexample: "One guess is not data; data comes from measuring or counting.", es: "datos", es_note: "Cognate. In Spanish it is almost always plural.", family: ["collect", "graph"], cue: "A tally chart beside a pile of pencils." },
+    { term: "evidence", tier: 2, pos: "noun", icon: "🔍", def: "facts that show your claim is true", example: "The line plot is evidence that 6 inches is the most common length.", nonexample: "Saying 'I just know' is not evidence.", es: "evidencia", es_note: "Cognate: sounds and means almost the same.", family: ["prove", "proof"], cue: "A magnifying glass over a line plot." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "School Store Stop", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Draw the coins and use the first frame.", l3_4: "Write the key words you hear, then rebuild five sentences.", l5_6: "Rebuild the story and add how Mia found the change." },
+      payload: {
+        text: "Mia goes to the school store at 2:15 PM. A pencil costs 45 cents. She has 2 quarters. Two quarters are worth 50 cents. She pays 50 cents. The clerk gives her 5 cents back.",
+        key_words: ["store", "pencil", "quarters", "cents", "pays"],
+        frame: "Mia has ___ quarters. They are worth ___ cents. The pencil costs ___ cents. She gets ___ cents back.",
+        checks: ["Mia is at the store at 2:15 PM", "the pencil costs 45 cents", "two quarters are worth 50 cents", "she gets 5 cents back"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match each math word to its meaning. Keep going until all nine click!",
+      tip: "Students can replay with the picture cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words with pictures first.", l3_4: "Match all pairs, then say each word in a sentence.", l5_6: "Match all pairs, then write one sentence with two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "minute", r: "60 of these make an hour" },
+          { l: "AM", r: "the hours from midnight until noon" },
+          { l: "PM", r: "the hours from noon until midnight" },
+          { l: "coin", r: "a small round piece of metal money" },
+          { l: "value", r: "how much a coin is worth" },
+          { l: "dollar", r: "money worth 100 cents" },
+          { l: "line plot", r: "Xs above a number line" },
+          { l: "data", r: "facts you collect to answer a question" },
+          { l: "evidence", r: "facts that show a claim is true" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Time, Money, or Data?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs, then tell your partner why.",
+      tip: "Listen for 'because' when partners explain a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
+      payload: {
+        categories: [{ name: "Time words" }, { name: "Money words" }, { name: "Data words" }],
+        items: [
+          { text: "minute", cat: 0 }, { text: "AM", cat: 0 }, { text: "PM", cat: 0 }, { text: "half past", cat: 0 },
+          { text: "coin", cat: 1 }, { text: "dollar", cat: 1 }, { text: "dime", cat: 1 }, { text: "value", cat: 1 },
+          { text: "line plot", cat: 2 }, { text: "data", cat: 2 }, { text: "most common", cat: 2 }, { text: "evidence", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the picture cues to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "minute", clues: ["There are 60 of me in an hour.", "The long hand points to me.", "I am a small part of time."] },
+          { term: "coin", clues: ["I am round and made of metal.", "A dime and a nickel are both me.", "You can spend me at the school store."] },
+          { term: "value", clues: ["I am 25 cents for a quarter.", "I tell how much something is worth.", "A nickel has less of me than a dime."] },
+          { term: "dollar", clues: ["I am worth 100 cents.", "Four quarters make me.", "I can be a bill or a coin."] },
+          { term: "line plot", clues: ["I use Xs above a number line.", "Each X is one thing we measured.", "My tallest stack shows the most common length."] },
+          { term: "data", clues: ["The lengths of ten pencils are me.", "I am facts or numbers you collect.", "A line plot shows me."] },
+          { term: "evidence", clues: ["A detective needs me.", "I am the facts that prove a claim.", "A line plot can be me when you argue."] },
+          { term: "quarter", clues: ["I am worth 25 cents.", "Four of me make a dollar.", "I am bigger than a dime."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Prove It, Partner", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Make a claim and prove it, then your partner checks your proof.",
+      tip: "Listen for evidence after every 'because' or 'according to'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the clock, coins, or Xs and use the starter.", l3_4: "Give evidence with 'because' every turn.", l5_6: "Add 'according to' and cite a number." },
+      payload: {
+        roles: { a: "Claimer", b: "Checker" },
+        cards: [
+          { prompt: "The short hand points to 3 and the long hand points to 6. What time is it?", starter: "It is ___ because ___.", follow_up: "How many minutes is the 6?" },
+          { prompt: "Do you eat breakfast at AM or PM? Prove it.", starter: "I eat breakfast at ___ AM because ___.", follow_up: "What time do you eat dinner?" },
+          { prompt: "Which is worth more: 2 dimes or 1 quarter?", starter: "I think ___ is worth more because ___.", follow_up: "How many cents is each one?" },
+          { prompt: "How many cents are 2 quarters and 1 dime?", starter: "2 quarters are ___ cents, and 1 dime is ___ cents, so ___.", follow_up: "Did you count the quarters first?" },
+          { prompt: "What does the line plot say about the most common pencil length?", starter: "According to the line plot, ___ because ___.", follow_up: "How many Xs does it have?" },
+          { prompt: "A friend says 5 inches is the most common length. How can you check?", starter: "I look at the line plot. I see ___ Xs above ___.", follow_up: "How many Xs does 6 inches have?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me the ___ on the plot?" },
+          { label: "Prove it", stem: "What is your evidence?" },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Store and Plot Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts about the school store and a pencil line plot. Ask to find the missing facts!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Repeat each number back to check it.", l5_6: "Check that 45 + 20 = 65 and that the Xs add up to 10." },
+      payload: {
+        goal: "Find every missing fact. Then check that 45 + 20 = 65 cents.",
+        a: { title: "Detective A", has: [{ k: "Pencil price", v: "45 cents" }, { k: "Pencil and eraser price", v: "65 cents" }, { k: "Xs above 6 inches", v: "4" }], needs: ["Eraser price", "Pencils measured in all", "Xs above 4 inches"] },
+        b: { title: "Detective B", has: [{ k: "Eraser price", v: "20 cents" }, { k: "Pencils measured in all", v: "10" }, { k: "Xs above 4 inches", v: "1" }], needs: ["Pencil price", "Pencil and eraser price", "Xs above 6 inches"] },
+        ask_frames: ["How many ___ are there?", "Can you say that number again?"],
+        tell_frames: ["The ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Evidence Radar", minutes: 12, grouping: "Solo",
+      mission: "Read Jaylen's claim. Mark the claims and the evidence, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the proof.",
+      materials: [],
+      support: { l1_2: "Mark only the evidence.", l3_4: "Mark the claims and the evidence.", l5_6: "Mark everything, then write one more piece of evidence." },
+      payload: {
+        text: "Jaylen's class measured 10 pencils. They made a line plot. There are 4 Xs above 6 inches. There are 2 Xs above 5 inches and 2 Xs above 7 inches. Jaylen says 6 inches is the most common length. His evidence is the 4 Xs above 6. No other length has 4 Xs. Jaylen also says 4 inches is the shortest length. It is the mark farthest to the left.",
+        marks: [
+          { label: "Claims", instruction: "Highlight what Jaylen says.", targets: ["6 inches is the most common length", "4 inches is the shortest length"] },
+          { label: "Evidence", instruction: "Highlight the proof.", targets: ["the 4 Xs above 6", "No other length has 4 Xs", "It is the mark farthest to the left"] },
+        ],
+        questions: [
+          { q: "What is Jaylen's first claim?", options: ["The pencils are all 4 inches long.", "6 inches is the most common length.", "The pencils are heavy."], answer: 1, why: "The text says Jaylen says 6 inches is the most common length." },
+          { q: "What evidence does he use for that claim?", options: ["The class has 10 pencils.", "There is 1 X above 4.", "There are 4 Xs above 6."], answer: 2, why: "The tallest stack, 4 Xs above 6, is his evidence." },
+          { q: "Where is the shortest length on a line plot?", options: ["On the left, at the smallest number.", "On the right.", "Above the tallest stack."], answer: 0, why: "Numbers get smaller to the left, so the shortest length is at the left." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["According to the line plot,", "6 inches is", "the most common length."] },
+          { parts: ["A quarter has a value", "of 25 cents", "because four of them", "make a dollar."] },
+          { parts: ["The short hand points", "to 3,", "so it is 3 o'clock."] },
+          { parts: ["I eat breakfast", "in the morning,", "so I say 7:00 AM."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Coin Jar", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Sam's coin jar story.",
+      tip: "Two bank words are extras; students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and try the words.", l3_4: "Fill all gaps, then check that each sentence makes sense.", l5_6: "Fill all gaps, then explain one choice with 'because'." },
+      payload: {
+        text: "Sam counts the {1} in his jar. A dime has a {2} of 10 cents. Four quarters make one {3}. Sam gets to school at 8:00 in the morning, so it is 8:00 {4}. His class collects {5} and shows it on a line plot.",
+        answers: ["coins", "value", "dollar", "AM", "data"],
+        bank: ["coins", "value", "dollar", "AM", "data", "PM", "evidence"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start." },
+      payload: {
+        items: [
+          { sentences: ["The line plot has four Xs above 6.", "Six inches is the most common."], connector: "so", model: "The line plot has four Xs above 6, so 6 inches is the most common." },
+          { sentences: ["A dime is worth 10 cents.", "A nickel is worth 5 cents."], connector: "while", model: "A dime is worth 10 cents, while a nickel is worth 5 cents." },
+          { sentences: ["I know it is PM.", "It is evening."], connector: "because", model: "I know it is PM because it is evening." },
+          { sentences: ["I checked the line plot.", "I found the most common length."], connector: "after", model: "After I checked the line plot, I found the most common length." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and say why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the numbers first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "2 dimes and 1 nickel are worth 3 cents because I counted 3 coins.", options: ["They are worth 30 cents because there are 3 coins.", "They are worth 25 cents because 10 + 10 + 5 = 25.", "They are worth 3 cents because 2 + 1 = 3."], answer: 1, why: "Count the value of each coin, not the number of coins: 10 + 10 + 5 = 25.", type: "value, not count" },
+          { wrong: "The clock shows 3:30, so the long hand points to 3.", options: ["The long hand points to 5.", "The long hand points to 30.", "The long hand points to 6."], answer: 2, why: "Each number is 5 minutes. The 6 means 6 × 5 = 30 minutes.", type: "wrong fact" },
+          { wrong: "6 inches is the most common length because it is the biggest number.", options: ["6 inches is the most common because it is on the right.", "6 inches is the most common because I like 6.", "6 inches is the most common because it has the most Xs above it."], answer: 2, why: "Most common means the tallest stack of Xs. That is the evidence.", type: "no evidence" },
+          { wrong: "I eat dinner at 6:00 AM.", options: ["I eat dinner at 6:00 PM because dinner is in the evening.", "I eat dinner at 6:00 AM because it is early.", "I eat dinner at 6:00 AM because I am hungry."], answer: 0, why: "Evening hours are after noon, so they are PM.", type: "wrong word" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Claim and Proof", minutes: 15, grouping: "Solo",
+      mission: "Write a claim about the pencil line plot and prove it with evidence.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Draw the Xs and use the frames.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts and use 'according to' with a number." },
+      payload: {
+        prompt: "A class measured 10 pencils. 4 inches has 1 X, 5 inches has 2 Xs, 6 inches has 4 Xs, 7 inches has 2 Xs, and 8 inches has 1 X. What is the most common length? Prove it.",
+        structure: [
+          { part: "Claim", frame: "My claim is that ___ inches is the most common length." },
+          { part: "Evidence", frame: "According to the line plot, ___ inches has ___ Xs." },
+          { part: "Reasoning", frame: "No other length has more than ___ Xs, so ___." },
+        ],
+        word_bank: ["line plot", "data", "evidence", "most common", "according to", "because", "so", "Xs"],
+        checklist: ["I made a claim.", "I used a number from the line plot.", "I used according to or because.", "I said why no other length wins."],
+        model: "My claim is that 6 inches is the most common length. According to the line plot, 6 inches has 4 Xs. No other length has more than 2 Xs. So 6 inches is the most common.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A pen costs 35 cents. Mia has 1 quarter and 1 dime. Does she have enough? Prove it.",
+    frame: "Mia has ___ cents because ___. The pen costs ___ cents, so ___.",
+    model: "Yes, Mia has enough. 1 quarter is 25 cents and 1 dime is 10 cents. 25 + 10 = 35, so she has exactly 35 cents.",
+    rubric: {
+      emerging: "Says yes with coins drawn or a word bank.",
+      developing: "Uses the frame with the value of each coin.",
+      proficient: "Adds 25 + 10 = 35 and says why that is enough.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Quarter' sounds like 'cuarto' but the coin is worth 25 cents, and 'dime' and 'nickel' are nicknames with no Spanish word to match.", fix: "Show each coin with its value on a card and say the name and the value together." },
+    { group: "All multilingual learners", issue: "'Quarter past' and 'half past' use fraction words, so students link them to coins instead of to 15 and 30 minutes.", fix: "Color the clock quarter and half, and say 'quarter past, 15 minutes' together." },
+  ],
+  misconception: {
+    pattern: "Students count how many coins they have instead of adding what each coin is worth.",
+    redirect: "Ask 'How many coins? Now how much is each coin worth?' and let students touch each coin while they count by its value.",
+  },
+};

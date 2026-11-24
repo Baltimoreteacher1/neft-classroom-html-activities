@@ -1,0 +1,265 @@
+// BCPSS Language Studio v2 — g1-ela-u2 (Grade 1 ELA, Wit & Wisdom + Fundations). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do an animal's body parts help it stay alive?",
+  can_do: {
+    content: "I can name an animal's body part and tell how it helps the animal.",
+    language: "I can use 'because' to tell why a body part is important.",
+  },
+  mentor: {
+    text: "A turtle has a hard shell. It stays safe because the shell protects its body.",
+    gist: "The speaker names the body part first, then uses 'because' to tell why it helps.",
+    chunks: [
+      { text: "A turtle has a hard shell.", role: "Animal and body part", tone: "evidence", ask: "Which body part does the turtle have?" },
+      { text: "It stays safe", role: "The good result", tone: "concept", ask: "What good thing happens to the turtle?" },
+      { text: "because", role: "The reason word", tone: "connector", ask: "Which little word tells us the reason is coming?" },
+      { text: "the shell protects its body.", role: "The reason", tone: "precision", ask: "What does the shell do for the turtle?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The [animal] has a [body part].",
+      "The [body part] helps it [verb].",
+      "It is [adjective].",
+    ],
+    l3_4: [
+      "A [animal] has [body part] to [verb].",
+      "The [body part] helps it [action] because [reason].",
+      "This keeps the [animal] [safe / alive].",
+    ],
+    l5_6: [
+      "A [animal] has [feature], which helps it [action] because [reason].",
+      "Without its [feature], the [animal] could not [action].",
+      "This helps the [animal] survive because [reason].",
+    ],
+  },
+  connectors: ["because", "so", "to", "and", "which helps", "but"],
+  vocab: [
+    { term: "feature", tier: 3, pos: "noun", icon: "🔎", def: "one part that makes an animal special", example: "A long neck is a giraffe feature.", nonexample: "The color of your shirt is not an animal feature.", es: "característica", es_note: "Feature = característica. A body part feature = rasgo del cuerpo.", family: ["features"], cue: "A giraffe with a circle drawn around its long neck." },
+    { term: "survive", tier: 2, pos: "verb", icon: "💚", def: "to stay alive", example: "Animals eat food to survive.", nonexample: "An animal that has no food or water cannot survive.", es: "sobrevivir", es_note: "Cognate: sounds and means almost the same.", family: ["survives", "survived"], cue: "A small rabbit safe in its burrow with a green heart above it." },
+    { term: "protect", tier: 2, pos: "verb", icon: "🛡️", def: "to keep safe from harm", example: "A hard shell can protect a crab.", nonexample: "Leaving a baby bird alone does not protect it.", es: "proteger", es_note: "Cognate: sounds and means almost the same.", family: ["protects", "protected", "protection"], cue: "A turtle pulled inside its shell with a shield beside it." },
+    { term: "danger", tier: 2, pos: "noun", icon: "⚠️", def: "something that could hurt you", example: "A hungry fox is a danger to a rabbit.", nonexample: "A soft bed is not a danger.", es: "peligro", es_note: "Danger = peligro. 'Dangerous' = peligroso.", family: ["dangers", "dangerous"], cue: "A mouse looking up at a fox shadow with a warning sign." },
+    { term: "shell", tier: 3, pos: "noun", icon: "🐢", def: "a hard cover on the outside of a turtle, crab, or snail", example: "The turtle hides in its shell.", nonexample: "A soft fur coat is not a shell.", es: "caparazón", es_note: "Animal shell = caparazón. An egg or nut shell = cáscara.", family: ["shells"], cue: "A turtle with its hard round shell colored in." },
+    { term: "beak", tier: 3, pos: "noun", icon: "🐦", def: "the hard mouth of a bird", example: "The heron uses its beak to catch fish.", nonexample: "A dog has a nose and mouth, not a beak.", es: "pico", es_note: "Beak = pico. Also the pointed top of a mountain in Spanish.", family: ["beaks"], cue: "A bird with its beak circled, holding a seed." },
+    { term: "claw", tier: 3, pos: "noun", icon: "🦀", def: "a sharp, curved nail on an animal", example: "The crab holds food in its claw.", nonexample: "A round paw pad is not a claw.", es: "garra", es_note: "Claw = garra or uña. A crab claw = pinza.", family: ["claws"], cue: "A blue crab holding up two big claws." },
+    { term: "quill", tier: 3, pos: "noun", icon: "📌", def: "a sharp, stiff spine on a porcupine", example: "A quill can hurt a hungry fox.", nonexample: "A soft feather on a duck is not a quill.", es: "púa", es_note: "Quill = púa. A porcupine = puercoespín.", family: ["quills"], cue: "A porcupine with its sharp spines standing up." },
+    { term: "catch", tier: 2, pos: "verb", icon: "🎣", def: "to grab something that is moving", example: "The osprey will catch a fish.", nonexample: "Dropping a ball is not catching it.", es: "atrapar", es_note: "Catch = atrapar. Also coger in some places, but atrapar is safest in school.", family: ["catches", "caught"], cue: "A bird swooping down to grab a fish from the water." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Heron by the Bay", minutes: 10, grouping: "Partners",
+      mission: "Listen to the heron story twice. Tell it back with your partner!",
+      tip: "Read slowly twice; children jot picture words and then rebuild the story orally in pairs.",
+      materials: ["Picture cards: heron, legs, beak, fish"],
+      support: { l1_2: "Point to the picture cards as you hear each body part.", l3_4: "Say one sentence about the legs and one about the beak.", l5_6: "Retell all the facts and use 'help' to tell what each part does." },
+      payload: {
+        text: "A great blue heron stands in the bay. It has long legs. The long legs help it wade. It has a sharp beak. The beak helps it catch fish.",
+        key_words: ["heron", "legs", "wade", "beak", "catch"],
+        frame: "A ___ stands in the bay. Its ___ help it wade. Its ___ helps it ___ fish.",
+        checks: ["a heron stands in the bay", "the long legs help it wade", "the heron has a sharp beak", "the beak helps it catch fish"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Feature Match-Up", minutes: 8, grouping: "Solo",
+      mission: "Tap a word. Tap the picture clue that goes with it.",
+      tip: "Have children say each word and point to a picture of the animal part before they tap.",
+      materials: [],
+      support: { l1_2: "Match the animal parts first: shell, beak, claw, quill.", l3_4: "Match all eight and say a sentence for two of them.", l5_6: "Match all eight and name an animal for each part." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "feature", r: "🔎 one part that makes an animal special" },
+          { l: "survive", r: "💚 stay alive" },
+          { l: "protect", r: "🛡️ keep safe from harm" },
+          { l: "danger", r: "⚠️ something that could hurt you" },
+          { l: "shell", r: "🐢 a hard cover on a turtle" },
+          { l: "beak", r: "🐦 the hard mouth of a bird" },
+          { l: "claw", r: "🦀 a sharp, curved nail" },
+          { l: "quill", r: "📌 a sharp spine on a porcupine" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Ending Sound Safari", minutes: 8, grouping: "Partners",
+      mission: "Say each animal word. Sort it by its ending sound.",
+      tip: "Fundations link: have children tap the sounds on their fingers and mark the ending team with a glued-sound arc.",
+      materials: ["Fundations keyword cards: duck, wing, skunk"],
+      support: { l1_2: "Say the word slowly and listen to the end.", l3_4: "Say the ending sound, then the whole word.", l5_6: "Add one new word to each group." },
+      payload: {
+        categories: [{ name: "ck like duck" }, { name: "ng like wing" }, { name: "nk like skunk" }],
+        items: [
+          { text: "duck", cat: 0 }, { text: "neck", cat: 0 }, { text: "black", cat: 0 }, { text: "peck", cat: 0 },
+          { text: "wing", cat: 1 }, { text: "long", cat: 1 }, { text: "sting", cat: 1 }, { text: "strong", cat: 1 },
+          { text: "skunk", cat: 2 }, { text: "trunk", cat: 2 }, { text: "pink", cat: 2 }, { text: "honk", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Animal Features", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the mystery animal!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think and whisper to a partner.",
+      materials: [],
+      support: { l1_2: "Look at the animal picture cards to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue for one animal." },
+      payload: {
+        cards: [
+          { term: "turtle", clues: ["I walk very slowly.", "I carry a hard home on my back.", "I pull my head inside when danger is near."] },
+          { term: "porcupine", clues: ["I live in forests.", "I have many sharp quills.", "I raise my quills when I feel danger."] },
+          { term: "giraffe", clues: ["I live in Africa.", "I am the tallest animal on Earth.", "My long neck reaches leaves on tall trees."] },
+          { term: "owl", clues: ["I fly at night.", "My big eyes help me see in the dark.", "I say hoo, hoo."] },
+          { term: "blue crab", clues: ["I live in the Chesapeake Bay.", "I have a hard shell and two claws.", "I walk sideways, and people in Maryland love to eat me."] },
+          { term: "duck", clues: ["I swim on ponds.", "My feet are webbed like paddles.", "I say quack, quack."] },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Feature Sentence Puzzle", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a fact about an animal.",
+      tip: "Ask which piece starts with a capital letter and how the sentence ends.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends with a period, then read it aloud.", l5_6: "After building, add 'because' and a reason." },
+      payload: {
+        items: [
+          { parts: ["A turtle", "has a hard shell", "to stay safe."] },
+          { parts: ["The giraffe", "reaches leaves", "with its long neck."] },
+          { parts: ["A duck", "paddles", "with its webbed feet."] },
+          { parts: ["The porcupine", "has sharp quills", "to protect itself."] },
+          { parts: ["The heron", "stands in", "the bay", "and catches fish."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Animal Feature Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner about an animal feature.",
+      tip: "Model one turn first; listen for the body part and the word 'because' in each answer.",
+      materials: ["Animal talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add the word because.", l5_6: "Say two features and tell how each one helps." },
+      payload: {
+        roles: { a: "Animal expert", b: "Listener" },
+        cards: [
+          { prompt: "Pick an animal you know. Which body part helps it most?", starter: "A ___ has ___.", follow_up: "How does it help the animal?" },
+          { prompt: "How does a turtle stay safe?", starter: "A turtle has ___ to ___.", follow_up: "What if it had no shell?" },
+          { prompt: "What helps a bird eat?", starter: "A bird has a ___ to ___.", follow_up: "What does a bird like to eat?" },
+          { prompt: "Which animal would you like to be?", starter: "I would like to be a ___ because ___.", follow_up: "Which feature do you like best?" },
+          { prompt: "Have you seen a crab or a heron near the bay?", starter: "I saw a ___ at ___.", follow_up: "What feature did you notice?" },
+          { prompt: "How do your own body parts help you?", starter: "My ___ helps me ___.", follow_up: "Can an animal do that too?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you point to ___?" },
+          { label: "Me too", stem: "I also ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Animal Card Swap", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to find the missing animal features.",
+      tip: "Partners keep cards hidden and ask and answer aloud; no peeking at each other's card.",
+      materials: ["Animal cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'How does it help?'" },
+      payload: {
+        goal: "Find the special feature of each animal and write it on your card.",
+        a: { title: "Explorer A", has: [{ k: "Turtle feature", v: "hard shell" }, { k: "Giraffe feature", v: "long neck" }, { k: "Duck feature", v: "webbed feet" }], needs: ["Owl feature", "Porcupine feature", "Heron feature"] },
+        b: { title: "Explorer B", has: [{ k: "Owl feature", v: "big eyes" }, { k: "Porcupine feature", v: "sharp quills" }, { k: "Heron feature", v: "long legs" }], needs: ["Turtle feature", "Giraffe feature", "Duck feature"] },
+        ask_frames: ["What feature does the ___ have?", "How does it help?"],
+        tell_frames: ["The ___ has ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Porcupine and Fox", minutes: 10, grouping: "Whole Class",
+      mission: "Read about the porcupine. Find the joining words and the feature words!",
+      tip: "Read aloud twice; children circle joining words in one color and feature words in another on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the joining words.", l3_4: "Find joining words and feature words.", l5_6: "Find both, then write what the quills do." },
+      payload: {
+        text: "A porcupine has sharp quills. A fox sees the porcupine. The fox wants a snack. But the quills can hurt the fox. So the fox goes away. The porcupine stays safe.",
+        marks: [
+          { label: "Joining words", instruction: "Circle the little words that join ideas.", targets: ["But", "So"] },
+          { label: "Feature and result", instruction: "Underline the feature and what happens.", targets: ["sharp quills", "can hurt the fox", "stays safe"] },
+        ],
+        questions: [
+          { q: "What feature does the porcupine have?", options: ["Sharp quills", "A long neck", "Webbed feet"], answer: 0, why: "The first sentence says the porcupine has sharp quills." },
+          { q: "Why does the fox go away?", options: ["It is not hungry.", "The quills can hurt it.", "It sees a bird."], answer: 1, why: "The story says the quills can hurt the fox, so it goes away." },
+          { q: "What does 'So' tell us?", options: ["What the fox ate", "Where the fox lives", "What happened because of the quills"], answer: 2, why: "'So' joins the cause (the quills) to the result (the fox goes away)." },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Blue Crab at the Bay", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap in Maya's crab story.",
+      tip: "Three bank words are extras; children decide which ones do not fit the story.",
+      materials: [],
+      support: { l1_2: "Read the sentence and look for a picture clue.", l3_4: "Fill the gaps, then read the story to a partner.", l5_6: "Fill the gaps, then write one more fact about the crab." },
+      payload: {
+        text: "Maya sees a blue crab at the bay. The crab has a hard {1}. The shell helps {2} it from {3}. The crab also has two sharp {4}. The claws help it hold food.",
+        answers: ["shell", "protect", "danger", "claws"],
+        bank: ["shell", "protect", "danger", "claws", "beak", "survive", "quill"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Because Builders", minutes: 10, grouping: "Partners",
+      mission: "Join two short facts with the joining word.",
+      tip: "Say both facts, then the joined sentence; more than one correct answer is fine.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the facts and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["The turtle has a shell.", "It stays safe."], connector: "because", model: "The turtle stays safe because it has a shell." },
+          { sentences: ["The giraffe has a long neck.", "It can reach tall leaves."], connector: "so", model: "The giraffe has a long neck, so it can reach tall leaves." },
+          { sentences: ["The duck has webbed feet.", "They help it swim."], connector: "which helps", model: "The duck has webbed feet, which helps it swim." },
+          { sentences: ["The owl has big eyes.", "It sees at night."], connector: "because", model: "The owl sees at night because it has big eyes." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Animal Fact Page", minutes: 15, grouping: "Solo",
+      mission: "Pick an animal. Draw it and write how a body part helps it.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Fact page template"],
+      support: { l1_2: "Draw it. Copy the first frame and label the body part.", l3_4: "Write the body part and what it does.", l5_6: "Write the body part, what it does, and why it helps." },
+      payload: {
+        prompt: "Pick an animal. Draw it. Write one feature, what it does, and why it helps the animal survive.",
+        structure: [
+          { part: "The animal and feature", frame: "A [animal] has [body part]." },
+          { part: "What it does", frame: "The [body part] helps it [action]." },
+          { part: "Why it matters", frame: "This helps it survive because [reason]." },
+        ],
+        word_bank: ["shell", "beak", "claws", "quills", "neck", "feet", "legs", "protect", "catch", "survive"],
+        checklist: ["I drew my animal.", "I named a feature.", "I said what it does.", "I used the word because."],
+        model: "A porcupine has sharp quills. The quills help it stay safe. This helps it survive because enemies stay away.",
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Vocabulary", title: "Feature Fix-It", minutes: 8, grouping: "Partners",
+      mission: "Find the mistake in each sentence. Pick the best fix!",
+      tip: "Have children read the wrong sentence aloud, explain what sounds wrong, then choose the fix.",
+      materials: [],
+      support: { l1_2: "Listen to the sentence and pick the one that sounds right.", l3_4: "Pick the fix and say why the other choices do not work.", l5_6: "Pick the fix, then write your own correct sentence." },
+      payload: {
+        items: [
+          { wrong: "The turtle has a shell because it can fly.", options: ["The turtle has a shell because it is loud.", "The turtle has a shell because it keeps the turtle safe.", "The turtle has a shell because it is cold."], answer: 1, why: "A shell protects a turtle. The reason must tell how the shell helps." },
+          { wrong: "A giraffe has a long neck. It reach tall leaves.", options: ["It reaches tall leaves.", "It reach tall leaves now.", "It reaching leaves."], answer: 0, why: "With 'it', the action word needs an s: it reaches." },
+          { wrong: "The crab has claws for swim.", options: ["The crab has claws for to eat.", "The crab has claws to hold food.", "The crab has claws to swim."], answer: 1, why: "After 'to', say what the claws do. Crabs hold food with their claws." },
+          { wrong: "A duck has webbed feet. Because it swims.", options: ["Because a duck has webbed feet.", "A duck has webbed feet, so swims.", "A duck has webbed feet because it swims."], answer: 2, why: "A 'because' idea must join to the first part in one sentence." },
+        ],
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Pick an animal. Name one feature. Tell how it helps the animal survive.",
+    frame: "A [animal] has [feature]. It helps the animal [action] because [reason].",
+    model: "A turtle has a hard shell. It helps the turtle stay safe because the shell protects its body.",
+    rubric: {
+      emerging: "Points to an animal body part in a picture and says one word.",
+      developing: "Uses the frame to name an animal, a feature, and what it does.",
+      proficient: "Names the feature and tells how it helps the animal with 'because' and a clear reason.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Children may say 'claws for swim', copying Spanish 'para nadar'. English uses 'to swim' or 'for swimming'.", fix: "Give one model, 'claws to hold food', and have children copy the pattern 'has [part] to [verb]'." },
+    { group: "All multilingual learners", issue: "Children name the body part but stop before giving the reason.", fix: "Ask 'Why does it help?' and hold up a finger for each part: the feature, the job, then 'because'." },
+  ],
+  misconception: {
+    pattern: "Children say an animal has a feature because it wants it, or they think every animal has the same body parts.",
+    redirect: "Ask 'What job does the feature do?' and compare two animals, like a duck's feet and a heron's legs.",
+  },
+};

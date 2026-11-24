@@ -3,9 +3,10 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import * as seed from "../data/bcpss-curriculum-seed.mjs";
+import { STUDIO_SUMMARIES } from "../db/seeds/bcpss/v2/summaries.mjs";
 import { onRequest as familyGuideApi } from "./api/bcpss/family-guide/[unitId].js";
 import { onRequest as pathwaysApi } from "./api/bcpss/pathways.js";
-import { buildFamilyGuide, FAMILY_LABS } from "./_lib/bcpss/family-guide.js";
+import { buildFamilyGuide } from "./_lib/bcpss/family-guide.js";
 import { buildGradePathway, buildMoveAtlas, buildPathwayIndex, normalizeGrade, unitRoute } from "./_lib/bcpss/pathways.js";
 
 let failed = 0;
@@ -21,7 +22,8 @@ const t = async (name, fn) => {
 
 const UNITS = seed.BCPSS_UNITS;
 const UNIT = new Map(UNITS.map((u) => [u.id, u]));
-const CONN = new Map(seed.UNIT_CONNECTIONS.map((c) => [c.unit_id, c]));
+// Authored Language Studio words and mentor sentences take precedence over the generated seed text.
+const CONN = new Map(seed.UNIT_CONNECTIONS.map((c) => [c.unit_id, { ...c, ...(STUDIO_SUMMARIES[c.unit_id] || {}) }]));
 const get = async (handler, path, params = {}) => handler({ request: new Request(`https://x${path}`), env: {}, params });
 
 await t("grade tokens are normalised and anything else is rejected", () => {
@@ -153,22 +155,20 @@ await t("the pathways API serves index, grade and atlas, rejects bad input, and 
   assert.equal(buildPathwayIndex().grades.reduce((n, g) => n + g.units, 0), UNITS.length);
 });
 
-await t("every unit has a family guide: its own starter, cognate words, the four practice labs and consistent neighbours", () => {
+await t("every unit has a bilingual family guide: summary, words in both languages, talk, home activities, neighbours", async () => {
   for (const u of UNITS) {
-    const g = buildFamilyGuide(u.id);
+    const g = await buildFamilyGuide(u.id);
     assert.equal(g.unit.id, u.id);
-    assert.equal(g.starter, CONN.get(u.id).unit_example_frame);
-    assert.ok(g.starter.length > 10);
-    assert.deepEqual(g.words.map((w) => w.term), CONN.get(u.id).tier2_tier3_vocab.map((v) => v.term));
-    assert.deepEqual(g.labs.map((l) => l.key), FAMILY_LABS.map((l) => l.key));
-    for (const lab of g.labs) assert.ok(lab.url.startsWith("/access-practice-lab/") && lab.url.includes(`bcpssUnit=${u.id}`));
+    assert.ok(g.summary.en.length > 20 && g.summary.es.length > 20, `${u.id} summary`);
+    assert.ok(g.vocab.length >= 3 && g.vocab.every((w) => w.term && w.def.en && w.def.es), `${u.id} vocab`);
+    assert.ok(g.talk.length >= 3 && g.try_at_home.length >= 2, `${u.id} talk/try`);
     if (g.neighbours.next) {
-      assert.equal(buildFamilyGuide(g.neighbours.next.id).neighbours.prev.id, u.id);
+      assert.equal((await buildFamilyGuide(g.neighbours.next.id)).neighbours.prev.id, u.id);
       assert.equal(UNIT.get(g.neighbours.next.id).subject, u.subject);
       assert.equal(UNIT.get(g.neighbours.next.id).grade, u.grade);
     }
   }
-  assert.equal(buildFamilyGuide("nope"), null);
+  assert.equal(await buildFamilyGuide("nope"), null);
 });
 
 await t("every family card has real English and Spanish text (the page reads family_card.translations_json)", () => {
@@ -187,13 +187,11 @@ await t("the family-guide API validates ids and returns 404 for unknown units", 
   assert.equal((await get(familyGuideApi, "/x", { unitId: "" })).status, 400);
 });
 
-await t("the hub and the activity viewer no longer preselect Grade 6 Math", () => {
+await t("the hub no longer preselects Grade 6 Math", () => {
   const hub = readFileSync(new URL("../bcpss-teachers/bcpss-teachers.js", import.meta.url), "utf8");
   const html = readFileSync(new URL("../bcpss-teachers/index.html", import.meta.url), "utf8");
-  const viewer = readFileSync(new URL("../bcpss-teachers/activity/activity-view.js", import.meta.url), "utf8");
   assert.match(hub, /const state = \{[^}]*grade: "",\s*subject: "",/s);
   assert.doesNotMatch(html, /data-grade="6" aria-pressed="true"|data-subject="Math" aria-pressed="true"|<option value="6" selected>|<option value="Math" selected>/);
-  assert.doesNotMatch(viewer, /g6-math-u2|DEFAULT_UNIT_ID/);
   const units = readFileSync(new URL("./api/bcpss/units.js", import.meta.url), "utf8");
   assert.doesNotMatch(units, /\|\| "6"|\|\| "Math"/);
 });

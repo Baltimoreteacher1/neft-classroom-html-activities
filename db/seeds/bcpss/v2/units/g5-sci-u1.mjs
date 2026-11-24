@@ -1,0 +1,266 @@
+// BCPSS Language Studio v2 — g5-sci-u1 (Matter: particles, properties, conservation). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can you prove that matter is not lost when it melts, dissolves, or mixes?",
+  can_do: {
+    content: "I can use mass measurements to show that matter is conserved when things melt, dissolve, or mix.",
+    language: "I can make a claim and back it up with evidence using because, according to, and as shown by.",
+  },
+  mentor: {
+    text: "The mass stayed at 60 grams before and after mixing, so we can claim that matter was conserved because no particles disappeared.",
+    gist: "The speaker uses scale numbers as proof that nothing was lost when two things were mixed.",
+    chunks: [
+      { text: "The mass stayed at 60 grams before and after mixing,", role: "The evidence", tone: "evidence", ask: "Which numbers from the scale does the speaker use as proof?" },
+      { text: "so", role: "The link word", tone: "connector", ask: "Which word links the evidence to the claim?" },
+      { text: "we can claim that matter was conserved", role: "The claim", tone: "concept", ask: "What is the speaker saying is true about matter?" },
+      { text: "because no particles disappeared.", role: "The reasoning", tone: "precision", ask: "What idea about particles explains the claim?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The mass is [number] grams before.",
+      "The mass is [number] grams after.",
+      "The mass [stayed the same / changed].",
+    ],
+    l3_4: [
+      "My claim is that [matter was conserved / a new substance formed].",
+      "I know this because the mass was [number] grams before and [number] grams after.",
+      "According to our data, the [sugar / salt / ice] [dissolved / melted], but its particles are still [there].",
+    ],
+    l5_6: [
+      "Our data show that the mass [stayed the same / dropped] because [reason].",
+      "As shown by [evidence], the [substance] did not vanish; it [what happened].",
+      "Although the [material] looked [different], we conclude that [claim] since [reasoning].",
+    ],
+  },
+  connectors: ["because", "so", "according to", "as shown by", "therefore", "however"],
+  vocab: [
+    { term: "matter", tier: 3, pos: "noun", def: "anything that takes up space and has mass", example: "Air is matter because it takes up space inside a balloon.", nonexample: "Light is not matter, because it has no mass and takes up no space.", es: "materia", es_note: "Cognate. In school, 'materia' can also mean a subject like math.", family: ["material"], cue: "A balloon getting bigger as someone blows air into it." },
+    { term: "particle", tier: 3, pos: "noun", def: "a tiny piece of matter that is too small to see", example: "A drop of Bay water holds more particles than you could ever count.", nonexample: "A grain of sand is small, but you can see it, so it is not a particle in this sense.", es: "partícula", es_note: "Cognate: sounds and means almost the same.", family: ["particles"], cue: "A magnified dot pattern spreading out in a glass of water." },
+    { term: "mass", tier: 3, pos: "noun", def: "the amount of matter in an object, measured in grams", example: "The mass of the cup is 140 grams on the scale.", nonexample: "A big balloon can have less mass than a small rock, so size does not tell mass.", es: "masa", es_note: "Cognate. At home, 'masa' also means dough.", family: ["massive"], cue: "A balance scale with a rock on one side and weights on the other." },
+    { term: "mixture", tier: 3, pos: "noun", def: "two or more substances put together without making a new substance", example: "Salt water is a mixture of salt and water.", nonexample: "A cake is not just a mixture, because baking makes new substances.", es: "mezcla", es_note: "Not a cognate. Students may know 'mezclar' (to mix).", family: ["mix"], cue: "A bowl of trail mix with every piece still visible." },
+    { term: "dissolve", tier: 3, pos: "verb", def: "to mix into a liquid so completely that the pieces cannot be seen", example: "Sugar will dissolve faster in warm water than in cold water.", nonexample: "Sand does not dissolve in water; it sinks to the bottom.", es: "disolverse", es_note: "Cognate: 'disolver' is the base verb.", family: ["dissolved", "solution"], cue: "A sugar cube vanishing in a glass of tea." },
+    { term: "property", tier: 3, pos: "noun", def: "something you can observe or test about a material, like its color or hardness", example: "Being attracted to a magnet is a property of iron.", nonexample: "A student's name is not a property of a material.", es: "propiedad", es_note: "Cognate. In daily life, 'propiedad' can also mean something you own.", family: ["properties"], cue: "A hand holding a shiny, hard, silver spoon." },
+    { term: "evaporate", tier: 3, pos: "verb", def: "to change from a liquid into a gas", example: "A puddle on the playground will evaporate on a hot day.", nonexample: "Ice turning into water is melting, not evaporating.", es: "evaporarse", es_note: "Cognate: 'evaporar' is the base verb.", family: ["evaporation"], cue: "A puddle shrinking on a sunny blacktop." },
+    { term: "conserve", tier: 3, pos: "verb", def: "to keep the total amount the same", example: "Matter is conserved when ice melts, because the mass stays the same.", nonexample: "If a cup loses 3 grams as gas escapes, the cup's mass is not conserved, but the matter still exists.", es: "conservar", es_note: "Cognate. In daily life, 'conservar' can also mean to save food.", family: ["conserved", "conservation"], cue: "Two scale readings, before and after, that show the same number." },
+    { term: "substance", tier: 2, pos: "noun", def: "one kind of material with its own properties, like salt or water", example: "Baking soda is a white substance that fizzes with vinegar.", nonexample: "Salt water is a mixture, not a single substance.", es: "sustancia", es_note: "Cognate: sounds and means almost the same.", family: ["substances"], cue: "Three labeled jars: salt, sugar, and baking soda." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Mateo and the Melting Ice", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner using the key words.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame while you draw the cup.", l3_4: "Write the key words you hear, then rebuild four sentences.", l5_6: "Rebuild the whole text and add one sentence that gives a reason." },
+      payload: {
+        text: "Mateo puts ice in a cup and places both on a scale. The scale reads 140 grams. He waits while the ice melts into water. Then he weighs the cup again. The scale still reads 140 grams. Mateo claims that melting does not change the mass because the particles are still in the cup.",
+        key_words: ["scale", "melts", "grams", "claims", "particles"],
+        frame: "First, Mateo ___. Then the ice ___. The scale ___. He claims ___ because ___.",
+        checks: ["Mateo weighs a cup of ice", "the ice melts into water", "the scale reads 140 grams before and after", "he claims mass stays the same because the particles are still there"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Science Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each science word to its meaning. Wrong matches bounce back, so keep trying until all eight click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know from the pictures first.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
+      payload: {
+        left_label: "Science word", right_label: "What it means",
+        pairs: [
+          { l: "matter", r: "anything that takes up space and has mass" },
+          { l: "particle", r: "a tiny piece of matter that is too small to see" },
+          { l: "mass", r: "the amount of matter in an object, measured in grams" },
+          { l: "mixture", r: "two or more substances put together without making a new substance" },
+          { l: "dissolve", r: "to mix into a liquid so completely that the pieces cannot be seen" },
+          { l: "property", r: "something you can observe or test about a material" },
+          { l: "evaporate", r: "to change from a liquid into a gas" },
+          { l: "conserve", r: "to keep the total amount the same" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Matter or Not Matter?", minutes: 8, grouping: "Partners",
+      mission: "Sort each thing into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the things you can see first.", l3_4: "Sort every card and say 'I put ___ here because ___.'", l5_6: "Sort every card, then add one new example to each group." },
+      payload: {
+        categories: [{ name: "Matter you can see" }, { name: "Matter you cannot see" }, { name: "Not matter" }],
+        items: [
+          { text: "sand", cat: 0 }, { text: "ice", cat: 0 }, { text: "crab shell", cat: 0 }, { text: "Bay water", cat: 0 },
+          { text: "air", cat: 1 }, { text: "water vapor", cat: 1 }, { text: "oxygen", cat: 1 },
+          { text: "light", cat: 2 }, { text: "sound", cat: 2 }, { text: "heat", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Guess the Science Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "particle", clues: ["I am much too small to see.", "Water, sand, and air are all built from me.", "Matter is made of countless tiny pieces like me."] },
+          { term: "mass", clues: ["A balance can measure me.", "I am measured in grams.", "A rock has more of me than a feather."] },
+          { term: "mixture", clues: ["Trail mix is one of me.", "Two or more things are put together.", "Salad and salt water both belong to my group."] },
+          { term: "dissolve", clues: ["Sugar does this in hot tea.", "The pieces spread out so much you cannot see them.", "Salt does this in Bay water."] },
+          { term: "evaporate", clues: ["A puddle does this on a hot day.", "Liquid water changes into a gas.", "Salt stays behind when water does this."] },
+          { term: "conserve", clues: ["The total amount stays the same.", "Scientists check it with a scale.", "We say matter was ___ if the mass is the same after ice melts."] },
+          { term: "property", clues: ["Color is one of me.", "Hardness and shininess are my cousins.", "Scientists use me to tell materials apart."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Prove It to Your Partner", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Make a claim with evidence, then your partner pushes your thinking.",
+      tip: "Listen for evidence after every 'because' or 'according to'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the picture and use the first frame.", l3_4: "Give a number from the scale as evidence every turn.", l5_6: "Add 'however' to tell about a different result." },
+      payload: {
+        roles: { a: "Claimer", b: "Challenger" },
+        cards: [
+          { prompt: "Sugar disappears in your tea. Did the matter disappear?", starter: "My claim is ___ because ___.", follow_up: "What could you measure with a scale to check?" },
+          { prompt: "Ice melts in a cup. How can you show the mass did not change?", starter: "I would weigh the cup before and after, and I expect ___.", follow_up: "What would you say if the mass changed?" },
+          { prompt: "Why can't we see particles?", starter: "We cannot see particles because ___.", follow_up: "What is one clue that particles are really there?" },
+          { prompt: "Baking soda and vinegar fizz in an open cup, and the mass drops. Where did the matter go?", starter: "The matter went ___ because ___.", follow_up: "How could you catch the gas to check?" },
+          { prompt: "How could you separate iron filings from sand?", starter: "I would use a ___ because iron ___.", follow_up: "Does the total mass change after you separate them?" },
+          { prompt: "A friend says boiling water until it is gone destroys matter. What do you say?", starter: "I disagree because ___.", follow_up: "Where did the water go?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me the evidence", stem: "Which number or observation shows that ___?" },
+          { label: "Compare", stem: "My data were different. I found ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Bag Versus Cup", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds half of the mass data. Ask questions to fill in the missing numbers, with no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud, then decide which setup lost mass.",
+      materials: ["Data cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each number back to check.", l5_6: "After you finish, write a claim about which setup lost mass and why." },
+      payload: {
+        goal: "Complete the mass data for the sealed bag and the open cup, then decide which one lost mass.",
+        a: { title: "Scientist A", has: [{ k: "Sealed bag mass before", v: "85 grams" }, { k: "Open cup mass after", v: "117 grams" }], needs: ["Sealed bag mass after", "Open cup mass before"] },
+        b: { title: "Scientist B", has: [{ k: "Sealed bag mass after", v: "85 grams" }, { k: "Open cup mass before", v: "120 grams" }], needs: ["Sealed bag mass before", "Open cup mass after"] },
+        ask_frames: ["What is the ___ ?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Fizz Detective", minutes: 12, grouping: "Solo",
+      mission: "Read Aisha's investigation like a detective. Mark the evidence and the reason words, then answer the questions.",
+      tip: "Students highlight in colors; the questions check whether they can link evidence to a claim.",
+      materials: [],
+      support: { l1_2: "Mark only the numbers.", l3_4: "Mark evidence and reason words.", l5_6: "Mark everything, then rewrite one sentence using 'as shown by'." },
+      payload: {
+        text: "Aisha wants to know if matter disappears when a reaction makes gas. She puts baking soda and vinegar in a bag and seals it tightly. The bag fills with gas and gets puffy. She weighs the bag before and after the reaction. The mass is 85 grams both times. Next, she repeats the test in an open cup. This time the mass drops by 3 grams. According to her data, the gas escaped into the air. The matter was not destroyed because the sealed bag still had the same mass.",
+        marks: [
+          { label: "Evidence", instruction: "Highlight the numbers and measurements.", targets: ["The mass is 85 grams both times", "This time the mass drops by 3 grams", "the sealed bag still had the same mass"] },
+          { label: "Reason words", instruction: "Highlight the words that link evidence to a claim.", targets: ["According to her data", "because the sealed bag still had the same mass"] },
+          { label: "Science words", instruction: "Highlight the science vocabulary.", targets: ["baking soda", "vinegar", "gas", "mass"] },
+        ],
+        questions: [
+          { q: "Why did the mass drop in the open cup?", options: ["The gas escaped into the air.", "The vinegar vanished forever.", "The cup got lighter on its own."], answer: 0, why: "The text says the gas escaped into the air, so the cup lost that gas." },
+          { q: "Which evidence shows matter was conserved in the sealed bag?", options: ["The bag looked puffy.", "The mass was 85 grams before and after.", "Aisha used a bag."], answer: 1, why: "The same mass before and after is the proof that nothing was lost." },
+          { q: "Which phrase tells you Aisha is using evidence?", options: ["Next", "This time", "According to her data"], answer: 2, why: "'According to her data' points to measurements as proof." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Claim Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong science sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the evidence word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["The mass stayed at 140 grams", "after the ice melted,", "so matter was conserved."] },
+          { parts: ["According to our data,", "the sugar dissolved,", "but its particles are still there."] },
+          { parts: ["The salt did not disappear", "because it was left behind", "when the water evaporated."] },
+          { parts: ["As shown by the scale,", "the sealed bag", "had the same mass before and after."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Salt from the Bay", minutes: 8, grouping: "Solo",
+      mission: "Choose the right science word for every gap in Nia's salt story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and think about what makes sense.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then replace one answer with a phrase that means the same." },
+      payload: {
+        text: "Water from the Bay is a {1} of water and salt. Nia pours 100 grams of it into a dish. The salt seems to {2} in the water, so she cannot see it. Over three days, the water slowly starts to {3}. A thin white crust of salt is left in the dish. This proves the salt was still there, because its {4} never left. Salt is a {5} that stays behind when water changes to a gas.",
+        answers: ["mixture", "dissolve", "evaporate", "particles", "substance"],
+        bank: ["mixture", "dissolve", "evaporate", "particles", "substance", "conserve", "property"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos: more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the words.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["The mass stayed the same.", "No matter was lost."], connector: "so", model: "The mass stayed the same, so no matter was lost." },
+          { sentences: ["The sugar looks like it disappeared.", "Its particles are still in the water."], connector: "but", model: "The sugar looks like it disappeared, but its particles are still in the water." },
+          { sentences: ["The open cup lost mass.", "The gas escaped into the air."], connector: "because", model: "The open cup lost mass because the gas escaped into the air." },
+          { sentences: ["Salt dissolves in water.", "Sand does not dissolve in water."], connector: "while", model: "Salt dissolves in water, while sand does not." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Claim", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why it works.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the science words first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The sugar disappeared, so the mass dropped to zero.", options: ["The sugar dissolved, so the mass stayed the same.", "The sugar melted, so the mass dropped.", "The sugar vanished, so the mass doubled."], answer: 0, why: "Dissolved sugar is still in the water, so the total mass stays the same.", type: "wrong fact" },
+          { wrong: "Matter was conserved.", options: ["Matter was conserved because I like the experiment.", "Matter was conserved because the mass was 140 grams before and after.", "Matter was conserved because the cup is clear."], answer: 1, why: "A strong claim needs evidence, and the scale numbers are the evidence.", type: "missing evidence" },
+          { wrong: "The ice evaporated into water.", options: ["The ice dissolved into water.", "The ice evaporated into water.", "The ice melted into water."], answer: 2, why: "Solid ice changing to liquid water is melting. Evaporating is liquid changing to gas.", type: "wrong word" },
+          { wrong: "The mass stayed at 85 grams, so matter was destroyed.", options: ["The mass stayed at 85 grams, so we need a new scale.", "The mass stayed at 85 grams, so matter was not lost.", "The mass stayed at 85 grams, so matter was destroyed twice."], answer: 1, why: "The same mass before and after means no matter was lost.", type: "evidence does not match claim" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Claim, Evidence, Reasoning", minutes: 15, grouping: "Solo",
+      mission: "Write a short paragraph that proves matter was not lost, using a claim, evidence, and reasoning.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw the before and after.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'according to', and cite both numbers." },
+      payload: {
+        prompt: "Zoe mixes 80 grams of water with 20 grams of salt and stirs until the salt dissolves. The mixture has a mass of 100 grams. Did matter disappear? Write a claim backed by evidence.",
+        structure: [
+          { part: "Claim", frame: "My claim is that ___." },
+          { part: "Evidence", frame: "According to the data, the mass was ___ grams before mixing and ___ grams after." },
+          { part: "Reasoning", frame: "This shows ___ because ___." },
+        ],
+        word_bank: ["matter", "conserved", "mass", "dissolved", "particles", "because", "according to", "as shown by"],
+        checklist: ["I made a clear claim.", "I used numbers as evidence.", "I used because or according to.", "I used at least three science words."],
+        model: "My claim is that matter was conserved when Zoe mixed the salt and water. According to the data, the mass was 100 grams before mixing and 100 grams after. This shows that no matter disappeared because the salt particles are still spread out in the water.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A cup of ice has a mass of 200 grams. After the ice melts, what is the mass? Make a claim and give evidence.",
+    frame: "My claim is ___ because ___.",
+    model: "My claim is that the mass is still 200 grams because matter is conserved when ice melts, and the particles are still in the cup.",
+    rubric: {
+      emerging: "States the mass with a word bank or a labeled drawing.",
+      developing: "Uses the frame with one science word and the correct number.",
+      proficient: "Makes a clear claim and gives a reason that mentions particles or conserved matter.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Masa' also means dough and 'conservar' can mean saving food, so the science meanings of mass and conserve can get lost.", fix: "Say 'masa' and 'mass' together while a scale shows a number, so the word connects to measuring." },
+    { group: "All multilingual learners", issue: "Melt, dissolve, and evaporate all sound like 'disappear', so students write that matter vanished.", fix: "Use three pictures and the sentence 'It changed, but it did not disappear.'" },
+  ],
+  misconception: {
+    pattern: "Students say the sugar or water 'disappeared' and stop, with no data.",
+    redirect: "Ask 'What did the scale say before and after, and where are the particles now?' until they answer with a number and a because-clause.",
+  },
+};

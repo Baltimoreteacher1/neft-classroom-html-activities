@@ -1,0 +1,266 @@
+// BCPSS Language Studio v2 — g7-math-u3. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do the signs of numbers cause the answer to a problem to be positive, negative, or zero?",
+  can_do: {
+    content: "I can add, subtract, multiply, and divide positive and negative numbers, including fractions and decimals.",
+    language: "I can explain a cause and its effect with because, so, and leads to.",
+  },
+  mentor: {
+    text: "Subtracting a negative number is the same as adding its opposite, so 5 − (−3) leads to a greater value of 8.",
+    gist: "The speaker names a rule as the cause and then shows the result it produces.",
+    chunks: [
+      { text: "Subtracting a negative number is the same as adding its opposite,", role: "The cause", tone: "concept", ask: "What rule does the speaker say is true about subtracting a negative?" },
+      { text: "so", role: "The cause-and-effect signal", tone: "connector", ask: "Which word shows that an effect is coming?" },
+      { text: "5 − (−3)", role: "The example", tone: "precision", ask: "Which numbers does the speaker use to show the rule?" },
+      { text: "leads to a greater value of 8.", role: "The effect", tone: "evidence", ask: "What happens to the value, and what is the answer?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The temperature is [number] degrees.",
+      "[Number] and [opposite number] are opposites.",
+      "The answer is [positive / negative / zero].",
+    ],
+    l3_4: [
+      "Subtracting [number] is the same as adding [opposite], so the answer is [number].",
+      "The product is [positive / negative] because the signs are [the same / different].",
+      "[Number] + [opposite number] = 0, so they are additive inverses.",
+    ],
+    l5_6: [
+      "Because [cause], [expression] leads to [result].",
+      "As a result of [action], the value [rises / falls] by [number].",
+      "If [condition], then the answer must be [positive / negative] since [reason].",
+    ],
+  },
+  connectors: ["because", "so", "leads to", "as a result", "causes", "therefore"],
+  vocab: [
+    { term: "additive inverse", tier: 3, pos: "noun", def: "a number that adds to another number to make 0", example: "The additive inverse of −7 is 7 because −7 + 7 = 0.", nonexample: "The reciprocal of 7 is 1/7, so it is not the additive inverse of 7.", es: "inverso aditivo", es_note: "Cognate pair: inverso / aditivo.", family: ["opposite", "inverse"], cue: "Two arrows of equal length pointing in opposite directions from zero." },
+    { term: "rational number", tier: 3, pos: "noun", def: "a number you can write as a fraction with whole numbers on the top and bottom", example: "−0.75 is a rational number because it equals −3/4.", nonexample: "Pi is not a rational number because no fraction equals it exactly.", es: "número racional", es_note: "Cognate pair: número / racional.", family: ["ratio", "rational numbers"], cue: "A fraction bar with whole numbers above and below." },
+    { term: "terminating decimal", tier: 3, pos: "noun", def: "a decimal that stops after a few digits", example: "0.125 is a terminating decimal because it stops after three digits.", nonexample: "0.333… goes on forever, so it is not a terminating decimal.", es: "decimal finito", es_note: "Some books say 'decimal exacto'. 'Finito' is close to 'finite'.", family: ["terminate", "decimal"], cue: "A calculator display that ends with 0.125." },
+    { term: "repeating decimal", tier: 3, pos: "noun", def: "a decimal with digits that repeat forever in a pattern", example: "The fraction 1/3 is a repeating decimal: 0.333…", nonexample: "0.25 stops, so it is not a repeating decimal.", es: "decimal periódico", es_note: "Not a cognate. 'Periódico' means the pattern comes back again and again.", family: ["repeat", "decimal"], cue: "The digits 3 3 3 with a bar drawn over them." },
+    { term: "zero pair", tier: 3, pos: "noun", def: "a positive and a negative of the same size that cancel to make 0", example: "One positive chip and one negative chip make a zero pair.", nonexample: "Two positive chips make 2, so they are not a zero pair.", es: "par cero", es_note: "Not a cognate. Some Spanish materials say 'par nulo'.", family: ["zero", "pair"], cue: "A red chip and a yellow chip stacked together." },
+    { term: "integer", tier: 3, pos: "noun", def: "a whole number, the opposite of a whole number, or zero", example: "The numbers −4, 0, and 12 are all integers.", nonexample: "2.5 is not an integer because it has a decimal part.", es: "número entero", es_note: "Not a cognate. 'Entero' means whole.", family: ["integers"], cue: "A number line with dots on whole numbers only." },
+    { term: "product", tier: 2, pos: "noun", def: "the answer to a multiplication problem", example: "The product of −3 and 4 is −12.", nonexample: "The sum of 3 and 4 is 7, not a product.", es: "producto", es_note: "Cognate. Careful: a 'product' in a store is also 'producto'.", family: ["multiply", "factor"], cue: "Two numbers joined by × with an answer after the equal sign." },
+    { term: "quotient", tier: 2, pos: "noun", def: "the answer to a division problem", example: "The quotient of −12 and −4 is 3.", nonexample: "The difference of 12 and 4 comes from subtraction, so it is not a quotient.", es: "cociente", es_note: "Not a cognate. Easy to confuse with 'coeficiente'.", family: ["divide", "division"], cue: "A division bracket with the answer on top." },
+    { term: "sign", tier: 2, pos: "noun", def: "the plus or minus mark that tells you if a number is positive or negative", example: "The sign of −8 is negative.", nonexample: "A stop sign on North Avenue is not a math sign.", es: "signo", es_note: "Cognate. 'Signo' also means a symbol or a zodiac sign.", family: ["signs", "signed"], cue: "A big plus and a big minus side by side." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Cold Snap at the Harbor", minutes: 12, grouping: "Partners",
+      mission: "Listen twice to the weather story, then rebuild it with your partner using the key words.",
+      tip: "Read at natural speed twice; students jot key words and numbers only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and first frame; draw a thermometer while you listen.", l3_4: "Jot the key words and numbers, then rebuild 4–5 sentences.", l5_6: "Rebuild the whole story and add one sentence about why each change happened." },
+      payload: {
+        text: "On a winter morning at the Inner Harbor, the temperature is −4 degrees Celsius. By noon it rises 9 degrees. First, we add −4 and 9. The sum is 5, so it is 5 degrees at noon. At night it drops 8 degrees. Now we add 5 and −8, and the result is −3.",
+        key_words: ["temperature", "rises", "sum", "drops", "result"],
+        frame: "First, the temperature is ___. Then it rises ___, so ___. At night it drops ___, so ___.",
+        checks: ["The temperature starts at −4 degrees", "It rises 9 degrees and becomes 5 at noon", "It drops 8 degrees at night", "The final temperature is −3 degrees"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Number Words Match", minutes: 8, grouping: "Solo",
+      mission: "Match each number word to its meaning. Wrong matches bounce back, so keep going until all eight click!",
+      tip: "Students can replay with the picture cues face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match words to the picture cues first, then to the meanings.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
+      payload: {
+        left_label: "Number word", right_label: "What it means",
+        pairs: [
+          { l: "additive inverse", r: "a number that adds to another number to make 0" },
+          { l: "rational number", r: "a number you can write as a fraction of whole numbers" },
+          { l: "terminating decimal", r: "a decimal that stops after a few digits" },
+          { l: "repeating decimal", r: "a decimal with digits that repeat forever" },
+          { l: "zero pair", r: "a positive and a negative of the same size that cancel" },
+          { l: "integer", r: "a whole number, its opposite, or zero" },
+          { l: "product", r: "the answer to a multiplication problem" },
+          { l: "quotient", r: "the answer to a division problem" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Stop or Repeat?", minutes: 8, grouping: "Partners",
+      mission: "Divide each fraction in your head or on paper, then sort it by how its decimal behaves.",
+      tip: "Let partners check each other's division before they defend a sort.",
+      materials: [],
+      support: { l1_2: "Start with 1/2, 1/4, and 1/3, which you may know.", l3_4: "Divide the top by the bottom, then say 'it stops' or 'it repeats'.", l5_6: "Sort all fractions, then explain what the bottom number tells you." },
+      payload: {
+        categories: [{ name: "Terminating decimal" }, { name: "Repeating decimal" }],
+        items: [
+          { text: "1/2", cat: 0 }, { text: "3/4", cat: 0 }, { text: "1/8", cat: 0 }, { text: "4/5", cat: 0 }, { text: "3/8", cat: 0 }, { text: "7/10", cat: 0 },
+          { text: "1/3", cat: 1 }, { text: "2/3", cat: 1 }, { text: "5/6", cat: 1 }, { text: "1/9", cat: 1 }, { text: "1/6", cat: 1 }, { text: "4/9", cat: 1 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Number Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "additive inverse", clues: ["I am the partner that makes a sum of zero.", "My partner for −7 is 7.", "A number and I sit the same distance from zero on opposite sides."] },
+          { term: "rational number", clues: ["I can be written as a fraction.", "−3/4 and 0.5 are both my kind.", "I am a ratio of two integers."] },
+          { term: "terminating decimal", clues: ["I stop after a few digits.", "0.125 is one of me.", "Dividing 1 by 8 gives me."] },
+          { term: "repeating decimal", clues: ["My digits never stop.", "Dividing 1 by 3 gives me.", "A bar over the digits shows my pattern."] },
+          { term: "zero pair", clues: ["I need one positive and one negative chip.", "Together my two parts make 0.", "Take me off a chip board and nothing changes."] },
+          { term: "integer", clues: ["The numbers −4, 0, and 12 all belong to me.", "I have no fraction part.", "Whole numbers and their opposites make me."] },
+          { term: "product", clues: ["Multiplication gives me.", "For −3 and 4, I am −12.", "Two negative factors make me positive."] },
+          { term: "quotient", clues: ["Division gives me.", "For −12 and −4, I am 3.", "A positive divided by a negative makes me negative."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Cause and Effect Talk", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain the cause and the effect, then your partner pushes your thinking with a move.",
+      tip: "Listen for a cause word like because or leads to in every answer.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the number line and use the first frame.", l3_4: "Say a reason with 'because' every turn.", l5_6: "Add 'as a result' to describe the effect." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "Why does 5 − (−3) equal 8?", starter: "Subtracting a negative is the same as ___, so ___.", follow_up: "Can you show it on a number line?" },
+          { prompt: "Why is −6 × 4 negative?", starter: "The product is negative because ___.", follow_up: "What happens if both factors are negative?" },
+          { prompt: "The temperature is −2 degrees and rises 7 degrees. What causes the new temperature to be 5?", starter: "Adding ___ to −2 leads to ___ because ___.", follow_up: "Where does your answer land on the number line?" },
+          { prompt: "Why do −9 and 9 make a zero pair?", starter: "They make a zero pair because ___.", follow_up: "What is another pair that does the same thing?" },
+          { prompt: "How do you know that −3/4 is a terminating decimal?", starter: "Dividing ___ by ___ gives ___, which stops, so ___.", follow_up: "How would you check 1/3?" },
+          { prompt: "What causes a quotient to be positive?", starter: "The quotient is positive when ___ because ___.", follow_up: "Is the same thing true for products?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is on the number line?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Weather Station Swap", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds half of the weather record. Ask questions to find the missing facts, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Station cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each number back to confirm.", l5_6: "Find the Tuesday low and check that the changes lead to Wednesday's low." },
+      payload: {
+        goal: "Find the Tuesday low and check that the changes lead from Monday's low to Wednesday's low.",
+        a: { title: "Station A", has: [{ k: "Monday low", v: "−6 degrees" }, { k: "Wednesday low", v: "−5 degrees" }], needs: ["Monday to Tuesday change", "Tuesday to Wednesday change"] },
+        b: { title: "Station B", has: [{ k: "Monday to Tuesday change", v: "rises 4 degrees" }, { k: "Tuesday to Wednesday change", v: "drops 3 degrees" }], needs: ["Monday low", "Wednesday low"] },
+        ask_frames: ["What is the ___?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Cause Finder", minutes: 12, grouping: "Solo",
+      mission: "Read Diego's number game like a detective, mark the causes and the effects, then answer the questions.",
+      tip: "Students highlight causes and effects in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'so'.", l3_4: "Mark the causes and the effects.", l5_6: "Mark everything, then rewrite one sentence with 'leads to'." },
+      payload: {
+        text: "Diego is playing a number game. He starts at −5 on the board. His first card says to subtract −8. Subtracting −8 is the same as adding 8, so Diego moves right and lands on 3. His next card says to multiply by −2. A positive times a negative gives a negative, so his score becomes −6. Because the signs were different, the product was negative.",
+        marks: [
+          { label: "Causes", instruction: "Highlight the reasons that make something happen.", targets: ["Subtracting −8 is the same as adding 8", "Because the signs were different"] },
+          { label: "Effects", instruction: "Highlight what happens as a result.", targets: ["so Diego moves right and lands on 3", "so his score becomes −6"] },
+          { label: "Number words", instruction: "Highlight the math language.", targets: ["subtract −8", "multiply by −2", "positive times a negative"] },
+        ],
+        questions: [
+          { q: "Why does Diego move right on the board?", options: ["Subtracting −8 is the same as adding 8.", "He subtracted a positive number.", "The card says to move left."], answer: 0, why: "Subtracting a negative is the same as adding its opposite, so the value goes up." },
+          { q: "What causes the score to become negative?", options: ["Both factors are negative.", "The signs of the factors are different.", "The sum is zero."], answer: 1, why: "A positive times a negative gives a negative product." },
+          { q: "What is Diego's score after the last card?", options: ["−13", "6", "−6"], answer: 2, why: "3 × (−2) = −6." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the cause word, then build around it.", l5_6: "After building, add a new effect of your own." },
+      payload: {
+        items: [
+          { parts: ["Because subtracting a negative", "is the same as adding", "its opposite, 4 − (−2) equals 6."] },
+          { parts: ["A negative times a negative", "gives a positive,", "so −3 × −5 equals 15."] },
+          { parts: ["The sum of −7 and 7 is 0", "because they", "are additive inverses."] },
+          { parts: ["Dividing 3 by 4 gives 0.75,", "so 3/4 is", "a terminating decimal."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Garage Levels", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Maya's parking garage story.",
+      tip: "Two bank words are extras; students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and listen for the missing word.", l3_4: "Fill all gaps, then check that every sentence makes sense.", l5_6: "Fill all gaps, then replace one answer with a phrase that means the same." },
+      payload: {
+        text: "Maya parks on level −3 of a garage under the Inner Harbor. The elevator goes up 3 levels, so she ends on level 0. The numbers −3 and 3 are {1} because their sum is 0. A chip board shows this with one positive and one negative chip, which is a {2}. The levels are {3} since they are whole numbers or their opposites. If she divides 12 by −4, the {4} is −3. If she multiplies 12 and −4, the {5} is −48.",
+        answers: ["additive inverses", "zero pair", "integers", "quotient", "product"],
+        bank: ["additive inverses", "zero pair", "integers", "quotient", "product", "sign", "repeating decimal"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link the Cause", minutes: 10, grouping: "Partners",
+      mission: "Join the short sentences into one strong cause-and-effect sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["Both factors are negative.", "The product is positive."], connector: "so", model: "Both factors are negative, so the product is positive." },
+          { sentences: ["The temperature starts at −2.", "It rises 7 degrees.", "The new temperature is 5."], connector: "leads to", model: "Starting at −2 and rising 7 degrees leads to a new temperature of 5." },
+          { sentences: ["Subtracting a negative number makes the value greater.", "It is the same as adding a positive number."], connector: "because", model: "Subtracting a negative number makes the value greater because it is the same as adding a positive number." },
+          { sentences: ["The signs are different.", "The quotient is negative."], connector: "as a result", model: "The signs are different. As a result, the quotient is negative." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Cause", minutes: 10, grouping: "Partners",
+      mission: "Each sentence hides a mistake, so find the best fix and explain why it works.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the signs first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "5 − (−3) = 2 because I subtracted 3.", options: ["5 − (−3) = −8 because the numbers have different signs.", "5 − (−3) = 8 because subtracting a negative is the same as adding 3.", "5 − (−3) = 2 because negative numbers are smaller."], answer: 1, why: "Subtracting −3 is the same as adding 3, so 5 + 3 = 8.", type: "wrong rule" },
+          { wrong: "−4 × −6 = −24 because both numbers are negative.", options: ["−4 × −6 = 24 because a negative times a negative is positive.", "−4 × −6 = −10 because I added the numbers.", "−4 × −6 = −24 because negatives stay negative."], answer: 0, why: "Two negative factors have the same sign, so the product is positive.", type: "wrong sign" },
+          { wrong: "−2.5 + 2.5 = −5 because I added the sizes.", options: ["−2.5 + 2.5 = 5 because both sizes are 2.5.", "−2.5 + 2.5 = −5 because negative numbers win.", "−2.5 + 2.5 = 0 because they are additive inverses."], answer: 2, why: "Opposites add to 0, so −2.5 and 2.5 cancel.", type: "wrong operation" },
+          { wrong: "−12 ÷ 4 = 3 because 12 divided by 4 is 3.", options: ["−12 ÷ 4 = 3 because the 12 is bigger.", "−12 ÷ 4 = −3 because the signs are different, so the quotient is negative.", "−12 ÷ 4 = −8 because I subtracted."], answer: 1, why: "The answer needs a sign, and different signs make a negative quotient.", type: "missing sign" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Explain the Sign", minutes: 15, grouping: "Solo",
+      mission: "Write a short explanation of why the answer is positive, using a cause and its effect.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Draw a number line first, then use one frame for each part.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts and add 'as a result' or 'leads to'." },
+      payload: {
+        prompt: "Explain why −4 − (−6) equals 2. Use words that show cause and effect.",
+        structure: [
+          { part: "Cause", frame: "Subtracting −6 is the same as [adding / subtracting] [number]." },
+          { part: "Effect", frame: "This leads to [expression], so the answer is [number]." },
+          { part: "Evidence", frame: "On a number line, I start at [number] and move [number] units to the [left / right], so I land on [number]." },
+        ],
+        word_bank: ["subtracting", "opposite", "additive inverse", "because", "leads to", "so", "number line", "positive"],
+        checklist: ["I named the rule that causes the change.", "I used a cause word like because or leads to.", "I used at least two math words.", "I showed the answer on a number line."],
+        model: "Subtracting −6 is the same as adding its opposite, 6. This leads to −4 + 6. On a number line, I start at −4 and move 6 units to the right, so I land on 2.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Explain why −3 × 5 is negative. Use at least one math word and one cause word.",
+    frame: "The product is ___ because ___, so ___.",
+    model: "The product is −15 because the signs are different, so a negative times a positive leads to a negative.",
+    rubric: {
+      emerging: "Writes the answer and names the sign with a word bank or a labeled number line.",
+      developing: "Uses the frame with one math word and a correct sign.",
+      proficient: "Explains the sign with a clear cause and the correct answer in two or more sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Menos' means both 'minus' and 'negative', so students read −3 as 'minus three' every time.", fix: "Say 'negative three' for the number and 'subtract' for the action, and have students say both on a number line." },
+    { group: "All multilingual learners", issue: "Sum, difference, product, and quotient are everyday words with other meanings, so students mix up which operation each one names.", fix: "Pair each word with one example, like 'product: −3 × 4 = −12', and keep the examples on the wall." },
+  ],
+  misconception: {
+    pattern: "Students say 'two negatives make a positive' for every problem, including −3 + (−4) = 7.",
+    redirect: "Ask 'Are we adding or multiplying?' and have them show −3 + (−4) on a number line to land on −7.",
+  },
+};

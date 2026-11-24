@@ -1,0 +1,263 @@
+// BCPSS Language Studio v2 — g1-ela-u3 (Grade 1 ELA, Wit & Wisdom + Fundations). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can wind and big feelings change what happens in a story?",
+  can_do: {
+    content: "I can tell how wind pushes things and how a feeling can change a story.",
+    language: "I can use 'first', 'then', and 'at last' to tell what happened in order.",
+  },
+  mentor: {
+    text: "First, the wind pushed the kite up. Then Zoe felt joy and she cheered.",
+    gist: "The speaker tells events in order with 'First' and 'Then', and names a feeling.",
+    chunks: [
+      { text: "First, the wind pushed the kite up.", role: "The first event", tone: "evidence", ask: "What did the wind do first?" },
+      { text: "Then", role: "The order word", tone: "connector", ask: "Which little word tells us the next event is coming?" },
+      { text: "Zoe felt joy", role: "The feeling", tone: "concept", ask: "What feeling did Zoe have?" },
+      { text: "and she cheered.", role: "What she did", tone: "evidence", ask: "What did Zoe do because of her feeling?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The wind [pushes / pulls] the [thing].",
+      "[Character] feels [emotion].",
+      "First, [action]. Then, [action].",
+    ],
+    l3_4: [
+      "First, the wind [action].",
+      "Then, [character] felt [emotion] and [response].",
+      "At last, [what happened].",
+    ],
+    l5_6: [
+      "At first, [setting]. Then a [gust / storm] [action].",
+      "At the turning point, [character] [action] because [reason].",
+      "In the end, [character] felt [emotion] and [response].",
+    ],
+  },
+  connectors: ["first", "then", "after that", "at last", "because", "but"],
+  vocab: [
+    { term: "wind", tier: 2, pos: "noun", icon: "🌬️", def: "air that moves outside", example: "The wind moves the leaves.", nonexample: "Still air in a closed room is not wind.", es: "viento", es_note: "Wind = viento. Windy = ventoso.", family: ["windy"], cue: "Tree leaves and a flag all blowing to one side." },
+    { term: "force", tier: 3, pos: "noun", icon: "💪", def: "a push or a pull", example: "A push is a force.", nonexample: "A color is not a force.", es: "fuerza", es_note: "Force = fuerza. In science, a force pushes or pulls.", family: ["forces"], cue: "Two arrows, one pushing a box and one pulling a wagon." },
+    { term: "push", tier: 2, pos: "verb", icon: "👉", def: "to press on something to move it away from you", example: "I push the swing.", nonexample: "Reaching toward you is a pull, not a push.", es: "empujar", es_note: "Push = empujar. The sign on a door says 'Empuje'.", family: ["pushes", "pushed"], cue: "A child pressing a box across the floor with both hands." },
+    { term: "pull", tier: 2, pos: "verb", icon: "🧲", def: "to tug something toward you", example: "I pull the wagon.", nonexample: "Pressing a box away is a push, not a pull.", es: "jalar", es_note: "Pull = jalar (halar in some places). The sign on a door says 'Jale'.", family: ["pulls", "pulled"], cue: "A child tugging a wagon with a rope." },
+    { term: "powerful", tier: 2, pos: "adjective", icon: "🏋️", def: "very strong", example: "A strong gust is powerful.", nonexample: "A gentle breeze is not powerful.", es: "poderoso", es_note: "Powerful = poderoso or fuerte. Power = poder.", family: ["power"], cue: "A bent tree in a big storm next to a tiny breeze." },
+    { term: "emotion", tier: 3, pos: "noun", icon: "😊", def: "a feeling, like joy or fear", example: "Joy is a happy emotion.", nonexample: "A rock does not have an emotion.", es: "emoción", es_note: "Cognate: sounds and means almost the same.", family: ["emotions"], cue: "A row of faces: happy, sad, scared, and angry." },
+    { term: "gust", tier: 3, pos: "noun", icon: "💨", def: "a quick, strong blow of wind", example: "A gust blew my hat away.", nonexample: "A slow, steady breeze is not a gust.", es: "ráfaga", es_note: "Gust = ráfaga. A gust of wind = una ráfaga de viento.", family: ["gusts", "gusty"], cue: "A hat flying off a boy's head in a sudden swirl of air." },
+    { term: "calm", tier: 2, pos: "adjective", icon: "😌", def: "quiet and still, with no big feelings or wind", example: "The sea is calm today.", nonexample: "A loud storm is not calm.", es: "calma", es_note: "Cognate: calma. As an adjective it is 'tranquilo' or 'en calma'.", family: ["calmly", "calmer"], cue: "A flat blue sea and a child with a gentle smile." },
+    { term: "turning point", tier: 3, pos: "noun", icon: "🔄", def: "the moment in a story when things change", example: "The turning point is when the wind stops.", nonexample: "The first page of the story is not the turning point.", es: "momento de cambio", es_note: "In school Spanish, say 'momento de cambio' or 'punto clave'.", family: ["turning points"], cue: "A path that bends sharply, with an arrow at the bend." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Kite Day at the Park", minutes: 10, grouping: "Partners",
+      mission: "Listen to Zoe's kite story twice. Tell it back in order!",
+      tip: "Read slowly twice; children jot picture words and rebuild the story in order, using First, Then, and At last.",
+      materials: ["Picture cards: kite, gust, smile"],
+      support: { l1_2: "Point to the picture cards in order as you hear them.", l3_4: "Say what happened first, then, and at last.", l5_6: "Retell the story in order and say how Zoe feels." },
+      payload: {
+        text: "Zoe went to the park with her kite. First, the air was still. Then a gust pushed the kite up. Zoe felt joy. At last, the kite flew high.",
+        key_words: ["kite", "still", "gust", "pushed", "joy"],
+        frame: "First, the air was ___. Then a ___ pushed the ___ up. Zoe felt ___.",
+        checks: ["Zoe went to the park with her kite", "first the air was still", "then a gust pushed the kite up", "Zoe felt joy and the kite flew high"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Force and Feeling Match", minutes: 8, grouping: "Solo",
+      mission: "Tap a word. Tap the picture clue that goes with it.",
+      tip: "Have children act out push, pull, calm, and powerful before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match the first four words, then act them out.", l3_4: "Match all nine and say a sentence for two of them.", l5_6: "Match all nine and tell a partner about a gust you remember." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "wind", r: "🌬️ air that moves outside" },
+          { l: "force", r: "💪 a push or a pull" },
+          { l: "push", r: "👉 press to move it away" },
+          { l: "pull", r: "🧲 tug it toward you" },
+          { l: "powerful", r: "🏋️ very strong" },
+          { l: "emotion", r: "😊 a feeling, like joy or fear" },
+          { l: "gust", r: "💨 a quick, strong blow of wind" },
+          { l: "calm", r: "😌 quiet and still" },
+          { l: "turning point", r: "🔄 the moment a story changes" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Blend Blast Sort", minutes: 8, grouping: "Partners",
+      mission: "Say each word. Sort it by the two sounds at the start.",
+      tip: "Fundations link: have children tap each sound on their fingers and blend them smoothly into the word.",
+      materials: ["Fundations keyword cards: blue, flag, stop"],
+      support: { l1_2: "Say the word slowly and listen for the first two sounds.", l3_4: "Say the blend, then the whole word.", l5_6: "Add one new word to each group." },
+      payload: {
+        categories: [{ name: "bl like blue" }, { name: "fl like flag" }, { name: "st like stop" }],
+        items: [
+          { text: "blow", cat: 0 }, { text: "blue", cat: 0 }, { text: "black", cat: 0 }, { text: "blast", cat: 0 },
+          { text: "flag", cat: 1 }, { text: "flap", cat: 1 }, { text: "flat", cat: 1 }, { text: "flew", cat: 1 },
+          { text: "storm", cat: 2 }, { text: "stick", cat: 2 }, { text: "step", cat: 2 }, { text: "stamp", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Wind Detectives", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess what the wind moves!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think and whisper to a partner.",
+      materials: [],
+      support: { l1_2: "Look at the picture cards to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "kite", clues: ["I fly high in the sky.", "I have a long tail and a string.", "You hold my string on a windy day."] },
+          { term: "sailboat", clues: ["I float on the Chesapeake Bay.", "I have a big white cloth on a tall pole.", "The wind pushes my sail."] },
+          { term: "windmill", clues: ["I stand tall in a field.", "I have big blades that turn.", "Moving air spins my blades to make power."] },
+          { term: "umbrella", clues: ["I keep you dry in the rain.", "A strong gust can flip me inside out.", "You open me over your head."] },
+          { term: "flag", clues: ["I am made of cloth on a pole.", "I wave when air moves me.", "Schools and countries have me."] },
+          { term: "leaf", clues: ["I grow on a tree.", "I turn red and orange in fall.", "A breeze can carry me far away."] },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Windy Story Builder", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a story sentence.",
+      tip: "Ask which piece starts with a capital letter and which piece ends the sentence.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece with the period, then read it aloud.", l5_6: "After building, add a feeling word of your own." },
+      payload: {
+        items: [
+          { parts: ["First, the wind", "pushed", "the red kite."] },
+          { parts: ["Then a gust", "blew", "Ben's hat away."] },
+          { parts: ["Ben felt", "scared", "and ran after it."] },
+          { parts: ["At last,", "a kind man", "caught the hat."] },
+          { parts: ["The sea", "was calm", "after the storm."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Wind and Feelings Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner a short story in order.",
+      tip: "Model one turn first; listen for order words like first, then, and at last, plus one feeling word.",
+      materials: ["Talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add one order word.", l5_6: "Tell two events in order and name the feeling." },
+      payload: {
+        roles: { a: "Storyteller", b: "Listener" },
+        cards: [
+          { prompt: "What can the wind push or pull?", starter: "The wind can ___.", follow_up: "What happened to it?" },
+          { prompt: "Tell about a windy day.", starter: "First, ___. Then, ___.", follow_up: "How did you feel?" },
+          { prompt: "What makes you feel proud?", starter: "I feel proud when ___.", follow_up: "What did you do?" },
+          { prompt: "What do you do when you feel scared?", starter: "When I feel scared, I ___.", follow_up: "Who helps you feel calm?" },
+          { prompt: "Have you seen sailboats on the bay or kites at a park?", starter: "I saw ___ move in the wind.", follow_up: "What made it move?" },
+          { prompt: "Tell about a time your feelings changed.", starter: "At first I felt ___. At last I felt ___.", follow_up: "What was the turning point?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you point to ___?" },
+          { label: "Me too", stem: "I also ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Umbrella Story Gap", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to put Max's windy day story together.",
+      tip: "Partners keep cards hidden and ask and answer aloud; no peeking at each other's card.",
+      materials: ["Story cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'Why did Max feel that way?'" },
+      payload: {
+        goal: "Find out the turning point, the ending, and how Max feels at the end.",
+        a: { title: "Storyteller A", has: [{ k: "Beginning", v: "Max walked to school with his umbrella" }, { k: "Middle", v: "a big gust grabbed the umbrella" }, { k: "Feeling at first", v: "worried" }], needs: ["Turning point", "Ending", "Feeling at the end"] },
+        b: { title: "Storyteller B", has: [{ k: "Turning point", v: "Max ran and caught it by the fence" }, { k: "Ending", v: "Max closed it and walked on" }, { k: "Feeling at the end", v: "proud" }], needs: ["Beginning", "Middle", "Feeling at first"] },
+        ask_frames: ["What was the ___?", "How did Max feel at the ___?"],
+        tell_frames: ["The ___ was ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Ben and the Gust", minutes: 10, grouping: "Whole Class",
+      mission: "Read Ben's story. Find the order words and the feeling words!",
+      tip: "Read aloud twice; children circle order words in one color and feeling words in another on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the order words.", l3_4: "Find order words and feeling words.", l5_6: "Find both, then tell the turning point." },
+      payload: {
+        text: "Ben stood on the pier. First, the sea was calm. Then a gust came. It blew his hat away! Ben felt scared. After that, he ran after the hat. A kind man caught it. At last, Ben felt happy.",
+        marks: [
+          { label: "Order words", instruction: "Circle the words that tell when things happen.", targets: ["First", "Then", "After that", "At last"] },
+          { label: "Feeling words", instruction: "Underline the words that tell how things feel.", targets: ["calm", "scared", "happy"] },
+        ],
+        questions: [
+          { q: "What does the gust do?", options: ["It blows Ben's hat away.", "It makes the sea calm.", "It catches the hat."], answer: 0, why: "The story says the gust blew his hat away." },
+          { q: "How does Ben feel after the gust?", options: ["Happy", "Scared", "Calm"], answer: 1, why: "Ben felt scared when his hat blew away." },
+          { q: "Who catches the hat?", options: ["Ben", "A kind man", "A gust"], answer: 1, why: "A kind man caught it, and that is the turning point." },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Lena's Kite Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap in Lena's story.",
+      tip: "Three bank words are extras; children decide which ones do not fit the story.",
+      materials: [],
+      support: { l1_2: "Read the sentence and look for a picture clue.", l3_4: "Fill the gaps, then read the story to a partner.", l5_6: "Fill the gaps, then write one more sentence about Lena." },
+      payload: {
+        text: "Lena flew her kite at the park. First, the air was {1}. Then a {2} of wind pushed the kite up. Wind is a {3} because it can push. Joy is a happy {4}.",
+        answers: ["calm", "gust", "force", "emotion"],
+        bank: ["calm", "gust", "force", "emotion", "pull", "powerful", "push"],
+      },
+    },
+    {
+      kind: "sequence", domain: "Reading", title: "A Windy Day at the Pier", minutes: 8, grouping: "Small Group",
+      mission: "Put the story in order. Use the order words!",
+      tip: "Act out each step with picture cards, then retell with First, Next, Then, After that, and At last.",
+      materials: ["Picture cards"],
+      support: { l1_2: "Look at the pictures and say first, next, then.", l3_4: "Order the steps and say each one with its order word.", l5_6: "Order the steps, then add the turning point in your own words." },
+      payload: {
+        title: "A windy day at the pier",
+        steps: ["First, the sea is calm and quiet.", "Next, a gust blows hard.", "Then, the boat rocks and Max feels scared.", "After that, Max holds the rope tight.", "At last, the wind slows and Max feels calm."],
+        signals: ["First", "Next", "Then", "After that", "At last"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Order and Feeling Joiners", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one; more than one correct answer is fine.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["The wind blew.", "The kite flew up."], connector: "then", model: "The wind blew, then the kite flew up." },
+          { sentences: ["Ben felt scared.", "A gust blew his hat away."], connector: "because", model: "Ben felt scared because a gust blew his hat away." },
+          { sentences: ["The wind was strong.", "The boat did not move."], connector: "but", model: "The wind was strong, but the boat did not move." },
+          { sentences: ["The storm ended.", "Zoe felt calm."], connector: "after", model: "After the storm ended, Zoe felt calm." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Windy Day Story", minutes: 15, grouping: "Solo",
+      mission: "Draw a windy day. Write what happened and how you felt.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Story page template"],
+      support: { l1_2: "Draw it. Copy the first frame and label the wind.", l3_4: "Write the first event and the turning point.", l5_6: "Write all three parts and name the feeling." },
+      payload: {
+        prompt: "Draw a windy day. Write what happened first, the turning point, and how it ended.",
+        structure: [
+          { part: "First", frame: "First, the wind [action]." },
+          { part: "The turning point", frame: "Then, [character] felt [emotion] and [response]." },
+          { part: "The ending", frame: "At last, [what happened]." },
+        ],
+        word_bank: ["wind", "gust", "push", "pull", "calm", "scared", "proud", "kite", "sailboat", "force"],
+        checklist: ["I drew the windy day.", "I wrote what happened first.", "I named a feeling.", "I used an order word."],
+        model: "First, a gust pushed my kite up. Then I felt proud and I ran faster. At last, my kite flew above the trees.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Tell a short windy-day story. Use first, then, and at last.",
+    frame: "First, [action]. Then, [character] felt [emotion]. At last, [ending].",
+    model: "First, a gust blew Ben's hat away. Then Ben felt scared. At last, a man caught the hat.",
+    rubric: {
+      emerging: "Points to pictures in order and says one word for an action or a feeling.",
+      developing: "Uses the frame to tell two events and one feeling.",
+      proficient: "Tells three events in order with first, then, and at last, and names a feeling.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Children may say 'blowed' or 'felted' for irregular past verbs, because Spanish past forms follow a pattern.", fix: "Chant the pairs: blow, blew; feel, felt; run, ran. Practice them in a short story with picture cards." },
+    { group: "All multilingual learners", issue: "Children tell events in a list and skip order words, so the story has no time order.", fix: "Use a three-box strip, First, Then, At last, and have children say the order word before each event." },
+  ],
+  misconception: {
+    pattern: "Children think a force has to be big, or that a feeling pushes things the way the wind does.",
+    redirect: "Show a gentle breeze and a strong gust. Say 'Wind is a push you can feel. A feeling is inside you.'",
+  },
+};

@@ -1,0 +1,267 @@
+// BCPSS Language Studio v2 — gk-ss-u2 (Kindergarten Social Studies, Studies Weekly). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do maps and globes show us where places are?",
+  can_do: {
+    content: "I can read a simple map and tell where land, water, and places are.",
+    language: "I can say what a map symbol shows and where a place is.",
+  },
+  mentor: {
+    text: "On this map, the star shows the school, and the tree shows the park.",
+    gist: "The speaker names a map symbol and what it shows, then joins a second symbol with 'and'.",
+    chunks: [
+      { text: "On this map,", role: "Where we look", tone: "concept", ask: "What are we looking at?" },
+      { text: "the star shows the school,", role: "Symbol one", tone: "evidence", ask: "What does the star show?" },
+      { text: "and", role: "The joining word", tone: "connector", ask: "Which little word joins the two symbols?" },
+      { text: "the tree shows the park.", role: "Symbol two", tone: "evidence", ask: "What does the tree show?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The [school] is next to the [park].",
+      "I see [land / water].",
+      "This [symbol] is a [tree].",
+    ],
+    l3_4: [
+      "On this map, the [symbol] shows the [place].",
+      "The [place] is [near / next to / far from] the [place].",
+      "A globe shows [land] and [water].",
+    ],
+    l5_6: [
+      "On this map, the [symbol] shows [feature], which is [near / next to] [place].",
+      "A map is a type of [drawing] that shows [places] from above.",
+      "A [photo] is not a map because [reason].",
+    ],
+  },
+  connectors: ["and", "but", "because", "so", "also", "or"],
+  vocab: [
+    { term: "map", tier: 3, pos: "noun", icon: "🗺️", def: "a flat drawing of a place as seen from above", example: "We use a map to find the library.", nonexample: "A photo of your face is not a map.", es: "mapa", es_note: "Cognate: mapa. Careful: 'mapa' is masculine, el mapa.", family: ["maps"], cue: "A bird's-eye drawing of a block with a school and a park." },
+    { term: "globe", tier: 3, pos: "noun", icon: "🌍", def: "a round model of the whole Earth", example: "The globe spins on a stand.", nonexample: "A flat paper map is not a globe.", es: "globo terráqueo", es_note: "Globe = globo terráqueo. A balloon is also 'globo'.", family: ["globes"], cue: "A spinning globe on a stand with blue and green." },
+    { term: "symbol", tier: 3, pos: "noun", icon: "🔣", def: "a small picture that stands for something real", example: "A star can be a symbol for a school.", nonexample: "A real school building is not a symbol.", es: "símbolo", es_note: "Cognate: símbolo.", family: ["symbols"], cue: "A map with a tiny tree standing for a park." },
+    { term: "land", tier: 2, pos: "noun", icon: "🏞️", def: "the dry ground of Earth, not water", example: "We walk on land.", nonexample: "A river is not land.", es: "tierra", es_note: "Land = tierra. Also means soil or dirt.", family: ["landmass"], cue: "Green hills and a sandy beach." },
+    { term: "water", tier: 2, pos: "noun", icon: "🌊", def: "the wet stuff that fills oceans, rivers, and the Bay", example: "The Chesapeake Bay is a big body of water.", nonexample: "A mountain is not water.", es: "agua", es_note: "Water = agua.", family: ["ocean", "river"], cue: "Blue waves next to a sandy shore." },
+    { term: "neighborhood", tier: 3, pos: "noun", icon: "🏘️", def: "the part of town around your home where people live", example: "My neighborhood has a park and a store.", nonexample: "The whole world is not one neighborhood.", es: "vecindario", es_note: "Neighborhood = vecindario or barrio.", family: ["neighbors"], cue: "A row of rowhouses with a corner store and a park." },
+    { term: "near", tier: 2, pos: "adjective", icon: "📍", def: "close to something, not far away", example: "The pond is near the park.", nonexample: "A place across the city is not near.", es: "cerca", es_note: "Near = cerca. 'Cerca de' means near to.", family: ["nearby", "nearer"], cue: "Two houses with a short arrow between them." },
+    { term: "far", tier: 2, pos: "adjective", icon: "🛣️", def: "a long way from something", example: "The ocean is far from our school.", nonexample: "The desk next to you is not far.", es: "lejos", es_note: "Far = lejos. 'Lejos de' means far from.", family: ["farther"], cue: "Two houses with a long road between them." },
+    { term: "next to", tier: 2, pos: "preposition", icon: "↔️", def: "right beside something, with nothing in between", example: "The school is next to the park.", nonexample: "A store across town is not next to your house.", es: "al lado de", es_note: "Next to = al lado de or junto a.", family: ["beside"], cue: "A school and a park touching side by side." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Maya Draws a Map", minutes: 10, grouping: "Partners",
+      mission: "Listen twice. Tell what Maya draws!",
+      tip: "Read slowly twice; children point to the picture clues, then retell the map orally with a partner.",
+      materials: ["Picture cards: house, school, park, tree"],
+      support: { l1_2: "Point to the picture cards as you hear each word.", l3_4: "Say one sentence about each place Maya draws.", l5_6: "Retell all the ideas and use next to or near." },
+      payload: {
+        text: "Maya draws a map of her block. Her house is on the left. The school is on the right. The park is next to the school. A tree symbol shows the park.",
+        key_words: ["map", "house", "left", "right", "park", "symbol"],
+        frame: "Maya's house is on the ___. The school is on the ___. The park is ___ the school.",
+        checks: ["Maya draws a map of her block", "her house is on the left and the school is on the right", "the park is next to the school", "a tree symbol shows the park"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Map Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each word to its picture clue.",
+      tip: "Have children say each word and show it with a gesture before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match the picture words first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "map", r: "🗺️ a flat drawing from above" },
+          { l: "globe", r: "🌍 a round model of Earth" },
+          { l: "symbol", r: "🔣 a little picture that stands for something" },
+          { l: "land", r: "🏞️ dry ground" },
+          { l: "water", r: "🌊 oceans, rivers, and the Bay" },
+          { l: "neighborhood", r: "🏘️ the places around my home" },
+          { l: "near", r: "📍 close by" },
+          { l: "far", r: "🛣️ a long way away" },
+          { l: "next to", r: "↔️ right beside" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Land or Water?", minutes: 8, grouping: "Partners",
+      mission: "Sort each place. Is it land or water?",
+      tip: "Ask children to point to the color they would use on a map, green or blue, and say why.",
+      materials: [],
+      support: { l1_2: "Sort the pictures you know first.", l3_4: "Sort all words and say 'It is ___ because ___.'", l5_6: "Sort all words, then add one new place to each group." },
+      payload: {
+        categories: [{ name: "🏞️ Land (green)" }, { name: "🌊 Water (blue)" }],
+        items: [
+          { text: "hill", cat: 0 }, { text: "park", cat: 0 }, { text: "mountain", cat: 0 }, { text: "farm field", cat: 0 }, { text: "forest", cat: 0 }, { text: "island", cat: 0 },
+          { text: "ocean", cat: 1 }, { text: "river", cat: 1 }, { text: "lake", cat: 1 }, { text: "Chesapeake Bay", cat: 1 }, { text: "pond", cat: 1 }, { text: "Inner Harbor", cat: 1 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Map Place", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the mystery word!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think.",
+      materials: [],
+      support: { l1_2: "Use the picture cards to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "globe", clues: ["I am round like a ball.", "I spin on a stand.", "I show the whole Earth."] },
+          { term: "map", clues: ["I am flat.", "I show streets and parks from above.", "I have symbols and a key."] },
+          { term: "ocean", clues: ["I am huge and salty.", "Whales live in me.", "I cover most of Earth."] },
+          { term: "island", clues: ["I am land.", "Water is all around me.", "People may need a boat to get to me."] },
+          { term: "hill", clues: ["I am land that rises up.", "You can roll down me.", "Sledders love me in winter."] },
+          { term: "Inner Harbor", clues: ["Boats float on me.", "I am in the middle of Baltimore.", "The National Aquarium sits beside me."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Where Is It Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner where it is.",
+      tip: "Model one turn first; listen for near, far, next to, left, or right.",
+      materials: ["Picture talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add near or far.", l5_6: "Say where it is and tell what the symbol shows." },
+      payload: {
+        roles: { a: "Map Reader", b: "Listener" },
+        cards: [
+          { prompt: "Where is our school on the map?", starter: "Our school is ___.", follow_up: "What is next to it?" },
+          { prompt: "What is near your home?", starter: "Near my home is ___.", follow_up: "How do you get there?" },
+          { prompt: "What does the tree symbol show?", starter: "The tree shows ___.", follow_up: "Why did the mapmaker pick a tree?" },
+          { prompt: "Is the ocean near or far from our school?", starter: "The ocean is ___.", follow_up: "How do you know?" },
+          { prompt: "Find land and water on the globe.", starter: "I see ___ and ___.", follow_up: "Which color is the water?" },
+          { prompt: "Tell a partner how to find the library.", starter: "The library is on the ___.", follow_up: "What is it next to?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you point to ___?" },
+          { label: "Me too", stem: "I also see ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Treasure Map Partners", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to finish the map.",
+      tip: "Partners keep cards hidden and ask and answer aloud.",
+      materials: ["Map cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'Is it near the pond?'" },
+      payload: {
+        goal: "Find out where the school, park, library, and pond are.",
+        a: { title: "Mapmaker A", has: [{ k: "Library", v: "next to the school" }, { k: "Pond", v: "near the park" }], needs: ["School", "Park"] },
+        b: { title: "Mapmaker B", has: [{ k: "School", v: "on the left" }, { k: "Park", v: "on the right" }], needs: ["Library", "Pond"] },
+        ask_frames: ["Where is the ___?", "Is the ___ near or far?"],
+        tell_frames: ["The ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Reading a Block Map", minutes: 10, grouping: "Whole Class",
+      mission: "Listen to the map story. Find the symbols and places!",
+      tip: "Read aloud twice; children circle symbols and underline place words on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the symbol words.", l3_4: "Find symbols and place words.", l5_6: "Find both, then write one new sentence about the map." },
+      payload: {
+        text: "This is a map of Pip's block. A star is a symbol for the school. A tree is a symbol for the park. Blue shows water. Green shows land. The school is next to the park. The pond is far from the school.",
+        marks: [
+          { label: "Symbols", instruction: "Circle the symbols the map uses.", targets: ["A star", "A tree"] },
+          { label: "Place words", instruction: "Underline the words that tell where.", targets: ["next to", "far from"] },
+        ],
+        questions: [
+          { q: "What does the star show?", options: ["The park", "The school", "The pond"], answer: 1, why: "The star is a symbol for the school." },
+          { q: "What color shows water?", options: ["Green", "Red", "Blue"], answer: 2, why: "The map says blue shows water." },
+          { q: "Which place is far from the school?", options: ["The pond", "The park", "The tree"], answer: 0, why: "The pond is far from the school." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Place Sentence", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts with a capital letter and how children know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add and and one more place." },
+      payload: {
+        items: [
+          { parts: ["The school", "is next to", "the park."] },
+          { parts: ["The pond", "is near", "the tree."] },
+          { parts: ["Water is", "blue on", "the map."] },
+          { parts: ["A globe", "shows land", "and water."] },
+          { parts: ["The library", "is on", "the left."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Map Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap.",
+      tip: "Two bank words are extras; children must decide which ones do not fit.",
+      materials: [],
+      support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
+      payload: {
+        text: "A {1} is a drawing of a place. A {2} is round like a ball. Blue shows {3} on a map. Green shows {4}.",
+        answers: ["map", "globe", "water", "land"],
+        bank: ["map", "globe", "water", "land", "symbol", "near"],
+      },
+    },
+    {
+      kind: "quiz", domain: "Vocabulary", title: "Map Quiz Show", minutes: 8, grouping: "Whole Class",
+      mission: "Think. Pick the best answer. Say why!",
+      tip: "Read each question aloud; children answer with a thumbs or a card, no clock.",
+      materials: [],
+      support: { l1_2: "Look at the picture, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each wrong answer does not fit." },
+      payload: {
+        items: [
+          { q: "Which one is round and shows the whole Earth?", options: ["A globe", "A paper map", "A photo"], answer: 0, why: "A globe is a round model of the whole Earth." },
+          { q: "What is a symbol on a map?", options: ["A loud sound", "A small picture that stands for something", "A kind of road"], answer: 1, why: "A symbol is a small picture, like a tree for a park." },
+          { q: "Which place is land?", options: ["The ocean", "A river", "A hill"], answer: 2, why: "A hill is dry ground, so it is land." },
+          { q: "The school and the park touch. Which words fit?", options: ["next to", "far from", "across the sea"], answer: 0, why: "Places that touch are next to each other." },
+          { q: "What color shows water on most maps?", options: ["Blue", "Yellow", "Red"], answer: 0, why: "Maps use blue for water." },
+          { q: "Which one is far from Baltimore's Inner Harbor?", options: ["A boat dock", "The Pacific Ocean", "The Aquarium"], answer: 1, why: "The Pacific Ocean is on the other side of the country." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Join the Places", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one. More than one answer can work.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["The school is on the left.", "The park is on the right."], connector: "and", model: "The school is on the left and the park is on the right." },
+          { sentences: ["The pond is near the park.", "The lake is far away."], connector: "but", model: "The pond is near the park but the lake is far away." },
+          { sentences: ["A map is flat.", "A globe is round."], connector: "but", model: "A map is flat but a globe is round." },
+          { sentences: ["Blue shows water.", "Green shows land."], connector: "and", model: "Blue shows water and green shows land." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Block Map", minutes: 15, grouping: "Solo",
+      mission: "Draw a map of your block. Write what the symbols show.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Map page template"],
+      support: { l1_2: "Draw it. Copy the first frame and label your picture.", l3_4: "Write what one symbol shows and where it is.", l5_6: "Write two symbols and where each place is." },
+      payload: {
+        prompt: "Draw a map of your block with two symbols. Write what each symbol shows and where it is.",
+        structure: [
+          { part: "A symbol", frame: "On my map, the [symbol] shows the [place]." },
+          { part: "Where it is", frame: "The [place] is [near / next to / far from] the [place]." },
+          { part: "Land and water", frame: "I see [land / water] on my map." },
+        ],
+        word_bank: ["map", "symbol", "school", "park", "house", "land", "water", "near", "far", "next to", "left", "right"],
+        checklist: ["I drew my map.", "I used a symbol.", "I told where a place is.", "I used near, far, or next to."],
+        model: "On my map, the star shows my school. The school is next to the park. I see water near the park.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Look at a map. Tell what one symbol shows and where it is.",
+    frame: "On this map, the [symbol] shows the [place]. It is [near / next to / far from] the [place].",
+    model: "On this map, the tree shows the park. It is next to the school.",
+    rubric: {
+      emerging: "Points to a symbol and names the place with a picture.",
+      developing: "Uses the frame to say what a symbol shows.",
+      proficient: "Says what the symbol shows and uses near, next to, or far from to tell where it is.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Globe is called 'globo terráqueo' but 'globo' alone means balloon, so children may call a globe a balloon.", fix: "Say 'globe' with a spinning model in hand and practice 'A globe is a model of Earth.'" },
+    { group: "All multilingual learners", issue: "Children say 'It is there' and point, without a place word like near, next to, left, or right.", fix: "Use the frame 'The ___ is next to the ___' and have children touch both places on the map as they say it." },
+  ],
+  misconception: {
+    pattern: "Children think a map is a picture of the side of a building, or that the symbols are real size.",
+    redirect: "Ask 'Where are you looking from?' and have children look straight down at a desktop, then draw it as a map.",
+  },
+};

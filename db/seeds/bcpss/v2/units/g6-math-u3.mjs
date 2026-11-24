@@ -1,0 +1,267 @@
+// BCPSS Language Studio v2 — g6-math-u3. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can you explain each step of a calculation so someone else can follow it and trust the answer?",
+  can_do: {
+    content: "I can divide fractions by fractions and compute with multi-digit whole numbers and decimals.",
+    language: "I can explain my process with first, next, then, because, and so.",
+  },
+  mentor: {
+    text: "To divide 5/6 by 1/12, I multiplied 5/6 by 12 because dividing by 1/12 asks how many twelfths fit inside 5/6.",
+    gist: "The speaker turns a fraction division into multiplication and explains why that works.",
+    chunks: [
+      { text: "To divide 5/6 by 1/12,", role: "The goal", tone: "concept", ask: "What problem is the speaker solving?" },
+      { text: "I multiplied 5/6 by 12", role: "The step", tone: "precision", ask: "Which number did the speaker multiply by?" },
+      { text: "because", role: "The reason signal", tone: "connector", ask: "Which word tells you a reason is coming?" },
+      { text: "dividing by 1/12 asks how many twelfths fit inside 5/6.", role: "The proof", tone: "evidence", ask: "What question does dividing by 1/12 really ask?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The dividend is [number].",
+      "The divisor is [number].",
+      "The quotient is [number].",
+    ],
+    l3_4: [
+      "To divide [number] by [fraction], I multiplied by the reciprocal, [fraction].",
+      "I lined up the decimal points so that [digit] is added to [digit].",
+      "My estimate is [number], so my answer [is / is not] reasonable.",
+    ],
+    l5_6: [
+      "Since dividing by [fraction] asks how many [unit fractions] fit in [number], I can multiply by [reciprocal].",
+      "If my estimate is [number], then the answer [number] is reasonable because [reason].",
+      "Although [other method] also works, I chose [my method] because [reason].",
+    ],
+  },
+  connectors: ["first", "next", "then", "because", "so", "since", "which means"],
+  vocab: [
+    { term: "dividend", tier: 3, pos: "noun", def: "the number that is being divided into parts", example: "In 12 ÷ 3, the dividend is 12.", nonexample: "In 12 ÷ 3, the 3 is not the dividend; it is the number you divide by.", es: "dividendo", es_note: "Cognate. In banking, 'dividendo' also means a payment to investors.", family: ["divide", "division"], cue: "A pile of 12 crackers waiting to be shared." },
+    { term: "divisor", tier: 3, pos: "noun", def: "the number you divide by", example: "In 12 ÷ 3, the divisor is 3.", nonexample: "In 12 ÷ 3, the 12 is not the divisor; it is the amount being divided.", es: "divisor", es_note: "Cognate: spelled the same in Spanish.", family: ["divide", "division"], cue: "Three plates ready to receive the crackers." },
+    { term: "quotient", tier: 3, pos: "noun", def: "the answer to a division problem", example: "The quotient of 12 ÷ 3 is 4.", nonexample: "The product is the answer to multiplication, so it is not a quotient.", es: "cociente", es_note: "Not a cognate. Listen for 'cociente' in Spanish math class.", family: ["quotients"], cue: "An answer box at the end of a division problem." },
+    { term: "reciprocal", tier: 3, pos: "noun", def: "the fraction you get by flipping the top and bottom; a number and its flip multiply to make 1", example: "The reciprocal of 2/3 is 3/2.", nonexample: "The opposite of 2/3 is −2/3, and that is not its reciprocal.", es: "recíproco", es_note: "Cognate. Your teacher may also say 'inverso multiplicativo'.", family: ["reciprocals"], cue: "A fraction card flipped upside down." },
+    { term: "algorithm", tier: 3, pos: "noun", def: "a set of steps that works every time for one kind of problem", example: "Long division is an algorithm for dividing large numbers.", nonexample: "A lucky guess is not an algorithm because it does not follow steps.", es: "algoritmo", es_note: "Cognate: sounds and means almost the same.", family: ["algorithms"], cue: "A recipe card with numbered steps." },
+    { term: "unit fraction", tier: 3, pos: "noun", def: "a fraction with a 1 on top that shows one equal piece of a whole", example: "1/8 is a unit fraction, and 3/8 is not.", nonexample: "3/8 is not a unit fraction because it shows three pieces, not one.", es: "fracción unitaria", es_note: "Cognate pair: fracción / unitaria.", family: ["fraction", "unit"], cue: "One slice of a pizza cut into eight equal slices." },
+    { term: "place value", tier: 3, pos: "noun", def: "the worth of a digit because of where it sits in a number", example: "In 3.47, the place value of the 4 is tenths.", nonexample: "4 tenths and 4 ones use the same digit, but they do not have the same place value.", es: "valor posicional", es_note: "Not a direct cognate. 'Valor de posición' is also used.", family: ["place", "value"], cue: "A chart with columns labeled ones, tenths, and hundredths." },
+    { term: "decimal point", tier: 3, pos: "noun", def: "the dot that separates whole numbers from parts of a whole", example: "Line up the decimal points before you add 3.5 and 12.75.", nonexample: "A period at the end of a sentence looks alike, but it is not a decimal point.", es: "punto decimal", es_note: "Some Spanish-speaking countries write a comma, as in 3,5. Check the format.", family: ["decimal", "point"], cue: "A bright dot between 12 and 75 in a price tag." },
+    { term: "estimate", tier: 2, pos: "verb", def: "to find an answer that is close without doing every step exactly", example: "I estimate 4.8 × 5.1 by rounding to 5 × 5.", nonexample: "Writing the exact product is not an estimate, because it uses every digit.", es: "estimar", es_note: "Cognate. The noun is 'estimación'.", family: ["estimation", "estimated"], cue: "A hand holding a rounded number card next to a calculator." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Ribbon Cuts", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner using as many of the real words as you can.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame while you listen.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one sentence that tells why the step works." },
+      payload: {
+        text: "Kayla has 2/3 of a yard of ribbon for bracelets. Each bracelet needs 1/6 of a yard. First, she writes 2/3 ÷ 1/6. Next, she finds the reciprocal of 1/6, which is 6. Then she multiplies 2/3 by 6 to get 12/3, or 4. Kayla can make four bracelets.",
+        key_words: ["ribbon", "yard", "reciprocal", "multiplies", "bracelets"],
+        frame: "First, Kayla ___. Next, she ___. Then she ___. So she can make ___.",
+        checks: ["Kayla has 2/3 of a yard of ribbon", "each bracelet needs 1/6 of a yard", "she multiplies by the reciprocal, 6", "the answer is four bracelets"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match every math word to its meaning. Wrong matches bounce back, so keep going until all nine click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you already know first, then try the rest.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "dividend", r: "the number that is being divided into parts" },
+          { l: "divisor", r: "the number you divide by" },
+          { l: "quotient", r: "the answer to a division problem" },
+          { l: "reciprocal", r: "a fraction flipped upside down; the two multiply to make 1" },
+          { l: "algorithm", r: "a set of steps that works every time" },
+          { l: "unit fraction", r: "a fraction with a 1 on top" },
+          { l: "place value", r: "the worth of a digit because of where it sits" },
+          { l: "decimal point", r: "the dot between whole numbers and parts" },
+          { l: "estimate", r: "to find a close answer without exact steps" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Which Math Group?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you know first and leave the rest for later.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
+      payload: {
+        categories: [{ name: "Parts of a division problem" }, { name: "Fraction words" }, { name: "Decimal words" }],
+        items: [
+          { text: "dividend", cat: 0 }, { text: "divisor", cat: 0 }, { text: "quotient", cat: 0 }, { text: "remainder", cat: 0 },
+          { text: "reciprocal", cat: 1 }, { text: "unit fraction", cat: 1 }, { text: "numerator", cat: 1 }, { text: "denominator", cat: 1 },
+          { text: "decimal point", cat: 2 }, { text: "tenths", cat: 2 }, { text: "hundredths", cat: 2 }, { text: "place value", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "dividend", clues: ["I am the amount being shared out.", "In 12 ÷ 3, I am the 12.", "I sit inside the division house."] },
+          { term: "divisor", clues: ["I tell the size or number of the groups.", "In 12 ÷ 3, I am the 3.", "I stand outside the division house."] },
+          { term: "quotient", clues: ["I show up at the very end.", "In 12 ÷ 3, I am the 4.", "I am the answer to a division problem."] },
+          { term: "reciprocal", clues: ["Flip me upside down!", "The flip of 3/5 is 5/3.", "My partner and I multiply to make exactly 1."] },
+          { term: "algorithm", clues: ["Follow me step by step.", "Long division is one of me.", "I am a set of steps that works every time."] },
+          { term: "unit fraction", clues: ["I have a 1 on top.", "1/2, 1/5, and 1/8 are my family.", "I am one equal piece of a whole."] },
+          { term: "place value", clues: ["Where a digit sits changes what it is worth.", "The 5 in 350 is worth 50 because of me.", "Ones, tens, and hundreds are my columns."] },
+          { term: "decimal point", clues: ["I am a tiny dot with a big job.", "I sit between ones and tenths.", "Line me up when you add $4.50 and $2.25."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Walk Me Through It", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain each step of your process, then your partner pushes your thinking with a move.",
+      tip: "Listen for a signal word like first, next, or then in every explanation.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the numbers and use the first frame.", l3_4: "Use first, next, and then in every turn.", l5_6: "Add 'since' or 'which means' to explain why each step works." },
+      payload: {
+        roles: { a: "Explainer", b: "Questioner" },
+        cards: [
+          { prompt: "How do you divide 3/4 by 1/4?", starter: "I found how many ___ fit in ___, so ___.", follow_up: "Can you show it with a drawing?" },
+          { prompt: "Why does multiplying by the reciprocal work when you divide by 1/6?", starter: "Dividing by 1/6 asks how many ___ fit in 1 whole, so ___.", follow_up: "How many sixths are in 1 whole?" },
+          { prompt: "Estimate 4.8 × 5.1 before you multiply. What do you get, and why?", starter: "I rounded 4.8 to ___ and 5.1 to ___, so my estimate is ___.", follow_up: "Will the exact answer be a little more or a little less? How do you know?" },
+          { prompt: "How do you add 3.5 and 12.75 without making a mistake?", starter: "First I lined up the ___ so that ___.", follow_up: "What zero can you add so both numbers have the same places?" },
+          { prompt: "Your friend says 8 ÷ 1/2 is 4. What do you say?", starter: "I disagree because ___.", follow_up: "How many halves fit in 1 whole?" },
+          { prompt: "How can you check a division answer?", starter: "I multiply the ___ by the ___ to get back to the ___.", follow_up: "Why does that check work?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is in the problem?" },
+          { label: "Check it", stem: "I tried it and got ___. Do we agree?" },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Bakery Number Swap", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts about two bakery jobs. Ask questions to find the missing facts, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Baker cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each number back to check.", l5_6: "Check each answer by multiplying the quotient by the divisor." },
+      payload: {
+        goal: "Fill in the missing equation or answer for all three bakery jobs.",
+        a: { title: "Baker A", has: [{ k: "Granola job equation", v: "3 ÷ 3/4" }, { k: "Trail mix job answer", v: "9 scoops" }, { k: "Pretzel job equation", v: "5/6 ÷ 1/12" }], needs: ["Granola job answer", "Trail mix job equation", "Pretzel job answer"] },
+        b: { title: "Baker B", has: [{ k: "Granola job answer", v: "4 bags" }, { k: "Trail mix job equation", v: "3/4 ÷ 1/12" }, { k: "Pretzel job answer", v: "10 trays" }], needs: ["Granola job equation", "Trail mix job answer", "Pretzel job equation"] },
+        ask_frames: ["What is the ___ for the ___ job?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ for the ___ job is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Does It Make Sense?", minutes: 12, grouping: "Solo",
+      mission: "Read Marcus's fare plan like a detective. Mark the reason words and the math words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'because'.", l3_4: "Mark both the reason words and the math words.", l5_6: "Mark everything, then rewrite one sentence with 'since'." },
+      payload: {
+        text: "Marcus rides a harbor boat with his cousin. A ticket costs $4.75, and a snack costs $2.50. Marcus estimates first. He rounds $4.75 to $5 and $2.50 to $3, so he expects about $8. Then he lines up the decimal points and adds. Because 4.75 plus 2.50 equals 7.25, the exact cost is $7.25. His estimate was close, so his answer makes sense.",
+        marks: [
+          { label: "Reason words", instruction: "Highlight the words that tell why.", targets: ["so he expects about $8", "Because 4.75 plus 2.50 equals 7.25", "so his answer makes sense"] },
+          { label: "Math words", instruction: "Highlight the math vocabulary.", targets: ["estimates", "rounds", "decimal points", "exact cost"] },
+        ],
+        questions: [
+          { q: "Why does Marcus round before he adds?", options: ["To get a quick answer to check against.", "To change the price of the ticket.", "To make the decimal point disappear."], answer: 0, why: "His rounded numbers give about $8, which he uses to check the exact answer." },
+          { q: "Why does he line up the decimal points?", options: ["So the sum is always a whole number.", "So each digit is added to a digit with the same place value.", "So the numbers look neat."], answer: 1, why: "Tenths must be added to tenths, and hundredths to hundredths." },
+          { q: "What does it tell Marcus that $7.25 is close to $8?", options: ["He should add again.", "The answer is wrong.", "The answer is reasonable."], answer: 2, why: "A close estimate shows that the exact answer is probably right." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["I multiplied by the reciprocal", "because dividing by 1/4", "asks how many fourths fit."] },
+          { parts: ["To divide 12 by 3/4,", "I wrote 12 × 4/3", "and got a quotient of 16."] },
+          { parts: ["We lined up the decimal points", "so we could add", "tenths to tenths."] },
+          { parts: ["Since 4.8 is close to 5,", "my estimate for 4.8 × 6", "is about 30."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Cashew Packing", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Mr. Lopez's cashew story.",
+      tip: "Two bank words are extras, and students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and try each word.", l3_4: "Fill all gaps, then check that every sentence still makes sense.", l5_6: "Fill all gaps, then replace one answer with a phrase that means the same." },
+      payload: {
+        text: "Mr. Lopez has 4 pounds of cashews to pack into bags. Each bag holds 1/2 pound. He writes 4 ÷ 1/2, so 4 is the {1} and 1/2 is the {2}. The {3} of 1/2 is 2, so he multiplies 4 × 2. The {4} is 8, so he can fill eight bags. He made a quick {5} first, and eight bags seemed right.",
+        answers: ["dividend", "divisor", "reciprocal", "quotient", "estimate"],
+        bank: ["dividend", "divisor", "reciprocal", "quotient", "estimate", "algorithm", "place value"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combinations; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["I multiplied by 6.", "Dividing by 1/6 asks how many sixths fit."], connector: "because", model: "I multiplied by 6 because dividing by 1/6 asks how many sixths fit." },
+          { sentences: ["The estimate is about 30.", "The answer 28.8 is reasonable."], connector: "so", model: "The estimate is about 30, so the answer 28.8 is reasonable." },
+          { sentences: ["The decimal points are lined up.", "I can add tenths to tenths."], connector: "since", model: "Since the decimal points are lined up, I can add tenths to tenths." },
+          { sentences: ["The dividend is the amount being divided.", "The divisor is the amount you divide by."], connector: "while", model: "The dividend is the amount being divided, while the divisor is the amount you divide by." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the key word in each sentence first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "To divide by 2/5, I multiply by 2/5.", options: ["To divide by 2/5, I multiply by 5/2.", "To divide by 2/5, I multiply by 2/5 again.", "To divide by 2/5, I subtract 2/5."], answer: 0, why: "Dividing by a fraction means multiplying by its reciprocal, so you flip it to 5/2.", type: "wrong step" },
+          { wrong: "The quotient is the number you divide by.", options: ["The quotient is the number being divided.", "The quotient is the answer to a division problem.", "The quotient is the number you subtract."], answer: 1, why: "The quotient is the answer; the number you divide by is the divisor.", type: "wrong word" },
+          { wrong: "I added 3.5 and 12.75 by lining up the last digits.", options: ["I added 3.5 and 12.75 by lining up the first digits.", "I added 3.5 and 12.75 without lining up anything.", "I added 3.5 and 12.75 by lining up the decimal points."], answer: 2, why: "Lining up decimal points keeps tenths with tenths and hundredths with hundredths.", type: "wrong step" },
+          { wrong: "The answer is 24.48 because it is the answer.", options: ["The answer 24.48 is reasonable because it has a decimal point.", "The answer 24.48 is reasonable because my estimate was 5 × 5 = 25.", "The answer 24.48 is reasonable because I am sure."], answer: 1, why: "A reason needs evidence, and a close estimate is good evidence.", type: "no evidence" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Explain Every Step", minutes: 15, grouping: "Solo",
+      mission: "Write a clear explanation that shows each step of your process and why it works.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw bars to help you.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'since', and include the quotient." },
+      payload: {
+        prompt: "A baker has 2/3 pound of butter. Each tray of cookies uses 1/12 pound. Explain how to find how many trays she can make.",
+        structure: [
+          { part: "Goal", frame: "To find the number of trays, I divide ___ by ___." },
+          { part: "Reason", frame: "I can multiply by the reciprocal because ___." },
+          { part: "Steps", frame: "The reciprocal of ___ is ___, so ___ × ___ = ___, which means ___." },
+        ],
+        word_bank: ["dividend", "divisor", "reciprocal", "quotient", "first", "next", "because", "so"],
+        checklist: ["I named what I divided by what.", "I gave a reason with because or since.", "I used at least three math words.", "I wrote the answer with a unit."],
+        model: "To find the number of trays, I divide 2/3 by 1/12. I can multiply by the reciprocal because dividing by 1/12 asks how many twelfths fit inside 2/3. The reciprocal of 1/12 is 12, so 2/3 × 12 = 24/3 = 8, which means the baker can make eight trays.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Explain how to find 3/4 ÷ 1/2. Use at least two math words and one reason word.",
+    frame: "I multiplied 3/4 by the ___ of 1/2, which is ___, because ___, so the quotient is ___.",
+    model: "I multiplied 3/4 by the reciprocal of 1/2, which is 2, because dividing by 1/2 asks how many halves fit in 3/4, so the quotient is 1 1/2.",
+    rubric: {
+      emerging: "Names the numbers with a word bank or a labeled drawing.",
+      developing: "Uses the frame with two math words and a correct quotient.",
+      proficient: "Explains the steps with a clear reason and correct numbers in two or more sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Many Spanish-speaking countries write 3,5 with a comma and 1.000 for one thousand, so a decimal point can be misread.", fix: "Read each decimal aloud as 'three and five tenths' and have students say what the dot means before computing." },
+    { group: "All multilingual learners", issue: "'12 divided by 3' and '3 divided into 12' swap the dividend and divisor, so students put the numbers in the wrong places.", fix: "Color the dividend and divisor on every problem and read the sentence aloud with the frame before solving." },
+  ],
+  misconception: {
+    pattern: "Students say 'I just flip the fraction' without knowing which fraction to flip or why.",
+    redirect: "Ask 'Which number do you flip, and what question does dividing by that fraction really ask?' until they say how many pieces fit.",
+  },
+};

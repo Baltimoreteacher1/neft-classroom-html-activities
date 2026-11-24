@@ -1,0 +1,268 @@
+// BCPSS Language Studio v2 — g2-math-u2. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do you know your answer to an adding or taking-away problem makes sense?",
+  can_do: {
+    content: "I can add and subtract numbers within 100 and check that my answer makes sense.",
+    language: "I can explain my steps with first, then, and because.",
+  },
+  mentor: {
+    text: "My answer of 65 is reasonable because my estimate of 70 is close.",
+    gist: "The speaker gives an answer and proves it makes sense by using a close guess.",
+    chunks: [
+      { text: "My answer of 65", role: "The answer", tone: "concept", ask: "What number is the answer?" },
+      { text: "is reasonable", role: "The claim", tone: "precision", ask: "What does the speaker say about the answer?" },
+      { text: "because", role: "The reason signal", tone: "connector", ask: "Which word tells you a reason is coming?" },
+      { text: "my estimate of 70 is close.", role: "The proof", tone: "evidence", ask: "What close number helps prove the answer?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "I added [number] and [number].",
+      "My answer is [number].",
+      "My estimate is [number].",
+    ],
+    l3_4: [
+      "First I added the [tens], then I added the [ones].",
+      "I regrouped [number] ones into [number] ten and [number] ones.",
+      "My answer is reasonable because my estimate is [number].",
+    ],
+    l5_6: [
+      "I used [partial sums]: [number] + [number] = [number], so the sum is [number].",
+      "Since my estimate of [number] is close to [number], my answer is reasonable.",
+      "I subtracted [number] from [number] and checked by adding, so I know [claim].",
+    ],
+  },
+  connectors: ["because", "so", "first", "then", "next", "since"],
+  vocab: [
+    { term: "sum", tier: 2, pos: "noun", icon: "➕", def: "the answer you get when you add", example: "The sum of 40 and 20 is 60.", nonexample: "The answer to a take-away problem is not a sum.", es: "suma", es_note: "Cognate: sounds and means almost the same.", family: ["add", "total"], cue: "Two piles of blocks pushed into one big pile." },
+    { term: "difference", tier: 2, pos: "noun", icon: "➖", def: "the answer you get when you take one number away from another", example: "The difference between 50 and 20 is 30.", nonexample: "Adding 50 and 20 does not give the difference.", es: "diferencia", es_note: "Cognate: sounds and means almost the same.", family: ["subtract", "take away"], cue: "Five apples with two crossed out." },
+    { term: "tens", tier: 3, pos: "noun", icon: "🔟", def: "groups of ten; in 47, the 4 stands for 4 of these", example: "The number 47 has 4 tens and 7 ones.", nonexample: "The 7 in 47 is not in the tens place.", es: "decenas", es_note: "Not a cognate. 'Decena' comes from 'diez', which means ten.", family: ["ten", "place value"], cue: "A rod made of ten linked cubes." },
+    { term: "ones", tier: 3, pos: "noun", icon: "1️⃣", def: "the single pieces left after you make groups of ten; in 47, the 7 is this", example: "The number 47 has 7 ones.", nonexample: "A group of ten is not counted as ones.", es: "unidades", es_note: "Not a cognate. 'Unidades' also means units.", family: ["one", "place value"], cue: "Seven loose cubes next to four rods." },
+    { term: "regroup", tier: 3, pos: "verb", icon: "🔄", def: "to trade 10 ones for 1 ten, or 1 ten for 10 ones", example: "I regroup 13 ones into 1 ten and 3 ones.", nonexample: "Switching seats in class is not regrouping numbers.", es: "reagrupar", es_note: "Cognate: add 're-' to 'agrupar'.", family: ["regrouped", "group"], cue: "Ten loose cubes snapping into one rod." },
+    { term: "partial sums", tier: 3, pos: "noun", icon: "🧩", def: "small answers you get by adding the tens and the ones apart, then putting them together", example: "I used partial sums: 30 + 20 = 50 and 8 + 7 = 15.", nonexample: "Adding all the digits at once is not using partial sums.", es: "sumas parciales", es_note: "Cognate pair: sumas / parciales.", family: ["partial", "sum"], cue: "Two small piles of cubes joined into one." },
+    { term: "estimate", tier: 2, pos: "verb", icon: "🎯", def: "to make a smart guess that is close to the real answer", example: "I estimate 39 + 41 by thinking 40 + 40.", nonexample: "A wild guess with no thinking is not an estimate.", es: "estimar", es_note: "Cognate: sounds and means almost the same.", family: ["estimation", "round"], cue: "A dart landing near the bullseye." },
+    { term: "reasonable", tier: 2, pos: "adjective", icon: "✅", def: "makes sense when you check it", example: "An answer of 65 is reasonable because my estimate is 70.", nonexample: "An answer of 5 for 38 + 27 is not reasonable.", es: "razonable", es_note: "Cognate: sounds and means almost the same.", family: ["reason", "sensible"], cue: "A thumbs-up next to a checked answer." },
+    { term: "number line", tier: 3, pos: "noun", icon: "📏", def: "a line with numbers in order that you can hop along to add or subtract", example: "I hop on the number line from 27 up to 52.", nonexample: "A clothesline is a line, but it is not a number line.", es: "recta numérica", es_note: "Not a cognate. Some teachers also say 'línea numérica'.", family: ["jump", "hop"], cue: "A ruler with small arcs hopping above it." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Sticker Swap", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Draw the stickers and use the first frame.", l3_4: "Write the key words you hear, then rebuild four sentences.", l5_6: "Rebuild the whole story and add why the answer makes sense." },
+      payload: {
+        text: "Tomas has 46 crab stickers. His sister gives him 29 more. Tomas adds the tens first. 40 and 20 is 60. Then he adds the ones. 6 and 9 is 15. He puts 60 and 15 together. Tomas has 75 stickers now.",
+        key_words: ["adds", "tens", "ones", "stickers", "together"],
+        frame: "First, Tomas adds the ___. Then he adds the ___. He puts ___ and ___ together.",
+        checks: ["Tomas has 46 stickers and gets 29 more", "he adds the tens: 60", "he adds the ones: 15", "he puts them together to get 75"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match each math word to its meaning. Keep going until all nine click!",
+      tip: "Students can replay with the picture cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words with pictures first.", l3_4: "Match all pairs, then say each word in a sentence.", l5_6: "Match all pairs, then write one sentence with two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "sum", r: "the answer when you add" },
+          { l: "difference", r: "the answer when you take one number away from another" },
+          { l: "tens", r: "groups of ten" },
+          { l: "ones", r: "the single pieces left after making groups of ten" },
+          { l: "regroup", r: "trade 10 ones for 1 ten" },
+          { l: "partial sums", r: "small answers from adding tens and ones apart" },
+          { l: "estimate", r: "a smart guess that is close" },
+          { l: "reasonable", r: "makes sense when you check it" },
+          { l: "number line", r: "a line of numbers in order for hopping" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Add, Take Away, or Check?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs, then tell your partner why.",
+      tip: "Listen for 'because' when partners explain a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
+      payload: {
+        categories: [{ name: "Adding words" }, { name: "Take-away words" }, { name: "Checking words" }],
+        items: [
+          { text: "sum", cat: 0 }, { text: "plus", cat: 0 }, { text: "in all", cat: 0 }, { text: "altogether", cat: 0 },
+          { text: "difference", cat: 1 }, { text: "minus", cat: 1 }, { text: "take away", cat: 1 }, { text: "how many left", cat: 1 },
+          { text: "estimate", cat: 2 }, { text: "reasonable", cat: 2 }, { text: "check", cat: 2 }, { text: "close to", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the picture cues to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "sum", clues: ["I am 50 in 20 + 30.", "I am the answer when you add.", "I rhyme with gum."] },
+          { term: "difference", clues: ["I am 30 in 50 − 20.", "I am the answer when you take away.", "I tell how far apart two numbers are."] },
+          { term: "regroup", clues: ["Trade ten pennies for one dime.", "I turn 10 ones into 1 ten.", "I help when you have too many ones."] },
+          { term: "estimate", clues: ["I am a smart guess, not exact.", "Round the numbers to the nearest ten.", "I help you check if an answer is close."] },
+          { term: "tens", clues: ["In 47, the 4 shows me.", "I am a group of ten.", "In partial sums, you add me first."] },
+          { term: "ones", clues: ["In 47, the 7 shows me.", "I am single, not in a group.", "You regroup me when I make 10 or more."] },
+          { term: "number line", clues: ["Hop along me to add.", "I show numbers in order from left to right.", "A ruler looks a lot like me."] },
+          { term: "reasonable", clues: ["I mean 'makes sense'.", "38 + 27 = 65 is me, but 38 + 27 = 15 is not.", "An estimate helps you see if I am true."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Prove It, Partner", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer, then your partner asks a question.",
+      tip: "Listen for a reason after every 'because'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the numbers and use the starter.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Compare two ways to solve the same problem." },
+      payload: {
+        roles: { a: "Explainer", b: "Checker" },
+        cards: [
+          { prompt: "How do you add 36 + 27?", starter: "First I add the tens: ___. Then I add the ones: ___.", follow_up: "What do you do with 13 ones?" },
+          { prompt: "Is 80 a reasonable answer for 45 + 39? Why?", starter: "80 is reasonable because ___.", follow_up: "What is the exact answer?" },
+          { prompt: "How do you solve 52 − 27 on a number line?", starter: "I start at ___ and hop up to ___.", follow_up: "How many did you hop in all?" },
+          { prompt: "What does regroup mean?", starter: "Regroup means I trade ___ for ___.", follow_up: "Show me with 14 ones." },
+          { prompt: "Why do we estimate before we add?", starter: "We estimate because ___.", follow_up: "What would your estimate be for 29 + 31?" },
+          { prompt: "A friend says 29 + 34 = 53. What do you say?", starter: "I disagree because ___.", follow_up: "How can an estimate show the mistake?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me the ___ on the number line?" },
+          { label: "Check it", stem: "Let me check by adding: ___ + ___ = ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Number Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret numbers. Ask questions to find the missing ones. No peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Repeat each number back to check it.", l5_6: "Check the totals by adding the numbers yourselves." },
+      payload: {
+        goal: "Find every missing number. Then check that 36 + 35 = 71 and 24 + 26 = 50.",
+        a: { title: "Detective A", has: [{ k: "Aisha's stickers", v: "36" }, { k: "Total stickers", v: "71" }, { k: "Pencils sold Monday", v: "24" }], needs: ["Ben's stickers", "Pencils sold Tuesday"] },
+        b: { title: "Detective B", has: [{ k: "Ben's stickers", v: "35" }, { k: "Pencils sold Tuesday", v: "26" }, { k: "Pencils sold in all", v: "50" }], needs: ["Aisha's stickers", "Pencils sold Monday"] },
+        ask_frames: ["How many ___ are there?", "Can you say that number again?"],
+        tell_frames: ["The number of ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Reason Radar", minutes: 12, grouping: "Solo",
+      mission: "Read Dre's plan like a detective. Mark the jumps and the reason, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the number jumps.", l3_4: "Mark the jumps and the math words.", l5_6: "Mark everything, then rewrite the last sentence with 'since'." },
+      payload: {
+        text: "Dre has 52 crab cards. He gives 27 cards to his cousin. How many cards are left? Dre counts up on a number line. From 27 to 30 is 3. From 30 to 50 is 20. From 50 to 52 is 2. He adds 3 + 20 + 2 and gets 25. Dre has 25 cards left. His answer is reasonable because 50 − 30 is about 20, and 25 is close.",
+        marks: [
+          { label: "Number jumps", instruction: "Highlight each jump Dre makes.", targets: ["From 27 to 30 is 3", "From 30 to 50 is 20", "From 50 to 52 is 2"] },
+          { label: "Math words", instruction: "Highlight the math words.", targets: ["number line", "reasonable", "counts up"] },
+          { label: "Reason words", instruction: "Highlight the words that tell why.", targets: ["because", "close"] },
+        ],
+        questions: [
+          { q: "How does Dre find the answer?", options: ["He guesses.", "He counts up on a number line.", "He adds 52 and 27."], answer: 1, why: "The text says Dre counts up on a number line." },
+          { q: "How many cards does Dre have left?", options: ["27", "52", "25"], answer: 2, why: "The jumps 3, 20, and 2 add up to 25." },
+          { q: "Why is 25 reasonable?", options: ["50 − 30 is about 20, which is close to 25.", "25 is bigger than 52.", "Dre likes the number 25."], answer: 0, why: "A close estimate shows the answer makes sense." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["I added the tens first,", "then I added", "the ones."] },
+          { parts: ["My answer is reasonable", "because my estimate", "is close."] },
+          { parts: ["I regrouped 13 ones", "into 1 ten", "and 3 ones."] },
+          { parts: ["First I counted up", "on the number line", "to find the difference."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Fish Stickers", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Leo's story.",
+      tip: "Two bank words are extras; students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and try the words.", l3_4: "Fill all gaps, then check that each sentence makes sense.", l5_6: "Fill all gaps, then explain one choice with 'because'." },
+      payload: {
+        text: "Leo has 45 fish stickers and gets 38 more. He wants to find the {1}. He adds the {2} first: 40 + 30 = 70. Next he adds the {3}: 5 + 8 = 13. He must {4} 13 ones into 1 ten and 3 ones. Then 70 + 13 = 83. A close {5} is 45 + 40 = 85. So 83 is {6}.",
+        answers: ["sum", "tens", "ones", "regroup", "estimate", "reasonable"],
+        bank: ["sum", "tens", "ones", "regroup", "estimate", "reasonable", "difference", "number line"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start." },
+      payload: {
+        items: [
+          { sentences: ["I added the tens.", "I added the ones."], connector: "then", model: "I added the tens, then I added the ones." },
+          { sentences: ["I regrouped 10 ones.", "There were too many ones."], connector: "because", model: "I regrouped 10 ones because there were too many ones." },
+          { sentences: ["My estimate is 80.", "My answer of 84 is close."], connector: "so", model: "My estimate is 80, so my answer of 84 is close." },
+          { sentences: ["I checked by adding.", "I knew the answer was right."], connector: "after", model: "After I checked by adding, I knew the answer was right." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and say why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the number words first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "I added 8 + 7 and got 15, so I wrote 15 in the ones place.", options: ["I wrote 15 in the tens place.", "I wrote 8 in the ones place.", "I wrote 5 in the ones place and regrouped 1 ten."], answer: 2, why: "Only one digit fits in the ones place, so 15 ones is 1 ten and 5 ones.", type: "regroup" },
+          { wrong: "45 + 39 = 94 is reasonable because 94 is a big number.", options: ["94 is reasonable because I like it.", "94 is not close to my estimate of 80, so I check again.", "94 is reasonable because it is bigger than 45."], answer: 1, why: "An estimate of 40 + 40 = 80 is not close to 94. The real sum is 84.", type: "missing proof" },
+          { wrong: "I subtracted 60 − 25 and the sum is 35.", options: ["I subtracted 60 − 25 and the sum is 85.", "I subtracted 60 − 25 and the difference is 85.", "I subtracted 60 − 25 and the difference is 35."], answer: 2, why: "Taking away gives a difference, and 60 − 25 = 35.", type: "wrong word" },
+          { wrong: "I know 45 + 38 = 83 is right because it looks right.", options: ["I know it is right because I like 83.", "I know it is right because 83 − 38 = 45.", "I know it is right because 83 is a big number."], answer: 1, why: "Taking 38 away from 83 gets back to 45, which proves the sum.", type: "missing proof" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Prove Your Answer", minutes: 15, grouping: "Solo",
+      mission: "Write how you solve the problem and why your answer makes sense.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Draw the tens and ones, then use the frames.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts and add a second way to check." },
+      payload: {
+        prompt: "Kai has 48 marbles and gets 36 more. How many does he have in all? Show your steps and tell why your answer is reasonable.",
+        structure: [
+          { part: "Add the tens", frame: "First I add the tens: ___ + ___ = ___." },
+          { part: "Add the ones", frame: "Then I add the ones: ___ + ___ = ___. I regroup ___." },
+          { part: "Check", frame: "My answer is ___. It is reasonable because my estimate of ___ is close." },
+        ],
+        word_bank: ["tens", "ones", "regroup", "sum", "estimate", "reasonable", "because", "then"],
+        checklist: ["I added the tens.", "I added the ones and regrouped.", "I wrote the sum.", "I used because to say why it is reasonable."],
+        model: "First I add the tens: 40 + 30 = 70. Then I add the ones: 8 + 6 = 14. I regroup 14 ones, so 70 + 14 = 84. My answer is reasonable because my estimate of 50 + 40 = 90 is close.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Add 34 + 29. Show your steps and tell why your answer is reasonable.",
+    frame: "I added the tens: ___. I added the ones: ___. The sum is ___. It is reasonable because ___.",
+    model: "I added the tens: 30 + 20 = 50. I added the ones: 4 + 9 = 13. The sum is 63. It is reasonable because my estimate of 30 + 30 = 60 is close.",
+    rubric: {
+      emerging: "Writes the sum with a drawing or word bank.",
+      developing: "Uses the frame to show the tens and ones steps with correct numbers.",
+      proficient: "Shows both steps, gets 63, and gives a reason with because and an estimate.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Ones' sounds like the English word for 'one', and students may not hear it as a place name; 'unidades' is the school word.", fix: "Say 'ones, unidades' together and point to loose cubes while you use the word." },
+    { group: "All multilingual learners", issue: "'Sum' and 'some' sound the same, and 'tens' and 'tenths' sound close, so students mix them up in listening tasks.", fix: "Show a picture cue with every spoken word and have students hold up the card they hear." },
+  ],
+  misconception: {
+    pattern: "Students write a two-digit number like 15 in the ones place and do not regroup.",
+    redirect: "Ask 'Can 15 ones fit in the ones place? How many tens can you make?' and let them trade 10 cubes for a rod.",
+  },
+};

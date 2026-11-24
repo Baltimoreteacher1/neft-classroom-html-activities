@@ -1,0 +1,539 @@
+/* BCPSS Teacher Studio — Unit Overview (v2). Uses the hub tokens in bcpss-teachers.css. */
+
+.ov {
+  display: grid;
+  gap: 1.5rem;
+}
+.ov h3 {
+  margin: 0;
+  font: 700 1.05rem/1.3 var(--font-display);
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.ov h4 {
+  margin: 0 0 0.25rem;
+  font: 600 0.9rem/1.3 var(--font-display);
+}
+.ov p {
+  margin: 0;
+}
+.ov-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+.ov-ghost {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--brand);
+  font: 600 0.9rem var(--font);
+  cursor: pointer;
+}
+.ov-ghost:hover {
+  background: var(--surface-2);
+}
+.ov-ghost:focus-visible,
+.ov-chunk:focus-visible,
+.ov-transfer-list button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* goals */
+.ov-cando {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.ov-goal {
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  border-left-width: 5px;
+  background: var(--surface);
+}
+.ov-goal h3 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  margin-bottom: 0.4rem;
+}
+.ov-goal p {
+  font: 500 1.1rem/1.45 var(--font-display);
+  color: var(--ink);
+}
+.ov-goal--content {
+  border-left-color: var(--ocean-900);
+  background: var(--ocean-200);
+}
+.ov-goal--language {
+  border-left-color: var(--sage-900);
+  background: var(--sage-200);
+}
+
+/* mentor sentence */
+.ov-mentor,
+.ov-frames,
+.ov-vocab,
+.ov-exit {
+  padding: 1.25rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.ov-sentence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font: 500 1.25rem/1.6 var(--font-serif);
+}
+.ov-chunk {
+  padding: 0.3rem 0.7rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.ov-chunk[aria-pressed="true"] {
+  border-color: var(--ink);
+}
+.ov-chunk--concept,
+.ov-role--concept {
+  background: var(--ocean-200);
+}
+.ov-chunk--connector,
+.ov-role--connector {
+  background: var(--copper-200);
+}
+.ov-chunk--evidence,
+.ov-role--evidence {
+  background: var(--sage-200);
+}
+.ov-chunk--precision,
+.ov-role--precision {
+  background: var(--rose-200);
+}
+.ov-chunk-detail {
+  margin-top: 0.9rem;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font: 400 0.98rem/1.5 var(--font);
+  display: grid;
+  gap: 0.35rem;
+}
+.ov-role {
+  width: fit-content;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+}
+.ov-hint {
+  color: var(--ink-2);
+  font-size: 0.88rem;
+}
+
+/* frames */
+.ov-level {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--ocean-200);
+  color: var(--ocean-900);
+  font: 600 0.75rem var(--font);
+  vertical-align: middle;
+}
+.ov-frame-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+.ov-frame-list li {
+  padding: 0.7rem 1rem;
+  border-left: 4px solid var(--sage-900);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface-2);
+  font: 500 1.05rem/1.6 var(--font-display);
+}
+.ov-blank {
+  display: inline-block;
+  min-width: 4.5rem;
+  padding: 0 0.5rem;
+  border-bottom: 2px dashed var(--border-control);
+  color: var(--ink-2);
+  font-size: 0.9em;
+  text-align: center;
+}
+.ov-connectors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ov-connectors span {
+  font: 600 0.75rem var(--font);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+}
+.ov-connectors b {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--copper-200);
+  color: var(--copper-900);
+  font: 600 0.9rem var(--font);
+}
+
+/* vocabulary */
+.ov-vocab-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ov-vocab-list li {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.ov-vocab-list b {
+  font: 700 1rem var(--font-display);
+}
+.ov-vocab-list span {
+  color: var(--ink-2);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+/* exit ticket */
+.ov-exit {
+  display: grid;
+  gap: 0.75rem;
+}
+.ov-exit-prompt {
+  font: 500 1.05rem/1.5 var(--font-display);
+}
+.ov-exit-frame {
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font: 500 1rem/1.6 var(--font-display);
+}
+.ov-rubric {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.6rem;
+  margin: 0;
+}
+.ov-rubric div {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+}
+.ov-rubric dt {
+  font: 700 0.72rem var(--font);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+}
+.ov-rubric dd {
+  margin: 0.25rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.ov-model summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--brand);
+  font-weight: 600;
+}
+.ov-model p {
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius);
+  background: var(--sage-200);
+}
+
+/* watch-outs */
+.ov-watch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.ov-watch-grid article {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--trap-border);
+  border-radius: var(--radius);
+  background: var(--trap-bg);
+  color: var(--trap-ink);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.ov-fix {
+  margin-top: 0.35rem;
+}
+
+/* transfer */
+.ov-transfer-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.6rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ov-transfer-list button {
+  display: grid;
+  gap: 0.15rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  font: 500 0.9rem var(--font);
+}
+.ov-transfer-list button span {
+  color: var(--ink-2);
+  font-size: 0.78rem;
+}
+.ov-transfer-list button:hover {
+  background: var(--surface-2);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ov-goal--content,
+  :root:not([data-theme="light"]) .ov-chunk--concept,
+  :root:not([data-theme="light"]) .ov-role--concept {
+    background: #1b2c44;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ov * {
+    transition: none !important;
+  }
+}
+
+/* ---- Language Studio tab (studio-tab.js) ---- */
+.stt {
+  --dom-listening: #0f766e;
+  --dom-speaking: #c2410c;
+  --dom-reading: #1e3a8a;
+  --dom-writing: #b45309;
+  --dom-vocabulary: #15803d;
+  --dom-game: #be185d;
+  display: grid;
+  gap: 1.75rem;
+}
+.stt h3 {
+  margin: 0 0 0.4rem;
+  font: 700 1.2rem/1.3 var(--font-display);
+}
+.stt p {
+  margin: 0;
+}
+.stt-h {
+  margin-bottom: 0.75rem !important;
+}
+.stt-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  background: var(--brand-primary);
+  color: #fff;
+}
+.stt-hero h3 {
+  font-size: 1.5rem;
+}
+.stt-hero p {
+  max-width: 46ch;
+  color: #e6edf6;
+  line-height: 1.5;
+}
+.stt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.8rem !important;
+}
+.stt-chips span {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 16%);
+  font: 600 0.78rem var(--font);
+}
+.stt-launch {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 1.6rem;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--brand-primary);
+  font: 700 1.05rem var(--font-display);
+  text-decoration: none;
+}
+.stt-launch:hover {
+  background: var(--ocean-200);
+}
+.stt-launch:focus-visible,
+.stt-play:focus-visible,
+.stt-print:focus-visible,
+.stt-res a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.stt-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stt-row {
+  --dom: var(--dom-reading);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-subtle);
+  border-left: 5px solid var(--dom);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.stt-row--listening { --dom: var(--dom-listening); }
+.stt-row--speaking { --dom: var(--dom-speaking); }
+.stt-row--reading { --dom: var(--dom-reading); }
+.stt-row--writing { --dom: var(--dom-writing); }
+.stt-row--vocabulary { --dom: var(--dom-vocabulary); }
+.stt-row--game { --dom: var(--dom-game); }
+.stt-num {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--dom);
+  color: #fff;
+  font: 700 0.95rem var(--font-display);
+}
+.stt-main {
+  display: grid;
+  gap: 0.15rem;
+}
+.stt-main b {
+  font: 700 1.02rem var(--font-display);
+}
+.stt-main span {
+  color: var(--ink-2);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+.stt-main small {
+  color: var(--dom);
+  font: 700 0.75rem var(--font);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.stt-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.stt-play,
+.stt-print {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: var(--radius);
+  font: 600 0.9rem var(--font);
+  text-decoration: none;
+}
+.stt-play {
+  background: var(--brand);
+  color: #fff;
+}
+.stt-play:hover {
+  background: var(--brand-hover);
+}
+.stt-print {
+  border: 1px solid var(--border-control);
+  color: var(--brand);
+  background: var(--surface);
+}
+.stt-res-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stt-res {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.stt-res b {
+  font: 700 0.98rem var(--font-display);
+}
+.stt-res span {
+  color: var(--ink-2);
+  font-size: 0.86rem;
+}
+.stt-res div {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+.stt-res a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius);
+  color: var(--brand);
+  font: 600 0.85rem var(--font);
+  text-decoration: none;
+}
+.stt-res a:hover {
+  background: var(--surface-2);
+}
+@media (max-width: 640px) {
+  .stt-row {
+    grid-template-columns: auto 1fr;
+  }
+  .stt-actions {
+    grid-column: 1 / -1;
+  }
+}

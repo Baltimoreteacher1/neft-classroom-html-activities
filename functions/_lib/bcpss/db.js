@@ -8,6 +8,7 @@ import { neon } from "@neondatabase/serverless";
 import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
 import { cosineSimilarity, embedText, toPgVectorLiteral } from "./embeddings.js";
 import { buildEsolPack } from "./esol-pack.js";
+import { applyStudio, loadFamily, loadStudio, studioEssentialQuestions } from "./studio.js";
 
 const BCPSS_UNITS = seed.BCPSS_UNITS || [];
 const LANGUAGE_BLUEPRINTS = seed.LANGUAGE_BLUEPRINTS || [];
@@ -272,6 +273,13 @@ async function ensureD1TelemetryTable(db) {
 // ---------------------------------------------------------------------------
 
 export async function listUnits(env, grade, subject) {
+  const result = await listUnitsBase(env, grade, subject);
+  const studio = await studioEssentialQuestions(result.units.map((u) => u.id));
+  result.units = result.units.map((u) => ({ ...u, ...(studio.get(u.id) || {}) }));
+  return result;
+}
+
+async function listUnitsBase(env, grade, subject) {
   const gradeStr = String(grade);
   const sql = getNeonClient(env);
 
@@ -605,6 +613,8 @@ async function getUnitDetailBase(env, unitId) {
 export async function getUnitDetail(env, unitId) {
   const result = await getUnitDetailBase(env, unitId);
   if (result.detail) {
+    applyStudio(result.detail, await loadStudio(unitId));
+    result.detail.family = await loadFamily(unitId);
     const esol_pack = buildEsolPack({
       unit: result.detail.unit,
       connection: result.detail.connections?.[0],

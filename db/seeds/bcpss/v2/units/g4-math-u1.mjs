@@ -1,0 +1,285 @@
+// BCPSS Language Studio v2 — g4-math-u1 (Reveal Math Grade 4, Unit 1). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How does a digit's place in a number change its value, and how can you prove an answer makes sense?",
+  can_do: {
+    content: "I can read, write, and round big numbers, and I can add and subtract them with regrouping.",
+    language: "I can explain how a digit's value changes with because, so, and since.",
+  },
+  mentor: {
+    text: "The 5 in 5,000 is ten times as much as the 5 in 500 because each place to the left is worth ten times more.",
+    gist: "The speaker compares two 5s in one number and explains the pattern that makes the comparison true.",
+    chunks: [
+      { text: "The 5 in 5,000", role: "The first digit", tone: "concept", ask: "Which 5 is the speaker talking about first?" },
+      { text: "is ten times as much as the 5 in 500", role: "The comparison", tone: "precision", ask: "How do the two 5s compare in value?" },
+      { text: "because", role: "The reason signal", tone: "connector", ask: "Which word tells you a reason is coming?" },
+      { text: "each place to the left is worth ten times more.", role: "The pattern", tone: "evidence", ask: "What pattern in the places makes the comparison true?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The [digit] is in the [place] place.",
+      "The value of the [digit] is [number].",
+      "[Number] is ten times as much as [number].",
+    ],
+    l3_4: [
+      "The [digit] in [number] is worth [value] because it is in the [place] place.",
+      "I regrouped [number] [place] as [number] [next place].",
+      "[Number] is ten times as much as [number] because [reason].",
+    ],
+    l5_6: [
+      "Since each place is worth ten times the place to its right, the [digit] in the [place] place is ten times as much as the [digit] in the [place] place.",
+      "I estimated [number] + [number] by rounding to [number] + [number], so the sum should be close to [number].",
+      "My answer is reasonable because [reason].",
+    ],
+  },
+  connectors: ["because", "so", "since", "therefore", "which means", "as a result"],
+  vocab: [
+    { term: "digit", tier: 3, pos: "noun", def: "one of the ten symbols used to write numbers: 0 through 9", example: "The number 4,725 has four digits.", nonexample: "The letter B is not a digit.", es: "dígito", es_note: "Cognate: sounds and means almost the same.", family: ["digits"], cue: "The numerals 0 to 9 lined up on a classroom number strip." },
+    { term: "place value", tier: 3, pos: "noun", def: "the worth of a digit based on its spot in a number", example: "In 4,725, the place value of the 7 is hundreds.", nonexample: "The price of a snack is a value, but it is not a place value.", es: "valor posicional", es_note: "Cognate pair: valor / posicional.", family: ["place", "value"], cue: "A place-value chart with columns for ones, tens, hundreds, and thousands." },
+    { term: "expanded form", tier: 3, pos: "noun", def: "a way to write a number as the sum of each digit's value", example: "In expanded form, 5,284 is 5,000 + 200 + 80 + 4.", nonexample: "The number 5,284 is not in expanded form until you split it by place.", es: "forma desarrollada", es_note: "Not a cognate. Some books also say 'forma expandida'.", family: ["expand", "expanded"], cue: "A number split into colored blocks, one block for each place." },
+    { term: "standard form", tier: 3, pos: "noun", def: "the usual way to write a number with digits, like 5,284", example: "5,000 + 200 + 80 + 4 is 5,284 in standard form.", nonexample: "Five thousand two hundred eighty-four uses words, not standard form.", es: "forma estándar", es_note: "Cognate: 'estándar' sounds like 'standard'.", family: ["standard"], cue: "A price tag showing 5,284 with commas." },
+    { term: "ten times as much", tier: 3, pos: "phrase", def: "a value that is 10 groups of the smaller value", example: "The 7 in 700 is ten times as much as the 7 in 70.", nonexample: "Ten more than 70 is 80, which is not ten times as much.", es: "diez veces más", es_note: "Say 'diez veces el valor'. Watch out: 'ten times' multiplies, it does not add.", family: ["times", "multiply"], cue: "One stick of 70 blocks next to ten sticks of 70 blocks." },
+    { term: "regroup", tier: 3, pos: "verb", def: "to trade 10 of one place for 1 of the next place to the left", example: "I regroup 10 ones as 1 ten when I add 8 + 6.", nonexample: "Writing the same digits in a new order is not regrouping.", es: "reagrupar", es_note: "Cognate: sounds and means almost the same.", family: ["regrouping", "regrouped"], cue: "Ten small cubes snapping into one long rod." },
+    { term: "round", tier: 2, pos: "verb", def: "to change a number to a nearby number that is easier to use", example: "I round 3,672 to the nearest hundred and get 3,700.", nonexample: "A pizza has a round shape, but that word is about shape, not numbers.", es: "redondear", es_note: "Related to 'redondo' (round shape).", family: ["rounded", "rounding"], cue: "A number line with 3,672 sliding to the closer hundred." },
+    { term: "estimate", tier: 2, pos: "verb", def: "to find an answer that is close, but not exact", example: "I estimate 4,725 + 2,386 by adding 5,000 + 2,000.", nonexample: "An exact answer like 7,111 is not an estimate.", es: "estimar", es_note: "Cognate: sounds and means almost the same.", family: ["estimated", "estimation"], cue: "A student squinting at a jar of beans and guessing about 100." },
+    { term: "sum", tier: 2, pos: "noun", def: "the answer to an addition problem", example: "The sum of 4,725 and 2,386 is 7,111.", nonexample: "The answer to a subtraction problem is a difference, not a sum.", es: "suma", es_note: "Cognate. In English, 'sum' also sounds like 'some'.", family: ["sums", "add"], cue: "Two piles of cubes pushed together into one big pile." },
+    { term: "difference", tier: 2, pos: "noun", def: "the answer to a subtraction problem", example: "The difference of 9,000 and 4,568 is 4,432.", nonexample: "A different color is not a math difference.", es: "diferencia", es_note: "Cognate: sounds and means almost the same.", family: ["different", "subtract"], cue: "Two bars of different lengths with the gap between them shaded." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Bus Rider Count", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner using the key words.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and draw a bus while you listen.", l3_4: "Write the key words you hear, then rebuild 4 to 5 sentences.", l5_6: "Rebuild the whole text and add one sentence that tells why estimating helps." },
+      payload: {
+        text: "Dee counts riders on a city bus route. On Monday, 4,725 riders get on. On Tuesday, 2,386 riders get on. First, she estimates. Five thousand plus two thousand is about seven thousand. Next, she adds the exact numbers and regroups when she needs to. The sum is 7,111 riders. The sum is close to her estimate, so her answer makes sense.",
+        key_words: ["riders", "estimates", "regroups", "sum", "exact"],
+        frame: "First, Dee ___. Next, she ___. The sum is ___, which is close to her ___.",
+        checks: ["Dee estimates before she adds", "she regroups when she needs to", "the exact sum is 7,111 riders", "the sum is close to the estimate, so the answer makes sense"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Place Value Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match every math word to its meaning. Wrong matches bounce back, so keep going until all ten click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know first, then use the picture cues.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "digit", r: "one of the ten symbols used to write numbers" },
+          { l: "place value", r: "the worth of a digit based on its spot" },
+          { l: "expanded form", r: "a number written as the sum of each digit's value" },
+          { l: "standard form", r: "the usual way to write a number with digits" },
+          { l: "ten times as much", r: "a value that is 10 groups of the smaller value" },
+          { l: "regroup", r: "to trade 10 of one place for 1 of the next place" },
+          { l: "round", r: "to change a number to a nearby, easier number" },
+          { l: "estimate", r: "to find an answer that is close, not exact" },
+          { l: "sum", r: "the answer to an addition problem" },
+          { l: "difference", r: "the answer to a subtraction problem" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Write, Part, or Do?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you know first and point to the places on a chart.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add a fourth group of your own." },
+      payload: {
+        categories: [{ name: "Ways to write a number" }, { name: "Parts of a number" }, { name: "Things you do with numbers" }],
+        items: [
+          { text: "standard form", cat: 0 }, { text: "expanded form", cat: 0 }, { text: "word form", cat: 0 },
+          { text: "digit", cat: 1 }, { text: "place value", cat: 1 }, { text: "ones place", cat: 1 }, { text: "thousands place", cat: 1 },
+          { text: "regroup", cat: 2 }, { text: "round", cat: 2 }, { text: "estimate", cat: 2 }, { text: "add", cat: 2 }, { text: "subtract", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Number Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "digit", clues: ["I am one of ten symbols.", "The number 508 has three of me.", "0 through 9 are all me."] },
+          { term: "regroup", clues: ["Ten ones can trade for one ten.", "I help when a column has too many.", "You do me in addition and in subtraction."] },
+          { term: "round", clues: ["I turn 3,672 into 3,700.", "I make a number easier to work with.", "Look at the next digit to decide whether to go up or down."] },
+          { term: "estimate", clues: ["My answer is close, but not exact.", "Use me to check if an answer makes sense.", "Rounding helps me."] },
+          { term: "sum", clues: ["I am the answer to an addition problem.", "In 4 + 5 = 9, I am the 9.", "My partner is the difference."] },
+          { term: "difference", clues: ["I am the answer to a subtraction problem.", "In 9 − 4 = 5, I am the 5.", "My partner is the sum."] },
+          { term: "place value", clues: ["I tell you what a digit is worth.", "The 7 in 700 and the 7 in 70 have different ones of me.", "Ones, tens, and hundreds are my spots."] },
+          { term: "expanded form", clues: ["I show a number as a sum of its parts.", "5,284 becomes 5,000 + 200 + 80 + 4.", "I stretch a number out."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Prove It to Your Partner", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      tip: "Listen for a reason after every 'because'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the digit and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'since' or 'which means' to link two ideas." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "The 3 in 3,000 and the 3 in 300 are both 3s. How are their values different?", starter: "The 3 in 3,000 is worth ___, but the 3 in 300 is worth ___.", follow_up: "How many times as much is the first 3?" },
+          { prompt: "How do you write 5,284 in expanded form, and how do you know each part?", starter: "I wrote 5,284 as ___ because ___.", follow_up: "What is the value of the 8?" },
+          { prompt: "You add 4,725 and 2,386. When do you need to regroup?", starter: "I regroup when ___, so I trade ___.", follow_up: "Which place needed regrouping first?" },
+          { prompt: "Round 3,672 to the nearest hundred. How do you decide?", starter: "I look at the ___ place. Since ___, I round ___.", follow_up: "What would you do with 3,650?" },
+          { prompt: "Why is estimating a good way to check a sum?", starter: "Estimating helps because ___.", follow_up: "What estimate would you use for 6,812 + 3,095?" },
+          { prompt: "A friend says 9,000 − 4,568 = 5,432. How can you check?", starter: "I can check by ___.", follow_up: "What should the answer be?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is in the number?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Number Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret clues about two mystery numbers. Ask questions to find the missing facts, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the number back to check.", l5_6: "Check each other's forms by adding the expanded form to see if it matches." },
+      payload: {
+        goal: "Find the standard form and the expanded form of both mystery numbers.",
+        a: {
+          title: "Detective A",
+          has: [
+            { k: "Mystery Number 1 expanded form", v: "40,000 + 6,000 + 300 + 5" },
+            { k: "Mystery Number 2 standard form", v: "8,092" },
+            { k: "Mystery Number 2 digit in the hundreds place", v: "0" },
+          ],
+          needs: ["Mystery Number 1 standard form", "Mystery Number 2 expanded form"],
+        },
+        b: {
+          title: "Detective B",
+          has: [
+            { k: "Mystery Number 1 standard form", v: "46,305" },
+            { k: "Mystery Number 2 expanded form", v: "8,000 + 90 + 2" },
+            { k: "Mystery Number 1 digit in the tens place", v: "0" },
+          ],
+          needs: ["Mystery Number 1 expanded form", "Mystery Number 2 standard form"],
+        },
+        ask_frames: ["What is the ___ of Mystery Number ___?", "Can you say that number again, please?"],
+        tell_frames: ["The ___ of Mystery Number ___ is ___.", "I need to look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Reason Radar", minutes: 12, grouping: "Solo",
+      mission: "Read Keisha's proof like a detective. Mark the reason words and the math words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'so' and the numbers 4,000 and 400.", l3_4: "Mark both the reason words and the math words.", l5_6: "Mark everything, then rewrite one sentence with 'because'." },
+      payload: {
+        text: "Keisha counts the cookies sold at the school bake sale. Her sheet says 4,400. She wants to prove that the first 4 is ten times as much as the second 4. The first 4 is in the thousands place, so it is worth 4,000. The second 4 is in the hundreds place, so it is worth 400. Since 4,000 is ten times 400, her claim is true.",
+        marks: [
+          { label: "Reason words", instruction: "Highlight the words that tell why.", targets: ["so it is worth 4,000", "so it is worth 400", "Since 4,000 is ten times 400"] },
+          { label: "Math words", instruction: "Highlight the math vocabulary.", targets: ["thousands place", "hundreds place", "ten times as much", "claim"] },
+        ],
+        questions: [
+          { q: "Where is the first 4 in 4,400?", options: ["Hundreds place", "Thousands place", "Tens place"], answer: 1, why: "The text says the first 4 is in the thousands place, so it is worth 4,000." },
+          { q: "How does Keisha know her claim is true?", options: ["4,000 is ten times 400.", "4,000 is smaller than 400.", "Both 4s are in the same place."], answer: 0, why: "She shows that 4,000 is ten times 400, and that proves the comparison." },
+          { q: "Which word gives a reason at the start of the last sentence?", options: ["Since", "claim", "true"], answer: 0, why: "'Since' signals that a reason is coming." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["The 7 in 7,000", "is ten times as much", "as the 7 in 700."] },
+          { parts: ["I regrouped 10 ones", "as 1 ten", "because I had too many ones."] },
+          { parts: ["Since 4,725 rounds to 5,000", "and 2,386 rounds to 2,000,", "my estimate is 7,000."] },
+          { parts: ["The difference is 4,432", "because 4,432 + 4,568", "equals 9,000."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Number on the Board", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Omar's number story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read the sentence aloud and think about the first letter.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then replace one answer with a phrase that means the same thing." },
+      payload: {
+        text: "Omar writes 3,408 on the board. The {1} in the thousands place is 3. Its {2} tells us it is worth 3,000. Omar writes the number in {3} as 3,000 + 400 + 8. Then he must {4} 3,408 to the nearest hundred, so he gets 3,400. To check a sum, he makes an {5} first.",
+        answers: ["digit", "place value", "expanded form", "round", "estimate"],
+        bank: ["digit", "place value", "expanded form", "round", "estimate", "regroup", "sum"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "More than one correct combination is possible, so compare partners' versions.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["The 6 in 6,000 is worth 6,000.", "The 6 in 600 is worth 600."], connector: "while", model: "The 6 in 6,000 is worth 6,000, while the 6 in 600 is worth 600." },
+          { sentences: ["I regrouped 10 ones as 1 ten.", "The ones column had 12."], connector: "because", model: "I regrouped 10 ones as 1 ten because the ones column had 12." },
+          { sentences: ["I estimated 7,000 first.", "I know 7,111 is a reasonable sum."], connector: "so", model: "I estimated 7,000 first, so I know 7,111 is a reasonable sum." },
+          { sentences: ["Each place is worth ten times the place to its right.", "The 8 in 80 is ten times as much as the 8 in 8."], connector: "since", model: "Since each place is worth ten times the place to its right, the 8 in 80 is ten times as much as the 8 in 8." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the places first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The 6 in 6,000 is ten times as much as the 6 in 60.", options: ["The 6 in 6,000 is ten times as much as the 6 in 600.", "The 6 in 6,000 is ten times as much as the 6 in 6.", "The 6 in 6,000 is ten times as much as the 6 in 6,000."], answer: 0, why: "The hundreds place is right next to the thousands place, and 6,000 is 10 × 600.", type: "wrong place" },
+          { wrong: "The difference of 9,000 and 4,568 is 5,432.", options: ["The difference is 13,568, because 9,000 + 4,568 = 13,568.", "The difference is 4,432, because 4,432 + 4,568 = 9,000.", "The difference is 5,432, because 5,432 is close to 5,000."], answer: 1, why: "Add the difference back to the small number. It must equal 9,000.", type: "wrong answer" },
+          { wrong: "4,725 rounds to 4,000, so the estimate of 4,725 + 2,386 is 6,000.", options: ["4,725 rounds to 5,000 because the hundreds digit is 7, so the estimate is 6,000.", "4,725 stays 4,000 because rounding always goes down, so the estimate is 6,000.", "4,725 rounds to 5,000 because the hundreds digit is 7, so the estimate is 7,000."], answer: 2, why: "A 7 in the hundreds place means round up to 5,000, and 5,000 + 2,000 = 7,000.", type: "wrong rounding" },
+          { wrong: "In expanded form, 5,284 is 5,000 + 200 + 8 + 4.", options: ["In expanded form, 5,284 is 5,000 + 2,000 + 80 + 4.", "In expanded form, 5,284 is 5,000 + 200 + 80 + 4.", "In expanded form, 5,284 is 5,284 + 0."], answer: 1, why: "The 8 is in the tens place, so it is worth 80, not 8.", type: "wrong value" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Prove Your Claim", minutes: 15, grouping: "Solo",
+      mission: "Write a short proof that shows whether Marcus is right, with a claim, a reason, and evidence.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw the places first.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'since', and cite two numbers." },
+      payload: {
+        prompt: "Marcus says the 3 in 3,000 is ten times as much as the 3 in 30. Is he right? Explain how you know.",
+        structure: [
+          { part: "Claim", frame: "Marcus is ___ because ___." },
+          { part: "Reason", frame: "The 3 in 3,000 is worth ___, and the 3 in 30 is worth ___." },
+          { part: "Evidence", frame: "The 3 in 3,000 is ten times as much as the 3 in ___, and that 3 is ten times as much as the 3 in ___." },
+        ],
+        word_bank: ["digit", "place value", "ten times as much", "worth", "because", "since", "thousands", "tens"],
+        checklist: ["I said if Marcus is right or not.", "I gave a reason with because or since.", "I used two place values.", "I wrote real numbers as evidence."],
+        model: "Marcus is not right. The 3 in 3,000 is worth 3,000, and the 3 in 30 is worth 30. These places are not next to each other. The 3 in 3,000 is ten times as much as the 3 in 300, and the 3 in 300 is ten times as much as the 3 in 30.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Explain why the 4 in 4,000 is ten times as much as the 4 in 400. Use two math words and one reason word.",
+    frame: "The 4 in 4,000 is ten times as much as the 4 in 400 because ___.",
+    model: "The 4 in 4,000 is ten times as much as the 4 in 400 because each place to the left is worth ten times more.",
+    rubric: {
+      emerging: "Names the two places with a word bank or a labeled chart.",
+      developing: "Uses the frame and one place-value word with the right numbers.",
+      proficient: "Explains the ten-times pattern with a clear reason and correct values in two or more sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Many Spanish-speaking countries use a period or a space where English uses a comma, so 4.725 can look like a decimal.", fix: "Write 4,725 on the board and read it aloud together. Point to the comma as a place-value chunk." },
+    { group: "All multilingual learners", issue: "'Tenth' and 'ten,' or 'hundredth' and 'hundred,' sound alike, so students mix up words and values.", fix: "Say the final 'th' sound clearly and keep a word wall that shows 10 and 100 next to each word." },
+  ],
+  misconception: {
+    pattern: "Students hear 'ten times as much' and add 10, writing 70 + 10 = 80 instead of 70 × 10 = 700.",
+    redirect: "Build 70 with blocks, then lay out ten copies of it. Ask 'Is that ten more, or ten groups?' and have students say 'ten times as much' with the product.",
+  },
+};

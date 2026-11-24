@@ -1,0 +1,200 @@
+/* Language Studio Player — activity runner, celebration, responsive, motion and print rules. */
+/* ---------- activity runner ---------- */
+.st-run {
+  display: grid;
+  gap: 20px;
+}
+.st-run__head {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--st-radius);
+  border: 1px solid var(--st-line);
+  background: var(--st-surface);
+  box-shadow: var(--st-shadow);
+  padding: clamp(18px, 3vw, 28px);
+  padding-left: clamp(22px, 3.4vw, 34px);
+}
+.st-run__head::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 8px;
+  background: var(--st-d, var(--st-accent));
+}
+.st-run__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.st-run__bar .st-btn--ghost {
+  margin-left: -12px;
+}
+.st-run__count {
+  color: var(--st-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-left: auto;
+}
+.st-run h1 {
+  font-size: clamp(1.7rem, 1.2rem + 2.2vw, 2.5rem);
+}
+.st-run__mission {
+  margin-top: 10px;
+  font-size: 1.12em;
+  max-width: 60ch;
+  color: var(--st-ink);
+}
+.st-run__support {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 14px;
+  border-radius: var(--st-radius-sm);
+  background: var(--st-d-soft, var(--st-accent-soft));
+  color: var(--st-ink);
+  font-size: 0.95rem;
+}
+.st-run__support b {
+  color: var(--st-d-ink, var(--st-accent));
+  white-space: nowrap;
+}
+.st-tip {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--st-muted);
+}
+.st-tip summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+.st-tip p {
+  padding: 4px 0 8px;
+}
+.st-stage {
+  min-width: 0;
+}
+.st-stage--placeholder {
+  text-align: center;
+  padding: 56px 20px;
+}
+.st-stage--placeholder h2 {
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+}
+
+/* ---------- celebration ---------- */
+.st-win {
+  text-align: center;
+  padding: clamp(24px, 5vw, 44px);
+  border-radius: var(--st-radius);
+  border: 2px solid var(--st-ok-line);
+  background: linear-gradient(180deg, var(--st-ok-soft), var(--st-surface));
+  box-shadow: var(--st-shadow-lift);
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  animation: st-rise 0.4s ease both;
+}
+.st-win h2 {
+  font-size: clamp(1.6rem, 1.2rem + 2vw, 2.3rem);
+  outline: none;
+}
+.st-win__detail {
+  color: var(--st-muted);
+  max-width: 46ch;
+}
+.st-stars {
+  display: inline-flex;
+  gap: 6px;
+}
+.st-star {
+  width: 48px;
+  height: 48px;
+  color: var(--st-star-off);
+}
+.st-star.is-on {
+  color: var(--st-star);
+  filter: drop-shadow(0 3px 6px rgb(217 119 6 / 35%));
+  animation: st-pop 0.5s ease both;
+}
+.st-star.is-on:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.st-star.is-on:nth-child(3) {
+  animation-delay: 0.24s;
+}
+.st-win__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.st-fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 90;
+}
+.st-confetti {
+  position: absolute;
+  top: -16px;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  animation: st-fall var(--t, 2.2s) cubic-bezier(0.3, 0.6, 0.5, 1) forwards;
+}
+@keyframes st-fall {
+  to {
+    transform: translate3d(var(--dx, 0), 105vh, 0) rotate(var(--r, 540deg));
+    opacity: 0.9;
+  }
+}
+
+@media (max-width: 560px) {
+  .st-top__brand {
+    display: none;
+  }
+  .st-top__inner {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  .st-top__back span {
+    display: none;
+  }
+  .st-level button {
+    padding: 0 12px;
+    font-size: 0.88rem;
+  }
+  .st-main {
+    padding-top: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media print {
+  .no-print,
+  .st-top {
+    display: none !important;
+  }
+  body {
+    background: Canvas;
+    color: CanvasText;
+  }
+}
+

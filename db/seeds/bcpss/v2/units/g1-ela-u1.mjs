@@ -1,0 +1,262 @@
+// BCPSS Language Studio v2 — g1-ela-u1 (Grade 1 ELA, Wit & Wisdom + Fundations). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do books travel to children, and how can one book change a life?",
+  can_do: {
+    content: "I can tell the problem in a story and how the problem gets solved.",
+    language: "I can use 'The problem was...' and 'So...' to tell what happened.",
+  },
+  mentor: {
+    text: "The problem was that Leo had no books. So a truck brought books to his village.",
+    gist: "The speaker names the problem first, then uses 'So' to tell how it got fixed.",
+    chunks: [
+      { text: "The problem was", role: "The problem starter", tone: "concept", ask: "Which words tell us a problem is coming?" },
+      { text: "that Leo had no books.", role: "What went wrong", tone: "evidence", ask: "What did Leo not have?" },
+      { text: "So", role: "The joining word", tone: "connector", ask: "Which little word links the problem to the fix?" },
+      { text: "a truck brought books to his village.", role: "The fix", tone: "evidence", ask: "How did the books get to Leo?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The [character] has a [problem].",
+      "A [truck / boat] brings [books].",
+      "Now I can [read].",
+    ],
+    l3_4: [
+      "The problem was that [character] had no [thing].",
+      "So [helper] brought [thing] to [place].",
+      "Now [character] can [verb].",
+    ],
+    l5_6: [
+      "The problem was that [character] could not [verb] because [reason].",
+      "First, [character] tried to [action]. Then [helper] [action].",
+      "The lesson is that [big idea].",
+    ],
+  },
+  connectors: ["so", "because", "then", "but", "and", "now"],
+  vocab: [
+    { term: "library", tier: 3, pos: "noun", icon: "📚", def: "a place with many books that you can take home for a while", example: "I read a book at the library.", nonexample: "A store sells books. A library lends them.", es: "biblioteca", es_note: "False friend: 'librería' is a bookstore. Library = biblioteca.", family: ["libraries", "librarian"], cue: "A building with shelves full of books and a child holding a library card." },
+    { term: "borrow", tier: 2, pos: "verb", icon: "🤝", def: "to take something for a short time and give it back", example: "I borrow a book for one week.", nonexample: "Keeping the book forever is not borrowing it.", es: "pedir prestado", es_note: "Borrow = pedir prestado. Lend = prestar. They are opposites.", family: ["borrows", "borrowed"], cue: "A child taking a book from a librarian, with an arrow showing it comes back." },
+    { term: "problem", tier: 2, pos: "noun", icon: "❗", def: "something hard that needs a fix", example: "No books is a problem for Leo.", nonexample: "A sunny day is not a problem.", es: "problema", es_note: "Cognate: sounds and means almost the same.", family: ["problems"], cue: "A child frowning at a locked door with no key." },
+    { term: "solve", tier: 2, pos: "verb", icon: "✅", def: "to find a way to fix a problem", example: "We solve the problem with a truck.", nonexample: "Ignoring a hard thing does not fix it.", es: "resolver", es_note: "Solve = resolver. The noun 'solution' = solución (cognate).", family: ["solves", "solved", "solution"], cue: "A child turning a key in a lock and the door opening." },
+    { term: "travel", tier: 2, pos: "verb", icon: "🚚", def: "to go from one place to another", example: "Books travel on a truck.", nonexample: "A book sitting on a shelf does not travel.", es: "viajar", es_note: "Travel = viajar. Not the same as 'trabajar' (to work).", family: ["travels", "traveled"], cue: "A truck full of books driving along a long road." },
+    { term: "village", tier: 3, pos: "noun", icon: "🏘️", def: "a very small town far from big cities", example: "The village is far from the city.", nonexample: "A big city with tall towers is not a village.", es: "aldea", es_note: "Village = aldea or pueblo. Not 'villa', which can mean a fancy house.", family: ["villages", "villager"], cue: "A few little houses and a dirt road with hills behind." },
+    { term: "share", tier: 2, pos: "verb", icon: "🎁", def: "to let other people use or have some of what you have", example: "I share my book with a friend.", nonexample: "Hiding your book is not sharing it.", es: "compartir", es_note: "Share = compartir. Not 'share' like a stock or 'parte' of a whole.", family: ["shares", "shared", "sharing"], cue: "Two children holding one open book between them." },
+    { term: "character", tier: 3, pos: "noun", icon: "🧒", def: "a person or animal in a story", example: "The character in my book is a brave girl.", nonexample: "The title on the cover is not a character.", es: "personaje", es_note: "Character = personaje. Do not use 'carácter', which means a person's nature.", family: ["characters"], cue: "A storybook page with a girl and a dog standing in a field." },
+    { term: "lesson", tier: 2, pos: "noun", icon: "💡", def: "the big idea a story teaches you", example: "The lesson is to never give up.", nonexample: "The name of a character is not the big idea.", es: "moraleja", es_note: "A story's lesson = moraleja or enseñanza. A school class = lección.", family: ["lessons"], cue: "A light bulb above an open storybook." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "The Book Truck Comes", minutes: 10, grouping: "Partners",
+      mission: "Listen to Ana's story twice. Tell it back with your partner!",
+      tip: "Read slowly twice at a natural pace; children jot picture words, then rebuild the story orally with a partner.",
+      materials: ["Picture cards: village, truck, book"],
+      support: { l1_2: "Point to the picture cards as you hear each word.", l3_4: "Say one sentence about the problem and one about the fix.", l5_6: "Retell the whole story and use 'So' to join the problem to the fix." },
+      payload: {
+        text: "Ana lives in a small village. The village has no library. A truck full of books comes on Fridays. Ana borrows two books. Now Ana reads every night.",
+        key_words: ["village", "library", "truck", "borrows", "reads"],
+        frame: "Ana lives in a ___. There is no ___. A ___ brings books. Now Ana ___.",
+        checks: ["Ana lives in a small village", "the village has no library", "a truck brings books on Fridays", "Ana borrows books and reads every night"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Pals", minutes: 8, grouping: "Solo",
+      mission: "Tap a word. Tap the picture clue that goes with it.",
+      tip: "Have children say each word aloud, then act it out before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match the first four words, then say each one aloud.", l3_4: "Match all eight and say a sentence for two of them.", l5_6: "Match all eight and tell a partner how two words go together." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "library", r: "📚 shelves of books to take home" },
+          { l: "borrow", r: "🤝 take it, then give it back" },
+          { l: "problem", r: "❗ something hard to fix" },
+          { l: "solve", r: "✅ find a way to fix it" },
+          { l: "travel", r: "🚚 go from here to there" },
+          { l: "village", r: "🏘️ a few little houses far away" },
+          { l: "share", r: "🎁 let a friend have some" },
+          { l: "lesson", r: "💡 the big idea of a story" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Digraph Dash Sort", minutes: 8, grouping: "Partners",
+      mission: "Say each word. Sort it by the two letters that make one sound.",
+      tip: "Fundations link: have children tap out the sounds and hold up one finger for the digraph.",
+      materials: ["Fundations keyword cards: ship, chip, thin"],
+      support: { l1_2: "Say the word slowly and point to the two letters that team up.", l3_4: "Say the word, then say the digraph sound.", l5_6: "Add one new word to each group and use it in a sentence." },
+      payload: {
+        categories: [{ name: "sh like ship" }, { name: "ch like chip" }, { name: "th like thin" }],
+        items: [
+          { text: "ship", cat: 0 }, { text: "shelf", cat: 0 }, { text: "fish", cat: 0 }, { text: "wish", cat: 0 },
+          { text: "chip", cat: 1 }, { text: "chapter", cat: 1 }, { text: "lunch", cat: 1 }, { text: "much", cat: 1 },
+          { text: "thin", cat: 2 }, { text: "thank", cat: 2 }, { text: "bath", cat: 2 }, { text: "path", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Book Helper", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the mystery book helper!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think and whisper to a partner.",
+      materials: [],
+      support: { l1_2: "Look at the picture cards to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "library", clues: ["You can borrow books here.", "It has shelves from floor to ceiling.", "You use a card to take a book home."] },
+          { term: "librarian", clues: ["I help you find a book.", "I work where books live.", "I stamp your card and say, 'Bring it back soon!'"] },
+          { term: "bookmobile", clues: ["I am a truck with wheels.", "I am full of shelves and books.", "I visit places that are far from a library."] },
+          { term: "donkey", clues: ["I have long ears and four legs.", "In some places, I carry books on my back.", "I walk to far-away villages."] },
+          { term: "flashlight", clues: ["I give light in the dark.", "You press a button to turn me on.", "A child can read under the covers with me."] },
+          { term: "backpack", clues: ["You wear me on your back.", "I carry your books to school.", "I have two straps and a zipper."] },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Story Sentence", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a story sentence.",
+      tip: "Ask which piece starts with a capital letter and which piece ends with a period.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece with the period, then read it all aloud.", l5_6: "After building, add one more detail of your own." },
+      payload: {
+        items: [
+          { parts: ["The problem was", "that Leo", "had no books."] },
+          { parts: ["So a truck", "brought books", "to the village."] },
+          { parts: ["Now Leo", "can borrow", "a book."] },
+          { parts: ["The librarian", "helps children", "find books."] },
+          { parts: ["Books can travel", "by boat", "and by donkey."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Problem and Fix Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner the problem and the fix.",
+      tip: "Model one turn first; listen for 'The problem was' and 'So' in each answer.",
+      materials: ["Talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the problem and the fix with the word 'so'.", l5_6: "Say the problem, the fix, and why the fix worked." },
+      payload: {
+        roles: { a: "Storyteller", b: "Listener" },
+        cards: [
+          { prompt: "Tell about a time you lost something.", starter: "The problem was ___.", follow_up: "How did you solve it?" },
+          { prompt: "What book do you love to read?", starter: "My favorite book is ___.", follow_up: "Who is the main character?" },
+          { prompt: "Have you visited a library branch in Baltimore?", starter: "I went to the library to ___.", follow_up: "What did you borrow?" },
+          { prompt: "Imagine you live far from any library.", starter: "The problem is that I can not ___.", follow_up: "How could a truck or a boat help?" },
+          { prompt: "Who helps you read at home or at school?", starter: "___ helps me read.", follow_up: "What do you read together?" },
+          { prompt: "What is a good lesson from a story you know?", starter: "The lesson is ___.", follow_up: "Which character learns it?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you point to ___?" },
+          { label: "Me too", stem: "I also ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Book Truck Detectives", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to find the secret facts about the book truck.",
+      tip: "Partners keep cards hidden and ask and answer aloud; no reading each other's card.",
+      materials: ["Book truck cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to the pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'Why does it stop there?'" },
+      payload: {
+        goal: "Find out where the book truck stops, who drives it, and which book is the book of the week.",
+        a: { title: "Detective A", has: [{ k: "Truck day", v: "Friday" }, { k: "Truck color", v: "blue" }, { k: "Books each child can borrow", v: "two" }], needs: ["Truck stop", "Truck driver", "Book of the week"] },
+        b: { title: "Detective B", has: [{ k: "Truck stop", v: "the village school" }, { k: "Truck driver", v: "Mr. Cruz" }, { k: "Book of the week", v: "a book about boats" }], needs: ["Truck day", "Truck color", "Books each child can borrow"] },
+        ask_frames: ["What is the ___?", "Who drives the ___?"],
+        tell_frames: ["The ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Nia and the Book Boat", minutes: 10, grouping: "Whole Class",
+      mission: "Read Nia's story. Find the problem words and the fix words!",
+      tip: "Read aloud twice; children circle problem words in one color and fix words in another on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the problem words.", l3_4: "Find problem words and fix words.", l5_6: "Find both, then write one sentence about how Nia feels at the end." },
+      payload: {
+        text: "Nia lives on a tiny island. The island has no library. Boats bring food, but no books. Nia is sad. Then a book boat comes! Nia borrows a book. She reads on the beach. Now Nia is glad.",
+        marks: [
+          { label: "Problem words", instruction: "Circle the words that tell what is wrong.", targets: ["no library", "no books", "sad"] },
+          { label: "Fix words", instruction: "Underline the words that tell how it gets fixed.", targets: ["book boat", "borrows a book", "glad"] },
+        ],
+        questions: [
+          { q: "What is Nia's problem?", options: ["She has no books.", "She has no boat.", "She has no shoes."], answer: 0, why: "The story says the island has no books, and that makes Nia sad." },
+          { q: "How does Nia get a book?", options: ["She buys one.", "A book boat comes.", "A truck comes."], answer: 1, why: "A book boat comes to the island and Nia borrows a book." },
+          { q: "How does Nia feel at the end?", options: ["Sad", "Scared", "Glad"], answer: 2, why: "The last sentence says Nia is glad." },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Sam Reads at Last", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap in Sam's story.",
+      tip: "Two or three bank words are extras; children decide which ones do not fit the story.",
+      materials: [],
+      support: { l1_2: "Read the whole sentence and look for a picture clue.", l3_4: "Fill the gaps, then read the story to a partner.", l5_6: "Fill the gaps, then write one more sentence about Sam." },
+      payload: {
+        text: "Sam lives in a {1} far from town. He has a {2}. He has no books! A truck comes to him. Sam can {3} a book for a week. The truck helps Sam {4} his problem. Then Sam can read!",
+        answers: ["village", "problem", "borrow", "solve"],
+        bank: ["village", "problem", "borrow", "solve", "library", "share", "travel"],
+      },
+    },
+    {
+      kind: "sequence", domain: "Reading", title: "Leo Gets a Book", minutes: 8, grouping: "Small Group",
+      mission: "Put the story in order. Use the signal words!",
+      tip: "Act out each step with picture cards, then have children retell with First, Next, Then, Finally.",
+      materials: ["Picture cards"],
+      support: { l1_2: "Look at the pictures and say first, next, then.", l3_4: "Order the steps and say each one with its signal word.", l5_6: "Order the steps, then add a step of your own." },
+      payload: {
+        title: "How Leo gets a book",
+        steps: ["First, Leo has no books to read.", "Next, a book truck comes to his village.", "Then, Leo borrows a book about boats.", "Finally, Leo reads and smiles."],
+        signals: ["First", "Next", "Then", "Finally"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Join the Fix", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one; more than one correct answer is fine.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["Leo had no books.", "A truck came."], connector: "so", model: "Leo had no books, so a truck came." },
+          { sentences: ["Ana was sad.", "She had no books."], connector: "because", model: "Ana was sad because she had no books." },
+          { sentences: ["The boat came.", "The children cheered."], connector: "then", model: "The boat came, then the children cheered." },
+          { sentences: ["Sam read the book.", "He gave it back."], connector: "and", model: "Sam read the book and he gave it back." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Book Helper Story", minutes: 15, grouping: "Solo",
+      mission: "Draw a book helper. Write the problem and how it gets solved.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Story page template"],
+      support: { l1_2: "Draw it. Copy the first frame and label your picture.", l3_4: "Write the problem and the fix.", l5_6: "Write the problem, the fix, and how the character feels now." },
+      payload: {
+        prompt: "Pick a helper that brings books, like a truck, a boat, or a donkey. Draw it. Write the problem and the fix.",
+        structure: [
+          { part: "The problem", frame: "The problem was that [character] had no [thing]." },
+          { part: "The fix", frame: "So [helper] brought [thing] to [place]." },
+          { part: "The ending", frame: "Now [character] can [verb]." },
+        ],
+        word_bank: ["truck", "boat", "donkey", "village", "library", "borrow", "problem", "solve", "books"],
+        checklist: ["I drew my helper.", "I wrote the problem.", "I wrote the fix.", "I used the word so."],
+        model: "The problem was that Nia had no books. So a book boat came to her island. Now Nia can read every day.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Think of a book story. Tell the problem. Tell how it was solved.",
+    frame: "The problem was [problem]. So [helper] [fix].",
+    model: "The problem was that Nia had no books. So a book boat came to her island.",
+    rubric: {
+      emerging: "Points to a picture and says one word for the problem or the fix.",
+      developing: "Uses the frame to tell the problem and the fix in two short sentences.",
+      proficient: "Tells the problem and the fix with 'so' and says how the character feels now.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Children may say 'librería' for library, but a librería is a bookstore where you buy books.", fix: "Say library = biblioteca and act out borrowing a book and giving it back. Practice 'I borrow a book at the library.'" },
+    { group: "All multilingual learners", issue: "Children retell what happened in a list and skip the problem and the fix.", fix: "Use a two-box drawing, Problem and Fix, and have children say 'The problem was...' before 'So...'." },
+  ],
+  misconception: {
+    pattern: "Children think a library sells books, or they tell the whole story without naming the problem.",
+    redirect: "Ask 'What went wrong in the story?' and point to the problem box, then ask 'What fixed it?' for the second box.",
+  },
+};

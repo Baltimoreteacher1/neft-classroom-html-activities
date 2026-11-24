@@ -1,0 +1,267 @@
+// BCPSS Language Studio v2 — g5-math-u1. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can you prove that your volume strategy works for any rectangular prism?",
+  can_do: {
+    content: "I can find the volume of a rectangular prism and of a solid made from two prisms.",
+    language: "I can justify my strategy with works because, is valid since, and so.",
+  },
+  mentor: {
+    text: "My strategy works because every layer holds 12 cubes, and the prism has 5 layers, so the volume is 60 cubic units.",
+    gist: "The speaker says a strategy is correct, gives the reason, and then states the answer with its unit.",
+    chunks: [
+      { text: "My strategy works", role: "The claim", tone: "concept", ask: "What does the speaker say about the strategy?" },
+      { text: "because", role: "The reason signal", tone: "connector", ask: "Which word tells you a reason is coming?" },
+      { text: "every layer holds 12 cubes, and the prism has 5 layers,", role: "The proof", tone: "evidence", ask: "Which two facts about the prism make the strategy work?" },
+      { text: "so the volume is 60 cubic units.", role: "The answer", tone: "precision", ask: "What is the volume, and what unit goes with it?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The prism is [number] units long, [number] units wide, and [number] units tall.",
+      "One layer has [number] cubes.",
+      "The volume is [number] cubic units.",
+    ],
+    l3_4: [
+      "I multiplied [length] × [width] × [height], so the volume is [number] cubic units.",
+      "My strategy works because each layer has [number] cubes and there are [number] layers.",
+      "I decomposed the solid into [number] prisms, then I added their volumes.",
+    ],
+    l5_6: [
+      "My strategy is valid since [reason].",
+      "Although I could count every cube, multiplying is faster because [reason].",
+      "If the base area is [number] square units and the height is [number] units, then the volume is [number] cubic units.",
+    ],
+  },
+  connectors: ["because", "so", "since", "works because", "is valid since", "although"],
+  vocab: [
+    { term: "volume", tier: 3, pos: "noun", def: "how much space a solid takes up inside, measured in cubic units", example: "The volume of the box is 24 cubic units.", nonexample: "The area of the floor is not the volume of the room.", es: "volumen", es_note: "Cognate: sounds and means almost the same.", family: ["volumes"], cue: "A clear fish tank slowly filling with water." },
+    { term: "cubic unit", tier: 3, pos: "noun", def: "a cube that is 1 unit long, 1 unit wide, and 1 unit tall, used to measure space inside a solid", example: "We count cubic units to find how much a box holds.", nonexample: "A square unit covers a flat surface, so it does not measure volume.", es: "unidad cúbica", es_note: "Cognate pair: unidad / cúbica.", family: ["cubic", "unit"], cue: "One small sugar cube on a desk." },
+    { term: "rectangular prism", tier: 3, pos: "noun", def: "a solid with six flat faces that are all rectangles, like a shoe box", example: "A cereal box is a rectangular prism.", nonexample: "A soup can is not a rectangular prism because its top is a circle.", es: "prisma rectangular", es_note: "Cognate pair: prisma / rectangular.", family: ["prism", "prisms"], cue: "A shoe box with the lid on." },
+    { term: "layer", tier: 2, pos: "noun", def: "one flat level of cubes in a solid, like one floor of a building", example: "The bottom layer of the box holds 15 cubes.", nonexample: "A layer of paint is not a layer of cubes.", es: "capa", es_note: "Not a cognate. 'Capa' also means a cape or a coat of paint.", family: ["layers"], cue: "A stack of three trays, each one full of cubes." },
+    { term: "base", tier: 2, pos: "noun", def: "the face a solid sits on, whose area is called B in a formula", example: "The base of the prism is 5 units by 3 units.", nonexample: "A base in baseball is a place to stand, not a face of a prism.", es: "base", es_note: "Same spelling and meaning as in math Spanish.", family: ["bases"], cue: "The bottom face of a box, shaded in color." },
+    { term: "height", tier: 2, pos: "noun", def: "how tall a solid is, measured from the bottom face to the top face", example: "The height of the box is 4 inches.", nonexample: "How far across the box is from side to side is its width, not its height.", es: "altura", es_note: "Not a cognate. Say 'hite'; the letters 'gh' are silent.", family: ["tall", "high"], cue: "An arrow pointing up from the bottom of a box to the top." },
+    { term: "composite solid", tier: 3, pos: "noun", def: "a solid made by joining two or more simpler solids", example: "An L-shaped block is a composite solid made of two prisms.", nonexample: "A single shoe box is one prism, so it is not a composite solid.", es: "sólido compuesto", es_note: "Cognate pair: sólido / compuesto.", family: ["composite"], cue: "Two boxes pushed together to form an L." },
+    { term: "decompose", tier: 3, pos: "verb", def: "to break a solid into smaller, simpler solids", example: "I can decompose this L-shaped solid into two prisms.", nonexample: "Gluing two boxes together is the opposite of decomposing.", es: "descomponer", es_note: "Cognate: sounds and means almost the same.", family: ["decomposed", "decomposing"], cue: "An L-shaped block split into two boxes by a dotted line." },
+    { term: "formula", tier: 3, pos: "noun", def: "a rule written with letters that works for every case", example: "The formula V = l × w × h works for every rectangular prism.", nonexample: "A single answer like 24 is a number, not a formula.", es: "fórmula", es_note: "Cognate: sounds and means almost the same.", family: ["formulas"], cue: "A short rule written with letters on a whiteboard." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Pack the Toy Box", minutes: 12, grouping: "Partners",
+      mission: "Listen twice to Marcus pack his box. Then rebuild the story with your partner.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Draw the box while you listen, then use the key words and the first frame.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one sentence about why multiplying works." },
+      payload: {
+        text: "Marcus packs a toy box with one-inch cubes. The box is 5 inches long, 3 inches wide, and 4 inches tall. The bottom layer holds 15 cubes because 5 times 3 is 15. The box has 4 layers, so Marcus multiplies 15 by 4. The volume is 60 cubic inches.",
+        key_words: ["layer", "cubes", "multiplies", "volume", "cubic inches"],
+        frame: "First, Marcus ___. The bottom layer holds ___ because ___. So he multiplies ___ by ___. The volume is ___.",
+        checks: ["the box is 5 by 3 by 4 inches", "the bottom layer holds 15 cubes", "there are 4 layers, so he multiplies 15 by 4", "the volume is 60 cubic inches"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Volume Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each math word to its meaning. Wrong matches bounce back, so keep going until all eight click!",
+      tip: "Students can replay with the picture cues face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words with picture cues first, then match the meanings.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "volume", r: "how much space a solid takes up inside" },
+          { l: "cubic unit", r: "a cube that is 1 unit on every edge" },
+          { l: "rectangular prism", r: "a solid whose six faces are all rectangles" },
+          { l: "layer", r: "one flat level of cubes in a solid" },
+          { l: "base", r: "the face a solid sits on" },
+          { l: "height", r: "how tall a solid is" },
+          { l: "composite solid", r: "a solid made by joining simpler solids" },
+          { l: "decompose", r: "to break a solid into simpler solids" },
+          { l: "formula", r: "a rule written with letters" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Part, Measure, or Move?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs. Then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you already know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one more word of your own to each group." },
+      payload: {
+        categories: [{ name: "Parts of a prism" }, { name: "Ways to measure" }, { name: "Math moves" }],
+        items: [
+          { text: "base", cat: 0 }, { text: "height", cat: 0 }, { text: "layer", cat: 0 }, { text: "width", cat: 0 },
+          { text: "volume", cat: 1 }, { text: "cubic unit", cat: 1 }, { text: "square unit", cat: 1 }, { text: "area", cat: 1 },
+          { text: "decompose", cat: 2 }, { text: "multiply", cat: 2 }, { text: "add the volumes", cat: 2 }, { text: "count the layers", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Guess the Solid Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the picture cues to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue of your own for each card." },
+      payload: {
+        cards: [
+          { term: "volume", clues: ["A fish tank holds this much water.", "It tells how much space is inside a solid.", "We measure it in cubic units."] },
+          { term: "layer", clues: ["Think of one floor of a tall building.", "A box of cubes can be split into these flat levels.", "Stack several to build the whole prism."] },
+          { term: "height", clues: ["It tells how tall a prism stands.", "Measure from the bottom face to the top face.", "It is one of the three numbers you multiply."] },
+          { term: "base", clues: ["A prism sits on this face.", "Its area is called B in a formula.", "For a prism that is 6 by 2, this face covers 12 square units."] },
+          { term: "composite solid", clues: ["It looks like an L when you view it from the side.", "Two prisms are joined to make one shape.", "You can split it into simpler boxes."] },
+          { term: "cubic unit", clues: ["Picture a single sugar cube.", "It is 1 inch long, 1 inch wide, and 1 inch tall.", "Count these to find how much a box holds."] },
+          { term: "formula", clues: ["It is a rule written with letters.", "V = l × w × h is one example.", "It works for every box, not just one."] },
+          { term: "decompose", clues: ["Snap a big shape into smaller shapes.", "Do this to an L-shaped solid before you add.", "The opposite is joining the pieces back together."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Defend Your Strategy", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      tip: "Listen for a reason after every 'because' or 'since'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the box and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'although' to compare two strategies." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "A box is 4 units long, 3 units wide, and 2 units tall. How do you find its volume?", starter: "I multiplied ___ × ___ × ___, so the volume is ___.", follow_up: "How many cubes are in one layer?" },
+          { prompt: "Why does the formula V = B × h work?", starter: "It works because the base area tells ___ and the height tells ___.", follow_up: "What does the letter B stand for?" },
+          { prompt: "A friend counted 24 cubes in a box and wrote 24 square units. What do you say?", starter: "I disagree because ___.", follow_up: "Which unit should your friend write?" },
+          { prompt: "You can count every cube or multiply. Which is faster, and why?", starter: "Multiplying is faster because ___.", follow_up: "When might counting still help you?" },
+          { prompt: "How do you find the volume of an L-shaped solid?", starter: "I decomposed the solid into ___ because ___.", follow_up: "Is there a second way to split it?" },
+          { prompt: "Is it valid to add the volumes of two prisms that touch? Explain.", starter: "It is valid since ___.", follow_up: "What would go wrong if the prisms overlapped?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is on the prism?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Cargo Crate Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts about two cargo crates at the Port of Baltimore. Ask questions to find the missing facts.",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the number back to check it.", l5_6: "Check each other's numbers by multiplying the dimensions yourselves." },
+      payload: {
+        goal: "Fill in the missing dimensions and volume for Crate 1 and Crate 2.",
+        a: { title: "Detective A", has: [{ k: "Crate 1 dimensions", v: "5 units × 2 units × 3 units" }, { k: "Crate 2 volume", v: "32 cubic units" }], needs: ["Crate 1 volume", "Crate 2 dimensions"] },
+        b: { title: "Detective B", has: [{ k: "Crate 1 volume", v: "30 cubic units" }, { k: "Crate 2 dimensions", v: "4 units × 4 units × 2 units" }], needs: ["Crate 1 dimensions", "Crate 2 volume"] },
+        ask_frames: ["What is the ___ of Crate ___?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ of Crate ___ is ___.", "I'm not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Proof Radar: The Class Fish Tank", minutes: 12, grouping: "Solo",
+      mission: "Read Diego's plan like a detective. Mark the reason words and the math words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'since' and the word 'so'.", l3_4: "Mark both the reason words and the math words.", l5_6: "Mark everything, then rewrite one sentence with 'because'." },
+      payload: {
+        text: "Diego plans a fish tank for the classroom. The tank is 10 inches long, 5 inches wide, and 6 inches tall. He wants to know how much water it can hold, so he finds the volume. First, he multiplies the length by the width to get the area of the base, which is 50 square inches. Then he multiplies 50 by the height of 6. The volume is 300 cubic inches. His strategy is valid since the base area tells how many cubes fit in one layer, and the height tells how many layers fit.",
+        marks: [
+          { label: "Reason words", instruction: "Highlight the words that tell why.", targets: ["so he finds the volume", "since the base area tells how many cubes fit in one layer"] },
+          { label: "Math words", instruction: "Highlight the math vocabulary.", targets: ["area of the base", "height", "layer", "cubic inches"] },
+        ],
+        questions: [
+          { q: "Why does Diego find the volume?", options: ["He wants to know how much water the tank can hold.", "He wants to paint the outside of the tank.", "He wants to know how long the tank is."], answer: 0, why: "The text says he finds the volume so he knows how much water the tank can hold." },
+          { q: "What does the 50 square inches show?", options: ["The volume of the whole tank", "The area of the base, or the cubes in one layer", "The height of the tank"], answer: 1, why: "10 × 5 = 50 is the area of the base, and it also counts the cubes in one layer." },
+          { q: "Which word gives the reason his strategy is valid?", options: ["First", "Then", "since"], answer: 2, why: "'Since' signals the reason: the base area and the height each tell something about the cubes." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build the Proof", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["My strategy works", "because every layer", "has the same number of cubes."] },
+          { parts: ["The volume is 60 cubic units", "since there are 5 layers", "of 12 cubes."] },
+          { parts: ["I decomposed the L-shaped solid", "into two prisms", "because that made each volume easy to find."] },
+          { parts: ["Since the box is 2 units tall,", "it has 2 layers", "of 15 cubes."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Moving Day", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Tasha's moving-box story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and try each word.", l3_4: "Fill all the gaps, then check that every sentence makes sense.", l5_6: "Fill all the gaps, then explain why each extra word does not fit." },
+      payload: {
+        text: "Tasha packs a box that is 6 inches long, 4 inches wide, and 3 inches tall. Each {1} holds 24 cubes because 6 times 4 is 24. The box has 3 layers, so she multiplies 24 by 3 and finds that the {2} is 72 {3}. Then she joins the box to a smaller one to make a {4}. To find the total, she will {5} the solid into two boxes.",
+        answers: ["layer", "volume", "cubic inches", "composite solid", "decompose"],
+        bank: ["layer", "volume", "cubic inches", "composite solid", "decompose", "base", "formula"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link the Proof", minutes: 10, grouping: "Partners",
+      mission: "Join the short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combinations; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine the sentences with the connector and read the result aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["I multiplied 5 by 4 by 3.", "I wanted the volume of the box."], connector: "because", model: "I multiplied 5 by 4 by 3 because I wanted the volume of the box." },
+          { sentences: ["Each layer holds 9 cubes.", "The prism has 4 layers.", "I multiply 9 by 4."], connector: "so", model: "Each layer holds 9 cubes, and the prism has 4 layers, so I multiply 9 by 4." },
+          { sentences: ["The solid is made of two boxes.", "I can add their volumes."], connector: "since", model: "Since the solid is made of two boxes, I can add their volumes." },
+          { sentences: ["Volume counts the cubes inside.", "Area covers a flat surface."], connector: "whereas", model: "Volume counts the cubes inside, whereas area covers a flat surface." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Faulty Proof", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the unit first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The volume of the box is 36 square units.", options: ["The volume of the box is 36 cubic units.", "The volume of the box is 36 units.", "The volume of the box is 36 faces."], answer: 0, why: "Volume counts cubes that fill the inside, so it uses cubic units.", type: "wrong unit" },
+          { wrong: "I added 4 + 3 + 2 to find the volume because the box has three sides.", options: ["I added 4 + 3 + 2 because adding is faster.", "I multiplied 4 × 3 × 2 because each layer has 4 × 3 cubes and there are 2 layers.", "I counted only the top layer, so the answer is 12."], answer: 1, why: "Volume needs multiplication: cubes in one layer times the number of layers.", type: "wrong strategy" },
+          { wrong: "My answer is 48 cubic units, and that is right.", options: ["My answer is 48 cubic units because I counted it.", "My answer is 48 cubic units since cubes are small.", "My answer is 48 cubic units because 6 × 4 = 24 cubes fill one layer, and 2 layers make 48."], answer: 2, why: "A strong claim gives a reason that uses the numbers from the problem.", type: "missing reason" },
+          { wrong: "I composed the L-shaped solid into two prisms, then added their volumes.", options: ["I composed the L-shaped solid into one prism, then added its heights.", "I decomposed the L-shaped solid into two prisms, then added their volumes.", "I decomposed the L-shaped solid into two prisms, then subtracted their volumes."], answer: 1, why: "To split a solid apart we decompose it, and then we add the volumes of the pieces.", type: "wrong word" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Prove Your Strategy", minutes: 15, grouping: "Solo",
+      mission: "Write a short proof that shows your volume strategy works. Include a claim, a reason, and the answer.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Draw the prism first, then use one frame for each part.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'since', and cite the cubes in one layer." },
+      payload: {
+        prompt: "A prism is 8 cm long, 3 cm wide, and 5 cm tall. Explain how to find its volume and why your strategy works.",
+        structure: [
+          { part: "Strategy", frame: "To find the volume, I ___." },
+          { part: "Reason", frame: "This works because each layer has ___ cubes and there are ___ layers." },
+          { part: "Answer", frame: "So the volume is ___ cubic ___." },
+        ],
+        word_bank: ["volume", "layer", "base", "height", "multiply", "because", "so", "cubic centimeters"],
+        checklist: ["I named my strategy.", "I gave a reason with because or since.", "I used at least three math words.", "I used cubic units."],
+        model: "To find the volume, I multiply the length, width, and height. This strategy works because 8 times 3 gives 24 cubes in one layer, and the prism has 5 layers. So the volume is 24 times 5, which is 120 cubic centimeters.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A box is 6 units long, 2 units wide, and 4 units tall. Find its volume and explain why your strategy works.",
+    frame: "I multiplied ___ because ___, so the volume is ___ cubic units.",
+    model: "I multiplied 6 × 2 to get 12 cubes in one layer. The box has 4 layers because it is 4 units tall, so the volume is 48 cubic units.",
+    rubric: {
+      emerging: "Gives the answer with a word bank or a labeled drawing.",
+      developing: "Uses the frame with two math words and the correct unit.",
+      proficient: "Explains the strategy with a clear reason and correct numbers in two or more sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "The word 'height' is spelled with 'gh', and students often write 'heigth' or say 'heit', which hides the math word from classmates.", fix: "Say 'hite' together, point to the silent letters, and keep a picture of an arrow going up the box." },
+    { group: "All multilingual learners", issue: "Square units and cubic units sound alike, so students write the wrong unit for volume.", fix: "Chant 'flat covers = square, space inside = cubic' and check the unit aloud before every answer." },
+  ],
+  misconception: {
+    pattern: "Students add the length, width, and height, or write '24' with no unit and no reason.",
+    redirect: "Ask 'How many cubes are in one layer, and how many layers are there?' until they answer with a unit and a because-clause.",
+  },
+};

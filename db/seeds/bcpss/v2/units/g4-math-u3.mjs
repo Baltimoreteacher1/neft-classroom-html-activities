@@ -1,0 +1,267 @@
+// BCPSS Language Studio v2 — g4-math-u3. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can you tell which of two fractions is greater, and how can you prove it?",
+  can_do: {
+    content: "I can make equivalent fractions and compare fractions with benchmarks.",
+    language: "I can compare two fractions with both, whereas, and because.",
+  },
+  mentor: {
+    text: "Both 1/2 and 4/8 name the same amount, whereas 3/8 is less because it has only three eighths, not four.",
+    gist: "The speaker shows what two fractions share and what makes a third fraction different.",
+    chunks: [
+      { text: "Both 1/2 and 4/8 name the same amount,", role: "What they share", tone: "concept", ask: "What do 1/2 and 4/8 have in common?" },
+      { text: "whereas", role: "The contrast signal", tone: "connector", ask: "Which word tells you a difference is coming?" },
+      { text: "3/8 is less", role: "The difference", tone: "precision", ask: "Which fraction is not like the other two?" },
+      { text: "because it has only three eighths, not four.", role: "The proof", tone: "evidence", ask: "How does counting eighths show why 3/8 is less?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "[Fraction] is equal to [fraction].",
+      "[Fraction] is greater than [fraction].",
+      "Both fractions have [number] in the bottom.",
+    ],
+    l3_4: [
+      "I multiplied [fraction] by [number]/[number] to get [fraction].",
+      "[Fraction] is greater than [fraction] because [reason].",
+      "Both [fraction] and [fraction] are [alike], whereas [fraction] is [different].",
+    ],
+    l5_6: [
+      "Since [fraction] is equivalent to [fraction], I can compare the numerators.",
+      "[Fraction] is closer to [benchmark] than [fraction], so [conclusion].",
+      "Although [fraction] has a larger denominator, it is [less / greater] because [reason].",
+    ],
+  },
+  connectors: ["both … and", "whereas", "but", "while", "in contrast", "because"],
+  vocab: [
+    { term: "equivalent fraction", tier: 3, pos: "noun", def: "a different way to write a fraction so that it has the same value", example: "4/8 is an equivalent fraction for 1/2.", nonexample: "3/8 is not worth the same amount as 1/2, so it is not equal to it.", es: "fracción equivalente", es_note: "Cognate pair: fracción / equivalente.", family: ["equivalent", "equal"], cue: "Two fraction strips of the same length, cut into different numbers of pieces." },
+    { term: "numerator", tier: 3, pos: "noun", def: "the top number in a fraction that tells how many parts you have", example: "In 3/8, the numerator is 3.", nonexample: "The bottom number tells the size of the parts, so it is not the numerator.", es: "numerador", es_note: "Cognate: sounds and means almost the same.", family: ["number", "numerators"], cue: "Three shaded slices of a pizza with the 3 circled." },
+    { term: "denominator", tier: 3, pos: "noun", def: "the bottom number in a fraction that tells how many equal parts make one whole", example: "In 3/8, the denominator is 8 because the whole has eight equal parts.", nonexample: "The top number counts the parts you have, so it is not the denominator.", es: "denominador", es_note: "Cognate: sounds and means almost the same.", family: ["denominators"], cue: "A pizza cut into eight equal slices with the 8 circled." },
+    { term: "benchmark fraction", tier: 3, pos: "noun", def: "a friendly fraction like 0, 1/2, or 1 that helps you judge other fractions", example: "I use the benchmark fraction 1/2 to see that 3/8 is less than half.", nonexample: "A fraction like 7/13 is hard to picture, so it is not a good one to measure against.", es: "fracción de referencia", es_note: "'Benchmark' is not a cognate. Some books say 'fracción de comparación'.", family: ["benchmark", "fractions"], cue: "A number line with 0, 1/2, and 1 marked as big flags." },
+    { term: "common denominator", tier: 3, pos: "noun", def: "the same bottom number in two or more fractions", example: "4/8 and 3/8 have a common denominator of 8.", nonexample: "1/2 and 3/8 have different bottom numbers, so they do not share one yet.", es: "denominador común", es_note: "Cognate pair: denominador / común.", family: ["common", "denominator"], cue: "Two fraction strips cut into the same number of pieces." },
+    { term: "compare", tier: 2, pos: "verb", def: "to look at two things and decide how they are alike or different", example: "I compare 3/4 and 5/8 to see which is greater.", nonexample: "Counting one fraction alone is not comparing, because you need two.", es: "comparar", es_note: "Cognate: sounds and means almost the same.", family: ["comparison", "compared"], cue: "Two fraction strips side by side." },
+    { term: "greater than", tier: 2, pos: "phrase", def: "worth more than another number", example: "6/8 is greater than 5/8.", nonexample: "5/8 is not greater than 6/8, because it has fewer eighths.", es: "mayor que", es_note: "Not a cognate. 'Mayor' can also mean older in everyday Spanish.", family: ["greater", "symbol >"], cue: "A big fraction strip next to a smaller one with a > sign." },
+    { term: "less than", tier: 2, pos: "phrase", def: "worth a smaller amount than another number", example: "3/8 is less than 1/2.", nonexample: "4/8 is not less than 1/2, because they are equal.", es: "menor que", es_note: "Not a cognate. 'Menor' can also mean younger in everyday Spanish.", family: ["less", "symbol <"], cue: "A small fraction strip next to a longer one with a < sign." },
+    { term: "whole", tier: 2, pos: "noun", def: "one complete thing, like a full pizza, with no parts missing", example: "Eight eighths make one whole.", nonexample: "Three slices of a pizza are only a part, not the whole.", es: "entero", es_note: "In Spanish, 'entero' also means 'whole number'. Here it means one complete thing.", family: ["wholes"], cue: "A complete circle with no slices missing." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Cornbread Showdown", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice. Then rebuild it with your partner, as close to the real words as you can.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame. Draw the two pans while you listen.", l3_4: "Write the key words you hear, then rebuild five or six sentences.", l5_6: "Rebuild the whole text and add one sentence about how the fractions are different." },
+      payload: {
+        text: "Kai and Ava each have a pan of cornbread. The pans are the same size. Kai eats 1/2 of his pan. Ava eats 3/8 of her pan. Kai multiplies 1/2 by 4/4 to get the equivalent fraction 4/8. Now both fractions have a common denominator. Since 4/8 is greater than 3/8, Kai ate more.",
+        key_words: ["equivalent fraction", "common denominator", "greater than", "multiplies", "4/8"],
+        frame: "Kai eats ___ of his pan, and Ava eats ___ of hers. Kai makes ___, so he can compare. Since ___ is greater than ___, ___.",
+        checks: ["the two pans are the same size", "Kai eats 1/2 and Ava eats 3/8", "Kai makes the equivalent fraction 4/8", "4/8 is greater than 3/8, so Kai ate more"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match every math word to its meaning. Wrong matches bounce back, so keep going until all nine click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know first, then try the rest.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "equivalent fraction", r: "a different way to write a fraction with the same value" },
+          { l: "numerator", r: "the top number that tells how many parts you have" },
+          { l: "denominator", r: "the bottom number that tells how many equal parts make one whole" },
+          { l: "benchmark fraction", r: "a friendly fraction like 0, 1/2, or 1 that helps you judge others" },
+          { l: "common denominator", r: "the same bottom number in two or more fractions" },
+          { l: "compare", r: "to decide how two things are alike or different" },
+          { l: "greater than", r: "worth more than another number" },
+          { l: "less than", r: "worth a smaller amount than another number" },
+          { l: "whole", r: "one complete thing with no parts missing" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Parts, Compare, or Make Equal?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
+      payload: {
+        categories: [{ name: "Parts of a fraction" }, { name: "Words for comparing" }, { name: "Ways to make fractions equal" }],
+        items: [
+          { text: "numerator", cat: 0 }, { text: "denominator", cat: 0 }, { text: "fraction bar", cat: 0 }, { text: "whole", cat: 0 },
+          { text: "greater than", cat: 1 }, { text: "less than", cat: 1 }, { text: "compare", cat: 1 }, { text: "benchmark fraction", cat: 1 },
+          { text: "equivalent fraction", cat: 2 }, { text: "common denominator", cat: 2 }, { text: "multiply the top and bottom", cat: 2 }, { text: "same value", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Fraction Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "numerator", clues: ["I sit on top of the fraction bar.", "In 3/8, I am the 3.", "I count how many parts you have."] },
+          { term: "denominator", clues: ["I sit below the fraction bar.", "In 3/8, I am the 8.", "I tell how many equal parts make one whole."] },
+          { term: "equivalent fraction", clues: ["1/2 and 2/4 are two names for me.", "I look different but I have the same value.", "You make me by multiplying the top and bottom by the same number."] },
+          { term: "benchmark fraction", clues: ["I am a friendly fraction to measure against.", "0, 1/2, and 1 are my favorite examples.", "I help you judge a hard fraction fast."] },
+          { term: "common denominator", clues: ["Two fractions share my number on the bottom.", "I let you compare by looking only at the tops.", "4/8 and 3/8 both have me."] },
+          { term: "compare", clues: ["I need two numbers.", "I decide which is bigger or smaller.", "I use signs like > and <."] },
+          { term: "greater than", clues: ["I point the open side of the sign at the bigger number.", "6/8 and 5/8: 6/8 is me.", "My sign looks like >."] },
+          { term: "less than", clues: ["3/8 is me compared with 1/2.", "My sign looks like <.", "I mean worth fewer parts."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Prove It to Your Partner", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      tip: "Listen for a reason after every 'because'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to your fraction strips and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'whereas' to show how two fractions are different." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "Compare 1/2 and 3/8 using a benchmark.", starter: "Both fractions are ___, whereas ___ is ___ because ___.", follow_up: "Which fraction is closer to 1/2?" },
+          { prompt: "How do you make an equivalent fraction for 2/3?", starter: "I multiplied the top and the bottom by ___ to get ___.", follow_up: "Why does the value stay the same?" },
+          { prompt: "Why are 2/4 and 1/2 the same amount?", starter: "They are the same because ___.", follow_up: "How could you show it with a drawing?" },
+          { prompt: "Compare 5/8 and 3/4. Which is greater?", starter: "I changed ___ into ___, so ___ is greater.", follow_up: "What is the common denominator you used?" },
+          { prompt: "Is 3/8 closer to 0, 1/2, or 1?", starter: "3/8 is closer to ___ because ___.", follow_up: "How far is 3/8 from the other benchmarks?" },
+          { prompt: "A friend says 1/3 is greater than 1/2 because 3 is greater than 2. What do you say?", starter: "I disagree because ___.", follow_up: "What happens to the size of each piece when the denominator gets bigger?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is on the fraction strip?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Fraction Face-Off", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts about two fractions. Ask questions to fill in the gaps, then decide which fraction is greater.",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Partner cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each fraction back to check it.", l5_6: "Check each other's work by multiplying the top and bottom again." },
+      payload: {
+        goal: "Fill in the missing facts, then decide which fraction is greater.",
+        a: { title: "Partner A", has: [{ k: "Fraction A", v: "3/4" }, { k: "Fraction B in twelfths", v: "10/12" }], needs: ["Fraction A in twelfths", "Fraction B"] },
+        b: { title: "Partner B", has: [{ k: "Fraction A in twelfths", v: "9/12" }, { k: "Fraction B", v: "5/6" }], needs: ["Fraction A", "Fraction B in twelfths"] },
+        ask_frames: ["What is ___ of ___?", "Can you repeat the ___, please?"],
+        tell_frames: ["___ of ___ is ___.", "I'm not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Reason Radar", minutes: 12, grouping: "Solo",
+      mission: "Read about Maya and Theo like a detective. Mark the reason words and the math words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'since'.", l3_4: "Mark both the reason words and the math words.", l5_6: "Mark everything, then rewrite one sentence with 'because'." },
+      payload: {
+        text: "Maya and Theo paint fence boards for a school garden. The boards are the same size. Maya paints 2/3 of her board. Theo paints 5/6 of his board. Maya multiplies 2/3 by 2/2 and gets 4/6. Both fractions now have the same denominator, so she can compare the numerators. Since 5 is greater than 4, 5/6 is greater than 4/6. Theo painted more of his board.",
+        marks: [
+          { label: "Reason words", instruction: "Highlight the words that tell why.", targets: ["so she can compare the numerators", "Since 5 is greater than 4"] },
+          { label: "Math words", instruction: "Highlight the math vocabulary.", targets: ["multiplies 2/3 by 2/2", "denominator", "numerators", "greater than"] },
+        ],
+        questions: [
+          { q: "Why does Maya multiply 2/3 by 2/2?", options: ["To get sixths, so both fractions have the same denominator.", "To make the board bigger.", "To find the benchmark fraction."], answer: 0, why: "4/6 and 5/6 share a denominator, so she can compare the numerators." },
+          { q: "Who painted more of a board?", options: ["Maya", "They painted the same amount.", "Theo"], answer: 2, why: "5/6 is greater than 4/6, and 4/6 is equal to 2/3." },
+          { q: "What is 2/3 equivalent to in this story?", options: ["5/6", "4/6", "2/6"], answer: 1, why: "2/3 multiplied by 2/2 equals 4/6." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong fraction sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["I multiplied 1/2 by 4/4", "to get 4/8,", "an equivalent fraction."] },
+          { parts: ["Both fractions have eighths,", "so we can compare", "the numerators."] },
+          { parts: ["Since 4/8 is greater than 3/8,", "one half is greater", "than three eighths."] },
+          { parts: ["Three eighths is less than one half", "because 3/8 is less", "than 4/8."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Lena's Number Line", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Lena's story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and listen for the word that fits.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then say the story again in your own words." },
+      payload: {
+        text: "Lena wants to compare 2/5 and 1/2. She uses 1/2 as a {1}. She multiplies 1/2 by 5/5 and 2/5 by 2/2. Now she has 5/10 and 4/10, which share a {2}. The fraction 5/10 is an {3} fraction for 1/2. She compares the {4}, 4 and 5. Since 4 is {5} 5, the fraction 2/5 is smaller than 1/2.",
+        answers: ["benchmark fraction", "common denominator", "equivalent", "numerators", "less than"],
+        bank: ["benchmark fraction", "common denominator", "equivalent", "numerators", "less than", "denominator", "greater than"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the fractions.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["1/2 is greater than 3/8.", "1/3 is less than 3/8."], connector: "whereas", model: "1/2 is greater than 3/8, whereas 1/3 is less than 3/8." },
+          { sentences: ["Equivalent fractions have different numerators.", "They name the same amount."], connector: "but", model: "Equivalent fractions have different numerators, but they name the same amount." },
+          { sentences: ["1/2 is a benchmark fraction.", "1 is a benchmark fraction."], connector: "both", model: "Both 1/2 and 1 are benchmark fractions." },
+          { sentences: ["Numerators tell how many parts we have.", "Denominators tell how many equal parts make a whole."], connector: "while", model: "Numerators tell how many parts we have, while denominators tell how many equal parts make a whole." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the top and bottom numbers first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "I made an equivalent fraction for 2/3 by adding 2 to the top and the bottom.", options: ["I made 4/6 by multiplying only the numerator by 2.", "I made 2/6 by multiplying only the denominator by 2.", "I made 4/6 by multiplying the numerator and denominator by 2."], answer: 2, why: "To keep the same value, multiply the top and the bottom by the same number.", type: "wrong method" },
+          { wrong: "1/3 is greater than 1/2 because 3 is greater than 2.", options: ["1/3 is less than 1/2 because thirds are bigger pieces than halves.", "1/3 is less than 1/2 because thirds are smaller pieces than halves.", "1/3 is equal to 1/2 because both have a 1 on top."], answer: 1, why: "When a whole is cut into more equal parts, each part is smaller.", type: "wrong reason" },
+          { wrong: "5/6 is greater than 3/4.", options: ["5/6 is greater than 3/4 because 6 is bigger than 4.", "5/6 is greater than 3/4 because 10/12 is greater than 9/12.", "5/6 is greater than 3/4 because it is a fraction."], answer: 1, why: "A strong comparison uses a common denominator: 10/12 is greater than 9/12.", type: "missing reason" },
+          { wrong: "The denominator tells how many parts we have.", options: ["The benchmark tells how many parts we have.", "The whole tells how many parts we have.", "The numerator tells how many parts we have."], answer: 2, why: "The numerator counts the parts you have. The denominator tells the size of the parts.", type: "wrong word" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Prove Which Is Greater", minutes: 15, grouping: "Solo",
+      mission: "Write a short proof that shows which fraction is greater. Name your method, show your numbers, and give the result.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw both fraction strips first.", l3_4: "Write all three parts and use 'because' or 'so' once.", l5_6: "Write all three parts, add 'whereas', and name a benchmark." },
+      payload: {
+        prompt: "Compare 3/4 and 5/8. Tell which fraction is greater and prove it.",
+        structure: [
+          { part: "Method", frame: "I changed ___ into ___ by multiplying the numerator and denominator by ___." },
+          { part: "Evidence", frame: "Now both fractions have a common denominator of ___, so I can compare the ___." },
+          { part: "Result", frame: "Since ___ is greater than ___, ___ is greater than ___." },
+        ],
+        word_bank: ["equivalent fraction", "common denominator", "numerator", "denominator", "greater than", "compare", "because", "so"],
+        checklist: ["I made an equivalent fraction.", "I named the common denominator.", "I used because, so, or since.", "I said which fraction is greater."],
+        model: "I changed 3/4 into 6/8 by multiplying the numerator and denominator by 2. Now both fractions have a common denominator of 8, so I can compare the numerators. Since 6 is greater than 5, 3/4 is greater than 5/8.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Compare 2/3 and 3/4. Tell which is greater and explain how you know. Use two math words and one reason word.",
+    frame: "I made both fractions ___ by ___, so ___ is greater than ___ because ___.",
+    model: "I made both fractions twelfths by multiplying, so 3/4 is greater than 2/3 because 9/12 is greater than 8/12.",
+    rubric: {
+      emerging: "Writes an equivalent fraction with a word bank or a drawing.",
+      developing: "Uses the frame with a common denominator and says which fraction is greater.",
+      proficient: "Explains the comparison with a clear reason and correct equivalent fractions in two or more sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Mayor' and 'menor' also mean older and younger, and 'entero' also means whole number, so the math words can feel confusing.", fix: "Pair 'mayor que' and 'menor que' with two fraction strips and the signs > and < every time." },
+    { group: "All multilingual learners", issue: "Students mix up numerator and denominator because the two words look and sound alike.", fix: "Say 'denominator is down' and have students point to the bottom number each time they use the word." },
+  ],
+  misconception: {
+    pattern: "Students think the fraction with the bigger denominator is the bigger fraction, or they add the same number to the top and the bottom.",
+    redirect: "Ask 'How big is each piece?' and have students fold or draw strips, then multiply the top and the bottom by the same number.",
+  },
+};

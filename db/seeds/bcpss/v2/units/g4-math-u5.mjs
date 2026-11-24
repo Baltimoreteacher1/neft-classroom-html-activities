@@ -1,0 +1,267 @@
+// BCPSS Language Studio v2 — g4-math-u5. Schema: ../schema.mjs
+
+export default {
+  essential_question: "What causes a measurement to change when you switch to a different unit?",
+  can_do: {
+    content: "I can write tenths and hundredths as decimals and change larger metric units into smaller ones.",
+    language: "I can explain a cause and its effect with because, so, and as a result.",
+  },
+  mentor: {
+    text: "Because 1 meter equals 100 centimeters, converting 3 meters results in 300 centimeters.",
+    gist: "The speaker gives a fact as the cause and shows the new measurement as the effect.",
+    chunks: [
+      { text: "Because", role: "The cause signal", tone: "connector", ask: "Which word tells you a cause is coming?" },
+      { text: "1 meter equals 100 centimeters,", role: "The cause", tone: "evidence", ask: "What fact about meters and centimeters is the cause?" },
+      { text: "converting 3 meters", role: "The action", tone: "concept", ask: "What is being changed from one unit to another?" },
+      { text: "results in 300 centimeters.", role: "The effect", tone: "precision", ask: "What new measurement does the speaker get?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "[Number] meter is [number] centimeters.",
+      "The decimal [number] means [number] [tenths / hundredths].",
+      "The [object] is [number] [unit] long.",
+    ],
+    l3_4: [
+      "Because 1 meter equals 100 centimeters, [number] meters equals [number] centimeters.",
+      "[Decimal] is greater than [decimal] because [reason].",
+      "I multiplied by [number], so the [object] is [number] [unit].",
+    ],
+    l5_6: [
+      "Since 1 [bigger unit] equals [number] [smaller unit], converting [number] [bigger unit] results in [number] [smaller unit].",
+      "As a result of writing both decimals in hundredths, I can see that [decimal] is [greater / less] than [decimal].",
+      "Because the [unit] is [bigger / smaller], I need [more / fewer] of them to measure the same length.",
+    ],
+  },
+  connectors: ["because", "so", "as a result", "which means", "therefore", "since"],
+  vocab: [
+    { term: "decimal", tier: 3, pos: "noun", def: "a number that uses a dot to show tenths, hundredths, and smaller parts of one", example: "The decimal 0.25 shows 25 hundredths of one whole.", nonexample: "The fraction 1/4 is not written as a decimal until we use a dot.", es: "decimal", es_note: "Cognate: same spelling. Spanish in some countries uses a comma, like 0,25, instead of a dot.", family: ["decimals"], cue: "A price tag that reads $0.25." },
+    { term: "tenth", tier: 3, pos: "noun", def: "one of 10 equal parts of a whole", example: "One tenth is written as 0.1 and is one slice of a pizza cut into ten.", nonexample: "One of 100 equal parts is smaller than a tenth.", es: "décimo", es_note: "Spanish 'décimo' is 'tenth'. Do not mix it up with 'decimal'.", family: ["tenths", "ten"], cue: "A strip with ten equal boxes and one shaded." },
+    { term: "hundredth", tier: 3, pos: "noun", def: "one of 100 equal parts of a whole", example: "One penny is one hundredth of a dollar, or $0.01.", nonexample: "One of 10 equal parts is bigger than a hundredth.", es: "centésimo", es_note: "Spanish 'centésimo' is 'hundredth'. It is different from 'centavo' (a cent).", family: ["hundredths", "hundred"], cue: "A grid of 100 squares with one square shaded." },
+    { term: "decimal point", tier: 3, pos: "noun", def: "the dot that separates the whole-number part from the parts smaller than one", example: "In 3.25, the decimal point comes after the 3.", nonexample: "A comma in 1,000 is not a decimal point; it only helps us read big numbers.", es: "punto decimal", es_note: "Cognate pair: punto / decimal. Many Spanish-speaking countries use a comma (coma decimal) instead.", family: ["decimal", "point"], cue: "A bold dot between 3 and 25." },
+    { term: "convert", tier: 2, pos: "verb", def: "to change a measurement from one unit to a different unit", example: "I convert 2 meters to 200 centimeters.", nonexample: "Measuring something twice with the same unit is not changing units.", es: "convertir", es_note: "Cognate: sounds and means almost the same.", family: ["conversion", "converting"], cue: "An arrow between a meter stick and a centimeter ruler." },
+    { term: "centimeter", tier: 3, pos: "noun", def: "a small metric unit of length; 100 of them make a meter", example: "My pencil is about 15 centimeters long.", nonexample: "A mile is a longer unit, and it is not part of the metric system.", es: "centímetro", es_note: "Cognate: sounds and means almost the same.", family: ["centimeters", "cm"], cue: "A ruler with the first centimeter highlighted." },
+    { term: "meter", tier: 3, pos: "noun", def: "the basic metric unit of length, a little longer than a yard", example: "A classroom door is about 2 meters tall.", nonexample: "A water meter measures how much water you use; it is a different meaning.", es: "metro", es_note: "Cognate. Careful: 'metro' also means subway in Spanish.", family: ["meters", "m"], cue: "A meter stick next to a student." },
+    { term: "kilometer", tier: 3, pos: "noun", def: "a metric unit of length equal to 1,000 meters", example: "Runners in a 5K race run five kilometers.", nonexample: "A meter is much shorter, so it is not the same as a kilometer.", es: "kilómetro", es_note: "Cognate: sounds and means almost the same. Stress the 'ló' in Spanish.", family: ["kilometers", "km"], cue: "A long road with a distance sign." },
+    { term: "kilogram", tier: 3, pos: "noun", def: "a metric unit of mass equal to 1,000 grams", example: "A bag of rice can weigh one kilogram.", nonexample: "A gram is much smaller, and a kilogram is not the same size.", es: "kilogramo", es_note: "Cognate: sounds and means almost the same. Spanish ends in -o.", family: ["kilograms", "kg", "gram"], cue: "A bag of rice on a scale." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Hallway Measure-Up", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice. Then rebuild it with your partner, as close to the real words as you can.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame. Draw the hallway while you listen.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one sentence that tells the effect." },
+      payload: {
+        text: "Tasha measures a hallway at her Baltimore school. It is 8.5 meters long. She wants centimeters, so she must convert. Because 1 meter equals 100 centimeters, she multiplies 8.5 by 100. The hallway is 850 centimeters long.",
+        key_words: ["hallway", "convert", "centimeters", "multiplies", "850"],
+        frame: "Tasha measures a ___ that is ___ meters long. Because ___, she ___. The hallway is ___.",
+        checks: ["the hallway is 8.5 meters long", "Tasha wants the length in centimeters", "1 meter equals 100 centimeters, so she multiplies by 100", "the hallway is 850 centimeters long"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match every math word to its meaning. Wrong matches bounce back, so keep going until all nine click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know first, then try the rest.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "decimal", r: "a number that uses a dot to show parts smaller than one" },
+          { l: "tenth", r: "one of 10 equal parts of a whole" },
+          { l: "hundredth", r: "one of 100 equal parts of a whole" },
+          { l: "decimal point", r: "the dot that separates the whole-number part from the smaller parts" },
+          { l: "convert", r: "to change a measurement to a different unit" },
+          { l: "centimeter", r: "a small metric unit of length; 100 make a meter" },
+          { l: "meter", r: "the basic metric unit of length, a little longer than a yard" },
+          { l: "kilometer", r: "a metric unit of length equal to 1,000 meters" },
+          { l: "kilogram", r: "a metric unit of mass equal to 1,000 grams" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Decimal, Length, or Weight?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
+      payload: {
+        categories: [{ name: "Decimal words" }, { name: "Length units" }, { name: "Mass and liquid units" }],
+        items: [
+          { text: "decimal", cat: 0 }, { text: "tenth", cat: 0 }, { text: "hundredth", cat: 0 }, { text: "decimal point", cat: 0 },
+          { text: "millimeter", cat: 1 }, { text: "centimeter", cat: 1 }, { text: "meter", cat: 1 }, { text: "kilometer", cat: 1 },
+          { text: "gram", cat: 2 }, { text: "kilogram", cat: 2 }, { text: "milliliter", cat: 2 }, { text: "liter", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Measure Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "decimal point", clues: ["I am a tiny dot.", "In 3.25, I come right after the 3.", "I separate whole numbers from smaller parts."] },
+          { term: "tenth", clues: ["I am one of ten equal parts.", "I am written as 0.1.", "Ten of me make one whole."] },
+          { term: "hundredth", clues: ["I am one of one hundred equal parts.", "I am written as 0.01.", "One penny is me of a dollar."] },
+          { term: "convert", clues: ["I change the unit, not the length.", "I turn 2 meters into 200 centimeters.", "I need a fact, like 1 meter has 100 small units."] },
+          { term: "centimeter", clues: ["I am about as wide as a fingernail.", "A hundred of me make a longer unit.", "I am the little numbered marks on most rulers."] },
+          { term: "meter", clues: ["I am about as long as a big step.", "A door is about two of me tall.", "I am the base unit of length in the metric system."] },
+          { term: "kilometer", clues: ["I measure long trips, not pencils.", "A 5K race is five of me.", "I am equal to 1,000 of the base units of length."] },
+          { term: "kilogram", clues: ["I measure how heavy something is.", "I am equal to 1,000 grams.", "A bag of rice can be me."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Cause and Effect Talk", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain the cause and the effect, then your partner pushes your thinking with a move.",
+      tip: "Listen for a cause and an effect in every answer, joined by because or so.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the ruler and use the first frame.", l3_4: "Give a cause with 'because' every turn.", l5_6: "Add 'as a result' to state the effect." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "Why is 0.25 meter the same length as 25 centimeters?", starter: "Because 1 meter equals ___ centimeters, ___.", follow_up: "How did the number change, and why?" },
+          { prompt: "Are 0.6 and 0.60 equal? How do you know?", starter: "They are equal because ___.", follow_up: "How many hundredths are in 0.6?" },
+          { prompt: "A runner goes 2 kilometers. How many meters is that?", starter: "Because 1 kilometer equals ___ meters, 2 kilometers is ___.", follow_up: "Why does the number get bigger when the unit gets smaller?" },
+          { prompt: "Which is greater, 0.4 or 0.35? How do you know?", starter: "0.4 is ___ than 0.35 because ___.", follow_up: "How can writing 0.4 as 0.40 help?" },
+          { prompt: "A bag of rice weighs 2 kilograms. How many grams is that?", starter: "I multiplied by ___, so the bag is ___ grams.", follow_up: "What fact about kilograms made you multiply?" },
+          { prompt: "A friend says 0.5 is less than 0.45 because 5 is less than 45. What do you say?", starter: "I disagree because ___.", follow_up: "How would you prove it with tenths and hundredths?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is on the ruler?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Measurement Mix-Up", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret clues about two objects. Ask questions to find the missing lengths, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Partner cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each number back to check it.", l5_6: "Check each other's numbers by converting again." },
+      payload: {
+        goal: "Fill in the missing lengths for the ribbon and the rope.",
+        a: { title: "Partner A", has: [{ k: "Ribbon in meters", v: "0.35 meter" }, { k: "Rope in centimeters", v: "120 centimeters" }], needs: ["Ribbon in centimeters", "Rope in meters"] },
+        b: { title: "Partner B", has: [{ k: "Ribbon in centimeters", v: "35 centimeters" }, { k: "Rope in meters", v: "1.2 meters" }], needs: ["Ribbon in meters", "Rope in centimeters"] },
+        ask_frames: ["What is the ___ of the ___?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ of the ___ is ___.", "I'm not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Cause Radar", minutes: 12, grouping: "Solo",
+      mission: "Read about Jordan's ramp like a detective. Mark the cause words and the math words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check cause and effect.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'because'.", l3_4: "Mark both the cause words and the math words.", l5_6: "Mark everything, then rewrite one sentence with 'so'." },
+      payload: {
+        text: "Jordan measures a toy car ramp at the school science fair. The ramp is 1.5 meters long, so Jordan wants the length in centimeters. Because 1 meter equals 100 centimeters, he multiplies 1.5 by 100. As a result, the ramp is 150 centimeters long. The car rolls 0.75 meter past the ramp. That is 75 centimeters, since 0.75 times 100 is 75.",
+        marks: [
+          { label: "Cause words", instruction: "Highlight the words that show a cause or an effect.", targets: ["Because 1 meter equals 100 centimeters", "As a result", "since 0.75 times 100 is 75"] },
+          { label: "Math words", instruction: "Highlight the math vocabulary.", targets: ["1.5 meters", "multiplies 1.5 by 100", "centimeters", "0.75 meter"] },
+        ],
+        questions: [
+          { q: "Why does Jordan multiply 1.5 by 100?", options: ["There are 100 centimeters in each meter.", "The ramp is 100 meters long.", "He wants to make the ramp longer."], answer: 0, why: "The text says he multiplies 'because 1 meter equals 100 centimeters.'" },
+          { q: "How long is the ramp in centimeters?", options: ["15 centimeters", "150 centimeters", "1,500 centimeters"], answer: 1, why: "1.5 × 100 = 150, so the ramp is 150 centimeters long." },
+          { q: "What is 0.75 meter in centimeters?", options: ["75 centimeters", "7.5 centimeters", "750 centimeters"], answer: 0, why: "0.75 × 100 = 75, so 0.75 meter is 75 centimeters." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong measurement sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the cause word, then build around it.", l5_6: "After building, add a new effect of your own." },
+      payload: {
+        items: [
+          { parts: ["Because 1 meter equals 100 centimeters,", "2 meters equals", "200 centimeters."] },
+          { parts: ["Since 1 tenth equals 10 hundredths,", "0.3 is the same", "as 0.30."] },
+          { parts: ["The decimal point separates", "the whole numbers", "from the parts."] },
+          { parts: ["Converting kilometers to meters", "means we multiply", "by 1,000."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Nia's Door", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Nia's story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and listen for the word that fits.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then say the story again in your own words." },
+      payload: {
+        text: "Nia's classroom door is 2 meters tall. She wants to {1} that to centimeters. Because 1 meter has 100 centimeters, 2 meters is 200 {2}. Her pencil is 0.15 meter long. The digit 5 is in the {3} place, so 0.15 is 15 hundredths. A {4} separates the ones from the tenths. Her walk to the bus stop is 1,000 meters, which is one {5}.",
+        answers: ["convert", "centimeters", "hundredths", "decimal point", "kilometer"],
+        bank: ["convert", "centimeters", "hundredths", "decimal point", "kilometer", "tenths", "kilogram"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["1 meter equals 100 centimeters.", "3 meters equals 300 centimeters."], connector: "so", model: "1 meter equals 100 centimeters, so 3 meters equals 300 centimeters." },
+          { sentences: ["0.7 is greater than 0.07.", "Tenths are bigger than hundredths."], connector: "because", model: "0.7 is greater than 0.07 because tenths are bigger than hundredths." },
+          { sentences: ["A runner goes 2 kilometers.", "She covers 2,000 meters."], connector: "which means", model: "A runner goes 2 kilometers, which means she covers 2,000 meters." },
+          { sentences: ["Each lap is 400 meters.", "Five laps equal 2,000 meters."], connector: "as a result", model: "Each lap is 400 meters, and as a result, five laps equal 2,000 meters." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the units first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "0.25 meter equals 25 meters.", options: ["0.25 meter equals 2.5 centimeters because 0.25 × 10 = 2.5.", "0.25 meter equals 250 centimeters because 0.25 × 1,000 = 250.", "0.25 meter equals 25 centimeters because 0.25 × 100 = 25."], answer: 2, why: "The unit changes to centimeters, and 1 meter has 100 centimeters.", type: "wrong unit" },
+          { wrong: "0.3 is less than 0.25 because 3 is less than 25.", options: ["0.3 is greater than 0.25 because 0.30 is 30 hundredths and 0.25 is 25 hundredths.", "0.3 is less than 0.25 because it has fewer digits.", "0.3 is equal to 0.25 because both have a 3 or a 5."], answer: 0, why: "Write both with the same place: 0.30 is greater than 0.25.", type: "wrong reason" },
+          { wrong: "1 kilometer is longer than 1 meter.", options: ["1 kilometer is longer than 1 meter because it is a bigger number.", "1 kilometer is longer than 1 meter because 1 kilometer equals 1,000 meters.", "1 kilometer is longer than 1 meter because it has more letters."], answer: 1, why: "A strong measurement sentence gives the fact that causes the result.", type: "missing reason" },
+          { wrong: "To change kilometers to meters, divide by 1,000.", options: ["To change kilometers to meters, add 1,000.", "To change kilometers to meters, divide by 100.", "To change kilometers to meters, multiply by 1,000 because a meter is smaller."], answer: 2, why: "A smaller unit means you need more of them, so you multiply.", type: "wrong operation" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Cause, Effect, Proof", minutes: 15, grouping: "Solo",
+      mission: "Write a short explanation that tells the cause, the effect, and a proof. Use because and as a result.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw a ruler first.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'as a result', and use tenths or hundredths." },
+      payload: {
+        prompt: "A ribbon is 0.6 meter long. Explain how to find its length in centimeters, and why that works.",
+        structure: [
+          { part: "Cause", frame: "Because 1 meter equals ___ centimeters, I ___ 0.6 by ___." },
+          { part: "Effect", frame: "As a result, the ribbon is ___ centimeters long." },
+          { part: "Proof", frame: "This makes sense because ___ tenths of a meter is ___ hundredths of a meter." },
+        ],
+        word_bank: ["convert", "meter", "centimeter", "decimal", "tenth", "hundredth", "because", "as a result"],
+        checklist: ["I gave the cause with because.", "I gave the effect with as a result or so.", "I used at least three math words.", "I wrote the correct unit."],
+        model: "Because 1 meter equals 100 centimeters, I multiply 0.6 by 100. As a result, the ribbon is 60 centimeters long. This makes sense because 6 tenths of a meter is 60 hundredths of a meter, or 60 centimeters.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A rope is 2.5 meters long. Explain how to find its length in centimeters. Use two math words and one cause word.",
+    frame: "Because 1 meter equals ___ centimeters, I ___ 2.5 by ___, so the rope is ___.",
+    model: "Because 1 meter equals 100 centimeters, I multiply 2.5 by 100, so the rope is 250 centimeters long.",
+    rubric: {
+      emerging: "Writes 250 centimeters with a word bank or a drawing of a ruler.",
+      developing: "Uses the frame with the correct multiplication and the unit centimeters.",
+      proficient: "Explains the cause and the effect with because and correct numbers in two or more sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Many Spanish-speaking families write decimals with a comma (0,25) and 'metro' can also mean subway, so the decimal point and the unit can confuse students.", fix: "Show both ways to write a decimal and point out that a dot is used here. Say 'meter' with a ruler in hand." },
+    { group: "All multilingual learners", issue: "Students think a bigger number always means a longer length, so they say 200 centimeters is longer than 2 meters.", fix: "Lay a meter stick next to a 100-centimeter ruler and say 'same length, different unit' until students repeat it." },
+  ],
+  misconception: {
+    pattern: "Students say 0.4 is less than 0.35 because 4 is less than 35, or they multiply by 10 instead of 100 when changing meters to centimeters.",
+    redirect: "Ask 'How many hundredths is each decimal?' and 'How many centimeters are in one meter?' before they pick an operation.",
+  },
+};

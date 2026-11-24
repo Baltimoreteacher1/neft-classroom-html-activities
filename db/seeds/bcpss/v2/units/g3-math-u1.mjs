@@ -1,0 +1,267 @@
+// BCPSS Language Studio v2 — g3-math-u1. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can equal groups and arrays help you multiply and divide, and how do you know your answer is right?",
+  can_do: {
+    content: "I can use equal groups and arrays to multiply and divide within 100.",
+    language: "I can explain each step with first, then, so, and because.",
+  },
+  mentor: {
+    text: "I shared 12 stickers equally into 3 bags, so each bag got 4 stickers, because 3 × 4 = 12.",
+    gist: "The speaker shares a total into equal groups and then checks the answer with multiplication.",
+    chunks: [
+      { text: "I shared 12 stickers equally into 3 bags,", role: "The action", tone: "precision", ask: "What did the speaker do, and how many groups did it make?" },
+      { text: "so", role: "The result signal", tone: "connector", ask: "Which word tells you the answer is coming?" },
+      { text: "each bag got 4 stickers,", role: "The answer", tone: "concept", ask: "How many stickers are in each group?" },
+      { text: "because 3 × 4 = 12.", role: "The proof", tone: "evidence", ask: "How does multiplication prove the answer is right?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "There are [number] groups.",
+      "Each group has [number] [objects].",
+      "[number] × [number] = [number].",
+    ],
+    l3_4: [
+      "First, I made [number] equal groups of [number].",
+      "The product is [number] because [number] × [number] = [number].",
+      "I divided [total] by [number], so each group has [number].",
+    ],
+    l5_6: [
+      "The array has [number] rows and [number] columns, so the product is [number].",
+      "Division undoes multiplication because [number] × [number] = [number], so [number] ÷ [number] = [number].",
+      "I know my answer is right since [check].",
+    ],
+  },
+  connectors: ["first", "then", "so", "because", "and", "which means"],
+  vocab: [
+    { term: "equal groups", tier: 3, pos: "noun", def: "sets that all have the same number of things", example: "Maya puts 4 stickers in each of 3 bags, so she has 3 equal groups.", nonexample: "Bags with 4, 5, and 3 stickers are not equal groups.", es: "grupos iguales", es_note: "Cognate: igual and equal sound alike.", family: ["equal", "equally"], cue: "Three bags, each holding the same four stickers." },
+    { term: "array", tier: 3, pos: "noun", def: "objects set in neat rows and columns", example: "The muffin tin shows an array of 2 rows and 6 columns.", nonexample: "Muffins tossed in a messy pile are not an array.", es: "arreglo", es_note: "Not a cognate. In school math, 'arreglo' names this pattern of rows and columns.", family: ["arrays"], cue: "A muffin tin with neat rows of muffins." },
+    { term: "row", tier: 2, pos: "noun", def: "a line of objects that goes across, from side to side", example: "The array has 3 rows with 5 dots in each row.", nonexample: "A line that goes up and down is a column, not a row.", es: "fila", es_note: "Not a cognate. Careful: this is not the 'row' in 'row a boat'.", family: ["rows"], cue: "A finger sliding left to right across a line of seats." },
+    { term: "column", tier: 2, pos: "noun", def: "a line of objects that goes up and down", example: "Each column of the egg carton holds 2 eggs.", nonexample: "A line that goes across is a row, not a column.", es: "columna", es_note: "Cognate: sounds and means almost the same.", family: ["columns"], cue: "A finger sliding from the top of an egg carton to the bottom." },
+    { term: "factor", tier: 3, pos: "noun", def: "a number that you multiply", example: "In 3 × 4 = 12, the factors are 3 and 4.", nonexample: "In 3 × 4 = 12, the number 12 is the answer, not a factor.", es: "factor", es_note: "Cognate: spelled the same in Spanish.", family: ["factors"], cue: "Two number cards side by side with a times sign between them." },
+    { term: "product", tier: 3, pos: "noun", def: "the answer you get when you multiply", example: "The product of 6 and 4 is 24.", nonexample: "The answer to a division problem is a quotient, not a product.", es: "producto", es_note: "Cognate. Careful: in a store, a product is also something for sale.", family: ["products"], cue: "The number 24 circled at the end of 6 × 4." },
+    { term: "multiply", tier: 3, pos: "verb", def: "to find how many in all when you have equal groups", example: "I multiply 5 × 3 to find how many are in 5 groups of 3.", nonexample: "Adding 5 + 3 does not tell the total of 5 groups of 3.", es: "multiplicar", es_note: "Cognate: sounds and means almost the same.", family: ["multiplication", "multiplied"], cue: "Four plates, each with three cookies." },
+    { term: "divide", tier: 3, pos: "verb", def: "to share a total into equal groups or to find how many are in each group", example: "I divide 12 stickers into 3 bags to find how many go in each bag.", nonexample: "Putting 12 and 3 together makes 15, so that is adding, not dividing.", es: "dividir", es_note: "Cognate: sounds and means almost the same.", family: ["division", "divided"], cue: "A pile of 12 stickers being dealt into 3 bags like cards." },
+    { term: "quotient", tier: 3, pos: "noun", def: "the answer you get when you divide", example: "The quotient of 12 ÷ 3 is 4.", nonexample: "The product is the answer to multiplication, not the quotient.", es: "cociente", es_note: "Cognate: cociente sounds a lot like quotient.", family: ["quotients"], cue: "The number 4 circled at the end of 12 ÷ 3." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Sticker Bag Story", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice. Then rebuild it with your partner.",
+      tip: "Read at a natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and draw the bags while you listen.", l3_4: "Write the key words you hear, then rebuild 4 or 5 sentences.", l5_6: "Rebuild the whole story and add one sentence about how to check." },
+      payload: {
+        text: "Maya has 12 stickers. She wants to share them equally into 3 bags. She puts one sticker in each bag again and again. Each bag gets 4 stickers. Then she checks with multiplication. Since 3 × 4 = 12, the groups are equal.",
+        key_words: ["stickers", "equally", "bags", "each", "multiplication"],
+        frame: "Maya has ___. She shares them ___. Each bag gets ___. She checks with ___.",
+        checks: ["Maya has 12 stickers", "she shares them equally into 3 bags", "each bag gets 4 stickers", "she checks with multiplication, 3 × 4 = 12"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match every math word to its meaning. Keep going until all nine click!",
+      tip: "Students can replay with the cue pictures covered to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know from pictures first.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence with two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "equal groups", r: "sets that all have the same number of things" },
+          { l: "array", r: "objects set in neat rows and columns" },
+          { l: "row", r: "a line of objects that goes across" },
+          { l: "column", r: "a line of objects that goes up and down" },
+          { l: "factor", r: "a number that you multiply" },
+          { l: "product", r: "the answer you get when you multiply" },
+          { l: "multiply", r: "to find how many in all when you have equal groups" },
+          { l: "divide", r: "to share a total into equal groups" },
+          { l: "quotient", r: "the answer you get when you divide" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Which Job Is It?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word or phrase into the group where it belongs, then explain one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the items you know first, such as 3 × 4 = 12.", l3_4: "Sort every item and say 'I put ___ here because ___.'", l5_6: "Sort every item, then add one new item to each group." },
+      payload: {
+        categories: [{ name: "Multiplication" }, { name: "Division" }, { name: "Arrays" }],
+        items: [
+          { text: "product", cat: 0 }, { text: "factor", cat: 0 }, { text: "3 × 4 = 12", cat: 0 }, { text: "how many in all", cat: 0 },
+          { text: "quotient", cat: 1 }, { text: "12 ÷ 3 = 4", cat: 1 }, { text: "share equally", cat: 1 }, { text: "how many in each group", cat: 1 },
+          { text: "row", cat: 2 }, { text: "column", cat: 2 }, { text: "array", cat: 2 }, { text: "neat lines of objects", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the cue pictures to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "product", clues: ["I am an answer.", "I come after the equal sign in 6 × 4 = 24.", "I am the result of multiplying."] },
+          { term: "quotient", clues: ["I am an answer.", "I am the result of sharing equally.", "In 12 ÷ 3 = 4, I am the 4."] },
+          { term: "array", clues: ["A muffin tin looks like me.", "I have neat lines going across and up and down.", "I help you see multiplication."] },
+          { term: "row", clues: ["A line of seats on a bus can be me.", "I go from side to side.", "Count me, then count the seats in me."] },
+          { term: "column", clues: ["I stand tall like a pole.", "I go from top to bottom.", "An egg carton has six of me."] },
+          { term: "factor", clues: ["I am one of the numbers you multiply.", "In 5 × 2 = 10, there are two of me.", "I am not the answer."] },
+          { term: "divide", clues: ["Think of dealing cards to friends.", "I share a total equally.", "My sign looks like a line with two dots."] },
+          { term: "multiply", clues: ["I find how many in all.", "Five bags with 3 apples each needs me.", "My sign looks like a small x."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Explain It Like a Coach", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer, then your partner asks one follow-up move.",
+      tip: "Listen for a reason after every 'because' and a signal word like first or then.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the picture and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'which means' to say what your answer tells you." },
+      payload: {
+        roles: { a: "Coach", b: "Player" },
+        cards: [
+          { prompt: "How do you find how many in 4 groups of 5?", starter: "First, I ___. Then I ___, so ___.", follow_up: "How could you check your answer?" },
+          { prompt: "What is an array? Show one with 3 rows and 2 columns.", starter: "An array is ___. This one has ___.", follow_up: "How many objects are in your array?" },
+          { prompt: "How do you share 15 pencils equally into 3 cups?", starter: "I divide ___ by ___, so ___.", follow_up: "How does multiplication prove it?" },
+          { prompt: "What is the difference between a product and a quotient?", starter: "A product is ___, but a quotient is ___.", follow_up: "Give one example of each." },
+          { prompt: "Your friend says 3 × 4 and 4 × 3 look different. What do you say?", starter: "I think ___ because ___.", follow_up: "Can you draw both arrays?" },
+          { prompt: "How are multiplying and dividing connected?", starter: "Division undoes multiplication because ___.", follow_up: "Which fact family shows this?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me the ___ in your drawing?" },
+          { label: "Check it", stem: "How can we check that ___?" },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Egg Carton Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts about two egg cartons. Ask questions to find the missing facts!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the number back to check.", l5_6: "Check each number by multiplying or dividing." },
+      payload: {
+        goal: "Fill in the missing facts for Carton 1 and Carton 2.",
+        a: { title: "Detective A", has: [{ k: "Carton 1 shape", v: "2 rows of 6" }, { k: "Carton 2 total", v: "18 eggs" }], needs: ["Carton 1 total", "Carton 2 shape"] },
+        b: { title: "Detective B", has: [{ k: "Carton 1 total", v: "12 eggs" }, { k: "Carton 2 shape", v: "3 rows of 6" }], needs: ["Carton 1 shape", "Carton 2 total"] },
+        ask_frames: ["What is the ___ of Carton ___?", "Can you say that again, please?"],
+        tell_frames: ["The ___ of Carton ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Bus Seat Detective", minutes: 12, grouping: "Solo",
+      mission: "Read about Mr. Dixon's bus like a detective. Mark the math words and the answer signals.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the math word 'array'.", l3_4: "Mark the math words and the answer signals.", l5_6: "Mark everything, then write one more sentence about the bus." },
+      payload: {
+        text: "Mr. Dixon drives a school bus. The bus has 6 rows of seats. Each row has 4 seats. Mr. Dixon wants to know how many seats there are in all. The seats make an array. He multiplies 6 × 4 = 24, so the bus has 24 seats. Later, 24 students get on the bus. They sit in 6 equal rows. Mr. Dixon divides 24 ÷ 6 = 4, so 4 students sit in each row.",
+        marks: [
+          { label: "Math words", instruction: "Highlight the math words.", targets: ["rows", "array", "multiplies", "divides"] },
+          { label: "Answer signals", instruction: "Highlight the phrases that tell the answer.", targets: ["so the bus has 24 seats", "so 4 students sit in each row"] },
+        ],
+        questions: [
+          { q: "How does Mr. Dixon find the number of seats?", options: ["He divides 24 ÷ 6.", "He multiplies 6 × 4.", "He adds 6 + 4."], answer: 1, why: "There are 6 rows with 4 seats in each row, so he multiplies 6 × 4 = 24." },
+          { q: "What does the 4 in the last sentence tell you?", options: ["How many rows are on the bus.", "How many students sit in each row.", "How many students ride the bus."], answer: 1, why: "He divided 24 students into 6 equal rows, so 4 students sit in each row." },
+          { q: "Which words show the seats are in an array?", options: ["school bus", "rows of seats", "later"], answer: 1, why: "Rows of seats with the same number in each row make an array." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["Maya multiplies", "3 groups of 4", "to find the product."] },
+          { parts: ["The quotient is 4", "because", "12 shared into 3 groups", "gives 4 in each group."] },
+          { parts: ["The array has 5 rows", "and 2 columns,", "so the product is 10."] },
+          { parts: ["Division undoes multiplication", "because 4 × 3 = 12", "and 12 ÷ 3 = 4."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Muffin Tin", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Ben's muffin story.",
+      tip: "Two bank words are extras that students must reject.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and look at the picture cue.", l3_4: "Fill all gaps, then check that every sentence makes sense.", l5_6: "Fill all gaps, then write what the product tells you." },
+      payload: {
+        text: "Ben bakes muffins in a tin with 2 {1} and 6 {2}. The muffins make an {3}. He multiplies the two {4}, 2 × 6 = 12. The {5} is 12, so Ben baked 12 muffins.",
+        answers: ["rows", "columns", "array", "factors", "product"],
+        bank: ["rows", "columns", "array", "factors", "product", "quotient", "divide"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["Maya has 3 bags.", "Each bag has 4 stickers."], connector: "and", model: "Maya has 3 bags, and each bag has 4 stickers." },
+          { sentences: ["Division undoes multiplication.", "I can check 12 ÷ 3 with 3 × 4."], connector: "so", model: "Division undoes multiplication, so I can check 12 ÷ 3 with 3 × 4." },
+          { sentences: ["The product is 24.", "6 × 4 = 24."], connector: "because", model: "The product is 24 because 6 × 4 = 24." },
+          { sentences: ["I count the rows.", "I count the columns."], connector: "then", model: "First I count the rows, then I count the columns." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake. Pick the best fix and say why.",
+      tip: "Press for why a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the math word first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The product of 4 and 5 is 9.", options: ["The product of 4 and 5 is 20.", "The product of 4 and 5 is 1.", "The product of 4 and 5 is 45."], answer: 0, why: "A product comes from multiplying, and 4 × 5 = 20. Adding gives 9, which is a sum.", type: "wrong operation" },
+          { wrong: "12 ÷ 3 = 4, so 4 is the product.", options: ["12 ÷ 3 = 4, so 4 is the factor.", "12 ÷ 3 = 4, so 4 is the array.", "12 ÷ 3 = 4, so 4 is the quotient."], answer: 2, why: "The answer to a division problem is called the quotient.", type: "wrong word" },
+          { wrong: "The array has 3 rows and 5 columns, so 3 + 5 = 15.", options: ["The array has 3 rows and 5 columns, so 3 × 5 = 15.", "The array has 3 rows and 5 columns, so 3 − 5 = 15.", "The array has 3 rows and 5 columns, so 3 ÷ 5 = 15."], answer: 0, why: "To find how many in an array, multiply rows times columns. 3 + 5 is only 8.", type: "wrong operation" },
+          { wrong: "I shared 12 stickers into 3 bags, so the answer is 4.", options: ["I shared 12 stickers into 3 bags, so the answer is 36.", "I shared 12 stickers into 3 bags, so each bag has 4 stickers.", "I shared 12 stickers into 3 bags, so there are 4 bags."], answer: 1, why: "A strong answer says what the 4 means: 4 stickers in each bag.", type: "missing label" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Explain Equal Groups", minutes: 15, grouping: "Solo",
+      mission: "Write a short explanation that shows each step and checks your answer.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Draw 4 groups first, then use the frames.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'which means', and show the check." },
+      payload: {
+        prompt: "Lia has 20 beads. She puts them into 4 equal groups. Explain how to find how many beads are in each group. Then check your answer.",
+        structure: [
+          { part: "Step", frame: "First, I divide ___ beads into ___ equal groups." },
+          { part: "Answer", frame: "The quotient is ___, so each group has ___ beads." },
+          { part: "Check", frame: "I check with multiplication because ___ × ___ = ___." },
+        ],
+        word_bank: ["divide", "quotient", "equal groups", "multiply", "product", "because", "so", "check"],
+        checklist: ["I told the first step.", "I named the quotient.", "I checked with multiplication.", "I used because or so."],
+        model: "First, I divide 20 beads into 4 equal groups. The quotient is 5, so each group has 5 beads. I check with multiplication because 4 × 5 = 20. Division and multiplication are connected.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "There are 3 rows of 5 chairs. Explain how to find how many chairs in all. Use at least two math words and one reason word.",
+    frame: "I multiply ___ × ___ because ___, so the product is ___.",
+    model: "I multiply 3 × 5 because there are 3 rows with 5 chairs in each row, so the product is 15 chairs.",
+    rubric: {
+      emerging: "Draws the array and names the rows with a word bank.",
+      developing: "Uses the frame with two math words and the correct product.",
+      proficient: "Explains with a clear reason, the right operation, and the correct answer with its label.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Students may read 'array' as a general word and not link it to rows and columns, or mix up 'row' and 'column' in speech.", fix: "Pair each word with a gesture: slide a hand across for row, and slide it down for column." },
+    { group: "All multilingual learners", issue: "Product and quotient sound alike when spoken fast, so students swap them.", fix: "Say 'product, multiply' together and 'quotient, divide' together, and match each to its sign." },
+  ],
+  misconception: {
+    pattern: "Students add the factors, such as 3 + 5, instead of multiplying, and they say only the number without a label.",
+    redirect: "Ask 'How many groups, and how many in each group?' and then 'Fifteen what?' until the answer has a label.",
+  },
+};

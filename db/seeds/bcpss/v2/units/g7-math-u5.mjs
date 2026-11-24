@@ -1,0 +1,266 @@
+// BCPSS Language Studio v2 — g7-math-u5. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How are scale drawings, circles, and prisms alike, and how are they different?",
+  can_do: {
+    content: "I can use a scale drawing, find the circumference and area of a circle, and find the surface area and volume of a prism.",
+    language: "I can compare two things with both, whereas, and in contrast.",
+  },
+  mentor: {
+    text: "Both the circumference and the area of a circle depend on the radius, whereas only the area uses the radius squared.",
+    gist: "The speaker names what two measurements share and then says what makes one different.",
+    chunks: [
+      { text: "Both the circumference and the area of a circle depend on the radius,", role: "What they share", tone: "concept", ask: "What do the circumference and the area have in common?" },
+      { text: "whereas", role: "The contrast signal", tone: "connector", ask: "Which word tells you a difference is coming?" },
+      { text: "only the area uses the radius squared.", role: "The difference", tone: "precision", ask: "What does the area do that the circumference does not?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "Both the [shape] and the [shape] have [feature].",
+      "The [shape] is [adjective], but the [shape] is [adjective].",
+      "The real length is [number] [units].",
+    ],
+    l3_4: [
+      "Both [shape A] and [shape B] have [shared feature], whereas [shape A] has [difference].",
+      "The scale is [number] to [number], so [drawing length] on the drawing is [real length] in real life.",
+      "[Circumference] is the distance around a circle, but [area] is the space inside it.",
+    ],
+    l5_6: [
+      "Both [A] and [B] [shared feature]; in contrast, [A] [difference].",
+      "When the radius is multiplied by [factor], the circumference is multiplied by [factor], whereas the area is multiplied by [factor squared].",
+      "Although [shape A] and [shape B] look alike, [feature] shows that [difference].",
+    ],
+  },
+  connectors: ["both", "whereas", "in contrast", "but", "while", "however"],
+  vocab: [
+    { term: "scale drawing", tier: 3, pos: "noun", def: "a smaller or larger picture of a real object where every length follows the same ratio", example: "A scale drawing of an Inner Harbor park shows the real paths much smaller.", nonexample: "A doodle with random sizes is not a scale drawing because its lengths do not follow one ratio.", es: "dibujo a escala", es_note: "'Escala' is a cognate of 'scale'.", family: ["scale", "drawing"], cue: "A floor plan of a classroom with a small ruler beside it." },
+    { term: "scale factor", tier: 3, pos: "noun", def: "the number you multiply a drawing length by to get the real length", example: "With a scale factor of 200, 4 cm on the drawing is 800 cm in real life.", nonexample: "Adding 200 to 4 cm is not using a scale factor because a scale factor multiplies.", es: "factor de escala", es_note: "Cognate pair: factor / escala.", family: ["scale", "factor"], cue: "A small square with an arrow labeled ×200 pointing to a big square." },
+    { term: "radius", tier: 3, pos: "noun", def: "the distance from the center of a circle to its edge", example: "A circle with a radius of 5 meters is 10 meters across.", nonexample: "A line across the whole circle is a diameter, not a radius.", es: "radio", es_note: "Same word as the 'radio' that plays music, so check the math meaning.", family: ["radii"], cue: "A circle with one line drawn from the center to the edge." },
+    { term: "diameter", tier: 3, pos: "noun", def: "the distance straight across a circle through its center", example: "The fountain has a diameter of 10 meters, so its radius is 5 meters.", nonexample: "A line from the center to the edge is a radius, not a diameter.", es: "diámetro", es_note: "Cognate: sounds and means almost the same.", family: ["diameters"], cue: "A circle with a line across the middle." },
+    { term: "circumference", tier: 3, pos: "noun", def: "the distance around the outside of a circle", example: "The circumference of a circle with a diameter of 10 m is about 31.4 m.", nonexample: "The space inside the circle is the area, not the circumference.", es: "circunferencia", es_note: "Cognate: sounds and means almost the same.", family: ["circle", "around"], cue: "A string wrapped once around a round fountain." },
+    { term: "pi", tier: 3, pos: "noun", def: "the number you get when you divide any circle's circumference by its diameter, about 3.14", example: "We use 3.14 for pi when we find circumference.", nonexample: "Pie with an e is food, but pi in math is a number.", es: "pi", es_note: "Same symbol, π. Say 'el número pi'.", family: ["π", "3.14"], cue: "The symbol π next to a circle." },
+    { term: "cross section", tier: 3, pos: "noun", def: "the flat shape you see when you slice through a solid", example: "A cross section of a box sliced parallel to its base is a rectangle.", nonexample: "The outside of a solid is not a cross section because a slice goes through it.", es: "sección transversal", es_note: "Cognate pair: sección / transversal.", family: ["section", "slice"], cue: "A loaf of bread with one slice cut and shown flat." },
+    { term: "prism", tier: 3, pos: "noun", def: "a solid with two matching parallel bases and flat rectangular sides", example: "A cereal box is a rectangular prism.", nonexample: "A cone has a curved side and a point, so it is not a prism.", es: "prisma", es_note: "Cognate: sounds and means almost the same.", family: ["prisms", "rectangular prism"], cue: "A cereal box standing on its base." },
+    { term: "surface area", tier: 3, pos: "noun", def: "the total area of all the faces of a solid", example: "The surface area of a cube with 3-inch edges is 54 square inches.", nonexample: "How much a box holds is its volume, not its surface area.", es: "área de superficie", es_note: "Cognate pair: área / superficie.", family: ["area", "surface"], cue: "A gift box covered in wrapping paper." },
+    { term: "volume", tier: 3, pos: "noun", def: "the amount of space inside a solid", example: "The volume of a prism is the area of its base times its height.", nonexample: "The area of one face is not the volume.", es: "volumen", es_note: "Cognate. Careful: 'volume' on a speaker is a different meaning.", family: ["volumes", "cubic units"], cue: "A fish tank filling with water." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Ana's Park Plan", minutes: 12, grouping: "Partners",
+      mission: "Listen twice to the story about a park plan, then rebuild it with your partner using the key words.",
+      tip: "Read at natural speed twice; students jot key words and numbers only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and first frame; draw the park while you listen.", l3_4: "Jot the key words and numbers, then rebuild 4–5 sentences.", l5_6: "Rebuild the whole story and add one sentence that compares two lengths." },
+      payload: {
+        text: "Ana draws a plan of a park. The scale is 1 to 200. A wall is 4 centimeters long on the drawing, so it is 800 centimeters in real life. That is 8 meters. The round fountain is 10 meters across. Its circumference is about 31.4 meters, but its radius is only 5 meters.",
+        key_words: ["scale", "drawing", "fountain", "circumference", "radius"],
+        frame: "Ana draws ___. The wall is ___ on the drawing, but ___ in real life. The fountain has a circumference of ___, whereas its radius is ___.",
+        checks: ["The scale is 1 to 200", "A 4 cm wall is 800 cm, or 8 meters, in real life", "The fountain is 10 meters across", "The circumference is about 31.4 meters and the radius is 5 meters"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Geometry Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each geometry word to its meaning. Wrong matches bounce back, so keep going until all eight click!",
+      tip: "Students can replay with the picture cues face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match words to the picture cues first, then to the meanings.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that compares two words." },
+      payload: {
+        left_label: "Geometry word", right_label: "What it means",
+        pairs: [
+          { l: "scale drawing", r: "a picture where every length follows the same ratio" },
+          { l: "scale factor", r: "the number you multiply a drawing length by to get the real length" },
+          { l: "radius", r: "the distance from the center of a circle to its edge" },
+          { l: "diameter", r: "the distance straight across a circle through its center" },
+          { l: "circumference", r: "the distance around the outside of a circle" },
+          { l: "cross section", r: "the flat shape you see when you slice through a solid" },
+          { l: "prism", r: "a solid with two matching parallel bases and flat rectangular sides" },
+          { l: "surface area", r: "the total area of all the faces of a solid" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Circle, Solid, or Scale?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'both' and 'whereas' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
+      payload: {
+        categories: [{ name: "Circle words" }, { name: "Solid (3D) words" }, { name: "Scale words" }],
+        items: [
+          { text: "radius", cat: 0 }, { text: "diameter", cat: 0 }, { text: "circumference", cat: 0 }, { text: "pi", cat: 0 },
+          { text: "prism", cat: 1 }, { text: "cross section", cat: 1 }, { text: "surface area", cat: 1 }, { text: "volume", cat: 1 },
+          { text: "scale drawing", cat: 2 }, { text: "scale factor", cat: 2 }, { text: "actual length", cat: 2 }, { text: "ratio", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Shape Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "scale factor", clues: ["I multiply a drawing length to get the real length.", "On a plan, I might be 200.", "I keep every length in the same ratio."] },
+          { term: "radius", clues: ["I go from the center to the edge.", "I am half of the way across.", "If a circle is 10 m across, I am 5 m."] },
+          { term: "diameter", clues: ["I go all the way across a circle.", "I pass through the center.", "I am twice the radius."] },
+          { term: "circumference", clues: ["Imagine walking once around a fountain.", "I am the distance around.", "I equal pi times the diameter."] },
+          { term: "pi", clues: ["I am a little more than 3.", "Circumference divided by diameter gives me.", "People round me to 3.14."] },
+          { term: "cross section", clues: ["Slice a solid with a knife.", "I am the flat shape that shows on the cut.", "Slicing a box parallel to its base makes a rectangle."] },
+          { term: "prism", clues: ["I have two matching bases.", "A cereal box is one of my family.", "My side faces are rectangles."] },
+          { term: "volume", clues: ["A fish tank holds this much water.", "I measure the space inside.", "I use cubic units."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Compare and Contrast Talk", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Compare the two ideas, then your partner pushes your thinking with a move.",
+      tip: "Listen for both and whereas in every comparison.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the shapes and use the first frame.", l3_4: "Name one way they are alike and one way they differ.", l5_6: "Add 'in contrast' to state the difference." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "Compare a radius and a diameter.", starter: "Both are ___, whereas the ___ goes ___.", follow_up: "How are they related by a number?" },
+          { prompt: "A plan has a scale of 1 to 50. A table is 6 cm on the plan. How long is the real table?", starter: "The real length is ___ because ___.", follow_up: "How could you check your answer?" },
+          { prompt: "Compare circumference and area.", starter: "Circumference measures ___, whereas area measures ___.", follow_up: "Which one uses square units?" },
+          { prompt: "A circle has a diameter of 20 cm. What is its circumference? Use 3.14 for pi.", starter: "I multiplied ___ by ___, so the circumference is ___.", follow_up: "What is the radius?" },
+          { prompt: "Compare a rectangular prism and a cube.", starter: "Both have ___, but a cube has ___.", follow_up: "Is a cube also a rectangular prism? Why?" },
+          { prompt: "What is the same and different about the volume and the surface area of a box?", starter: "Both describe ___, whereas volume ___ and surface area ___.", follow_up: "Which one uses cubic units?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is on the drawing?" },
+          { label: "Compare", stem: "I see it differently. In contrast, I ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Blueprint Swap", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds half of a blueprint. Ask questions to find the missing facts, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Blueprint cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each number back to confirm.", l5_6: "Check each real length by multiplying with the scale." },
+      payload: {
+        goal: "Find the real length of the court and check that the scale matches the pool.",
+        a: { title: "Blueprint A", has: [{ k: "Court length on the drawing", v: "5 cm" }, { k: "Pool width in real life", v: "12 meters" }], needs: ["Scale of the drawing", "Pool width on the drawing"] },
+        b: { title: "Blueprint B", has: [{ k: "Scale of the drawing", v: "1 cm = 4 meters" }, { k: "Pool width on the drawing", v: "3 cm" }], needs: ["Court length on the drawing", "Pool width in real life"] },
+        ask_frames: ["What is the ___ of the ___?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ of the ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Likeness Detective", minutes: 12, grouping: "Solo",
+      mission: "Read about Mia's two pizzas like a detective, mark the compare words and the numbers, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the comparison.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'Both'.", l3_4: "Mark the compare words and the numbers.", l5_6: "Mark everything, then rewrite one sentence with 'while'." },
+      payload: {
+        text: "Mia compares two round pizzas. Pizza A has a diameter of 10 inches. Pizza B has a diameter of 20 inches. Both pizzas are circles, whereas their sizes are different. The diameter doubles, so the circumference doubles from about 31.4 inches to about 62.8 inches. In contrast, the area grows four times, from about 78.5 square inches to about 314 square inches.",
+        marks: [
+          { label: "Compare words", instruction: "Highlight the words that show a likeness or a difference.", targets: ["Both pizzas are circles", "whereas their sizes are different", "In contrast"] },
+          { label: "Numbers", instruction: "Highlight the measurements Mia found.", targets: ["about 31.4 inches", "about 62.8 inches", "about 78.5 square inches", "about 314 square inches"] },
+        ],
+        questions: [
+          { q: "What happens to the circumference when the diameter doubles?", options: ["It doubles.", "It becomes four times as large.", "It stays the same."], answer: 0, why: "The text says it goes from about 31.4 inches to about 62.8 inches." },
+          { q: "What happens to the area when the diameter doubles?", options: ["It doubles.", "It grows four times.", "It grows by 10 square inches."], answer: 1, why: "The area goes from about 78.5 to about 314 square inches, which is four times as large." },
+          { q: "Which words signal a contrast in the last sentence?", options: ["Both", "from", "In contrast"], answer: 2, why: "'In contrast' tells you the area behaves differently from the circumference." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the contrast word, then build around it.", l5_6: "After building, add a new comparison of your own." },
+      payload: {
+        items: [
+          { parts: ["A radius reaches the center,", "whereas a diameter", "goes all the way across."] },
+          { parts: ["The circumference of a circle", "with a diameter of 10 meters", "is about 31.4 meters."] },
+          { parts: ["Since the scale factor is 200,", "4 centimeters on the drawing", "is 800 centimeters in real life."] },
+          { parts: ["Both a cube and a rectangular prism", "have six faces,", "whereas a triangular prism has five."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: The Fountain", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in the park fountain story.",
+      tip: "Two bank words are extras; students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and listen for the missing word.", l3_4: "Fill all gaps, then check that every sentence makes sense.", l5_6: "Fill all gaps, then find the area of the fountain with 3.14 and r × r." },
+      payload: {
+        text: "Ana's park has a round fountain. The line straight across it is the {1}, and it is 10 meters long. The {2} is half of that, or 5 meters. The distance around the fountain is the {3}, which is about 31.4 meters. Ana uses 3.14 for {4}. On the plan, 1 cm stands for 200 cm, so 200 is the {5}.",
+        answers: ["diameter", "radius", "circumference", "pi", "scale factor"],
+        bank: ["diameter", "radius", "circumference", "pi", "scale factor", "cross section", "volume"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Compare and Link", minutes: 10, grouping: "Partners",
+      mission: "Join the short sentences into one strong comparing sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the shapes.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["A radius reaches the center.", "A diameter goes across the whole circle."], connector: "whereas", model: "A radius reaches the center, whereas a diameter goes across the whole circle." },
+          { sentences: ["Surface area measures the outside.", "Volume measures the space inside."], connector: "while", model: "Surface area measures the outside, while volume measures the space inside." },
+          { sentences: ["Circumference is measured in centimeters.", "Area is measured in square centimeters."], connector: "in contrast", model: "Circumference is measured in centimeters. In contrast, area is measured in square centimeters." },
+          { sentences: ["The drawing is small.", "The real park is large.", "The shapes are the same."], connector: "but", model: "The drawing is small and the real park is large, but the shapes are the same." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Comparison", minutes: 10, grouping: "Partners",
+      mission: "Each sentence hides a mistake, so find the best fix and explain why it works.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the units first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "Circumference and area both use square units.", options: ["Circumference uses cubic units, whereas area uses square units.", "Circumference uses units like centimeters, whereas area uses square units.", "Circumference and area both use cubic units."], answer: 1, why: "Circumference is a length around the circle, so it uses plain units. Area covers a surface, so it uses square units.", type: "wrong unit" },
+          { wrong: "With a scale of 1 to 50, 6 cm on the drawing is 56 cm in real life.", options: ["With a scale of 1 to 50, 6 cm on the drawing is 300 cm in real life because I multiplied 6 by 50.", "With a scale of 1 to 50, 6 cm on the drawing is 0.12 cm in real life because I divided 6 by 50.", "With a scale of 1 to 50, 6 cm on the drawing is about 8 cm in real life because I divided 50 by 6."], answer: 0, why: "A scale factor multiplies the drawing length, so 6 × 50 = 300 cm.", type: "wrong operation" },
+          { wrong: "The radius of a circle is the distance across it.", options: ["The radius is the distance around a circle, and the diameter is half of it.", "The radius and the diameter are the same length.", "The diameter is the distance across a circle, and the radius is half of it."], answer: 2, why: "The diameter goes all the way across, and the radius goes from the center to the edge.", type: "wrong word" },
+          { wrong: "A cross section is the outside of a solid.", options: ["A cross section is the flat shape you see when you slice through a solid.", "A cross section is the space inside a solid.", "A cross section is the total area of all the faces."], answer: 0, why: "A cross section comes from slicing through the solid.", type: "wrong word" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Compare Two Circles", minutes: 15, grouping: "Solo",
+      mission: "Write a short comparison that shows how the circumference and area change when the radius doubles.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Draw both circles first, then use one frame for each part.", l3_4: "Write all three parts and use 'whereas' once.", l5_6: "Write all three parts and add 'in contrast' with a number." },
+      payload: {
+        prompt: "Circle A has a radius of 3 cm. Circle B has a radius of 6 cm. Compare how their circumference and area change. Use 3.14 for pi.",
+        structure: [
+          { part: "Likeness", frame: "Both circles [shared feature], and Circle B has [difference in radius]." },
+          { part: "Contrast", frame: "The circumference [changes], whereas the area [changes]." },
+          { part: "Evidence", frame: "Circle A has a circumference of [number] cm and an area of [number] square cm; Circle B has [number] and [number]." },
+        ],
+        word_bank: ["both", "whereas", "in contrast", "radius", "circumference", "area", "doubles", "four times"],
+        checklist: ["I named a way the circles are alike.", "I used whereas or in contrast.", "I used at least three math words.", "I used units for every measurement."],
+        model: "Both circles are round, but Circle B has a radius twice as long as Circle A. The circumference doubles, whereas the area becomes four times as large. Circle A has a circumference of 18.84 cm and an area of 28.26 square cm. Circle B has a circumference of 37.68 cm and an area of 113.04 square cm.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Compare what happens to the circumference and the area of a circle when its radius doubles.",
+    frame: "Both the ___ and the ___ ___, whereas ___.",
+    model: "Both the circumference and the area get larger when the radius doubles, whereas the circumference doubles and the area becomes four times as large.",
+    rubric: {
+      emerging: "Names one measurement and says it gets larger, with a word bank or a labeled drawing.",
+      developing: "Uses the frame to name both measurements and one difference.",
+      proficient: "Compares both measurements with whereas or in contrast and correct numbers.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Radius' sounds like 'radio', which also names a device that plays music, so the math meaning can get lost.", fix: "Say 'el radio de un círculo' with a drawing of a circle and a line from the center to the edge." },
+    { group: "All multilingual learners", issue: "'Scale' also names a kitchen scale and a fish scale, so 'scale drawing' sounds confusing.", fix: "Show a floor plan next to a real classroom and name it 'scale drawing' before using the word 'scale' alone." },
+  ],
+  misconception: {
+    pattern: "Students double the radius and say the area doubles too.",
+    redirect: "Ask 'What is r × r when r is 3 and when r is 6?' and have them compute both areas to see the area grows four times.",
+  },
+};

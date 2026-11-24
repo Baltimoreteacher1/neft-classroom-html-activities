@@ -1,0 +1,268 @@
+// BCPSS Language Studio v2 — g3-math-u3. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How are the space inside a rectangle and the distance around it different, and how do you measure each one?",
+  can_do: {
+    content: "I can find the area and perimeter of rectangles and tell how they are different.",
+    language: "I can compare two ideas with both, whereas, and but.",
+  },
+  mentor: {
+    text: "Both area and perimeter describe a rectangle, whereas area measures the space inside and perimeter measures the distance around.",
+    gist: "The speaker tells what area and perimeter share and then how they are different.",
+    chunks: [
+      { text: "Both area and perimeter describe a rectangle,", role: "What is the same", tone: "concept", ask: "What do area and perimeter have in common?" },
+      { text: "whereas", role: "The contrast signal", tone: "connector", ask: "Which word tells you a difference is coming?" },
+      { text: "area measures the space inside", role: "The first difference", tone: "precision", ask: "What does area measure?" },
+      { text: "and perimeter measures the distance around.", role: "The second difference", tone: "precision", ask: "What does perimeter measure?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "Area is the space [inside].",
+      "Perimeter is the distance [around].",
+      "The area is [number] square [units].",
+    ],
+    l3_4: [
+      "Both [shape] and [shape] are [rectangles].",
+      "The area is [number] square [units] because [length] × [width] = [number].",
+      "The perimeter is [number] [units] because I added [all four sides].",
+    ],
+    l5_6: [
+      "Area measures [the space inside], whereas perimeter measures [the distance around].",
+      "Both rectangles have [the same measure], but their [other measure] is different.",
+      "I decomposed the figure into [number] rectangles, so the total area is [number] square [units].",
+    ],
+  },
+  connectors: ["both", "whereas", "but", "while", "in contrast", "also"],
+  vocab: [
+    { term: "area", tier: 3, pos: "noun", def: "the number of square units that cover the inside of a shape", example: "The area of the garden tells how much space the plants have.", nonexample: "The fence around the garden shows the perimeter, not the area.", es: "área", es_note: "Cognate: sounds and means almost the same.", family: ["areas"], cue: "A floor covered with square tiles." },
+    { term: "perimeter", tier: 3, pos: "noun", def: "the distance around the outside of a shape", example: "The perimeter of the poster is how much ribbon fits around its edge.", nonexample: "The space inside the poster is its area, not its perimeter.", es: "perímetro", es_note: "Cognate: sounds and means almost the same.", family: ["perimeters"], cue: "A finger tracing the edge of a rectangle." },
+    { term: "square unit", tier: 3, pos: "noun", def: "a square with sides of 1 unit, used to measure how much space a shape covers", example: "One square unit covers a square that is 1 foot long and 1 foot wide.", nonexample: "A foot of rope is a unit of length, not a square unit.", es: "unidad cuadrada", es_note: "Cognate pair: unidad / cuadrada.", family: ["square units", "unit square"], cue: "One small square on graph paper." },
+    { term: "tile", tier: 2, pos: "verb", def: "to cover a shape with squares that have no gaps and no overlaps", example: "I tile the rectangle with 15 squares to find its area.", nonexample: "Squares with gaps between them do not tile a shape.", es: "cubrir con cuadrados", es_note: "Spanish uses 'cubrir' (to cover). 'Baldosa' is the floor tile you walk on.", family: ["tiles", "tiling"], cue: "A bathroom floor covered with square tiles." },
+    { term: "length", tier: 2, pos: "noun", def: "how long a shape is from one end to the other", example: "The length of the table is 6 feet.", nonexample: "How wide the table is across the short side is its width.", es: "longitud", es_note: "Not a cognate with 'largo'. 'Largo' is the everyday word for length.", family: ["long"], cue: "A ruler laid along the long side of a table." },
+    { term: "width", tier: 2, pos: "noun", def: "how wide a shape is from one side to the other", example: "The width of the poster is 3 feet.", nonexample: "How long the poster is from top to bottom is its length.", es: "ancho", es_note: "Not a cognate. 'Ancho' is the school word for width.", family: ["wide"], cue: "Arms stretched across a doorway." },
+    { term: "rectangle", tier: 3, pos: "noun", def: "a shape with four straight sides and four square corners", example: "A door is shaped like a rectangle with a length and a width.", nonexample: "A triangle is not a rectangle because it has only three sides.", es: "rectángulo", es_note: "Cognate: sounds and means almost the same.", family: ["rectangles", "rectangular"], cue: "A door drawn with square corners." },
+    { term: "decompose", tier: 3, pos: "verb", def: "to split a figure into simpler shapes", example: "I decompose the L-shape into two rectangles to find its area.", nonexample: "Gluing two rectangles together is the opposite of decomposing.", es: "descomponer", es_note: "Cognate: sounds and means almost the same.", family: ["decomposed"], cue: "An L-shape cut into two rectangles." },
+    { term: "side", tier: 2, pos: "noun", def: "one straight edge of a shape", example: "A rectangle has four sides, and opposite sides are the same length.", nonexample: "The inside of a rectangle is the space it covers, not a side.", es: "lado", es_note: "Not a cognate. 'Lado' is the school word for a side of a shape.", family: ["sides"], cue: "One edge of a rectangle highlighted in bold." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Garden Plans", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice. Then rebuild it with your partner.",
+      tip: "Read at a natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and draw the garden while you listen.", l3_4: "Write the key words you hear, then rebuild 4 or 5 sentences.", l5_6: "Rebuild the whole story and add one sentence that compares area and perimeter." },
+      payload: {
+        text: "Omar plans a garden for the school yard. It is 6 feet long and 4 feet wide. He covers the inside with square tiles. Since 6 × 4 = 24, the area is 24 square feet. Then he walks around the edge to plan a fence. Since 6 + 4 + 6 + 4 = 20, the perimeter is 20 feet.",
+        key_words: ["garden", "tiles", "area", "fence", "perimeter"],
+        frame: "Omar plans ___. He covers ___. The area is ___. Then he plans ___. The perimeter is ___.",
+        checks: ["Omar plans a garden 6 feet long and 4 feet wide", "he covers the inside with tiles, and the area is 24 square feet", "he walks around the edge to plan a fence", "the perimeter is 20 feet"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match every math word to its meaning. Keep going until all nine click!",
+      tip: "Students can replay with the cue pictures covered to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know from pictures first.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write a sentence with two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "area", r: "the number of square units that cover the inside of a shape" },
+          { l: "perimeter", r: "the distance around the outside of a shape" },
+          { l: "square unit", r: "a square with sides of 1 unit, used to measure space" },
+          { l: "tile", r: "to cover a shape with squares and no gaps" },
+          { l: "length", r: "how long a shape is from one end to the other" },
+          { l: "width", r: "how wide a shape is from one side to the other" },
+          { l: "rectangle", r: "a shape with four straight sides and four square corners" },
+          { l: "decompose", r: "to split a figure into simpler shapes" },
+          { l: "side", r: "one straight edge of a shape" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Inside, Around, or Both?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word or phrase into the group where it belongs, then tell your partner how you know.",
+      tip: "Listen for 'whereas' or 'both' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the items you know first.", l3_4: "Sort all items and say 'I put ___ here because ___.'", l5_6: "Sort all items, then add one new item to each group." },
+      payload: {
+        categories: [{ name: "Area (the space inside)" }, { name: "Perimeter (the distance around)" }, { name: "Both need these" }],
+        items: [
+          { text: "square units", cat: 0 }, { text: "tiles covering a floor", cat: 0 }, { text: "length × width", cat: 0 }, { text: "paint for a wall", cat: 0 },
+          { text: "a fence", cat: 1 }, { text: "add all the sides", cat: 1 }, { text: "ribbon around a gift", cat: 1 }, { text: "trim around a window", cat: 1 },
+          { text: "length", cat: 2 }, { text: "width", cat: 2 }, { text: "rectangle", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the cue pictures to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "area", clues: ["I am the space inside a shape.", "You cover me with squares.", "A 5 by 3 rectangle has 15 square units of me."] },
+          { term: "perimeter", clues: ["A fence follows me.", "I am the distance around.", "Add every side to find me."] },
+          { term: "square unit", clues: ["I am a tiny square.", "Count me to find how much space a shape covers.", "I measure space, not distance."] },
+          { term: "tile", clues: ["I am a flat piece that covers a floor.", "I leave no gaps.", "Many squares like me cover a rectangle."] },
+          { term: "length", clues: ["A ruler shows me.", "I tell how long a rectangle is.", "I am usually the longer measure."] },
+          { term: "width", clues: ["I tell how wide a rectangle is.", "I go from one side to the other.", "Multiply me by the length."] },
+          { term: "rectangle", clues: ["I have four sides and four square corners.", "My opposite sides are equal.", "A door is shaped like me."] },
+          { term: "decompose", clues: ["Think of cutting an L into pieces.", "I split a figure into simpler shapes.", "Then you add the areas of the pieces."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Compare and Contrast Talk", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Tell what is the same and what is different, then your partner asks a follow-up.",
+      tip: "Listen for one thing that is the same and one that is different in every answer.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the picture and use the first frame.", l3_4: "Use 'both' once and 'whereas' once.", l5_6: "Add 'in contrast' and a number from the problem." },
+      payload: {
+        roles: { a: "Speaker", b: "Listener" },
+        cards: [
+          { prompt: "How are area and perimeter alike? How are they different?", starter: "Both ___, whereas ___.", follow_up: "Which one uses square units?" },
+          { prompt: "A rectangle is 5 feet long and 3 feet wide. What is its area?", starter: "The area is ___ because ___.", follow_up: "How could you check with tiles?" },
+          { prompt: "The same rectangle has a fence around it. How long is the fence?", starter: "The perimeter is ___ because ___.", follow_up: "Why is the unit feet, not square feet?" },
+          { prompt: "Which would you need to buy carpet for a room: area or perimeter?", starter: "I would use ___ because ___.", follow_up: "What would you use for baseboard trim?" },
+          { prompt: "How do you find the area of an L-shaped figure?", starter: "First I decompose it into ___.", follow_up: "How do you put the pieces back together?" },
+          { prompt: "Can two rectangles have the same area but different perimeters?", starter: "Yes, because ___.", follow_up: "Give me an example with numbers." },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Compare", stem: "How is ___ like ___? How is it different?" },
+          { label: "Check it", stem: "How can we check that ___?" },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Rectangle Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts about two rectangles. Ask questions to find the missing facts!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the number back to check.", l5_6: "Check each number by multiplying or adding." },
+      payload: {
+        goal: "Fill in the missing facts for Rectangle 1 and Rectangle 2.",
+        a: { title: "Detective A", has: [{ k: "Rectangle 1 sides", v: "7 feet by 2 feet" }, { k: "Rectangle 2 area", v: "18 square feet" }], needs: ["Rectangle 1 area", "Rectangle 2 sides"] },
+        b: { title: "Detective B", has: [{ k: "Rectangle 1 area", v: "14 square feet" }, { k: "Rectangle 2 sides", v: "6 feet by 3 feet" }], needs: ["Rectangle 1 sides", "Rectangle 2 area"] },
+        ask_frames: ["What are the ___ of Rectangle ___?", "Can you say that again, please?"],
+        tell_frames: ["The ___ of Rectangle ___ are ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Two Gardens Compared", minutes: 12, grouping: "Solo",
+      mission: "Read about two class gardens. Mark the words that compare, the words that contrast, and the math words.",
+      tip: "Students highlight in three colors; the questions check the comparison.",
+      materials: [],
+      support: { l1_2: "Mark only the words 'both' and 'whereas'.", l3_4: "Mark the compare and contrast words.", l5_6: "Mark everything, then write one more contrast sentence." },
+      payload: {
+        text: "Two third-grade classes plan gardens. Room 12 builds a rectangle that is 8 feet long and 3 feet wide. Room 14 builds a rectangle that is 6 feet long and 4 feet wide. Both gardens have an area of 24 square feet. The perimeters are different, though. Room 12 needs 22 feet of fence, whereas Room 14 needs only 20 feet.",
+        marks: [
+          { label: "Same", instruction: "Highlight the words that tell what is the same.", targets: ["Both gardens", "area of 24 square feet"] },
+          { label: "Different", instruction: "Highlight the words that tell what is different.", targets: ["though", "whereas"] },
+          { label: "Math words", instruction: "Highlight the math words.", targets: ["area", "perimeters", "fence"] },
+        ],
+        questions: [
+          { q: "What is the same about the two gardens?", options: ["The perimeter", "The area", "The width"], answer: 1, why: "Both gardens have an area of 24 square feet." },
+          { q: "Which garden needs more fence?", options: ["Room 14", "Room 12", "They need the same fence."], answer: 1, why: "Room 12 needs 22 feet of fence, and Room 14 needs only 20 feet." },
+          { q: "Which word signals a difference in the last sentence?", options: ["whereas", "needs", "feet"], answer: 0, why: "Whereas shows that the next idea is different from the first idea." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the contrast word, then build around it.", l5_6: "After building, add a new fact of your own." },
+      payload: {
+        items: [
+          { parts: ["Area measures the space inside,", "whereas perimeter measures", "the distance around."] },
+          { parts: ["Both gardens", "have an area", "of 24 square feet."] },
+          { parts: ["A rectangle 5 feet long", "and 3 feet wide", "has an area of 15 square feet."] },
+          { parts: ["I decomposed the L-shape", "into two rectangles", "so I could add their areas."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Kai's Poster", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Kai's poster story.",
+      tip: "Two bank words are extras that students must reject.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and look at the picture cue.", l3_4: "Fill all gaps, then check that every sentence makes sense.", l5_6: "Fill all gaps, then write one more fact about the poster." },
+      payload: {
+        text: "Kai makes a poster that is 4 feet long and 3 feet wide. The {1} is the space inside, so he multiplies the {2} by the {3}. That gives 12 square feet. He glues ribbon around the edge. The {4} is the distance around, so he adds 4 + 3 + 4 + 3 = 14 feet. The paper is measured in {5} feet, but the ribbon is measured in feet.",
+        answers: ["area", "length", "width", "perimeter", "square"],
+        bank: ["area", "length", "width", "perimeter", "square", "tile", "side"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start." },
+      payload: {
+        items: [
+          { sentences: ["Area is measured in square units.", "Perimeter is measured in units."], connector: "whereas", model: "Area is measured in square units, whereas perimeter is measured in units." },
+          { sentences: ["A square is a rectangle.", "A rectangle is not always a square."], connector: "but", model: "A square is a rectangle, but a rectangle is not always a square." },
+          { sentences: ["A 4 by 3 rectangle has an area of 12.", "A 6 by 2 rectangle has an area of 12."], connector: "and", model: "A 4 by 3 rectangle has an area of 12, and a 6 by 2 rectangle has an area of 12 too." },
+          { sentences: ["I tile the inside to find area.", "I add the sides to find perimeter."], connector: "while", model: "I tile the inside to find area, while I add the sides to find perimeter." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake. Pick the best fix and say why.",
+      tip: "Press for why a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the units first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The area of a 5 by 3 rectangle is 16 square feet.", options: ["The area of a 5 by 3 rectangle is 8 square feet.", "The area of a 5 by 3 rectangle is 15 square feet.", "The area of a 5 by 3 rectangle is 16 feet."], answer: 1, why: "Area is length times width, and 5 × 3 = 15. The number 16 is the perimeter.", type: "wrong operation" },
+          { wrong: "The perimeter of a 4 by 2 rectangle is 12 square inches.", options: ["The perimeter of a 4 by 2 rectangle is 12 inches.", "The perimeter of a 4 by 2 rectangle is 8 inches.", "The perimeter of a 4 by 2 rectangle is 12 cubic inches."], answer: 0, why: "Perimeter is a distance, so it uses inches, not square inches.", type: "wrong unit" },
+          { wrong: "Perimeter measures the space inside, whereas area measures the distance around.", options: ["Area measures the space inside, whereas perimeter measures the distance around.", "Perimeter and area both measure the space inside.", "Area measures the space inside, whereas perimeter measures the space inside."], answer: 0, why: "Area is the space inside. Perimeter is the distance around.", type: "swapped words" },
+          { wrong: "I added 6 + 2 to find the perimeter of the 6 by 2 rectangle.", options: ["I multiplied 6 × 2 to find the perimeter.", "I added 6 + 2 + 6 + 2 = 16 to find the perimeter.", "I added 6 + 2 = 8 and wrote 8 square feet."], answer: 1, why: "A rectangle has four sides, so you add all four: 6 + 2 + 6 + 2 = 16.", type: "missing sides" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Compare Two Rectangles", minutes: 15, grouping: "Solo",
+      mission: "Write a short comparison that tells what is the same and what is different.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Draw both rectangles first, then use the frames.", l3_4: "Write all three parts and use 'whereas' once.", l5_6: "Write all three parts and add 'in contrast' with numbers." },
+      payload: {
+        prompt: "Rectangle A is 7 inches long and 2 inches wide. Rectangle B is 5 inches long and 4 inches wide. Compare their perimeters and their areas.",
+        structure: [
+          { part: "Same", frame: "Both rectangles have a ___ of ___." },
+          { part: "Different", frame: "Rectangle A has an area of ___, whereas Rectangle B has an area of ___." },
+          { part: "Big idea", frame: "So rectangles with the same ___ can have different ___." },
+        ],
+        word_bank: ["area", "perimeter", "length", "width", "square inches", "both", "whereas", "different"],
+        checklist: ["I told what is the same.", "I told what is different.", "I used both and whereas.", "I used the right units."],
+        model: "Both rectangles have a perimeter of 18 inches. Their areas are different, though. Rectangle A has an area of 14 square inches, whereas Rectangle B has an area of 20 square inches. So rectangles with the same perimeter can have different areas.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A rectangle is 6 feet long and 3 feet wide. Tell its area and its perimeter, and tell how they are different.",
+    frame: "The area is ___ square feet, whereas the perimeter is ___ feet, because ___.",
+    model: "The area is 18 square feet, whereas the perimeter is 18 feet. Area counts the space inside, but perimeter adds the distance around.",
+    rubric: {
+      emerging: "Finds one measure with a drawing and a word bank.",
+      developing: "Finds both measures with correct units and uses the frame.",
+      proficient: "Finds both measures and uses whereas or both to explain the difference in a clear sentence.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Largo' and 'ancho' are everyday words, so students may not connect them to length and width in math talk.", fix: "Label a rectangle in both languages and say length and width together with largo and ancho." },
+    { group: "All multilingual learners", issue: "Students mix up the units and write square feet for perimeter or feet for area.", fix: "Say 'inside means square units' and 'around means units' before each answer." },
+  ],
+  misconception: {
+    pattern: "Students add the length and width only once, such as 6 + 3, and call that the perimeter.",
+    redirect: "Ask 'How many sides does a rectangle have?' and have them touch each side as they add all four.",
+  },
+};

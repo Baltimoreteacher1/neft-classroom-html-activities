@@ -1,0 +1,268 @@
+// BCPSS Language Studio v2 — gk-sci-u3 (Kindergarten Science, SABES 5E). Schema: ../schema.mjs
+
+export default {
+  essential_question: "What do living things need to stay alive in their homes?",
+  can_do: {
+    content: "I can tell which things are alive and what plants and animals need.",
+    language: "I can say what a thing is and tell why with the word because.",
+  },
+  mentor: {
+    text: "A terrapin is a living thing, because it needs food and water.",
+    gist: "The speaker names the thing and its group first, then uses 'because' to give the reason.",
+    chunks: [
+      { text: "A terrapin is", role: "The thing", tone: "precision", ask: "What animal does the speaker name?" },
+      { text: "a living thing,", role: "The group", tone: "concept", ask: "What group is the terrapin in?" },
+      { text: "because", role: "The joining word", tone: "connector", ask: "Which word starts the reason?" },
+      { text: "it needs food and water.", role: "The reason", tone: "evidence", ask: "What does the terrapin need?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "A [plant] is a living thing.",
+      "A [rock] is not alive.",
+      "It needs [water].",
+    ],
+    l3_4: [
+      "A [animal] is a living thing because it needs [food / water / air].",
+      "A [habitat] is a home for a [animal].",
+      "A [rock] is nonliving because it does not [grow].",
+    ],
+    l5_6: [
+      "A [living thing] is a type of [plant / animal] that [grows and needs food].",
+      "A [habitat] gives a [animal] [food, water, and shelter].",
+      "A [rock] is not a living thing because it does not [need food].",
+    ],
+  },
+  connectors: ["because", "and", "so", "but", "also", "not"],
+  vocab: [
+    { term: "living thing", tier: 3, pos: "noun", icon: "🌱", def: "something that is alive, grows, and needs food", example: "A frog is a living thing.", nonexample: "A toy truck does not grow, so it is not a living thing.", es: "ser vivo", es_note: "Living thing = ser vivo. Say 'seres vivos' for more than one.", family: ["living things", "alive"], cue: "A sprout, a ladybug, and a child side by side with smiles." },
+    { term: "nonliving", tier: 3, pos: "adjective", icon: "🪨", def: "not alive, so it does not grow or need food", example: "A rock is nonliving.", nonexample: "A tree is alive, so it is not nonliving.", es: "no vivo", es_note: "Nonliving = no vivo or inerte. Say 'cosas sin vida' for kids.", family: ["not alive"], cue: "A rock, a spoon, and a toy truck with a crossed-out heart." },
+    { term: "plant", tier: 2, pos: "noun", icon: "🌿", def: "a living thing that grows in the ground and does not move around", example: "A sunflower is a tall plant.", nonexample: "A frog is an animal, not a plant.", es: "planta", es_note: "Cognate: sounds and means almost the same.", family: ["plants"], cue: "A black-eyed Susan with roots, stem, and petals." },
+    { term: "animal", tier: 2, pos: "noun", icon: "🐾", def: "a living thing that moves and eats food", example: "A blue crab is an animal.", nonexample: "A daisy is a plant, not an animal.", es: "animal", es_note: "Cognate: the same word in Spanish.", family: ["animals"], cue: "A blue crab, a squirrel, and a bee." },
+    { term: "need", tier: 2, pos: "noun", icon: "🙏", def: "something you must have to stay alive", example: "Water is a need for every plant.", nonexample: "A toy is a want, not a need.", es: "necesidad", es_note: "Need = necesidad. The verb 'to need' = necesitar.", family: ["needs", "needed"], cue: "A plant with a watering can, sun, and soil." },
+    { term: "water", tier: 2, pos: "noun", icon: "💧", def: "the clear liquid in rain, rivers, and the Bay", example: "Plants need water to grow.", nonexample: "Sand is not water.", es: "agua", es_note: "Water = agua.", family: ["drink"], cue: "A raindrop, a puddle, and a cup of water." },
+    { term: "habitat", tier: 3, pos: "noun", icon: "🏞️", def: "the natural home where a plant or animal lives", example: "A pond is a habitat for frogs.", nonexample: "A toy box is not a habitat.", es: "hábitat", es_note: "Cognate: hábitat. Same meaning in Spanish.", family: ["habitats"], cue: "A frog on a lily pad in a pond." },
+    { term: "shelter", tier: 2, pos: "noun", icon: "🏠", def: "a safe place to stay out of the weather and away from danger", example: "A bird builds a nest for shelter.", nonexample: "An open field is not much shelter.", es: "refugio", es_note: "Shelter = refugio or abrigo.", family: ["shelters"], cue: "A bird in a nest inside a tree." },
+    { term: "grow", tier: 2, pos: "verb", icon: "📏", def: "to get bigger over time", example: "A seed can grow into a plant.", nonexample: "A rock does not grow.", es: "crecer", es_note: "Grow = crecer.", family: ["grows", "growing"], cue: "Three plants: tiny, medium, and tall." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Pip the Blue Crab", minutes: 10, grouping: "Partners",
+      mission: "Listen twice. Tell Pip's story back!",
+      tip: "Read slowly twice; children point to the picture clues, then retell orally with a partner.",
+      materials: ["Picture cards: crab, bay, rock"],
+      support: { l1_2: "Point to the picture cards as you hear each word.", l3_4: "Say one sentence about Pip and one about the rock.", l5_6: "Retell all the ideas and say why the rock is not alive." },
+      payload: {
+        text: "Pip is a blue crab. She lives in the Chesapeake Bay. The Bay is her habitat. Pip eats small fish and snails. She needs water to breathe. A rock sits nearby. The rock is not alive.",
+        key_words: ["crab", "Bay", "habitat", "water", "rock", "alive"],
+        frame: "Pip is a ___. She lives in the ___. Pip needs ___. The rock is not ___.",
+        checks: ["Pip is a blue crab", "the Chesapeake Bay is her habitat", "Pip needs food and water", "the rock is not alive"],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Alive or Not Alive?", minutes: 8, grouping: "Partners",
+      mission: "Sort each thing. Is it alive or not?",
+      tip: "Ask 'Does it grow? Does it need food?' before each sort and listen for because.",
+      materials: [],
+      support: { l1_2: "Sort the pictures you know first.", l3_4: "Sort all words and say 'It is ___ because ___.'", l5_6: "Sort all words, then add one new thing to each group." },
+      payload: {
+        categories: [{ name: "🌱 Living thing" }, { name: "🪨 Nonliving" }],
+        items: [
+          { text: "oak tree", cat: 0 }, { text: "goldfish", cat: 0 }, { text: "ladybug", cat: 0 }, { text: "daisy", cat: 0 }, { text: "squirrel", cat: 0 }, { text: "child", cat: 0 },
+          { text: "rock", cat: 1 }, { text: "spoon", cat: 1 }, { text: "toy truck", cat: 1 }, { text: "window", cat: 1 }, { text: "puddle", cat: 1 }, { text: "cloud", cat: 1 },
+        ],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Life Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each word to its picture clue.",
+      tip: "Have children say each word and show it with a gesture before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match the picture words first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "living thing", r: "🌱 alive and grows" },
+          { l: "nonliving", r: "🪨 not alive" },
+          { l: "plant", r: "🌿 grows in the ground" },
+          { l: "animal", r: "🐾 moves and eats" },
+          { l: "need", r: "🙏 must have to live" },
+          { l: "water", r: "💧 plants and animals drink it" },
+          { l: "habitat", r: "🏞️ a home in nature" },
+          { l: "shelter", r: "🏠 a safe place to stay" },
+          { l: "grow", r: "📏 get bigger" },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Creature", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the living thing!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think.",
+      materials: [],
+      support: { l1_2: "Use the picture cards to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "blue crab", clues: ["I live in the Chesapeake Bay.", "I walk sideways.", "I have two big claws."] },
+          { term: "squirrel", clues: ["I have a bushy tail.", "I hide nuts for winter.", "I climb trees in Baltimore parks."] },
+          { term: "frog", clues: ["I hop near ponds.", "I start life as a tadpole.", "I say ribbit."] },
+          { term: "bee", clues: ["I fly from flower to flower.", "I make honey.", "I buzz."] },
+          { term: "sunflower", clues: ["I am a tall plant.", "When I am young, my face turns toward the sun.", "My seeds are tasty."] },
+          { term: "goldfish", clues: ["I swim in a bowl.", "I breathe with gills.", "I need clean water."] },
+          { term: "oak tree", clues: ["I am tall with a thick trunk.", "Acorns grow on me.", "Birds build nests in me."] },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Pond and Forest Report", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to finish the report.",
+      tip: "Partners keep cards hidden and ask and answer aloud.",
+      materials: ["Report cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'Does it need shelter?'" },
+      payload: {
+        goal: "Find out what the fern and the frog need and where they live.",
+        a: { title: "Scientist A", has: [{ k: "Frog needs", v: "food and water" }, { k: "Frog habitat", v: "a pond" }, { k: "Rock alive?", v: "no" }], needs: ["Fern needs", "Fern habitat"] },
+        b: { title: "Scientist B", has: [{ k: "Fern needs", v: "water and light" }, { k: "Fern habitat", v: "a shady forest" }, { k: "Fern alive?", v: "yes" }], needs: ["Frog needs", "Frog habitat"] },
+        ask_frames: ["What does the ___ need?", "Where does the ___ live?"],
+        tell_frames: ["The ___ needs ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Living Thing Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner what you know.",
+      tip: "Model one turn first; listen for because and one need.",
+      materials: ["Picture talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add one need.", l5_6: "Say why with because and name the habitat." },
+      payload: {
+        roles: { a: "Scientist", b: "Listener" },
+        cards: [
+          { prompt: "Is a squirrel alive? How do you know?", starter: "A squirrel is ___ because ___.", follow_up: "What does it eat?" },
+          { prompt: "Is a rock alive? How do you know?", starter: "A rock is ___ because ___.", follow_up: "Does a rock need food?" },
+          { prompt: "What does a flower need to grow?", starter: "A flower needs ___.", follow_up: "What else does it need?" },
+          { prompt: "Where does a blue crab live?", starter: "A blue crab lives in ___.", follow_up: "Why is that a good home?" },
+          { prompt: "What do you need to stay alive?", starter: "I need ___.", follow_up: "Is that a need or a want?" },
+          { prompt: "Name a living thing near our school.", starter: "I see a ___. It is a ___ thing.", follow_up: "What does it need?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you point to ___?" },
+          { label: "Me too", stem: "I also know ___." },
+        ],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Rosa's Garden", minutes: 10, grouping: "Whole Class",
+      mission: "Listen to Rosa's story. Find the living things!",
+      tip: "Read aloud twice; children circle living things and underline needs on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the living things.", l3_4: "Find living things and what they need.", l5_6: "Find both, then write one new sentence about Rosa's garden." },
+      payload: {
+        text: "Rosa has a garden. A sunflower grows in it. A ladybug sits on a leaf. A rock sits by the fence. The sunflower needs water and sun. The ladybug needs food. The rock does not need food.",
+        marks: [
+          { label: "Living things", instruction: "Circle the living things.", targets: ["sunflower", "ladybug"] },
+          { label: "Needs", instruction: "Underline what the living things need.", targets: ["water and sun", "needs food"] },
+        ],
+        questions: [
+          { q: "What does the sunflower need?", options: ["Water and sun", "Only a fence", "A leaf and a rock"], answer: 0, why: "The story says the sunflower needs water and sun." },
+          { q: "Which thing is nonliving?", options: ["The ladybug", "The sunflower", "The rock"], answer: 2, why: "The rock does not need food, so it is not alive." },
+          { q: "What does the ladybug need?", options: ["Sun", "Food", "A fence"], answer: 1, why: "The ladybug needs food." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Need Sentence", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts with a capital letter and how children know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add the word because and a reason." },
+      payload: {
+        items: [
+          { parts: ["Plants need", "water and", "light."] },
+          { parts: ["Animals need", "food and", "water."] },
+          { parts: ["A frog lives", "in a", "pond."] },
+          { parts: ["A rock", "is not", "alive."] },
+          { parts: ["Seeds grow", "into", "plants."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Pond Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap.",
+      tip: "Two bank words are extras; children must decide which ones do not fit.",
+      materials: [],
+      support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
+      payload: {
+        text: "A pond is a {1} for a frog. The frog is a {2} thing. It {3} water and food. A rock is {4}.",
+        answers: ["habitat", "living", "needs", "nonliving"],
+        bank: ["habitat", "living", "needs", "nonliving", "grow", "alive"],
+      },
+    },
+    {
+      kind: "quiz", domain: "Vocabulary", title: "Alive Quiz Show", minutes: 8, grouping: "Whole Class",
+      mission: "Think. Pick the best answer. Say why!",
+      tip: "Read each question aloud; children answer with a thumbs or a card, no clock.",
+      materials: [],
+      support: { l1_2: "Look at the picture, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each wrong answer does not fit." },
+      payload: {
+        items: [
+          { q: "Which one is a living thing?", options: ["A spoon", "A ladybug", "A rock"], answer: 1, why: "A ladybug is alive. It grows and eats." },
+          { q: "What do plants need to grow?", options: ["Water and light", "Candy and toys", "Rocks and sand only"], answer: 0, why: "Plants need water and light to grow." },
+          { q: "What is a habitat?", options: ["A kind of food", "A home in nature", "A loud sound"], answer: 1, why: "A habitat is the natural home of a plant or animal." },
+          { q: "A rock is nonliving. Why?", options: ["It does not grow or need food", "It is gray", "It is hard to carry"], answer: 0, why: "Living things grow and need food. A rock does neither." },
+          { q: "Where does a blue crab live?", options: ["In a desert", "In a tree", "In the Chesapeake Bay"], answer: 2, why: "The Bay is the blue crab's habitat." },
+          { q: "Which one is a plant?", options: ["A black-eyed Susan", "A squirrel", "A bee"], answer: 0, why: "The black-eyed Susan grows in the ground. It is Maryland's state flower." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Join With Because", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one. More than one answer can work.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["A frog is a living thing.", "It needs food."], connector: "because", model: "A frog is a living thing because it needs food." },
+          { sentences: ["A rock is nonliving.", "It does not grow."], connector: "because", model: "A rock is nonliving because it does not grow." },
+          { sentences: ["Plants need water.", "Plants need light."], connector: "and", model: "Plants need water and light." },
+          { sentences: ["The crab lives in the Bay.", "The Bay is its habitat."], connector: "and", model: "The crab lives in the Bay and the Bay is its habitat." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Living Thing Page", minutes: 15, grouping: "Solo",
+      mission: "Draw a living thing in its home. Write what it needs.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Habitat page template"],
+      support: { l1_2: "Draw it. Copy the first frame and label your picture.", l3_4: "Write what it is and one need.", l5_6: "Write what it is, its habitat, and a need with because." },
+      payload: {
+        prompt: "Pick a plant or animal. Draw it in its habitat. Write what it is, where it lives, and what it needs.",
+        structure: [
+          { part: "What it is", frame: "A [name] is a living thing." },
+          { part: "Where it lives", frame: "It lives in a [habitat]." },
+          { part: "What it needs", frame: "It needs [food / water / light] to [grow / stay alive]." },
+        ],
+        word_bank: ["plant", "animal", "habitat", "water", "food", "light", "shelter", "grow", "alive", "because", "pond", "Bay"],
+        checklist: ["I drew my picture.", "I told what it is.", "I told where it lives.", "I told what it needs."],
+        model: "A frog is a living thing. It lives in a pond. It needs food and water to stay alive.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Pick one living thing. Tell what it needs. Use the word because.",
+    frame: "A [name] is a living thing because it needs [food / water / light].",
+    model: "A sunflower is a living thing because it needs water and light.",
+    rubric: {
+      emerging: "Points to a living thing and names one need with a picture.",
+      developing: "Uses the frame to name a living thing and one need.",
+      proficient: "Names the living thing, gives two needs, and uses because; can tell why a rock is not alive.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Children may say 'is live' or 'is life' because Spanish uses 'vivo' as an adjective and English needs 'alive' or 'living'.", fix: "Teach 'alive' with its picture and the frame 'A ___ is alive.' Practice 'living thing' as one phrase." },
+    { group: "All multilingual learners", issue: "Children name the thing but forget the reason, so the answer has no because part.", fix: "Use the frame 'It is ___ because it ___' and have children point to the need in the picture first." },
+  ],
+  misconception: {
+    pattern: "Children say plants are not alive because they do not move, or that the sun and clouds are living things.",
+    redirect: "Ask 'Does it grow? Does it need food or water?' and look at a sprout growing over a week to see that plants change.",
+  },
+};

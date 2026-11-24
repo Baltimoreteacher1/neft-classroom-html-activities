@@ -7,6 +7,7 @@
 // areas in one grade really use the same WIDA blueprint.
 
 import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
+import { STUDIO_SUMMARIES } from "../../../db/seeds/bcpss/v2/summaries.mjs";
 
 export const PATHWAYS_VERSION = 1;
 export const KLU_ORDER = ["Narrate", "Inform", "Explain", "Argue"];
@@ -18,7 +19,10 @@ const BLUEPRINTS = seed.LANGUAGE_BLUEPRINTS || [];
 const CONNECTIONS = seed.UNIT_CONNECTIONS || [];
 
 const BLUEPRINT_BY_ID = new Map(BLUEPRINTS.map((b) => [b.id, b]));
-const CONNECTION_BY_UNIT = new Map(CONNECTIONS.map((c) => [c.unit_id, c]));
+// Authored Language Studio words and mentor sentences replace the generated seed text where they exist.
+const CONNECTION_BY_UNIT = new Map(
+  CONNECTIONS.map((c) => [c.unit_id, { ...c, ...(STUDIO_SUMMARIES[c.unit_id] || {}) }]),
+);
 
 export const gradeLabel = (grade) => (String(grade) === "K" ? "Kindergarten" : `Grade ${grade}`);
 

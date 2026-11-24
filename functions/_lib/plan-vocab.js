@@ -5601,13 +5601,13 @@ export const ACTIVITIES = [
   },
   {
     path: "/bcpss-teachers/",
-    title: "BCPSS K–8 Curriculum & Language Bridge",
+    title: "BCPSS K–8 Curriculum & Language Bridge — The Language Page",
     category: "Tool",
     unit: null,
   },
   {
     path: "/bcpss-teachers/activity/",
-    title: "BCPSS Unit Activity",
+    title: "BCPSS Activity — opening the Language Studio",
     category: "Tool",
     unit: null,
   },
@@ -5618,8 +5618,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/bcpss-teachers/language-studio/",
+    title: "Language Studio",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/bcpss-teachers/pathways/",
     title: "Year Pathways — BCPSS K–8 Curriculum & Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/bcpss-teachers/studio/",
+    title: "BCPSS Teacher Studio",
     category: "Tool",
     unit: null,
   },
@@ -6374,8 +6386,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/access-practice-lab/arcade/",
+    title: "Activity Arcade · The Language Page",
+    category: "Practice",
+    unit: null,
+  },
+  {
     path: "/access-practice-lab/family-tour/",
     title: "Family Tour | Recorrido familiar · The Language Page",
+    category: "Practice",
+    unit: null,
+  },
+  {
+    path: "/access-practice-lab/support/",
+    title: "Contact and help | The Language Page",
     category: "Practice",
     unit: null,
   },

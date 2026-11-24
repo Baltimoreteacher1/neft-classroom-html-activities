@@ -1,0 +1,266 @@
+// BCPSS Language Studio v2 — gk-sci-u2 (Kindergarten Science, SABES 5E). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do pushes and pulls change the way things move?",
+  can_do: {
+    content: "I can tell how a push or a pull changes how fast or which way a thing moves.",
+    language: "I can explain what I did first and what happened next.",
+  },
+  mentor: {
+    text: "I give the ball a strong push, so it rolls fast.",
+    gist: "The speaker tells the push first, then uses 'so' to tell how the ball moves.",
+    chunks: [
+      { text: "I give the ball", role: "The thing that moves", tone: "precision", ask: "What does the speaker give a push?" },
+      { text: "a strong push,", role: "The action", tone: "concept", ask: "How strong is the push?" },
+      { text: "so", role: "The joining word", tone: "connector", ask: "Which little word joins the push to what happens?" },
+      { text: "it rolls fast.", role: "What happens", tone: "evidence", ask: "How does the ball move?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "I [push / pull] the [thing].",
+      "It goes [away / close].",
+      "It is [fast / slow].",
+    ],
+    l3_4: [
+      "I give the [thing] a [strong / gentle] [push / pull].",
+      "A [push] makes it go [away from me].",
+      "A [strong] push makes it go [fast].",
+    ],
+    l5_6: [
+      "First, I give the [thing] a [strong / gentle] [push / pull]. Then, it [moves].",
+      "A [push] changes the [speed / direction] of the [thing].",
+      "The [thing] goes [faster / farther] because I [action].",
+    ],
+  },
+  connectors: ["so", "then", "first", "because", "and", "but"],
+  vocab: [
+    { term: "push", tier: 3, pos: "verb", icon: "👉", def: "to make something move away from you", example: "I push the swing.", nonexample: "Bringing a wagon closer is not a push.", es: "empujar", es_note: "Push = empujar. The noun 'a push' = un empujón.", family: ["pushes", "pushed"], cue: "A child with two hands on a swing, sending it away." },
+    { term: "pull", tier: 3, pos: "verb", icon: "🪢", def: "to make something come closer to you", example: "I pull the wagon.", nonexample: "Sending a ball away is not a pull.", es: "jalar", es_note: "Pull = jalar (or halar). The noun 'a pull' = un jalón.", family: ["pulls", "pulled"], cue: "A child holding a wagon handle, with the wagon coming closer." },
+    { term: "motion", tier: 3, pos: "noun", icon: "🏃", def: "the act of moving from one place to another", example: "The rolling ball is in motion.", nonexample: "A ball on a shelf is not in motion.", es: "movimiento", es_note: "Motion = movimiento. Not the same as 'moción'.", family: ["move", "moving"], cue: "A ball with little lines showing it rolling." },
+    { term: "speed", tier: 3, pos: "noun", icon: "💨", def: "how fast or how slow something goes", example: "A strong push gives the ball more speed.", nonexample: "The color of a ball is not its speed.", es: "rapidez", es_note: "Speed = rapidez (or velocidad).", family: ["fast", "slow"], cue: "A fast toy car with wind lines next to a slow snail." },
+    { term: "direction", tier: 3, pos: "noun", icon: "🧭", def: "the way something is going, like left, right, or up", example: "The ball changes direction when it hits the wall.", nonexample: "How loud a drum is has nothing to do with direction.", es: "dirección", es_note: "Cognate: dirección.", family: ["directions"], cue: "Arrows pointing left, right, up, and down." },
+    { term: "strong", tier: 2, pos: "adjective", icon: "💪", def: "with a lot of power, not weak", example: "A strong push sends the ball far.", nonexample: "A tiny tap is not strong.", es: "fuerte", es_note: "Strong = fuerte. Also used for loud sounds in Spanish.", family: ["stronger"], cue: "A child with big arms pushing a heavy box." },
+    { term: "gentle", tier: 2, pos: "adjective", icon: "🪶", def: "soft and light, not rough", example: "Give the ball a gentle push.", nonexample: "Slamming a door is not gentle.", es: "suave", es_note: "Gentle = suave. 'Gentil' means polite, not gentle.", family: ["gently"], cue: "A feather and a hand giving a tiny tap." },
+    { term: "roll", tier: 2, pos: "verb", icon: "⚽", def: "to move by turning over and over", example: "The ball can roll down the hall.", nonexample: "A box does not roll when you slide it.", es: "rodar", es_note: "Roll = rodar. A bread roll is 'un panecillo'.", family: ["rolls", "rolling"], cue: "A ball turning along the floor with a curved arrow." },
+    { term: "stop", tier: 2, pos: "verb", icon: "🛑", def: "to quit moving", example: "A hard pull can stop a rolling ball.", nonexample: "A rolling ball has not yet stopped.", es: "parar", es_note: "Stop = parar or detenerse. The sign says 'ALTO' in many places.", family: ["stops", "stopped"], cue: "A ball with a red stop sign beside it." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Playground Push and Pull", minutes: 10, grouping: "Partners",
+      mission: "Listen twice. Tell Noah's story back!",
+      tip: "Read slowly twice; children act out each push and pull, then retell with a partner.",
+      materials: ["Picture cards: swing, wagon, ball"],
+      support: { l1_2: "Point to the picture cards as you hear each word.", l3_4: "Say one sentence about the swing and one about the wagon.", l5_6: "Retell all the ideas and say how a big push changes speed." },
+      payload: {
+        text: "Noah is at the park. He pushes the swing. The swing moves away. He pulls the wagon. The wagon comes closer. A big push makes it go fast.",
+        key_words: ["park", "pushes", "swing", "pulls", "wagon", "fast"],
+        frame: "Noah ___ the swing. It moves ___. He ___ the wagon. It comes ___.",
+        checks: ["Noah pushes the swing", "the swing moves away", "he pulls the wagon and it comes closer", "a big push makes it go fast"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Motion Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each word to its picture clue.",
+      tip: "Have children act out each word with their hands before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match push, pull, and stop first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "push", r: "👉 move it away from me" },
+          { l: "pull", r: "🪢 bring it closer to me" },
+          { l: "motion", r: "🏃 moving along" },
+          { l: "speed", r: "💨 how fast or slow" },
+          { l: "direction", r: "🧭 the way it goes" },
+          { l: "strong", r: "💪 a big, powerful push" },
+          { l: "gentle", r: "🪶 a soft, light tap" },
+          { l: "roll", r: "⚽ turn over and over" },
+          { l: "stop", r: "🛑 quit moving" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Push or Pull?", minutes: 8, grouping: "Partners",
+      mission: "Sort each action. Is it a push or a pull?",
+      tip: "Ask children to act out each action and say whether the thing moves away or comes closer.",
+      materials: [],
+      support: { l1_2: "Act out each one first, then sort.", l3_4: "Sort all words and say 'It is a ___ because it goes ___.'", l5_6: "Sort all words, then add one new push and one new pull." },
+      payload: {
+        categories: [{ name: "👉 I push it" }, { name: "🪢 I pull it" }],
+        items: [
+          { text: "a swing from behind", cat: 0 }, { text: "a shopping cart", cat: 0 }, { text: "a ball to a friend", cat: 0 }, { text: "an elevator button", cat: 0 }, { text: "a stroller", cat: 0 },
+          { text: "a wagon by its handle", cat: 1 }, { text: "a dresser drawer", cat: 1 }, { text: "a rope in tug of war", cat: 1 }, { text: "a zipper", cat: 1 }, { text: "a sled by its rope", cat: 1 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Mover", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the mystery thing!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think.",
+      materials: [],
+      support: { l1_2: "Use the picture cards to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "wagon", clues: ["I have four wheels and a handle.", "You pull me down the sidewalk.", "Kids can ride in me."] },
+          { term: "swing", clues: ["I hang from a tall frame.", "A push from behind starts me.", "I go back and forth."] },
+          { term: "ball", clues: ["I am round.", "You kick or throw me.", "I roll away after a push."] },
+          { term: "sled", clues: ["I slide on snow.", "I have a rope in front.", "You pull me up the hill."] },
+          { term: "drawer", clues: ["I live in a desk or dresser.", "You pull my handle.", "Socks might be inside me."] },
+          { term: "toy car", clues: ["I have small wheels.", "A little push sends me far.", "Vroom, vroom!"] },
+          { term: "rope", clues: ["I am long and bendy.", "You hold me in tug of war.", "You pull me hand over hand."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Push and Pull Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Show a push or a pull. Tell your partner!",
+      tip: "Model one turn first; listen for push or pull and one word about speed or direction.",
+      materials: ["Picture talk cards", "A ball"],
+      support: { l1_2: "Do the action and say the first frame.", l3_4: "Say the frame and add fast or slow.", l5_6: "Say first and then to tell what happened." },
+      payload: {
+        roles: { a: "Mover", b: "Observer" },
+        cards: [
+          { prompt: "Give the ball a gentle push. What happens?", starter: "I give the ball a ___ push.", follow_up: "How far did it go?" },
+          { prompt: "Give the ball a strong push. What happens?", starter: "The ball goes ___.", follow_up: "Was it faster than before?" },
+          { prompt: "Pull a drawer. Which way does it go?", starter: "I pull the drawer ___.", follow_up: "Does it come closer?" },
+          { prompt: "Push a toy car, then pull a string. What changes?", starter: "First I ___. Then I ___.", follow_up: "Which way did it go?" },
+          { prompt: "How can you stop a rolling ball?", starter: "I can stop it with a ___.", follow_up: "Is that a push or a pull?" },
+          { prompt: "Which do you like better, push or pull?", starter: "I like to ___ because ___.", follow_up: "What do you push or pull at home?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you do it again?" },
+          { label: "Me too", stem: "I also ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Test Report Swap", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to finish the test report.",
+      tip: "Partners keep cards hidden and ask and answer aloud.",
+      materials: ["Test report cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'Did it go farther?'" },
+      payload: {
+        goal: "Find out what happened to the ball, the car, the wagon, and the sled.",
+        a: { title: "Tester A", has: [{ k: "Strong push on ball", v: "rolled far" }, { k: "Gentle push on ball", v: "rolled a short way" }, { k: "Push on toy car", v: "sped up" }], needs: ["Strong pull on wagon", "Gentle pull on wagon", "Pull on sled"] },
+        b: { title: "Tester B", has: [{ k: "Strong pull on wagon", v: "came close fast" }, { k: "Gentle pull on wagon", v: "came close slowly" }, { k: "Pull on sled", v: "slid closer" }], needs: ["Strong push on ball", "Gentle push on ball", "Push on toy car"] },
+        ask_frames: ["What happened with the ___?", "Did it go fast or slow?"],
+        tell_frames: ["The ___ ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Kai's Ball Test", minutes: 10, grouping: "Whole Class",
+      mission: "Listen to Kai's test. Find the push words!",
+      tip: "Read aloud twice; children circle push words and speed words on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the push words.", l3_4: "Find push words and speed words.", l5_6: "Find both, then write one new sentence about Kai." },
+      payload: {
+        text: "Kai has a ball on the floor. Kai gives a gentle push. The ball rolls slowly. Kai gives a strong push. The ball rolls fast. Kai stops the ball with his hand. Pushes make things move.",
+        marks: [
+          { label: "Push words", instruction: "Circle the push words.", targets: ["gentle push", "strong push"] },
+          { label: "Speed words", instruction: "Underline how the ball moves.", targets: ["slowly", "fast"] },
+        ],
+        questions: [
+          { q: "What happens after the gentle push?", options: ["The ball rolls fast", "The ball rolls slowly", "The ball jumps"], answer: 1, why: "A gentle push makes the ball roll slowly." },
+          { q: "Which push makes the ball go fast?", options: ["A strong push", "A gentle push", "No push"], answer: 0, why: "Kai's strong push makes the ball roll fast." },
+          { q: "How does Kai stop the ball?", options: ["With a song", "With his hand", "With a wall"], answer: 1, why: "The story says Kai stops the ball with his hand." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Motion Sentence", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts with a capital letter and how children know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add the word so and one more idea." },
+      payload: {
+        items: [
+          { parts: ["I push", "the ball", "away."] },
+          { parts: ["She pulls", "the wagon", "closer."] },
+          { parts: ["A strong push", "makes it", "go fast."] },
+          { parts: ["A gentle push", "makes it", "go slow."] },
+          { parts: ["Tim stops", "the rolling", "ball."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Park Day Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap.",
+      tip: "Two bank words are extras; children must decide which ones do not fit.",
+      materials: [],
+      support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
+      payload: {
+        text: "Ana has a wagon. She {1} the handle. The wagon comes {2}. Next, she {3} the ball away. The ball is in {4}.",
+        answers: ["pulls", "closer", "pushes", "motion"],
+        bank: ["pulls", "closer", "pushes", "motion", "stop", "away"],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Reading", title: "Fix the Sentence", minutes: 8, grouping: "Partners",
+      mission: "Find the mistake. Pick the best fix!",
+      tip: "Read each wrong sentence aloud and ask children to act it out to find what does not fit.",
+      materials: [],
+      support: { l1_2: "Act out each choice with your hands.", l3_4: "Pick the fix and say why the wrong one does not work.", l5_6: "Pick the fix, then write your own correct sentence." },
+      payload: {
+        items: [
+          { wrong: "A gentle push makes the ball go very fast.", options: ["A strong push makes the ball go very fast.", "A strong pull makes the ball go very slow.", "A gentle push makes the ball stay still."], answer: 0, why: "A strong push gives more speed. A gentle push gives less." },
+          { wrong: "I push the wagon to bring it closer.", options: ["I push the wagon to send it away.", "I pull the wagon to bring it closer.", "I pull the wagon to send it away."], answer: 1, why: "A pull brings things closer to you." },
+          { wrong: "The ball stays still, so it is in motion.", options: ["The ball stays still, so it is fast.", "The ball moves, so it is in motion.", "The ball moves, so it is still."], answer: 1, why: "Motion means moving, so the ball must move." },
+          { wrong: "Push means to bring it close to you.", options: ["Pull means to send it far away.", "Push means to stop it.", "Push means to send it away from you."], answer: 2, why: "A push moves something away from you." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Push, Then Move", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one. More than one answer can work.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["I give a strong push.", "The ball rolls far."], connector: "so", model: "I give a strong push, so the ball rolls far." },
+          { sentences: ["I pull the wagon.", "It comes closer."], connector: "and", model: "I pull the wagon and it comes closer." },
+          { sentences: ["The ball goes slowly.", "I gave a gentle push."], connector: "because", model: "The ball goes slowly because I gave a gentle push." },
+          { sentences: ["I push the swing.", "It moves away."], connector: "so", model: "I push the swing, so it moves away." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Push and Pull Page", minutes: 15, grouping: "Solo",
+      mission: "Draw a push or a pull. Write what happens.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Test page template"],
+      support: { l1_2: "Draw it. Copy the first frame and label your picture.", l3_4: "Write what you did and what happened.", l5_6: "Write first, then, and one more idea with so." },
+      payload: {
+        prompt: "Pick a toy. Draw how you moved it. Write the push or pull and what happened.",
+        structure: [
+          { part: "First", frame: "First, I give the [toy] a [strong / gentle] [push / pull]." },
+          { part: "Then", frame: "Then, it moves [fast / slow / away / closer]." },
+          { part: "What I learned", frame: "A [strong / gentle] [push / pull] makes it go [fast / slow]." },
+        ],
+        word_bank: ["push", "pull", "strong", "gentle", "fast", "slow", "away", "closer", "ball", "wagon", "first", "then"],
+        checklist: ["I drew my picture.", "I wrote push or pull.", "I told what happened.", "I used first and then."],
+        model: "First, I give the ball a strong push. Then, it rolls far away. A strong push makes the ball go fast.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Pick a push or a pull. Tell what you did first and what happened next.",
+    frame: "First, I [push / pull] the [thing]. Then, it [moves].",
+    model: "First, I push the ball with a strong push. Then, it rolls fast.",
+    rubric: {
+      emerging: "Points to a picture and says push or pull.",
+      developing: "Uses the frame to name a push or pull and one thing that happens.",
+      proficient: "Says first and then, names strong or gentle, and tells the speed or direction.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Push and pull sound alike and the verbs 'empujar' and 'jalar' are used differently in some homes, so children may swap them.", fix: "Pair each word with a hand motion: hands away for push, hands toward you for pull. Practice 'push away, pull closer.'" },
+    { group: "All multilingual learners", issue: "Children say 'it goes' but skip the speed or direction word, so the effect is missing.", fix: "Use the frame 'The ___ goes ___' and have children show fast, slow, away, or closer with their hands." },
+  ],
+  misconception: {
+    pattern: "Children say a ball keeps moving by itself with no push, or that a bigger ball must always go farther.",
+    redirect: "Ask 'What gave it the push?' and have children test a gentle push and a strong push on the same ball and compare.",
+  },
+};

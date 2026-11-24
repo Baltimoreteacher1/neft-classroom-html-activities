@@ -1,0 +1,267 @@
+// BCPSS Language Studio v2 — g5-math-u2. Schema: ../schema.mjs
+
+export default {
+  essential_question: "What happens to the digits of a decimal when you multiply or divide by 10, 100, or 1,000, and why?",
+  can_do: {
+    content: "I can read, compare, and round decimals to thousandths and multiply or divide them by powers of 10.",
+    language: "I can explain a cause and its effect with because, so, and as a result.",
+  },
+  mentor: {
+    text: "When I multiply 4.5 by 10, each digit moves one place to the left, because every place is worth ten times as much as the place to its right.",
+    gist: "The speaker names an action, tells what happens to the digits, and gives the place value reason.",
+    chunks: [
+      { text: "When I multiply 4.5 by 10,", role: "The cause", tone: "concept", ask: "What does the speaker do to the number 4.5?" },
+      { text: "each digit moves one place to the left,", role: "The effect", tone: "precision", ask: "What happens to the digits, and which way do they move?" },
+      { text: "because", role: "The reason signal", tone: "connector", ask: "Which word tells you the explanation is coming?" },
+      { text: "every place is worth ten times as much as the place to its right.", role: "The proof", tone: "evidence", ask: "What fact about places makes the digits move?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The digit [number] is in the [place] place.",
+      "I multiply by [10 / 100]. The digits move to the [left / right].",
+      "[Decimal] is greater than [decimal].",
+    ],
+    l3_4: [
+      "When I multiply by [10 / 100 / 1,000], each digit moves [number] places to the [left / right] because [reason].",
+      "The [digit] in [decimal] is in the [place] place, so its value is [value].",
+      "I rounded [decimal] to [rounded number] because the next digit is [digit].",
+    ],
+    l5_6: [
+      "Multiplying by [power of 10] causes each digit to shift [number] places to the [left / right], as a result [number] becomes [number].",
+      "Since [place] is worth [number] times as much as [place], the value of the [digit] is [value].",
+      "Although [decimal] has more digits than [decimal], it is [less / greater] because [reason].",
+    ],
+  },
+  connectors: ["because", "so", "as a result", "causes", "leads to", "since"],
+  vocab: [
+    { term: "place value", tier: 3, pos: "noun", def: "the value of a digit based on where it sits in a number", example: "In 4.5, the place value of the 5 is five tenths.", nonexample: "Counting how many digits a number has is not place value.", es: "valor posicional", es_note: "Spanish says 'valor posicional' or 'valor de posición' for the same idea.", family: ["place", "value"], cue: "A place value chart with one digit in each column." },
+    { term: "digit", tier: 3, pos: "noun", def: "one of the ten symbols 0 through 9 used to write numbers", example: "The number 3.07 has three digits.", nonexample: "The number 45 is not a digit; it is made of two digits.", es: "dígito", es_note: "Cognate: sounds and means almost the same.", family: ["digits"], cue: "Ten number tiles lined up from 0 to 9." },
+    { term: "decimal point", tier: 3, pos: "noun", def: "the dot that separates the whole number from the parts smaller than one", example: "Ones are on the left of the decimal point.", nonexample: "A period at the end of a sentence is not a decimal point.", es: "punto decimal", es_note: "Many Spanish-speaking countries write a comma, as in 0,5. In the United States we write a point.", family: ["decimal", "point"], cue: "A price tag showing $3.50 with the dot circled." },
+    { term: "thousandth", tier: 3, pos: "noun", def: "one of 1,000 equal parts of a whole", example: "In 0.007, the 7 means seven thousandths.", nonexample: "A thousand is a big number; a thousandth is a tiny part.", es: "milésimo", es_note: "Not the same as 'mil' (thousand). The ending -ésimo means a small part.", family: ["thousandths", "thousand"], cue: "A square cut into 1,000 tiny pieces with one piece shaded." },
+    { term: "power of 10", tier: 3, pos: "noun", def: "a number made by multiplying 10 by itself, like 100 or 1,000", example: "1,000 is a power of 10 because it equals 10 × 10 × 10.", nonexample: "The number 50 is not a power of 10.", es: "potencia de 10", es_note: "Cognate: 'potencia' also means power.", family: ["powers", "exponent"], cue: "A stack of tens: 10, 100, 1,000, getting taller." },
+    { term: "exponent", tier: 3, pos: "noun", def: "a small raised number that tells how many times to use the base as a factor", example: "In 10³, the exponent is 3, so I multiply three tens.", nonexample: "The big 10 in 10³ is the base, not the exponent.", es: "exponente", es_note: "Cognate: sounds and means almost the same.", family: ["exponents", "base"], cue: "A number 10 with a tiny 3 floating above its top corner." },
+    { term: "expanded form", tier: 3, pos: "noun", def: "a way to write a number as the sum of the values of its digits", example: "The expanded form of 3.25 is 3 + 0.2 + 0.05.", nonexample: "Writing 3.25 as 'three and twenty-five hundredths' is word form.", es: "forma desarrollada", es_note: "Some books say 'forma expandida'. Both mean the same.", family: ["expand", "form"], cue: "A number broken into colorful blocks joined by plus signs." },
+    { term: "round", tier: 2, pos: "verb", def: "to change a number to a nearby number that is easier to use", example: "I round 6.347 to 6.35 when I want the nearest hundredth.", nonexample: "A ball is round, but rounding a number is not about shape.", es: "redondear", es_note: "Cognate with 'redondo' (round). Same word family.", family: ["rounded", "rounding"], cue: "A number line with an arrow sliding to the closest tick mark." },
+    { term: "compare", tier: 2, pos: "verb", def: "to look at two numbers and tell which is greater, less, or equal", example: "To compare 0.45 and 0.5, I line up the places.", nonexample: "Adding two numbers does not compare them.", es: "comparar", es_note: "Cognate: sounds and means almost the same.", family: ["comparison", "compared"], cue: "Two decimals on a scale, one side tipping lower." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Calculator Shift", minutes: 12, grouping: "Partners",
+      mission: "Listen to Marcus's story twice, jot key words, then rebuild it with your partner.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and draw an arrow showing which way the digits move.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one sentence that explains why the digits move." },
+      payload: {
+        text: "Marcus types 3.4 on his calculator. He multiplies by 10, and the screen shows 34. Each digit moved one place to the left. Then he multiplies 34 by 100 and gets 3,400. This time each digit moved two places to the left. Zeros hold the empty places.",
+        key_words: ["multiplies", "digit", "places", "left", "zeros"],
+        frame: "First, Marcus ___. Next, he ___. Each digit ___. The zeros ___.",
+        checks: ["Marcus types 3.4 and multiplies by 10 to get 34", "each digit moved one place to the left", "34 times 100 is 3,400 and the digits moved two places", "zeros hold the empty places"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Decimal Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match every math word to its meaning. Wrong matches bounce back, so keep going until all nine click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know from the picture cues first.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "place value", r: "the value of a digit based on where it sits in a number" },
+          { l: "digit", r: "one of the ten symbols 0 through 9" },
+          { l: "decimal point", r: "the dot between the whole number and the parts" },
+          { l: "thousandth", r: "one of 1,000 equal parts of a whole" },
+          { l: "power of 10", r: "10 multiplied by itself, like 100 or 1,000" },
+          { l: "exponent", r: "a small raised number that tells how many times to multiply the base" },
+          { l: "expanded form", r: "a number written as a sum of its digit values" },
+          { l: "round", r: "to change a number to a nearby number that is easier to use" },
+          { l: "compare", r: "to tell which number is greater, less, or equal" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Which Place Is It?", minutes: 8, grouping: "Partners",
+      mission: "Sort each place or number into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the places you know first and say them aloud.", l3_4: "Sort all items and say 'I put ___ here because ___.'", l5_6: "Sort all items, then add one more place to each of the first two groups." },
+      payload: {
+        categories: [{ name: "Left of the decimal point" }, { name: "Right of the decimal point" }, { name: "Powers of 10" }],
+        items: [
+          { text: "ones", cat: 0 }, { text: "tens", cat: 0 }, { text: "hundreds", cat: 0 }, { text: "thousands", cat: 0 },
+          { text: "tenths", cat: 1 }, { text: "hundredths", cat: 1 }, { text: "thousandths", cat: 1 },
+          { text: "10¹", cat: 2 }, { text: "10²", cat: 2 }, { text: "10³", cat: 2 }, { text: "10⁴", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Place Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the picture cue to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "digit", clues: ["I am one of ten symbols, 0 through 9.", "The number 305 has three of me.", "My value changes depending on where I sit."] },
+          { term: "decimal point", clues: ["I am a tiny dot.", "Ones are on my left and tenths are on my right.", "Money uses me between dollars and cents."] },
+          { term: "thousandth", clues: ["I am the third place after the dot.", "Cut a whole into 1,000 equal parts and take one.", "In 0.007, the 7 sits in my place."] },
+          { term: "power of 10", clues: ["100 and 1,000 belong to my family.", "I am made by multiplying tens.", "Ten times ten times ten is one of me."] },
+          { term: "exponent", clues: ["I am a tiny number floating up high.", "In 10³, I am the 3.", "I tell how many times to multiply the base."] },
+          { term: "expanded form", clues: ["I write a number as a sum.", "The number 345 becomes 300 + 40 + 5.", "Each digit shows its own value."] },
+          { term: "round", clues: ["Find the nearest ten, tenth, or whole.", "The number 3.46 becomes 3.5 to the nearest tenth.", "Look at the next digit to decide."] },
+          { term: "compare", clues: ["Use the signs <, >, and =.", "Is 0.45 greater than 0.5?", "Line up the places to decide."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Explain the Shift", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain the cause and effect, then your partner pushes your thinking with a move.",
+      tip: "Listen for a cause word such as because or as a result in every answer.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the digit and say which way it moves.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'as a result' to tell what happens to the number." },
+      payload: {
+        roles: { a: "Explainer", b: "Questioner" },
+        cards: [
+          { prompt: "Why does 0.6 × 10 equal 6?", starter: "Multiplying by 10 causes each digit to move ___, so ___.", follow_up: "Which place did the 6 start in?" },
+          { prompt: "What happens to 52 when you divide it by 100?", starter: "Dividing by 100 makes each digit move ___. As a result, 52 becomes ___.", follow_up: "Where does the decimal point end up?" },
+          { prompt: "Why is 0.07 less than 0.7?", starter: "The 7 is worth less in 0.07 because ___.", follow_up: "How many times smaller is it?" },
+          { prompt: "Why does 10³ equal 1,000 and not 30?", starter: "The exponent 3 tells me to ___, so ___.", follow_up: "What would 10⁴ be?" },
+          { prompt: "A friend says 0.30 is greater than 0.3. What do you say?", starter: "I disagree because ___.", follow_up: "How can place value show they are equal?" },
+          { prompt: "How do you round 6.347 to the nearest hundredth?", starter: "I look at the ___ digit. It is ___, so ___.", follow_up: "What is the rounded number?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is in the number?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Number Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds half of two number puzzles. Ask questions to find the missing facts, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each number back to check.", l5_6: "Check each answer by moving the digits yourself." },
+      payload: {
+        goal: "Fill in the missing facts for Puzzle 1 and Puzzle 2.",
+        a: { title: "Detective A", has: [{ k: "Puzzle 1 start number and rule", v: "4.5 × 100" }, { k: "Puzzle 2 answer", v: "0.072" }], needs: ["Puzzle 1 answer", "Puzzle 2 start number and rule"] },
+        b: { title: "Detective B", has: [{ k: "Puzzle 1 answer", v: "450" }, { k: "Puzzle 2 start number and rule", v: "7.2 ÷ 100" }], needs: ["Puzzle 1 start number and rule", "Puzzle 2 answer"] },
+        ask_frames: ["What is the ___ in Puzzle ___?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ in Puzzle ___ is ___.", "I'm not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Crab Shell Radar", minutes: 12, grouping: "Solo",
+      mission: "Read about a Chesapeake Bay crab. Mark the cause-and-effect words and the math words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'because'.", l3_4: "Mark the cause words and the math words.", l5_6: "Mark everything, then rewrite one sentence with 'as a result'." },
+      payload: {
+        text: "A blue crab from the Chesapeake Bay measures 0.12 meter across its shell. Dev wants to know the width in centimeters. He multiplies 0.12 by 100 because 1 meter equals 100 centimeters. Multiplying by 100 moves each digit two places to the left, so 0.12 becomes 12. The crab is 12 centimeters wide. Dev checks his work: dividing 12 by 100 moves the digits back and gives 0.12 again.",
+        marks: [
+          { label: "Cause and effect words", instruction: "Highlight the words and phrases that show a cause or an effect.", targets: ["because 1 meter equals 100 centimeters", "moves each digit two places to the left", "so 0.12 becomes 12"] },
+          { label: "Math words", instruction: "Highlight the math vocabulary.", targets: ["multiplies", "digit", "dividing", "centimeters"] },
+        ],
+        questions: [
+          { q: "Why does Dev multiply 0.12 by 100?", options: ["Because 1 meter equals 100 centimeters.", "Because the crab is 100 years old.", "Because he wants a smaller number."], answer: 0, why: "The text says he multiplies 'because 1 meter equals 100 centimeters.'" },
+          { q: "What does multiplying by 100 do to the digits?", options: ["It moves them two places to the right.", "It moves them two places to the left.", "It changes them into zeros."], answer: 1, why: "The text says each digit moves two places to the left." },
+          { q: "How does Dev check his work?", options: ["He measures the crab again.", "He adds 100 to 12.", "He divides 12 by 100 and gets 0.12 again."], answer: 2, why: "Dividing by 100 moves the digits back to where they started." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["Multiplying by 10", "moves each digit", "one place to the left."] },
+          { parts: ["The 5 in 0.05", "is in the hundredths place", "because it is two places after the decimal point."] },
+          { parts: ["The exponent in 10³", "tells us to multiply", "three tens to get 1,000."] },
+          { parts: ["Since 6.5 divided by 10 is 0.65,", "each digit moved", "one place to the right."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Rainy Monday", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Mia's rainfall story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and listen for the word that fits.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then rewrite one sentence with a different cause word." },
+      payload: {
+        text: "Baltimore got 2.468 inches of rain on Monday. The 4 is in the {1} place. The 6 is in the {2} place. The 8 is in the {3} place. Mia wants to {4} the amount to the nearest tenth. She looks at the {5} to the right of the 4. It is a 6, so the 4 goes up to a 5. The rounded amount is 2.5 inches.",
+        answers: ["tenths", "hundredths", "thousandths", "round", "digit"],
+        bank: ["tenths", "hundredths", "thousandths", "round", "digit", "ones", "compare"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["I multiplied 0.8 by 10.", "The digit 8 moved to the ones place."], connector: "so", model: "I multiplied 0.8 by 10, so the digit 8 moved to the ones place." },
+          { sentences: ["The number 3.5 is greater than 3.05.", "It has 5 tenths, and 3.05 has 0 tenths."], connector: "because", model: "The number 3.5 is greater than 3.05 because it has 5 tenths, and 3.05 has 0 tenths." },
+          { sentences: ["The exponent tells me to multiply three tens.", "10³ equals 1,000."], connector: "since", model: "Since the exponent tells me to multiply three tens, 10³ equals 1,000." },
+          { sentences: ["Dividing by 10 moves digits to the right.", "Multiplying by 10 moves digits to the left."], connector: "whereas", model: "Dividing by 10 moves digits to the right, whereas multiplying by 10 moves digits to the left." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at where the digits end up first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "When I multiply 4.7 by 10, the answer is 4.70.", options: ["The answer is 0.47 because each digit moves one place to the right.", "The answer is 47 because each digit moves one place to the left.", "The answer is 4.7 because multiplying by 10 changes nothing."], answer: 1, why: "Multiplying by 10 makes the number ten times greater, so the digits move left. Adding a zero on the end does not change 4.7.", type: "wrong fact" },
+          { wrong: "The 6 in 0.06 is in the tenths place.", options: ["The 6 in 0.06 is in the hundredths place.", "The 6 in 0.06 is in the ones place.", "The 6 in 0.06 is in the thousandths place."], answer: 0, why: "The second place after the decimal point is hundredths, so 0.06 means 6 hundredths.", type: "wrong word" },
+          { wrong: "10³ equals 30.", options: ["10³ equals 13 because 10 + 3 = 13.", "10³ equals 100 because the exponent is 3.", "10³ equals 1,000 because it is 10 × 10 × 10."], answer: 2, why: "The exponent 3 tells how many tens to multiply: 10 × 10 × 10 = 1,000.", type: "wrong fact" },
+          { wrong: "0.3 is less than 0.25 because 3 is less than 25.", options: ["0.3 is greater than 0.25 because 3 tenths is more than 2 tenths.", "0.3 is less than 0.25 because it has fewer digits.", "0.3 is equal to 0.25 because both start with a zero."], answer: 0, why: "Compare place by place. The tenths digit of 0.3 is 3, which is more than the 2 in 0.25.", type: "missing reason" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Show the Shift in Writing", minutes: 15, grouping: "Solo",
+      mission: "Write a short explanation that shows a cause, its effect, and the place value reason behind it.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw arrows on the digits.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'as a result', and name two places." },
+      payload: {
+        prompt: "Dev has 0.35 and multiplies it by 100. Explain what happens to the digits and why.",
+        structure: [
+          { part: "Cause and effect", frame: "When I multiply 0.35 by 100, each digit moves ___ places to the ___." },
+          { part: "Reason", frame: "This happens because ___." },
+          { part: "Result", frame: "As a result, 0.35 becomes ___." },
+        ],
+        word_bank: ["digit", "place value", "decimal point", "power of 10", "because", "as a result", "causes", "leads to"],
+        checklist: ["I told what happens to the digits.", "I gave a reason with because or since.", "I used at least three math words.", "I wrote the new number correctly."],
+        model: "When I multiply 0.35 by 100, each digit moves two places to the left. This happens because each place is worth ten times as much as the place to its right, and 100 is ten times ten. As a result, 0.35 becomes 35.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "What happens to the digits of 6.2 when you multiply by 10? Use at least two math words and one cause word.",
+    frame: "Multiplying ___ by ___ causes each digit to ___, so the answer is ___.",
+    model: "Multiplying 6.2 by 10 causes each digit to move one place to the left, so the answer is 62.",
+    rubric: {
+      emerging: "Names the new number with a word bank or a labeled drawing.",
+      developing: "Uses the frame with two math words and the correct new number.",
+      proficient: "Explains the shift with a clear reason using place value and a cause word.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Many Spanish-speaking countries write decimals with a comma (0,5) and thousands with a point (1.000), so students may read 1.000 as one.", fix: "Show both ways side by side, then practice reading 1,000 and 0.001 aloud with the place value chart." },
+    { group: "All multilingual learners", issue: "Place names sound alike: tens and tenths, hundreds and hundredths, thousands and thousandths.", fix: "Pair each place word with a chart, and have students say 'tenth, part of one' and 'ten, group of ones' while pointing." },
+  ],
+  misconception: {
+    pattern: "Students say 'multiplying by 10 just adds a zero,' so they write 4.5 × 10 = 4.50.",
+    redirect: "Ask 'Is 4.50 ten times greater than 4.5?' and have them move each digit on a place value chart to see that the result is 45.",
+  },
+};

@@ -1,0 +1,270 @@
+// BCPSS Language Studio v2 — g1-math-u2 (Grade 1 Math, Reveal Math). Schema: ../schema.mjs
+
+const sup = (l1_2, l3_4, l5_6) => ({ l1_2, l3_4, l5_6 });
+
+export default {
+  essential_question: "How can I tell which of two numbers is bigger?",
+  can_do: {
+    content: "I can show a two-digit number as tens and ones and compare two numbers.",
+    language: "I can tell how two numbers are alike and different.",
+  },
+  mentor: {
+    text: "Both 47 and 39 have tens and ones. 47 has 4 tens, whereas 39 has 3 tens. So 47 is greater than 39.",
+    gist: "The speaker says what is the same, then what is different, and then which number is greater.",
+    chunks: [
+      { text: "Both 47 and 39 have tens and ones.", role: "What is the same", tone: "concept", ask: "What do both numbers have?" },
+      { text: "47 has 4 tens,", role: "First number", tone: "evidence", ask: "How many tens does 47 have?" },
+      { text: "whereas", role: "The contrast word", tone: "connector", ask: "Which word shows the numbers are different?" },
+      { text: "39 has 3 tens.", role: "Second number", tone: "evidence", ask: "How many tens does 39 have?" },
+      { text: "So 47 is greater than 39.", role: "The answer", tone: "precision", ask: "Which number is greater, and why?" },
+    ],
+  },
+  frames: {
+    l1_2: ["[47] has [4] tens.", "[47] is greater than [39].", "[28] is less than [34]."],
+    l3_4: ["[Number] has [4] tens and [7] ones.", "[Number] is greater than [number] because [reason].", "Both [numbers] have [shared feature]."],
+    l5_6: ["Both [A] and [B] have [shared feature].", "[A] has [x] tens, whereas [B] has [y] tens.", "So [A] is [greater than / less than] [B] because [tens compare]."],
+  },
+  connectors: ["both", "whereas", "because", "but", "so", "and"],
+  vocab: [
+    { term: "digit", tier: 3, pos: "noun", icon: "🔢", def: "one of the symbols from 0 to 9 used to write numbers", example: "The number 47 has two digits.", nonexample: "The word seven is not a digit.", es: "dígito", es_note: "Cognate: sounds almost the same.", family: ["digits"], cue: "The number 47 with an arrow to each symbol." },
+    { term: "tens", tier: 3, pos: "noun", icon: "🧱", def: "groups of 10 that make a number", example: "47 has 4 tens.", nonexample: "The 3 in 83 does not mean 3 tens.", es: "decenas", es_note: "Una decena is one group of ten.", family: ["ten"], cue: "Four towers of ten cubes each beside seven single cubes." },
+    { term: "ones", tier: 3, pos: "noun", icon: "🧊", def: "single items left over after you make groups of 10", example: "47 has 7 ones.", nonexample: "A tower of ten cubes is not ones.", es: "unidades", es_note: "Unidades are the single ones. Not the same as 'unos'.", family: ["one"], cue: "Seven single cubes lined up in a row." },
+    { term: "place value", tier: 3, pos: "noun", icon: "📍", def: "how much a digit is worth because of where it sits", example: "In 35, the place value of the 3 is 3 tens.", nonexample: "The 3 in 35 is not worth only 3.", es: "valor posicional", es_note: "Valor means worth. Posicional means by position.", family: ["place"], cue: "A two-column chart with Tens and Ones and the number 35." },
+    { term: "hundred", tier: 3, pos: "noun", icon: "💯", def: "ten groups of ten, written as 100", example: "120 is one hundred twenty.", nonexample: "99 is not a hundred. It is one less.", es: "centena", es_note: "One hundred = cien. A group of 100 = una centena.", family: ["hundreds"], cue: "A hundred chart with all ten rows filled." },
+    { term: "compare", tier: 2, pos: "verb", icon: "⚖️", def: "to look at two numbers and see how they are alike or different", example: "I compare 52 and 49 by looking at the tens.", nonexample: "Counting only one number is not comparing.", es: "comparar", es_note: "Cognate: sounds almost the same.", family: ["compares", "compared", "comparing"], cue: "Two numbers on a scale with a child looking at both." },
+    { term: "greater than", tier: 3, pos: "phrase", icon: "➕", def: "bigger in amount", example: "47 is greater than 39.", nonexample: "39 is not greater than 47.", es: "mayor que", es_note: "Mayor que means greater than. The > sign opens toward the bigger number.", family: ["greater", "more than"], cue: "A large pile of cubes beside a small pile with the > sign." },
+    { term: "less than", tier: 3, pos: "phrase", icon: "➖", def: "smaller in amount", example: "28 is less than 34.", nonexample: "34 is not less than 28.", es: "menor que", es_note: "Menor que means less than. The < sign points to the smaller number.", family: ["fewer"], cue: "A small pile of cubes beside a large pile with the < sign." },
+    { term: "equal to", tier: 3, pos: "phrase", icon: "🟰", def: "exactly the same amount", example: "50 is equal to 5 tens.", nonexample: "50 is not equal to 5 ones.", es: "igual a", es_note: "Igual a uses the = sign.", family: ["equals", "same as"], cue: "A balance scale with 5 towers of ten on each side." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Shell Counting at the Beach", minutes: 10, grouping: "Partners",
+      mission: "Listen to the shell story twice. Tell it back!",
+      tip: "Read slowly twice while children draw tens rods and ones cubes, then partners retell with the compare words.",
+      materials: ["Tens rods", "Ones cubes"],
+      support: sup("Build both numbers with rods and cubes.", "Retell with tens, ones and the word greater.", "Retell all the steps and say why the tens matter first."),
+      payload: {
+        text: "Tia has 53 shells. Leo has 48 shells. Tia has 5 tens and 3 ones. Leo has 4 tens and 8 ones. 5 tens is more than 4 tens. So 53 is greater than 48.",
+        key_words: ["shells", "tens", "ones", "more", "greater"],
+        frame: "Tia has ___ shells. Leo has ___ shells. ___ tens is more than ___ tens. So ___ is greater than ___.",
+        checks: ["Tia has 53 shells", "Leo has 48 shells", "5 tens is more than 4 tens", "53 is greater than 48"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Number Word Match-Up", minutes: 8, grouping: "Solo",
+      mission: "Tap a word. Tap the meaning that fits.",
+      tip: "Have children say each word and show it with rods and cubes before they tap.",
+      materials: [],
+      support: sup("Match the first four words.", "Match all eight, then use two in a sentence.", "Match all eight and add a number example to each."),
+      payload: {
+        left_label: "Word", right_label: "Meaning",
+        pairs: [
+          { l: "digit", r: "🔢 a symbol from 0 to 9" },
+          { l: "tens", r: "🧱 groups of 10" },
+          { l: "ones", r: "🧊 single cubes" },
+          { l: "place value", r: "📍 what a digit is worth" },
+          { l: "compare", r: "⚖️ see how numbers are alike or different" },
+          { l: "greater than", r: "➕ bigger in amount" },
+          { l: "less than", r: "➖ smaller in amount" },
+          { l: "equal to", r: "🟰 exactly the same" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Tower Sort", minutes: 8, grouping: "Partners",
+      mission: "Sort each number by how many tens it has.",
+      tip: "Listen for 'The ___ means ___ tens' as partners explain a sort.",
+      materials: ["Tens rods"],
+      support: sup("Build one number from each group with rods.", "Sort all and say how many ones for two cards.", "Sort all and add one new number to each group."),
+      payload: {
+        categories: [{ name: "🧱 3 tens" }, { name: "🧱 5 tens" }, { name: "🧱 7 tens" }],
+        items: [
+          { text: "31", cat: 0 }, { text: "36", cat: 0 }, { text: "39", cat: 0 }, { text: "34", cat: 0 },
+          { text: "52", cat: 1 }, { text: "57", cat: 1 }, { text: "50", cat: 1 }, { text: "55", cat: 1 },
+          { text: "70", cat: 2 }, { text: "73", cat: 2 }, { text: "78", cat: 2 }, { text: "75", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Number Word", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the math word!",
+      tip: "Fewer clues used earns more points; there is no clock, so let children think.",
+      materials: [],
+      support: sup("Look at the rods and cubes to help you guess.", "Guess before you open clue three.", "Write a fourth clue for one card."),
+      payload: {
+        cards: [
+          { term: "tens", clues: ["I am groups of 10.", "In 47, the 4 is me.", "10 ones make one of me."] },
+          { term: "ones", clues: ["I am single cubes.", "In 47, the 7 is me.", "10 of me trade for a tower."] },
+          { term: "digit", clues: ["I am one of 0 to 9.", "The number 47 has two of me.", "Every number is built from me."] },
+          { term: "hundred", clues: ["I am ten tens.", "You write me as 100.", "I come right after 99."] },
+          { term: "compare", clues: ["I mean to look at two numbers.", "I tell which is bigger or smaller.", "I start with the tens."] },
+          { term: "greater than", clues: ["I mean bigger in amount.", "52 is me 48.", "The open side of > faces my number."] },
+          { term: "less than", clues: ["I mean smaller in amount.", "48 is me 52.", "The point of < aims at my number."] },
+          { term: "place value", clues: ["I tell what a digit is worth.", "The 4 in 47 is worth 40 because of me.", "I change when a digit moves over."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Number Talk Cards", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Show it with cubes. Tell your partner!",
+      tip: "Model one turn first and listen for tens and ones plus a compare word.",
+      materials: ["Tens rods", "Ones cubes"],
+      support: sup("Build the number and say the first frame.", "Say the frame and one reason.", "Say two ways the numbers are alike and different."),
+      payload: {
+        roles: { a: "Builder", b: "Checker" },
+        cards: [
+          { prompt: "Say 53 as tens and ones.", starter: "53 has ___ tens and ___ ones.", follow_up: "What does the 5 mean?" },
+          { prompt: "Which is greater, 38 or 41?", starter: "___ is greater than ___ because ___.", follow_up: "Which digits did you look at first?" },
+          { prompt: "Which is less, 72 or 67?", starter: "___ is less than ___ because ___.", follow_up: "How many tens does each have?" },
+          { prompt: "Build a number with 6 tens and 4 ones.", starter: "My number is ___.", follow_up: "What is the digit in the ones place?" },
+          { prompt: "Say 120 with hundreds, tens and ones.", starter: "120 is 1 hundred, ___ tens, ___ ones.", follow_up: "How many tens is that in all?" },
+          { prompt: "How are 45 and 54 alike and different?", starter: "Both ___ have ___, whereas ___.", follow_up: "Which one is greater?" },
+        ],
+        moves: [
+          { label: "Prove it", stem: "Can you show me with cubes?" },
+          { label: "Say more", stem: "Tell me more about the tens." },
+          { label: "Agree", stem: "I agree because ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Who Has More?", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions. Find both numbers, then say who has more.",
+      tip: "Partners hide their cards, ask and answer aloud, then compare 62 and 49 with a full sentence.",
+      materials: ["Number cards A and B"],
+      support: sup("Use the ask frame word for word.", "Ask in your own words and say the answer back.", "Ask a follow-up, like 'Which number has more tens?'"),
+      payload: {
+        goal: "Find Mia's and Leo's numbers. Say whose number is greater.",
+        a: { title: "Partner A", has: [{ k: "Mia's tens", v: "6" }, { k: "Mia's ones", v: "2" }, { k: "Mia's number", v: "62" }], needs: ["Leo's tens", "Leo's ones", "Leo's number"] },
+        b: { title: "Partner B", has: [{ k: "Leo's tens", v: "4" }, { k: "Leo's ones", v: "9" }, { k: "Leo's number", v: "49" }], needs: ["Mia's tens", "Mia's ones", "Mia's number"] },
+        ask_frames: ["How many tens does ___ have?", "What is ___'s number?"],
+        tell_frames: ["___ has ___ tens.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Bottle Cap Contest", minutes: 10, grouping: "Whole Class",
+      mission: "Read about the cap contest. Find the number words.",
+      tip: "Read aloud twice; children circle place value words and underline compare words on a big chart.",
+      materials: ["Big chart paper"],
+      support: sup("Find only the place value words.", "Find place value words and compare words.", "Find both, then write one more compare sentence."),
+      payload: {
+        text: "Room 12 has 86 bottle caps. Room 9 has 79 bottle caps. 86 has 8 tens and 6 ones. 79 has 7 tens and 9 ones. Both numbers have two digits. 8 tens is more than 7 tens. So 86 is greater than 79.",
+        marks: [
+          { label: "Place value words", instruction: "Circle the place value words.", targets: ["tens", "ones", "digits"] },
+          { label: "Compare words", instruction: "Underline the words that compare.", targets: ["Both", "more than", "greater than"] },
+        ],
+        questions: [
+          { q: "Which room has more caps?", options: ["Room 9", "Room 12", "They are equal"], answer: 1, why: "86 is greater than 79, so Room 12 has more." },
+          { q: "How many tens does 79 have?", options: ["9", "7", "79"], answer: 1, why: "The 7 in 79 means 7 tens." },
+          { q: "Why is 86 greater than 79?", options: ["It has more ones.", "It has more tens.", "It has fewer digits."], answer: 1, why: "8 tens is more than 7 tens, so the tens decide." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Number Sentence", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts the sentence and which piece has the end mark.",
+      materials: [],
+      support: sup("Find the piece that starts the sentence.", "Read it aloud to check that it makes sense.", "Build it, then change the numbers to make a new one."),
+      payload: {
+        items: [
+          { parts: ["47 is", "greater than", "39."] },
+          { parts: ["28 is", "less than", "34."] },
+          { parts: ["60 equals", "6 tens", "and 0 ones."] },
+          { parts: ["The 7 in 74", "means", "7 tens."] },
+          { parts: ["120 is", "1 hundred", "and 2 tens."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Sticker Book Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap.",
+      tip: "Two bank words are extras; ask children why they do not fit.",
+      materials: [],
+      support: sup("Look at the rods and cubes to help you.", "Fill the gaps, then read the story aloud.", "Fill the gaps, then write one more sentence."),
+      payload: {
+        text: "Ava has 63 stickers. Max has 58 stickers. 63 has 6 {1} and 3 {2}. 58 has 5 tens and 8 ones. 6 tens is more than 5 tens. So 63 is {3} 58. We {4} the tens first.",
+        answers: ["tens", "ones", "greater than", "compare"],
+        bank: ["tens", "ones", "greater than", "compare", "less than", "digit"],
+      },
+    },
+    {
+      kind: "sequence", domain: "Reading", title: "Compare in Four Steps", minutes: 8, grouping: "Small Group",
+      mission: "Put the steps in order to compare 56 and 61.",
+      tip: "Use rods and cubes; children build each number and act out each step as they order it.",
+      materials: ["Tens rods", "Ones cubes"],
+      support: sup("Look at the rods and say first, next, then.", "Order the steps and say each signal word.", "Order the steps, then compare 74 and 71 the same way."),
+      payload: {
+        title: "How to compare 56 and 61",
+        steps: ["First, find the tens in 56 and 61.", "Next, compare 5 tens and 6 tens.", "Then, see that 6 tens is more.", "Finally, say 61 is greater than 56."],
+        signals: ["First", "Next", "Then", "Finally"],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Reading", title: "Fix the Number Talk", minutes: 10, grouping: "Partners",
+      mission: "Find what is wrong. Pick the best fix!",
+      tip: "Have partners say why each wrong choice does not fit before they choose.",
+      materials: [],
+      support: sup("Read the wrong sentence out loud. What sounds off?", "Pick the fix and say why it is better.", "Pick the fix, then write your own reason."),
+      payload: {
+        items: [
+          { wrong: "39 is greater than 47 because 9 is bigger than 7.", options: ["47 is greater than 39 because 4 tens is more than 3 tens.", "39 is greater than 47 because it has more ones.", "47 is less than 39 because it has more tens."], answer: 0, why: "Compare the tens first. 4 tens is more than 3 tens, so 47 is greater." },
+          { wrong: "In 52, the 5 means 5 ones.", options: ["In 52, the 5 means 2 tens.", "In 52, the 5 means 5 tens.", "In 52, the 2 means 2 tens."], answer: 1, why: "The 5 is in the tens place, so it means 5 tens." },
+          { wrong: "Both 34 and 43 have the same tens.", options: ["34 and 43 have the same ones.", "Both 34 and 43 are the same number.", "Both 34 and 43 use a 3 and a 4, whereas 34 has 3 tens and 43 has 4 tens."], answer: 2, why: "The digits are the same, but the places are different. That makes the numbers different." },
+          { wrong: "56 is greater than 65.", options: ["56 is equal to 65.", "56 is less than 65.", "65 is less than 56."], answer: 1, why: "5 tens is less than 6 tens, so 56 is less than 65." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Join with Whereas", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one; more than one answer can work.",
+      materials: [],
+      support: sup("Copy the model and change one number.", "Join the sentences and read them aloud.", "Join them, then write a new one with the same joining word."),
+      payload: {
+        items: [
+          { sentences: ["47 has 4 tens.", "39 has 3 tens."], connector: "whereas", model: "47 has 4 tens, whereas 39 has 3 tens." },
+          { sentences: ["52 is greater than 48.", "52 has more tens."], connector: "because", model: "52 is greater than 48 because 52 has more tens." },
+          { sentences: ["23 and 32 use the same digits.", "They are not equal."], connector: "but", model: "23 and 32 use the same digits, but they are not equal." },
+          { sentences: ["60 has 6 tens.", "60 has 0 ones."], connector: "and", model: "60 has 6 tens and 0 ones." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Compare Paragraph", minutes: 15, grouping: "Solo",
+      mission: "Compare 71 and 68. Write how they are alike and different.",
+      tip: "Children may build with rods first; accept labeled drawings and number sentences for emerging writers.",
+      materials: ["Tens rods", "Ones cubes"],
+      support: sup("Draw the rods and cubes. Copy the first frame.", "Write what is alike and what is different.", "Write alike, different, and which is greater."),
+      payload: {
+        prompt: "Compare 71 and 68. Tell what is alike. Tell what is different. Tell which is greater.",
+        structure: [
+          { part: "Alike", frame: "Both [number] and [number] have [shared feature]." },
+          { part: "Different", frame: "[Number] has [x] tens, whereas [number] has [y] tens." },
+          { part: "Answer", frame: "So [number] is [greater than / less than] [number]." },
+        ],
+        word_bank: ["both", "whereas", "tens", "ones", "digits", "greater than", "less than", "compare", "because", "so"],
+        checklist: ["I wrote what is alike.", "I wrote what is different.", "I used the word whereas.", "I said which is greater."],
+        model: "Both 71 and 68 have two digits. 71 has 7 tens, whereas 68 has 6 tens. So 71 is greater than 68.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Compare 64 and 59. Tell what is alike and what is different.",
+    frame: "Both [64] and [59] have [shared feature]. [64] has [x] tens, whereas [59] has [y] tens. So [number] is [greater than / less than] [number].",
+    model: "Both 64 and 59 have two digits. 64 has 6 tens, whereas 59 has 5 tens. So 64 is greater than 59.",
+    rubric: {
+      emerging: "Shows the tens and ones with cubes or a drawing and says which is more with help.",
+      developing: "Uses the frame to name the tens of each number and says which is greater.",
+      proficient: "Says what is alike, uses whereas for the difference, and gives the correct comparison.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Decenas and unidades may get mixed up with 'unos' and 'dieces', so children say 'ones' for the tens.", fix: "Show a tower for tens and a single cube for ones. Say 'one tower is ten' as you point." },
+    { group: "All multilingual learners", issue: "Children say 'bigger' but not 'greater than', and they leave out the reason.", fix: "Give the frame '___ is greater than ___ because ___ has more tens.' and have partners say it back." },
+  ],
+  misconception: {
+    pattern: "Children compare the ones first, so they say 29 is greater than 31 because 9 is more than 1.",
+    redirect: "Ask 'Which digit tells the tens?' Build both numbers with rods and cubes and compare the towers first.",
+  },
+};

@@ -1,0 +1,262 @@
+// BCPSS Language Studio v2 — gk-ss-u1 (Kindergarten Social Studies, Studies Weekly). Schema: ../schema.mjs
+
+export default {
+  essential_question: "Why do we have rules, and how can we be good citizens?",
+  can_do: {
+    content: "I can tell why rules keep people safe and fair at school and in my neighborhood.",
+    language: "I can say a rule and give a reason with because.",
+  },
+  mentor: {
+    text: "We walk in the hall because it keeps us safe.",
+    gist: "The speaker tells the rule first, then uses 'because' to give the reason.",
+    chunks: [
+      { text: "We walk in the hall", role: "The rule", tone: "concept", ask: "What rule does the speaker tell?" },
+      { text: "because", role: "The joining word", tone: "connector", ask: "Which word starts the reason?" },
+      { text: "it keeps us safe.", role: "The reason", tone: "evidence", ask: "Why do we have this rule?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "We [walk] in the [hall].",
+      "We [take turns].",
+      "We are [safe / fair].",
+    ],
+    l3_4: [
+      "We need the rule [rule] because it keeps us [safe / fair].",
+      "A good citizen [action].",
+      "My job is to [job].",
+    ],
+    l5_6: [
+      "We need the rule '[rule]' because it keeps our class [safe / fair].",
+      "A citizen has a responsibility to [action], so [effect].",
+      "It is fair to [action] because everyone [reason].",
+    ],
+  },
+  connectors: ["because", "so", "and", "if", "then", "also"],
+  vocab: [
+    { term: "rule", tier: 2, pos: "noun", icon: "📏", def: "something we all agree to do so that things go well", example: "Our class rule is to raise a hand.", nonexample: "A song is not a rule.", es: "regla", es_note: "Rule = regla. Also 'norma'.", family: ["rules"], cue: "A poster with a picture of a raised hand." },
+    { term: "safe", tier: 2, pos: "adjective", icon: "🦺", def: "not in danger and not likely to get hurt", example: "We stay safe when we walk in the hall.", nonexample: "Running with scissors is not safe.", es: "seguro", es_note: "Safe = seguro. 'Seguro' also means sure.", family: ["safety"], cue: "A child in a bike helmet." },
+    { term: "fair", tier: 2, pos: "adjective", icon: "⚖️", def: "treating everyone the same way, with no cheating", example: "It is fair when we all get a turn.", nonexample: "Cutting in line is not fair.", es: "justo", es_note: "Fair = justo. Not 'feria', which means a fair with rides.", family: ["fairly", "fairness"], cue: "A balanced scale with a child on each side." },
+    { term: "citizen", tier: 3, pos: "noun", icon: "🏙️", def: "a member of a place like a class, a school, or a city", example: "A good citizen helps others.", nonexample: "A visitor from far away is not a citizen of your class.", es: "ciudadano", es_note: "Cognate-like: ciudadano.", family: ["citizens", "citizenship"], cue: "Children helping each other pick up books." },
+    { term: "responsibility", tier: 3, pos: "noun", icon: "🧹", def: "a job that you should do", example: "It is my responsibility to feed the class fish.", nonexample: "A game you play for fun is not a responsibility.", es: "responsabilidad", es_note: "Cognate: responsabilidad.", family: ["responsible"], cue: "A child with a watering can by a classroom plant." },
+    { term: "respect", tier: 3, pos: "noun", icon: "💙", def: "treating people kindly and listening to them", example: "I show respect when I listen to my friend.", nonexample: "Laughing at a friend is not respect.", es: "respeto", es_note: "Cognate: respeto.", family: ["respectful"], cue: "A child listening with a hand to her ear." },
+    { term: "community", tier: 3, pos: "noun", icon: "🏘️", def: "a group of people who live or work in the same place", example: "Our school is a community.", nonexample: "One person alone is not a community.", es: "comunidad", es_note: "Cognate: comunidad.", family: ["communities"], cue: "Rowhouses, a school, and a park with people waving." },
+    { term: "take turns", tier: 2, pos: "verb phrase", icon: "🔄", def: "to let one person go, and then the next person", example: "We take turns on the slide.", nonexample: "Pushing past a friend is not taking turns.", es: "turnarse", es_note: "Take turns = turnarse or esperar su turno.", family: ["turn", "turns"], cue: "Kids in a line, with the first one on a slide." },
+    { term: "share", tier: 2, pos: "verb", icon: "🤝", def: "to let others use or have part of something", example: "I share my crayons with a friend.", nonexample: "Hiding the crayons is not sharing.", es: "compartir", es_note: "Share = compartir.", family: ["shares", "sharing"], cue: "Two children holding one box of crayons between them." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Rules at Recess", minutes: 10, grouping: "Partners",
+      mission: "Listen twice. Tell the recess story back!",
+      tip: "Read slowly twice; children act out waiting and taking turns, then retell with a partner.",
+      materials: ["Picture cards: slide, line, smile"],
+      support: { l1_2: "Point to the picture cards as you hear each word.", l3_4: "Say one sentence about Tia and one about Sam.", l5_6: "Retell all the ideas and say why the rule is fair." },
+      payload: {
+        text: "Tia and Sam are at recess. The rule says take turns on the slide. Tia waits her turn. Sam waits too. Nobody gets hurt. Everyone has fun.",
+        key_words: ["recess", "rule", "turns", "waits", "hurt", "fun"],
+        frame: "The rule says ___ on the slide. Tia ___. Sam ___ too. Nobody gets ___.",
+        checks: ["Tia and Sam are at recess", "the rule says take turns", "Tia and Sam both wait", "nobody gets hurt and everyone has fun"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Citizen Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each word to its picture clue.",
+      tip: "Have children say each word and show it with a gesture before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match the picture words first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "rule", r: "📏 we all agree to do it" },
+          { l: "safe", r: "🦺 not in danger" },
+          { l: "fair", r: "⚖️ the same for everyone" },
+          { l: "citizen", r: "🏙️ a member of a place" },
+          { l: "responsibility", r: "🧹 a job you should do" },
+          { l: "respect", r: "💙 kind and listening" },
+          { l: "community", r: "🏘️ people in one place" },
+          { l: "take turns", r: "🔄 one, then the next" },
+          { l: "share", r: "🤝 let others use it" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Why Do We Do It?", minutes: 8, grouping: "Partners",
+      mission: "Sort each action by the reason for it.",
+      tip: "Ask 'Why do we do this?' and listen for the word because when partners explain a sort.",
+      materials: [],
+      support: { l1_2: "Sort the pictures you know first.", l3_4: "Sort all words and say 'We do it because ___.'", l5_6: "Sort all words, then add one new action to each group." },
+      payload: {
+        categories: [{ name: "🦺 Keeps us safe" }, { name: "⚖️ Is fair" }, { name: "💙 Shows respect" }],
+        items: [
+          { text: "walking in the hall", cat: 0 }, { text: "holding the stair rail", cat: 0 }, { text: "wearing a bike helmet", cat: 0 }, { text: "looking both ways", cat: 0 },
+          { text: "waiting in line", cat: 1 }, { text: "taking turns", cat: 1 }, { text: "sharing the ball", cat: 1 }, { text: "giving everyone a chance", cat: 1 },
+          { text: "using kind words", cat: 2 }, { text: "listening to a friend", cat: 2 }, { text: "saying please", cat: 2 }, { text: "saying thank you", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Rule Helpers", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess who or what helps us!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think.",
+      materials: [],
+      support: { l1_2: "Use the picture cards to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "stop sign", clues: ["I am red.", "I have eight sides.", "Cars must wait when they see me."] },
+          { term: "traffic light", clues: ["I hang over a street corner.", "I have red, yellow, and green.", "Green means go."] },
+          { term: "crossing guard", clues: ["I wear a bright vest.", "I hold up a sign near school.", "I help you cross the street."] },
+          { term: "teacher", clues: ["I work in your classroom.", "I help make class rules with you.", "I read books and teach lessons."] },
+          { term: "principal", clues: ["I work in the school office.", "I help keep the whole school safe.", "I am the leader of the school."] },
+          { term: "bus driver", clues: ["I drive a big yellow bus.", "Buses on North Avenue need me.", "I say, Please sit down."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Rule Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner a rule and why.",
+      tip: "Model one turn first; listen for the rule and a reason with because.",
+      materials: ["Picture talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add a reason.", l5_6: "Say the rule, why, and what could happen without it." },
+      payload: {
+        roles: { a: "Rule Maker", b: "Listener" },
+        cards: [
+          { prompt: "What is a rule in our hall?", starter: "We ___ in the hall.", follow_up: "Why do we have that rule?" },
+          { prompt: "Why do we take turns?", starter: "We take turns because ___.", follow_up: "How does it feel when you get a turn?" },
+          { prompt: "What is a rule on the bus?", starter: "On the bus, we ___.", follow_up: "How does it keep us safe?" },
+          { prompt: "How do you show respect to a friend?", starter: "I show respect when I ___.", follow_up: "How does your friend feel?" },
+          { prompt: "What is your job in our class?", starter: "My job is to ___.", follow_up: "Why is that job important?" },
+          { prompt: "What does a good citizen do?", starter: "A good citizen ___.", follow_up: "Where can you do that in your neighborhood?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you act it out?" },
+          { label: "I agree", stem: "I agree because ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Classroom Rule Swap", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to learn the other class rules.",
+      tip: "Partners keep cards hidden and ask and answer aloud.",
+      materials: ["Rule cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'What if we did not have it?'" },
+      payload: {
+        goal: "Find out each class's rule and the reason for it.",
+        a: { title: "Room 1", has: [{ k: "Room 1 rule", v: "raise your hand" }, { k: "Room 1 reason", v: "everyone can hear" }], needs: ["Room 2 rule", "Room 2 reason"] },
+        b: { title: "Room 2", has: [{ k: "Room 2 rule", v: "walk in the hall" }, { k: "Room 2 reason", v: "no one gets hurt" }], needs: ["Room 1 rule", "Room 1 reason"] },
+        ask_frames: ["What is the rule in ___?", "Why do they have that rule?"],
+        tell_frames: ["The rule is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "The Line at the Fountain", minutes: 10, grouping: "Whole Class",
+      mission: "Listen to Leo's story. Find the rule and the result!",
+      tip: "Read aloud twice; children circle the rule words and underline the result on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the rule words.", l3_4: "Find the rule and what happens.", l5_6: "Find both, then write one new sentence about Leo." },
+      payload: {
+        text: "Leo wants a drink. A long line waits at the fountain. Leo wants to go first. Ms. Ruiz says, Wait in line. Leo waits his turn. Soon he gets a drink. The line is fair.",
+        marks: [
+          { label: "Rule words", instruction: "Circle the words that tell the rule.", targets: ["Wait in line", "waits his turn"] },
+          { label: "Result words", instruction: "Underline what happens after.", targets: ["gets a drink", "The line is fair"] },
+        ],
+        questions: [
+          { q: "What does Leo want?", options: ["A toy", "A drink", "A book"], answer: 1, why: "The story says Leo wants a drink." },
+          { q: "What does Ms. Ruiz say?", options: ["Wait in line", "Go first", "Come to my desk"], answer: 0, why: "She says wait in line." },
+          { q: "Why is the line fair?", options: ["Leo goes first", "Only some kids get a drink", "Everyone waits for a turn"], answer: 2, why: "Everyone waits, so everyone gets a turn." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Rule Sentence", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts with a capital letter and how children know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add because and a reason." },
+      payload: {
+        items: [
+          { parts: ["We raise", "our hands", "to talk."] },
+          { parts: ["We walk", "in the", "hall."] },
+          { parts: ["Good citizens", "help", "others."] },
+          { parts: ["We take", "turns on", "the swings."] },
+          { parts: ["Everyone", "gets", "a turn."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "School Day Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap.",
+      tip: "Two bank words are extras; children must decide which ones do not fit.",
+      materials: [],
+      support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
+      payload: {
+        text: "A rule helps us stay {1}. We take {2} on the slide. That is {3}. A good {4} follows the rules.",
+        answers: ["safe", "turns", "fair", "citizen"],
+        bank: ["safe", "turns", "fair", "citizen", "rule", "share"],
+      },
+    },
+    {
+      kind: "sequence", domain: "Reading", title: "Fix It Fairly", minutes: 8, grouping: "Small Group",
+      mission: "Put the steps in order. Solve it fairly!",
+      tip: "Act out the steps with two children and one ball; talk about how each child feels.",
+      materials: ["A ball"],
+      support: { l1_2: "Look at the pictures and say first, next, then.", l3_4: "Order the steps and say each one with its signal word.", l5_6: "Order the steps, then say why the last step is fair." },
+      payload: {
+        title: "Two kids want one ball",
+        steps: ["First, two kids want the same ball.", "Next, they stop and talk.", "Then, they make a plan to take turns.", "Finally, both kids get to play."],
+        signals: ["First", "Next", "Then", "Finally"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Rule and Reason", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one. More than one answer can work.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["We walk in the hall.", "It keeps us safe."], connector: "because", model: "We walk in the hall because it keeps us safe." },
+          { sentences: ["We take turns.", "It is fair."], connector: "because", model: "We take turns because it is fair." },
+          { sentences: ["I say please.", "It shows respect."], connector: "because", model: "I say please because it shows respect." },
+          { sentences: ["We clean up.", "It is our job."], connector: "because", model: "We clean up because it is our job." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Our Class Rule Poster", minutes: 15, grouping: "Solo",
+      mission: "Draw a rule poster. Write the rule and why.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Poster template"],
+      support: { l1_2: "Draw it. Copy the first frame and label your picture.", l3_4: "Write the rule and one reason.", l5_6: "Write the rule, the reason, and who it helps." },
+      payload: {
+        prompt: "Pick one rule for our class or neighborhood. Draw a poster. Write the rule and why we need it.",
+        structure: [
+          { part: "The rule", frame: "We [action] in the [place]." },
+          { part: "The reason", frame: "We need this rule because it keeps us [safe / fair]." },
+          { part: "Who it helps", frame: "It helps [everyone / my friends / our class]." },
+        ],
+        word_bank: ["rule", "safe", "fair", "citizen", "respect", "turns", "share", "hall", "class", "because", "everyone", "job"],
+        checklist: ["I drew my poster.", "I wrote the rule.", "I wrote why we need it.", "I used because."],
+        model: "We walk in the hall. We need this rule because it keeps us safe. It helps everyone in our school.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Pick one rule. Tell why we need it. Use the word because.",
+    frame: "We [action] because it keeps us [safe / fair].",
+    model: "We take turns on the slide because it is fair.",
+    rubric: {
+      emerging: "Points to a picture of a rule and says one word like safe or fair.",
+      developing: "Uses the frame to say a rule and one reason.",
+      proficient: "Says the rule, gives a clear reason with because, and tells who it helps.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Safe and sure both sound like 'seguro' in Spanish, so children may say 'I am safe' when they mean 'I am sure'.", fix: "Pair 'safe' with a helmet picture and practice 'It keeps me safe.' Teach 'sure' separately with a thumbs-up." },
+    { group: "All multilingual learners", issue: "Children say the rule but give no reason, or say 'because it is the rule', which is not a reason.", fix: "Use the frame 'It keeps us ___' and have children name what could go wrong without the rule." },
+  ],
+  misconception: {
+    pattern: "Children say rules are only for punishing people, or that fair means everyone gets exactly the same thing every time.",
+    redirect: "Ask 'Who does this rule help?' and talk about how a rule gives each person a turn or keeps each person safe.",
+  },
+};

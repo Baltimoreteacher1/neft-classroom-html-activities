@@ -1,0 +1,266 @@
+// BCPSS Language Studio v2 — g2-math-u4. Schema: ../schema.mjs
+
+export default {
+  essential_question: "Why does the same object measure a different number in different units?",
+  can_do: {
+    content: "I can measure lengths in inches, feet, centimeters, and meters, and compare them.",
+    language: "I can explain why a smaller unit gives a bigger number, using because and so.",
+  },
+  mentor: {
+    text: "Because a centimeter is smaller than an inch, I count more centimeters.",
+    gist: "The speaker gives a reason, and then says what happens because of it.",
+    chunks: [
+      { text: "Because", role: "The cause signal", tone: "connector", ask: "Which word tells you a cause is coming?" },
+      { text: "a centimeter is smaller than an inch,", role: "The cause", tone: "concept", ask: "What fact about the units is the cause?" },
+      { text: "I count more centimeters.", role: "The effect", tone: "evidence", ask: "What happens when the unit is smaller?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "A [unit] is [bigger / smaller] than a [unit].",
+      "The [object] is [number] [units] long.",
+      "I count [more / fewer] [units].",
+    ],
+    l3_4: [
+      "The [object] is [number] [inches] long and [number] [centimeters] long.",
+      "Because a [unit] is [smaller / bigger], I count [more / fewer] of them.",
+      "The [object] is [number] [units] longer than the [object].",
+    ],
+    l5_6: [
+      "Since 1 foot is 12 inches, measuring in [inches] gives a [larger] number than measuring in [feet].",
+      "As a result of using a [smaller unit], I counted [number] [units].",
+      "The longer the unit, the [fewer] I need, so [claim].",
+    ],
+  },
+  connectors: ["because", "so", "since", "as a result", "that is why", "so that"],
+  vocab: [
+    { term: "measure", tier: 2, pos: "verb", icon: "🔎", def: "to find out how long something is by using a tool", example: "I measure my pencil with a ruler.", nonexample: "Guessing with your eyes is not measuring.", es: "medir", es_note: "Not a cognate. 'Medir' is a verb, and 'medida' is the noun.", family: ["measurement", "measuring"], cue: "A hand holding a ruler next to a pencil." },
+    { term: "length", tier: 2, pos: "noun", icon: "↔️", def: "how long something is from one end to the other", example: "The length of my pencil is 6 inches.", nonexample: "How heavy a pencil is tells weight, not length.", es: "longitud", es_note: "Cognate with 'long'. In class, 'largo' is also used.", family: ["long", "longer"], cue: "A double arrow stretched along a rope." },
+    { term: "unit", tier: 2, pos: "noun", icon: "🧩", def: "a size we count with when we measure, like an inch", example: "An inch is a unit of length.", nonexample: "A pencil is an object, not a unit.", es: "unidad", es_note: "Cognate: sounds and means almost the same.", family: ["units"], cue: "A single small block placed along a ruler." },
+    { term: "ruler", tier: 3, pos: "noun", icon: "📏", def: "a flat tool with marks and numbers for measuring length", example: "I line up the ruler at zero.", nonexample: "A clock has numbers, but it does not measure length.", es: "regla", es_note: "Not a cognate. 'Regla' also means 'rule'.", family: ["rulers"], cue: "A 12-inch ruler with inches on one side and centimeters on the other." },
+    { term: "inch", tier: 3, pos: "noun", icon: "🔸", def: "a small unit of length, about as wide as a quarter", example: "My pencil is 6 inches long.", nonexample: "A foot is bigger than an inch.", es: "pulgada", es_note: "Not a cognate. The English plural is 'inches'.", family: ["inches"], cue: "A quarter placed on a ruler." },
+    { term: "foot", tier: 3, pos: "noun", icon: "🦶", def: "a unit of length that is the same as 12 inches", example: "One foot is the same as 12 inches.", nonexample: "Your own foot may not be exactly one foot long.", es: "pie", es_note: "Not a cognate. 'Pie' also means a body foot. The plural is 'feet'.", family: ["feet"], cue: "A 12-inch ruler held up like a stick." },
+    { term: "centimeter", tier: 3, pos: "noun", icon: "📍", def: "a small metric unit of length, about as wide as a pinky fingernail", example: "A paper clip is about 3 centimeters long.", nonexample: "An inch is not a centimeter; an inch is longer.", es: "centímetro", es_note: "Cognate: sounds and means almost the same.", family: ["centimeters", "metric"], cue: "A pinky fingernail placed on a ruler." },
+    { term: "meter", tier: 3, pos: "noun", icon: "🛣️", def: "a long metric unit of length, a little more than 3 feet", example: "The hallway is about 10 meters long.", nonexample: "A water meter is not a measure of length.", es: "metro", es_note: "Cognate: sounds and means almost the same.", family: ["meters", "metric"], cue: "A meter stick lying along a wall." },
+    { term: "compare", tier: 2, pos: "verb", icon: "⚖️", def: "to look at two things to see how they are alike or different", example: "I compare the pencil and the crayon.", nonexample: "Looking at only one object is not comparing.", es: "comparar", es_note: "Cognate: sounds and means almost the same.", family: ["comparison", "longer", "shorter"], cue: "Two pencils side by side, one longer." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Rope Race", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Draw the rope and use the first frame.", l3_4: "Write the key words you hear, then rebuild five sentences.", l5_6: "Rebuild the story and add why the number changed." },
+      payload: {
+        text: "Dre has a rope. It is 3 feet long. He measures it again in inches. A foot is bigger than an inch. So Dre counts more inches than feet. The rope is 36 inches long.",
+        key_words: ["rope", "feet", "inches", "bigger", "counts"],
+        frame: "The rope is ___ feet long. A foot is ___ than an inch. So Dre counts ___ inches.",
+        checks: ["the rope is 3 feet long", "Dre measures again in inches", "a foot is bigger than an inch", "the rope is 36 inches long"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match each math word to its meaning. Keep going until all nine click!",
+      tip: "Students can replay with the picture cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words with pictures first.", l3_4: "Match all pairs, then say each word in a sentence.", l5_6: "Match all pairs, then write one sentence with two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "measure", r: "find out how long something is" },
+          { l: "length", r: "how long something is, end to end" },
+          { l: "unit", r: "a size we count with when we measure" },
+          { l: "ruler", r: "a flat tool with marks for measuring" },
+          { l: "inch", r: "a small unit, about as wide as a quarter" },
+          { l: "foot", r: "a unit that is 12 inches long" },
+          { l: "centimeter", r: "a small metric unit of length" },
+          { l: "meter", r: "a long metric unit, a little over 3 feet" },
+          { l: "compare", r: "look at two things to see how they differ" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Which Unit Fits?", minutes: 8, grouping: "Partners",
+      mission: "Sort each object or word into the group where it belongs, then tell your partner why.",
+      tip: "Listen for 'because' when partners explain a sort.",
+      materials: [],
+      support: { l1_2: "Sort the things you know first.", l3_4: "Sort all cards and say 'I put ___ here because ___.'", l5_6: "Sort all cards, then add one new object to each group." },
+      payload: {
+        categories: [{ name: "Measure with inches or centimeters" }, { name: "Measure with feet or meters" }, { name: "Measuring words" }],
+        items: [
+          { text: "a crayon", cat: 0 }, { text: "a paper clip", cat: 0 }, { text: "a pencil", cat: 0 }, { text: "an eraser", cat: 0 },
+          { text: "a hallway", cat: 1 }, { text: "a playground", cat: 1 }, { text: "a school bus", cat: 1 }, { text: "a basketball court", cat: 1 },
+          { text: "ruler", cat: 2 }, { text: "unit", cat: 2 }, { text: "length", cat: 2 }, { text: "meter stick", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the picture cues to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "inch", clues: ["A quarter is about as wide as me.", "Twelve of me make one foot.", "I am a customary unit for short lengths."] },
+          { term: "foot", clues: ["I am 12 inches long.", "A big ruler is often one of me.", "Three of me make a yard."] },
+          { term: "centimeter", clues: ["I am about as wide as a pinky fingernail.", "I am a metric unit.", "I am smaller than an inch."] },
+          { term: "meter", clues: ["I am a metric unit for long things.", "I am a little longer than a yard.", "One hundred small metric units make me."] },
+          { term: "ruler", clues: ["I have marks and numbers.", "You line me up at zero.", "I have inches on one side and centimeters on the other."] },
+          { term: "unit", clues: ["An inch is one of me.", "I am a size we use to measure.", "Feet, meters, and centimeters are all me."] },
+          { term: "length", clues: ["I tell how long something is.", "A rope has me.", "You measure me from end to end."] },
+          { term: "compare", clues: ["Which is longer? I find out.", "I look at two things side by side.", "The words longer and shorter help me."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Cause and Effect Talk", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Say what causes what, then your partner asks a question.",
+      tip: "Listen for a cause and an effect joined by because or so.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the units and use the starter.", l3_4: "Give a cause with 'because' every turn.", l5_6: "Add 'as a result' to say the effect." },
+      payload: {
+        roles: { a: "Explainer", b: "Asker" },
+        cards: [
+          { prompt: "Why do you count more centimeters than inches?", starter: "I count more centimeters because ___.", follow_up: "Which unit is bigger?" },
+          { prompt: "Why do we start at zero on a ruler?", starter: "We start at zero because ___.", follow_up: "What happens if you start at 1?" },
+          { prompt: "Dre measures a desk in feet, then in inches. What happens to the number?", starter: "The number gets ___ because ___.", follow_up: "How many inches are in 1 foot?" },
+          { prompt: "A ribbon is 2 meters long. Is it more or fewer centimeters?", starter: "A meter is ___ than a centimeter, so ___.", follow_up: "About how many centimeters might it be?" },
+          { prompt: "A ribbon is 10 inches. A string is 4 inches. How much longer is the ribbon?", starter: "The ribbon is ___ inches longer because ___.", follow_up: "How did you find the difference?" },
+          { prompt: "Why do we use the same unit to compare two lengths?", starter: "We use the same unit because ___.", follow_up: "What goes wrong if one is in inches and one is in feet?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me on the ruler?" },
+          { label: "Cause check", stem: "What made that happen?" },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Measuring Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you knows some lengths in one unit. Ask questions to find the same lengths in the other unit!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Repeat each length back to check it.", l5_6: "Say which unit gave the bigger number each time, and why." },
+      payload: {
+        goal: "Find every missing length. Which unit gave the bigger number each time?",
+        a: { title: "Detective A", has: [{ k: "Rope in feet", v: "3 feet" }, { k: "Ribbon in meters", v: "2 meters" }, { k: "Pencil in inches", v: "6 inches" }], needs: ["Rope in inches", "Ribbon in centimeters", "Pencil in centimeters"] },
+        b: { title: "Detective B", has: [{ k: "Rope in inches", v: "36 inches" }, { k: "Ribbon in centimeters", v: "200 centimeters" }, { k: "Pencil in centimeters", v: "about 15 centimeters" }], needs: ["Rope in feet", "Ribbon in meters", "Pencil in inches"] },
+        ask_frames: ["How long is the ___?", "Can you say that length again?"],
+        tell_frames: ["The ___ is ___ long.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Cause Radar", minutes: 12, grouping: "Solo",
+      mission: "Read about Lily's bookmark. Mark the cause and effect words and the length words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check cause and effect.",
+      materials: [],
+      support: { l1_2: "Mark only the length words.", l3_4: "Mark the cause and effect words and the length words.", l5_6: "Mark everything, then explain the cause in your own words." },
+      payload: {
+        text: "Lily measures her bookmark. It is 5 inches long. She measures it again in centimeters. A centimeter is smaller than an inch. So Lily needs more of them. The bookmark is about 13 centimeters long. Then Lily measures a ribbon that is 8 inches. The ribbon is 3 inches longer than the bookmark.",
+        marks: [
+          { label: "Cause and effect", instruction: "Highlight the cause and the effect.", targets: ["A centimeter is smaller than an inch", "So Lily needs more of them"] },
+          { label: "Length words", instruction: "Highlight the lengths.", targets: ["5 inches", "13 centimeters", "3 inches longer"] },
+        ],
+        questions: [
+          { q: "Why does Lily need more centimeters?", options: ["The bookmark grew.", "A centimeter is smaller than an inch.", "Centimeters are heavier."], answer: 1, why: "The text says a centimeter is smaller than an inch, so she needs more of them." },
+          { q: "How long is the bookmark in centimeters?", options: ["5", "8", "about 13"], answer: 2, why: "The text says the bookmark is about 13 centimeters long." },
+          { q: "How much longer is the ribbon than the bookmark?", options: ["3 inches", "13 inches", "5 inches"], answer: 0, why: "8 inches take away 5 inches is 3 inches." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["A foot is longer", "than an inch,", "so I count fewer feet."] },
+          { parts: ["Because a centimeter is small,", "I count more centimeters", "than inches."] },
+          { parts: ["The rope is 36 inches long", "because it is", "3 feet long."] },
+          { parts: ["I start the ruler", "at the zero mark", "and read the number at the end."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Lily's Ribbon", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in the ribbon story.",
+      tip: "Two bank words are extras; students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and try the words.", l3_4: "Fill all gaps, then check that each sentence makes sense.", l5_6: "Fill all gaps, then explain one choice with 'because'." },
+      payload: {
+        text: "Lily wants to {1} her ribbon. She lines up the {2} at zero. The ribbon is 8 {3} long. A {4} is smaller than an inch. So the {5} in centimeters is about 20.",
+        answers: ["measure", "ruler", "inches", "centimeter", "length"],
+        bank: ["measure", "ruler", "inches", "centimeter", "length", "meter", "foot"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the units.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start." },
+      payload: {
+        items: [
+          { sentences: ["A centimeter is small.", "I count more centimeters."], connector: "so", model: "A centimeter is small, so I count more centimeters." },
+          { sentences: ["I count more inches than feet.", "An inch is smaller than a foot."], connector: "because", model: "I count more inches than feet because an inch is smaller than a foot." },
+          { sentences: ["I used the same unit.", "I could compare the two lengths."], connector: "so that", model: "I used the same unit so that I could compare the two lengths." },
+          { sentences: ["The pencil is 6 inches long.", "The crayon is 4 inches long."], connector: "while", model: "The pencil is 6 inches long, while the crayon is 4 inches long." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and say why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the unit words first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "A centimeter is bigger than an inch, so I count more centimeters.", options: ["A centimeter is bigger than an inch, so I count fewer centimeters.", "A centimeter is smaller than an inch, so I count more centimeters.", "A centimeter is the same as an inch, so I count the same."], answer: 1, why: "A smaller unit fits more times along the object, so you count more of them.", type: "wrong cause" },
+          { wrong: "The rope is 3 feet long, so it is 3 inches long.", options: ["The rope is 3 feet long, so it is 12 inches long.", "The rope is 3 feet long, so it is 30 inches long.", "The rope is 3 feet long, so it is 36 inches long."], answer: 2, why: "One foot is 12 inches, and 3 × 12 = 36.", type: "wrong number" },
+          { wrong: "The ribbon is 10 inches and the string is 4 inches, so the ribbon is 14 inches longer.", options: ["The ribbon is 6 inches longer than the string.", "The ribbon is 40 inches longer than the string.", "The ribbon is 14 inches longer than the string."], answer: 0, why: "To compare lengths, take the small one away from the big one: 10 − 4 = 6.", type: "wrong operation" },
+          { wrong: "I measured the pencil in inches and the crayon in centimeters, so I know which is longer.", options: ["I measured both in different units, so the bigger number is longer.", "I measured both in the same unit, so I can tell which is longer.", "I guessed which one looked longer."], answer: 1, why: "You need the same unit to compare lengths fairly.", type: "different units" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Why the Number Changes", minutes: 15, grouping: "Solo",
+      mission: "Write about a desk measured two ways. Tell the cause and the effect.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Draw the desk and ruler, then use the frames.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts and add 'as a result'." },
+      payload: {
+        prompt: "Tom measures his desk. It is 3 feet long. Explain why the desk has more inches than feet.",
+        structure: [
+          { part: "Measure", frame: "The desk is ___ feet long. It is ___ inches long." },
+          { part: "Cause", frame: "I count more inches because ___." },
+          { part: "Effect", frame: "As a result, the number of ___ is ___." },
+        ],
+        word_bank: ["unit", "inch", "foot", "measure", "length", "because", "as a result", "bigger"],
+        checklist: ["I wrote both lengths with units.", "I gave a cause with because.", "I said what happened as a result.", "I used at least three math words."],
+        model: "The desk is 3 feet long. It is 36 inches long. I count more inches because an inch is smaller than a foot. As a result, the number of inches is bigger.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A pencil is 6 inches long. Will you count more or fewer centimeters? Tell why.",
+    frame: "I will count ___ centimeters because ___.",
+    model: "I will count more centimeters because a centimeter is smaller than an inch. The pencil is about 15 centimeters long.",
+    rubric: {
+      emerging: "Says 'more' with a drawing or word bank.",
+      developing: "Uses the frame to say more and names the units.",
+      proficient: "Gives the cause with because, says what happens, and uses about 15 centimeters.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Many families use the metric system at home, so inches and feet may feel new, and students may say 'pie' for foot without knowing it means 12 inches.", fix: "Start with the metric units students know, then show both sides of a ruler to link centimeters and inches." },
+    { group: "All multilingual learners", issue: "'Foot' and 'feet' are different forms of one word, so students write 'two foot' or 'three feets'.", fix: "Chant 'one foot, two feet, three feet' while students point to the ruler." },
+  ],
+  misconception: {
+    pattern: "Students think a bigger number means a bigger unit, such as saying 36 inches is longer than 3 feet.",
+    redirect: "Ask 'Is 36 inches the same rope as 3 feet? Which unit is bigger, and which number is bigger?' and lay the rope along a ruler.",
+  },
+};

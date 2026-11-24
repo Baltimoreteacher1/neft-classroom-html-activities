@@ -1,0 +1,266 @@
+// BCPSS Language Studio v2 — g7-math-u2. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can you show that your answer to a money or percent problem is reasonable and right?",
+  can_do: {
+    content: "I can solve problems about discounts, sales tax, markup, simple interest, and percent error.",
+    language: "I can justify my method with 'works because' and 'is reasonable since'.",
+  },
+  mentor: {
+    text: "I multiplied the $40 cost by 1.25 because a 25% markup adds one fourth of the cost, so the price is $50.",
+    gist: "The speaker picks a method, gives the math reason it works, and states the result.",
+    chunks: [
+      { text: "I multiplied the $40 cost by 1.25", role: "The method", tone: "precision", ask: "What did the speaker do, and which numbers did the speaker use?" },
+      { text: "because", role: "The reason signal", tone: "connector", ask: "Which word tells you a reason is coming?" },
+      { text: "a 25% markup adds one fourth of the cost,", role: "The proof", tone: "evidence", ask: "What fact about a 25% markup makes the method work?" },
+      { text: "so the price is $50.", role: "The result", tone: "concept", ask: "What does the speaker find at the end?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The [item] costs $[amount].",
+      "The [tax / markup / discount] is $[amount].",
+      "The new price is $[amount].",
+    ],
+    l3_4: [
+      "I multiplied $[amount] by [number] because [reason].",
+      "The percent error is [number]% because the estimate is off by $[amount].",
+      "The interest is $[amount] each year because [rate]% of $[principal] is $[amount].",
+    ],
+    l5_6: [
+      "My method works because multiplying by [1 + r / 1 − r] [adds / takes away] [number]% of the original.",
+      "My answer is reasonable since [percent] of [base] is about [estimate].",
+      "Although [other method] also works, I chose [my method] because [reason].",
+    ],
+  },
+  connectors: ["because", "so", "since", "works because", "although", "which means"],
+  vocab: [
+    { term: "markup", tier: 3, pos: "noun", def: "the extra percent a store adds to what it paid, so it can make money", example: "A 25% markup on a $40 jacket adds $10.", nonexample: "Taking money off a price is a discount, not a markup.", es: "margen de ganancia", es_note: "Not a cognate. Some books say 'recargo' or 'aumento'.", family: ["mark up", "marked-up price"], cue: "A price tag with a sticker that adds a few dollars." },
+    { term: "discount", tier: 3, pos: "noun", def: "an amount taken off the regular price", example: "A 20% discount on a $30 shirt saves $6.", nonexample: "The price you pay after the sale is not the discount; it is the sale price.", es: "descuento", es_note: "Not a cognate, but very common in stores.", family: ["discounted", "sale price"], cue: "A red '20% off' sign in a store window." },
+    { term: "sales tax", tier: 3, pos: "noun", def: "a percent of the price that the store adds at the register and sends to the government", example: "Maryland charges a 6% sales tax, so a $50 game costs $3 more.", nonexample: "A tip is a thank-you for service, not a tax.", es: "impuesto sobre las ventas", es_note: "'Impuesto' means tax. It is not a cognate.", family: ["tax", "taxes"], cue: "A receipt with a line that says TAX." },
+    { term: "principal", tier: 3, pos: "noun", def: "the starting amount of money that you save or borrow", example: "The principal is $200, so 5% simple interest is $10 each year.", nonexample: "The principal of a school is a person; the money principal is an amount.", es: "capital inicial", es_note: "False friend: 'principal' in school is 'director'. Here it is money.", family: ["principle"], cue: "A stack of coins labeled 'start'." },
+    { term: "simple interest", tier: 3, pos: "noun", def: "money earned or owed on only the starting amount, at the same rate each year", example: "At 5% simple interest, $100 earns $5 every year.", nonexample: "Interest that also earns interest is not simple interest.", es: "interés simple", es_note: "Cognate pair: interés / simple.", family: ["interest rate"], cue: "A piggy bank with a small coin added each year." },
+    { term: "percent error", tier: 3, pos: "noun", def: "how far an estimate is from the exact value, written as a percent of the exact value", example: "Sam guessed $48 for a $50 price, so his percent error is 4%.", nonexample: "A $2 miss by itself is not a percent error until you divide by the exact value.", es: "porcentaje de error", es_note: "Not a cognate pair: 'error' is the same, 'porcentaje' is close to 'percent'.", family: ["error", "estimate"], cue: "A dart landing two steps from the bullseye." },
+    { term: "percent increase", tier: 3, pos: "noun", def: "how much a quantity grows, written as a percent of the starting amount", example: "A game that goes from $20 to $25 has a percent increase of 25%.", nonexample: "A drop from $25 to $20 is a decrease, not an increase.", es: "aumento porcentual", es_note: "'Aumento' means increase. 'Porcentual' sounds like 'percentage'.", family: ["increase", "percent decrease"], cue: "A bar that grows taller with a +25% label." },
+    { term: "estimate", tier: 2, pos: "verb", def: "to find a close answer quickly with friendly numbers", example: "I estimate that 10% of $79 is about $8.", nonexample: "A wild guess with no math behind it is not an estimate.", es: "estimar", es_note: "Cognate: sounds and means almost the same.", family: ["estimation", "estimated"], cue: "A hand rounding $79 up to $80." },
+    { term: "reasonable", tier: 2, pos: "adjective", def: "makes sense and is close to what you would expect", example: "A $5 discount on a $50 jacket is reasonable, but a $60 discount is not.", nonexample: "A tax bigger than the price is not reasonable.", es: "razonable", es_note: "Cognate: sounds and means almost the same.", family: ["reason", "reasonableness"], cue: "A thumbs-up next to an answer that makes sense." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Sweatshirt Sale", minutes: 12, grouping: "Partners",
+      mission: "Listen twice to Keisha's shopping trip, then rebuild it with your partner using the key words.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and first frame; write each dollar amount you hear.", l3_4: "Jot the key words and numbers, then rebuild 4–5 sentences.", l5_6: "Rebuild the whole story and add one sentence that checks her total." },
+      payload: {
+        text: "Keisha sees a sweatshirt at an Inner Harbor shop. The regular price is $40, and the sign says 25% off. First, she finds 25% of $40, which is $10. That is her discount. Next, she subtracts $10 from $40 to get $30. Maryland adds 6% sales tax, which is $1.80. So Keisha pays $31.80 in all.",
+        key_words: ["regular price", "discount", "subtracts", "sales tax", "$31.80"],
+        frame: "First, Keisha finds ___. Next, she ___. Then Maryland adds ___. So she pays ___.",
+        checks: ["The regular price is $40 and the sign says 25% off", "The discount is $10 and the sale price is $30", "The sales tax is 6%, or $1.80", "Keisha pays $31.80 in all"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Money Words Match", minutes: 8, grouping: "Solo",
+      mission: "Match each money word to its meaning. Wrong matches bounce back, so keep going until all eight click!",
+      tip: "Students can replay with the picture cues face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match words to the picture cues first, then to the meanings.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
+      payload: {
+        left_label: "Money word", right_label: "What it means",
+        pairs: [
+          { l: "markup", r: "the extra percent a store adds to what it paid" },
+          { l: "discount", r: "an amount taken off the regular price" },
+          { l: "sales tax", r: "a percent added at the register and sent to the government" },
+          { l: "principal", r: "the starting amount of money that you save or borrow" },
+          { l: "simple interest", r: "money earned on only the starting amount, at the same rate each year" },
+          { l: "percent error", r: "how far an estimate is from the exact value, as a percent of the exact value" },
+          { l: "estimate", r: "to find a close answer quickly with friendly numbers" },
+          { l: "reasonable", r: "makes sense and is close to what you would expect" },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Money Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "markup", clues: ["A store adds me to what it paid.", "A 25% one on a $40 jacket adds $10.", "I help the store make money."] },
+          { term: "discount", clues: ["Shoppers love to see my sign.", "I take money off the regular price.", "20% off a $30 shirt saves $6."] },
+          { term: "sales tax", clues: ["Maryland adds me at the register.", "I am 6% of the price.", "The government gets this money."] },
+          { term: "principal", clues: ["Think of the money you first put in a bank.", "Interest grows from me.", "In $200 saved at 5%, I am $200."] },
+          { term: "simple interest", clues: ["A bank pays me for keeping money there.", "I use the same amount every year.", "5% of $100 is $5, year after year."] },
+          { term: "percent error", clues: ["You compare a guess to the exact answer.", "Divide the miss by the exact value.", "A $2 miss on $50 gives 4%."] },
+          { term: "estimate", clues: ["I am a close answer.", "Friendly numbers help you make me.", "10% of $79 is about $8 when I do the work."] },
+          { term: "percent increase", clues: ["A price grows from $20 to $25.", "Divide the change by the starting amount.", "The answer is 25%."] },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Up, Down, or Over Time?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word by what it does to a number, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then add one new word to each group." },
+      payload: {
+        categories: [{ name: "Makes a price go up" }, { name: "Makes a price go down" }, { name: "Interest and error words" }],
+        items: [
+          { text: "markup", cat: 0 }, { text: "sales tax", cat: 0 }, { text: "tip", cat: 0 }, { text: "percent increase", cat: 0 },
+          { text: "discount", cat: 1 }, { text: "coupon", cat: 1 }, { text: "sale", cat: 1 }, { text: "percent decrease", cat: 1 },
+          { text: "simple interest", cat: 2 }, { text: "principal", cat: 2 }, { text: "percent error", cat: 2 }, { text: "estimate", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Defend Your Deal", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      tip: "Listen for a math reason after every 'because'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the numbers and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'although' to compare two methods." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "A $60 backpack has a 15% discount. How do you find the sale price?", starter: "I multiplied $60 by ___ because ___.", follow_up: "Is there a second way to get the same price?" },
+          { prompt: "A store pays $20 for a game and adds a 30% markup. What is the selling price?", starter: "The markup is $___, so the price is $___.", follow_up: "How can you check with 10% of $20?" },
+          { prompt: "Why does multiplying by 1.06 find the price with 6% sales tax?", starter: "Multiplying by 1.06 works because ___.", follow_up: "What would you multiply by for 8% tax?" },
+          { prompt: "A friend estimates 12 when the exact answer is 10. What is the percent error?", starter: "The estimate is off by ___, and ___ divided by ___ is ___%.", follow_up: "Why do we divide by the exact value?" },
+          { prompt: "You save $300 at 4% simple interest for 3 years. How much interest do you earn?", starter: "Each year the interest is $___, so after ___ years it is $___.", follow_up: "What stays the same each year in simple interest?" },
+          { prompt: "A shopper says 20% off and then 10% off is the same as 30% off. Do you agree?", starter: "I disagree because ___.", follow_up: "What is the price after both discounts on $100?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is in the problem?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Price Tag Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret price facts about two items. Ask questions to find the missing facts, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each number back to confirm.", l5_6: "Check the facts by finding the sale price of the jacket." },
+      payload: {
+        goal: "Find the jacket's sale price and check the sneaker discount.",
+        a: { title: "Detective A", has: [{ k: "Jacket regular price", v: "$80" }, { k: "Sneakers sale price", v: "$45" }], needs: ["Jacket discount", "Sneakers regular price"] },
+        b: { title: "Detective B", has: [{ k: "Jacket discount", v: "25% off" }, { k: "Sneakers regular price", v: "$50" }], needs: ["Jacket regular price", "Sneakers sale price"] },
+        ask_frames: ["What is the ___ for the ___?", "Can you say the ___ again, please?"],
+        tell_frames: ["The ___ for the ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Reasonable or Not?", minutes: 12, grouping: "Solo",
+      mission: "Read Marcus's plan like a detective, mark the reason words and the math words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'because'.", l3_4: "Mark both the reason words and the math words.", l5_6: "Mark everything, then rewrite one sentence with 'since'." },
+      payload: {
+        text: "Marcus wants to buy a $25 game in Towson. Maryland's sales tax is 6%, so he estimates the tax before he pays. He knows 10% of $25 is $2.50. Since 6% is a little more than half of 10%, he estimates the tax at about $1.50. Then he multiplies $25 by 1.06 and gets $26.50. The tax is $1.50, so his estimate was reasonable because it matched the exact tax.",
+        marks: [
+          { label: "Reason words", instruction: "Highlight the words that tell why.", targets: ["so he estimates the tax before he pays", "Since 6% is a little more than half of 10%", "because it matched the exact tax"] },
+          { label: "Math words", instruction: "Highlight the math vocabulary.", targets: ["sales tax", "estimates", "multiplies $25 by 1.06", "reasonable"] },
+        ],
+        questions: [
+          { q: "How does 10% of $25 help Marcus?", options: ["He uses it to estimate the 6% tax.", "He uses it to find the sale price.", "He uses it to find interest."], answer: 0, why: "He reasons that 6% is a little more than half of 10%, so the tax is about $1.50." },
+          { q: "What does Marcus multiply $25 by to include the tax?", options: ["0.06", "1.06", "6"], answer: 1, why: "Multiplying by 1.06 adds 6% of the price to the price." },
+          { q: "Why was his estimate reasonable?", options: ["It was bigger than the price.", "He rounded the game to $30.", "It matched the exact tax."], answer: 2, why: "The text says it was reasonable 'because it matched the exact tax.'" },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["I multiplied $60 by 0.85", "because a 15% discount", "leaves 85% of the price."] },
+          { parts: ["The percent error is 4%", "because $2 divided by $50", "equals 0.04."] },
+          { parts: ["Simple interest stays the same each year", "because it uses", "only the principal."] },
+          { parts: ["Since the markup is 30%,", "the price is", "1.3 times the cost."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Savings Plan", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Ana's savings story.",
+      tip: "Two bank words are extras; students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and listen for the missing word.", l3_4: "Fill all gaps, then check that every sentence makes sense.", l5_6: "Fill all gaps, then replace one answer with a phrase that means the same." },
+      payload: {
+        text: "Ana puts $200 in a savings account. The {1} is $200. The bank pays 5% {2} each year, so she earns $10 after one year. After 3 years she earns $30, because the interest uses only the starting amount. Her friend makes an {3} of about $28. The difference is $2, and $2 divided by the exact $30 gives a {4} of about 6.7%. Ana says the guess is {5} because it is close to $30.",
+        answers: ["principal", "simple interest", "estimate", "percent error", "reasonable"],
+        bank: ["principal", "simple interest", "estimate", "percent error", "reasonable", "markup", "discount"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["The discount is 20%.", "The price is 80% of the original."], connector: "so", model: "The discount is 20%, so the price is 80% of the original." },
+          { sentences: ["A store pays $20 for a game.", "It adds a 30% markup."], connector: "and then", model: "A store pays $20 for a game, and then it adds a 30% markup." },
+          { sentences: ["My estimate is $48.", "The exact price is $50."], connector: "while", model: "My estimate is $48, while the exact price is $50." },
+          { sentences: ["I multiplied by 1.06.", "A 6% tax adds 6% of the price."], connector: "because", model: "I multiplied by 1.06 because a 6% tax adds 6% of the price." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Reasoning", minutes: 10, grouping: "Partners",
+      mission: "Each sentence hides a mistake, so find the best fix and explain why it works.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the dollar signs and percent signs first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "A 20% discount on $50 means the sale price is $10.", options: ["A 20% discount on $50 means the sale price is $60.", "A 20% discount on $50 is $10, so the sale price is $40.", "A 20% discount on $50 means the sale price is $30."], answer: 1, why: "The $10 is the discount. You subtract it from $50 to get the sale price.", type: "wrong quantity" },
+          { wrong: "The estimate is $2 away from $50, so the percent error is 2%.", options: ["The estimate is $2 away from $50, so the percent error is 4%.", "The estimate is $2 away from $50, so the percent error is 25%.", "The estimate is $2 away from $50, so the percent error is $2."], answer: 0, why: "Divide the miss by the exact value: 2 ÷ 50 = 0.04, which is 4%.", type: "wrong calculation" },
+          { wrong: "Simple interest grows faster each year because the interest earns interest.", options: ["Simple interest doubles every year because of the rate.", "Simple interest is paid once at the end because it is simple.", "Simple interest stays the same each year because it uses only the principal."], answer: 2, why: "Simple interest is figured on the starting amount only, so it does not change.", type: "wrong fact" },
+          { wrong: "The markup is 25%, so I add 25 to the cost.", options: ["The markup is 25%, so I subtract 25% of the cost.", "The markup is 25%, so I add 25% of the cost to the cost.", "The markup is 25%, so I multiply the cost by 25."], answer: 1, why: "A percent markup is a part of the cost, so you add 25% of the cost, not the number 25.", type: "wrong operation" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Prove Your Price", minutes: 15, grouping: "Solo",
+      mission: "Write a short proof that shows your method works, with a claim, a reason, and evidence.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use one frame for each part and write each dollar amount.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'although', and check with an estimate." },
+      payload: {
+        prompt: "A store pays $40 for a jacket and adds a 25% markup. Explain how to find the selling price and why your method works.",
+        structure: [
+          { part: "Claim", frame: "To find the price, I [multiply / add] the cost by [number]." },
+          { part: "Reason", frame: "This works because [reason]." },
+          { part: "Evidence", frame: "The markup is $[amount], so the price is $[amount], which is reasonable because [estimate]." },
+        ],
+        word_bank: ["markup", "multiply", "1.25", "because", "so", "reasonable", "cost", "percent"],
+        checklist: ["I named my method.", "I gave a reason with because or since.", "I used at least two math words.", "I checked that my answer is reasonable."],
+        model: "To find the price, I multiply the $40 cost by 1.25. This works because the 25% markup adds one fourth of the cost to the cost. The markup is $10, so the price is $50, which is reasonable because 25% of $40 is easy to check.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A $30 shirt is 20% off. Explain how to find the sale price. Use at least two math words and one reason word.",
+    frame: "I found the ___ because ___, so the sale price is ___.",
+    model: "I found the discount, which is 20% of $30, or $6, because a discount comes off the price, so the sale price is $24.",
+    rubric: {
+      emerging: "Names the discount or the sale price with a word bank or a labeled drawing.",
+      developing: "Uses the frame with two math words and correct dollar signs.",
+      proficient: "Explains the method with a clear reason and correct numbers in two or more sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Principal' sounds like the school leader (director), and 'interest' sounds like being interested, so the money meanings get lost.", fix: "Pair each word with a bank picture and say 'capital inicial' and 'interés' when first introducing them." },
+    { group: "All multilingual learners", issue: "Small words change the math: '20% of $30' finds a part, but '20% off $30' finds a lower price.", fix: "Have students underline 'of' and 'off' in each problem and say aloud what each one asks them to find." },
+  ],
+  misconception: {
+    pattern: "Students say 'the answer is $6' after a 20% discount and stop, so they report the discount instead of the price they pay.",
+    redirect: "Ask 'Six dollars of what? Is that the discount or the price you pay?' until they name the quantity.",
+  },
+};

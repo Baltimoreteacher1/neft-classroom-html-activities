@@ -1,13 +1,24 @@
 import { getUnitDetail } from "../../../_lib/bcpss/db.js";
+import { DOCX_MIME } from "../../../_lib/bcpss/docx-kit.js";
+import { renderStudioDocx } from "../../../_lib/bcpss/studio-docx.js";
+import {
+  isKnownPart,
+  partFilename,
+  renderStudioPart,
+} from "../../../_lib/bcpss/studio-print-html.js";
 import {
   packetFilename,
   renderUnitDocxPacket,
   renderUnitHtmlPacket,
 } from "../../../_lib/bcpss/unit-packet.js";
-import { badRequest, handler, notFound } from "../../../_lib/http.js";
+import { badRequest, handler, json, notFound } from "../../../_lib/http.js";
 
 const VALID_FORMATS = new Set(["html", "pdf", "docx"]);
 const VALID_WIDA = new Set(["1_2", "3_4", "5_6"]);
+
+// Parts: packet (teacher overview, default), book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family.
+const PARTS_HELP =
+  "packet, book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family";
 
 const AUTO_PRINT_SCRIPT = `<script>window.addEventListener("load",function(){setTimeout(function(){window.print();},150);});</script>`;
 
@@ -39,6 +50,13 @@ export const onRequest = handler({
       return badRequest('Invalid wida parameter. Expected "1_2", "3_4", or "5_6".');
     }
 
+    const part = String(url.searchParams.get("part") || "packet")
+      .trim()
+      .toLowerCase();
+    if (!isKnownPart(part)) {
+      return badRequest(`Invalid part parameter. Expected one of: ${PARTS_HELP}.`);
+    }
+
     const download = url.searchParams.get("download") === "1";
 
     const { backend, detail } = await getUnitDetail(env, unitId);
@@ -46,27 +64,33 @@ export const onRequest = handler({
       return notFound(`Unit "${unitId}" not found.`);
     }
 
-    if (format === "html") {
-      const html = renderUnitHtmlPacket(detail, wida);
-      const headers = new Headers({
-        "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
-        "X-BCPSS-Backend": backend,
-      });
-      if (download) {
-        const filename = packetFilename(detail.unit, wida, "html");
-        headers.set("Content-Disposition", `attachment; filename="${filename}"`);
-      }
-      return new Response(html, { status: 200, headers });
-    }
+    // The legacy packet renderers only serve the packet of a unit with no authored Studio content yet.
+    const legacyPacket = part === "packet" && !detail.studio;
+
+    const missing =
+      !legacyPacket && (part === "family" ? !detail.family : !detail.studio)
+        ? notFound(
+            `Unit "${unitId}" has no authored ${part === "family" ? "family guide" : "Studio content"} yet.`,
+          )
+        : null;
 
     if (format === "docx") {
-      const docxBytes = renderUnitDocxPacket(detail, wida);
-      const filename = packetFilename(detail.unit, wida, "docx");
+      if (missing) return missing;
+      let docxBytes;
+      try {
+        docxBytes = legacyPacket
+          ? renderUnitDocxPacket(detail, wida)
+          : renderStudioDocx(detail, { part, wida });
+      } catch (err) {
+        return notFound(
+          `Part "${part}" is not available for unit "${unitId}": ${err?.message || err}`,
+        );
+      }
+      const filename = partFilename(packetFilename(detail.unit, wida, "docx"), part);
       return new Response(docxBytes, {
         status: 200,
         headers: {
-          "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "Content-Type": DOCX_MIME,
           "Content-Disposition": `attachment; filename="${filename}"`,
           "Cache-Control": "public, s-maxage=3600",
           "X-BCPSS-Backend": backend,
@@ -74,15 +98,38 @@ export const onRequest = handler({
       });
     }
 
-    // format === "pdf"
-    const html = renderUnitHtmlPacket(detail, wida);
-    const filename = packetFilename(detail.unit, wida, "pdf");
+    let html;
+    if (legacyPacket) {
+      html = renderUnitHtmlPacket(detail, wida);
+    } else {
+      if (missing) return missing;
+      try {
+        html = renderStudioPart(detail, { part, level: wida });
+      } catch (err) {
+        return notFound(
+          `Part "${part}" is not available for unit "${unitId}": ${err?.message || err}`,
+        );
+      }
+    }
 
+    const filename = partFilename(packetFilename(detail.unit, wida, format), part);
+
+    if (format === "html") {
+      const headers = new Headers({
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        "X-BCPSS-Backend": backend,
+      });
+      if (download) headers.set("Content-Disposition", `attachment; filename="${filename}"`);
+      return new Response(html, { status: 200, headers });
+    }
+
+    // format === "pdf"
     if (env?.BROWSER && typeof env.BROWSER.quickAction === "function") {
       try {
         const pdfResult = await env.BROWSER.quickAction("pdf", {
           html,
-          pdfOptions: { format: "letter", printBackground: true },
+          pdfOptions: { format: "letter", printBackground: true, preferCSSPageSize: true },
           gotoOptions: { waitUntil: "load", timeout: 30_000 },
         });
         const pdfBody = pdfResult instanceof Response ? await pdfResult.arrayBuffer() : pdfResult;

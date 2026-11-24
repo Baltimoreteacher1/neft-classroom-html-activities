@@ -1,0 +1,266 @@
+// BCPSS Language Studio v2 — gk-sci-u4 (Kindergarten Science, SABES 5E). Schema: ../schema.mjs
+
+export default {
+  essential_question: "What can we do to keep our neighborhood clean and healthy?",
+  can_do: {
+    content: "I can tell how trash and litter hurt a place and how we can help.",
+    language: "I can say what we should do and give a reason with because.",
+  },
+  mentor: {
+    text: "We should pick up litter because it keeps the harbor clean.",
+    gist: "The speaker says what we should do, then uses 'because' to give a reason.",
+    chunks: [
+      { text: "We should", role: "The claim starter", tone: "concept", ask: "Which words tell us the speaker has an idea?" },
+      { text: "pick up litter", role: "The action", tone: "precision", ask: "What should we do?" },
+      { text: "because", role: "The joining word", tone: "connector", ask: "Which word starts the reason?" },
+      { text: "it keeps the harbor clean.", role: "The reason", tone: "evidence", ask: "Why should we pick up litter?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "We should [recycle] [paper].",
+      "I can [reuse] a [jar].",
+      "[Litter] is bad for the [harbor].",
+    ],
+    l3_4: [
+      "We should [recycle] [paper] because it helps [the Earth].",
+      "I can [reduce] trash by [using a lunch box].",
+      "[Litter] hurts the [harbor] because [animals can get hurt].",
+    ],
+    l5_6: [
+      "We should [action] because it [helps our neighborhood by reason].",
+      "One solution is to [action], so [effect].",
+      "I know because I saw [evidence].",
+    ],
+  },
+  connectors: ["because", "so", "and", "also", "but", "then"],
+  vocab: [
+    { term: "environment", tier: 3, pos: "noun", icon: "🌎", def: "the land, water, air, and living things around us", example: "We keep our environment clean.", nonexample: "A single toy is not the whole environment.", es: "medio ambiente", es_note: "Environment = medio ambiente (or ambiente). Not 'environamiento'.", family: ["environments"], cue: "A park with trees, a pond, birds, and blue sky." },
+    { term: "trash", tier: 2, pos: "noun", icon: "🗑️", def: "things we throw away because we do not need them", example: "We put trash in the can.", nonexample: "A new book is not trash.", es: "basura", es_note: "Trash = basura. The can = el bote de basura.", family: ["garbage"], cue: "A trash can with a banana peel and a chip bag." },
+    { term: "litter", tier: 2, pos: "noun", icon: "🥤", def: "trash dropped on the ground instead of in a can", example: "Litter blows into the street.", nonexample: "Trash inside a can is not litter.", es: "basura tirada", es_note: "Litter = basura tirada or desperdicios. Say 'tirar basura' for to litter.", family: ["litterbug"], cue: "A cup and a wrapper on the grass beside a full can." },
+    { term: "recycle", tier: 3, pos: "verb", icon: "♻️", def: "to turn used things like paper and cans into new things", example: "We recycle paper in the class bin.", nonexample: "Throwing a can in the dumpster is not recycling.", es: "reciclar", es_note: "Cognate: reciclar.", family: ["recycles", "recycling"], cue: "A bottle going into a bin and a new bottle coming out." },
+    { term: "reuse", tier: 3, pos: "verb", icon: "🔄", def: "to use something again instead of throwing it away", example: "I reuse a jar to hold crayons.", nonexample: "Using a paper cup once and tossing it is not reuse.", es: "reutilizar", es_note: "Reuse = reutilizar or volver a usar.", family: ["reuses", "reusable"], cue: "A glass jar holding crayons on a desk." },
+    { term: "reduce", tier: 3, pos: "verb", icon: "➖", def: "to make less of something", example: "We reduce trash when we use a lunch box.", nonexample: "Buying lots of extra wrappers does not reduce trash.", es: "reducir", es_note: "Cognate: reducir.", family: ["reduces", "reduced"], cue: "A big pile of trash shrinking to a small pile." },
+    { term: "protect", tier: 2, pos: "verb", icon: "🛡️", def: "to keep something safe from harm", example: "We protect the Bay from trash.", nonexample: "Dropping litter does not protect the park.", es: "proteger", es_note: "Cognate: proteger.", family: ["protects", "protection"], cue: "Two hands gently covering a small green sprout." },
+    { term: "solution", tier: 3, pos: "noun", icon: "✅", def: "a way to fix a problem", example: "A recycling bin is a solution for paper trash.", nonexample: "Ignoring a problem is not a solution.", es: "solución", es_note: "Cognate: solución.", family: ["solutions", "solve"], cue: "A problem cloud next to a lightbulb and a check mark." },
+    { term: "clean", tier: 2, pos: "adjective", icon: "✨", def: "not dirty, with no litter", example: "Our park is clean today.", nonexample: "A park full of cups and wrappers is not clean.", es: "limpio", es_note: "Clean = limpio. The verb 'to clean' = limpiar.", family: ["cleaner", "cleaned"], cue: "A sparkling park bench with no trash around it." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Mr. Trash Wheel's Job", minutes: 10, grouping: "Partners",
+      mission: "Listen twice. Tell the story of the harbor helper!",
+      tip: "Read slowly twice; children point to the picture clues, then retell orally with a partner.",
+      materials: ["Picture cards: harbor, wheel, dumpster"],
+      support: { l1_2: "Point to the picture cards as you hear each word.", l3_4: "Say one sentence about the wheel and one about the harbor.", l5_6: "Retell all the ideas and say why the harbor is cleaner." },
+      payload: {
+        text: "Mr. Trash Wheel lives in Baltimore Harbor. He has big googly eyes. A river brings trash to him. His wheel turns and lifts the trash. The trash goes into a dumpster. Now the harbor is cleaner.",
+        key_words: ["harbor", "trash", "wheel", "eyes", "dumpster", "cleaner"],
+        frame: "Mr. Trash Wheel lives in the ___. A river brings ___. The ___ lifts it into a ___.",
+        checks: ["Mr. Trash Wheel lives in Baltimore Harbor", "the river brings trash to him", "his wheel lifts the trash into a dumpster", "the harbor is cleaner"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Care Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each word to its picture clue.",
+      tip: "Have children say each word and show it with a gesture before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match the picture words first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add a new example to each." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "environment", r: "🌎 land, water, and air around us" },
+          { l: "trash", r: "🗑️ things we throw away" },
+          { l: "litter", r: "🥤 trash on the ground" },
+          { l: "recycle", r: "♻️ make old things into new things" },
+          { l: "reuse", r: "🔄 use it again" },
+          { l: "reduce", r: "➖ make less" },
+          { l: "protect", r: "🛡️ keep it safe" },
+          { l: "solution", r: "✅ a way to fix a problem" },
+          { l: "clean", r: "✨ not dirty" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Bin Sort Challenge", minutes: 8, grouping: "Partners",
+      mission: "Sort each thing. Where does it go?",
+      tip: "Ask 'Can it be used again? Can it become new?' before each sort and listen for because.",
+      materials: ["Three bins or boxes"],
+      support: { l1_2: "Sort the pictures you know first.", l3_4: "Sort all words and say 'It goes here because ___.'", l5_6: "Sort all words, then add one new thing to each group." },
+      payload: {
+        categories: [{ name: "♻️ Recycle bin" }, { name: "🗑️ Trash can" }, { name: "🔄 Reuse it" }],
+        items: [
+          { text: "plastic bottle", cat: 0 }, { text: "newspaper", cat: 0 }, { text: "tin can", cat: 0 }, { text: "milk jug", cat: 0 },
+          { text: "chip bag", cat: 1 }, { text: "used napkin", cat: 1 }, { text: "banana peel", cat: 1 }, { text: "broken straw", cat: 1 },
+          { text: "jar for crayons", cat: 2 }, { text: "box for toys", cat: 2 }, { text: "old shirt rag", cat: 2 }, { text: "cloth bag", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Helper", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the mystery helper!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think.",
+      materials: [],
+      support: { l1_2: "Use the picture cards to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "Mr. Trash Wheel", clues: ["I have big googly eyes.", "I live in the Inner Harbor.", "I pick up trash from the water."] },
+          { term: "recycling bin", clues: ["Paper and cans go in me.", "I help turn old things into new things.", "You see me at school."] },
+          { term: "trash can", clues: ["I have a lid.", "Litter goes in me.", "A truck comes to empty me."] },
+          { term: "broom", clues: ["I have a long handle.", "I have stiff bristles.", "I sweep dirt off the floor."] },
+          { term: "reusable bag", clues: ["I carry groceries.", "You can use me again and again.", "I stop plastic bags from piling up."] },
+          { term: "rain barrel", clues: ["I sit under a pipe.", "I catch rain.", "People use my water for gardens."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Caring Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner what we should do.",
+      tip: "Model one turn first; listen for 'we should' and a reason with because.",
+      materials: ["Picture talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add a reason.", l5_6: "Say what we should do, why, and one thing you saw." },
+      payload: {
+        roles: { a: "Helper", b: "Listener" },
+        cards: [
+          { prompt: "You see a cup on the playground. What should we do?", starter: "We should ___ because ___.", follow_up: "Who can help you?" },
+          { prompt: "Our class has too much paper trash. What is a solution?", starter: "We can ___ the paper.", follow_up: "How will that help?" },
+          { prompt: "How can you reuse a jar?", starter: "I can reuse a jar to ___.", follow_up: "What else can you reuse?" },
+          { prompt: "Why is litter bad for animals?", starter: "Litter is bad because ___.", follow_up: "What animals live near the harbor?" },
+          { prompt: "How can we use less paper?", starter: "We can reduce paper by ___.", follow_up: "Does that make less trash?" },
+          { prompt: "How can we protect our park?", starter: "We should ___ because ___.", follow_up: "What did you see that tells you?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you point to ___?" },
+          { label: "I agree", stem: "I agree because ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Clean-Up Plan Swap", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to finish both plans.",
+      tip: "Partners keep cards hidden and ask and answer aloud.",
+      materials: ["Plan cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'Why is that a good plan?'" },
+      payload: {
+        goal: "Find out each class's problem and solution.",
+        a: { title: "Class A", has: [{ k: "Room 1 problem", v: "too much paper trash" }, { k: "Room 1 solution", v: "a recycling bin" }], needs: ["Room 2 problem", "Room 2 solution"] },
+        b: { title: "Class B", has: [{ k: "Room 2 problem", v: "litter on the playground" }, { k: "Room 2 solution", v: "a pick-up day with gloves" }], needs: ["Room 1 problem", "Room 1 solution"] },
+        ask_frames: ["What is the problem in ___?", "What is the solution in ___?"],
+        tell_frames: ["The problem is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Jada's Clean-Up Day", minutes: 10, grouping: "Whole Class",
+      mission: "Listen to Jada's story. Find the problem and the fix!",
+      tip: "Read aloud twice; children circle the problem and underline the solution on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the problem words.", l3_4: "Find the problem and the solution.", l5_6: "Find both, then write one new sentence about Jada's class." },
+      payload: {
+        text: "Jada sees litter at the park. Bottles lie by the swings. Birds could get hurt. Jada tells her class. They make a plan. They pick up the litter. They put bottles in the recycling bin. Now the park is clean.",
+        marks: [
+          { label: "The problem", instruction: "Circle the problem words.", targets: ["litter at the park", "Birds could get hurt"] },
+          { label: "The solution", instruction: "Underline how the class fixes it.", targets: ["pick up the litter", "recycling bin"] },
+        ],
+        questions: [
+          { q: "What does Jada see at the park?", options: ["A clean field", "Litter by the swings", "A new slide"], answer: 1, why: "Jada sees litter and bottles by the swings." },
+          { q: "Why is the litter a problem?", options: ["Birds could get hurt", "Birds like it", "It is shiny"], answer: 0, why: "The story says birds could get hurt." },
+          { q: "Where do the bottles go?", options: ["In the pond", "Under a bench", "In the recycling bin"], answer: 2, why: "The class puts bottles in the recycling bin." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Claim", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts with a capital letter and how children know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add because and a reason." },
+      payload: {
+        items: [
+          { parts: ["We should", "recycle", "paper."] },
+          { parts: ["We can", "reuse", "jars."] },
+          { parts: ["Litter", "hurts", "animals."] },
+          { parts: ["Trash goes", "in the", "can."] },
+          { parts: ["We can", "reduce", "trash."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Clean Park Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap.",
+      tip: "Two bank words are extras; children must decide which ones do not fit.",
+      materials: [],
+      support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence." },
+      payload: {
+        text: "Our park has {1} on the grass. We pick it up with gloves. Bottles go in the {2} bin. We {3} jars to hold crayons. Now our park is {4}.",
+        answers: ["litter", "recycling", "reuse", "clean"],
+        bank: ["litter", "recycling", "reuse", "clean", "protect", "reduce"],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Reading", title: "Fix the Claim", minutes: 8, grouping: "Partners",
+      mission: "Find the mistake. Pick the best fix!",
+      tip: "Read each wrong claim aloud and ask which part does not make sense or has no reason.",
+      materials: [],
+      support: { l1_2: "Look at the picture and pick the fix that matches.", l3_4: "Pick the fix and say why the wrong one does not work.", l5_6: "Pick the fix, then write your own claim with a reason." },
+      payload: {
+        items: [
+          { wrong: "We should litter because it keeps the park clean.", options: ["We should not litter because it keeps the park clean.", "We should litter because it is fun.", "We should litter and keep the park clean."], answer: 0, why: "Litter makes a park dirty. Not littering keeps it clean." },
+          { wrong: "We should recycle paper.", options: ["We should recycle paper because yes.", "We should recycle paper and trash.", "We should recycle paper because it makes less trash."], answer: 2, why: "A good claim needs a real reason after because." },
+          { wrong: "Litter is good for the harbor because fish like it.", options: ["Litter is bad for the harbor because animals can get hurt.", "Litter is good for the harbor because it floats.", "Litter is bad for the harbor because it is blue."], answer: 0, why: "Litter can hurt fish, birds, and turtles, so it is bad for the harbor." },
+          { wrong: "We should reuse a jar because it makes more trash.", options: ["We should reuse a jar because it makes more jars.", "We should reuse a jar because it makes less trash.", "We should throw a jar away because it makes less trash."], answer: 1, why: "Using a jar again means we throw away less." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Claim and Reason", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one. More than one answer can work.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["We should recycle paper.", "It makes less trash."], connector: "because", model: "We should recycle paper because it makes less trash." },
+          { sentences: ["We pick up litter.", "It keeps animals safe."], connector: "because", model: "We pick up litter because it keeps animals safe." },
+          { sentences: ["We reuse jars.", "We reduce trash."], connector: "and", model: "We reuse jars and we reduce trash." },
+          { sentences: ["Trash goes in the can.", "The park stays clean."], connector: "so", model: "Trash goes in the can, so the park stays clean." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Neighborhood Care Plan", minutes: 15, grouping: "Solo",
+      mission: "Draw a way to help. Write what we should do and why.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Poster template"],
+      support: { l1_2: "Draw it. Copy the first frame and label your picture.", l3_4: "Write what we should do and one reason.", l5_6: "Write the problem, the solution, and a reason with because." },
+      payload: {
+        prompt: "Pick a problem at school or in your neighborhood. Draw a solution. Write what we should do and why.",
+        structure: [
+          { part: "The problem", frame: "I see [litter / paper trash] at [place]." },
+          { part: "What we should do", frame: "We should [recycle / reuse / reduce / pick up] [thing]." },
+          { part: "Why", frame: "We should do it because it helps [the park / the harbor / animals]." },
+        ],
+        word_bank: ["litter", "trash", "recycle", "reuse", "reduce", "protect", "clean", "park", "harbor", "animals", "because", "solution"],
+        checklist: ["I drew my picture.", "I told the problem.", "I wrote what we should do.", "I used because."],
+        model: "I see litter at the park. We should pick up the litter. We should do it because it keeps the birds safe.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Pick one way to help the environment. Tell what we should do and why.",
+    frame: "We should [recycle / reuse / reduce / pick up] [thing] because [reason].",
+    model: "We should recycle paper because it makes less trash.",
+    rubric: {
+      emerging: "Points to a picture of recycling or litter and says one word.",
+      developing: "Uses the frame to say what we should do and gives one reason.",
+      proficient: "States a claim with 'we should', gives a real reason with because, and names a place it helps.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Recycle, reuse, and reduce sound alike, and the Spanish words reciclar, reutilizar, and reducir are easy to swap.", fix: "Pair each word with a gesture: a circle for recycle, a hand returning for reuse, and hands squeezing for reduce." },
+    { group: "All multilingual learners", issue: "Children state what we should do but give no reason, or say 'because it is good' without saying how.", fix: "Use the frame 'because it helps ___ by ___' and have children point to the harm or benefit in a picture first." },
+  ],
+  misconception: {
+    pattern: "Children say trash disappears when it goes in the can, or that litter is only a problem if people can see it.",
+    redirect: "Ask 'Where does the trash go next?' and follow a picture of the can to the truck and on to a landfill, an incinerator, or a recycling plant.",
+  },
+};

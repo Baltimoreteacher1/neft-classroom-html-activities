@@ -1,0 +1,465 @@
+/* Language Studio Player — self-checking game kinds (agent G): match, word_sort, clue_game, cloze,
+   unscramble, sequence, quiz, error_analysis. Colours come from the --st-* tokens in studio.css only. */
+
+.sg {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  --sg-lift: 0 3px 0 var(--st-line-strong);
+}
+.sg > * {
+  min-width: 0;
+}
+.sg button {
+  -webkit-tap-highlight-color: transparent;
+}
+.sg [hidden] {
+  display: none !important;
+}
+
+/* ---------- top bar: meter / dots / hint ---------- */
+.sg-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+}
+.sg-hint {
+  color: var(--st-muted);
+  font-size: 0.95rem;
+  flex: 1 1 240px;
+}
+.sg-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--st-muted);
+}
+.sg-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 190px;
+}
+.sg-meter__track {
+  position: relative;
+  flex: 1;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--st-surface-2);
+  border: 1px solid var(--st-line);
+  overflow: hidden;
+}
+.sg-meter__bar {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(var(--sg-p, 0));
+  transform-origin: left;
+  background: var(--st-ok);
+  border-radius: 999px;
+  transition: transform 0.4s cubic-bezier(0.3, 0.8, 0.3, 1);
+}
+.sg-meter__text {
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.sg-dots {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.sg-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--st-control);
+  background: var(--st-surface);
+  transition:
+    transform 0.2s,
+    background 0.2s;
+}
+.sg-dot.is-now {
+  border-color: var(--st-accent);
+  background: var(--st-accent);
+  transform: scale(1.25);
+}
+.sg-dot.is-ok {
+  border-color: var(--st-ok);
+  background: var(--st-ok);
+}
+.sg-dot.is-miss {
+  border-color: var(--st-hint-ink);
+  background: var(--st-hint-line);
+}
+.sg-feedback {
+  position: sticky;
+  top: 72px;
+  z-index: 4;
+  min-height: 60px;
+  align-items: center;
+  box-shadow: var(--st-shadow);
+}
+.sg-feedback--idle {
+  position: static;
+  min-height: 44px;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--st-muted);
+  font-weight: 400;
+  padding-inline: 2px;
+}
+.sg-feedback--idle::before {
+  content: none;
+}
+.sg-feedback.is-none {
+  display: none;
+}
+.sg-q > .sg-feedback {
+  position: static;
+}
+.sg-ico {
+  display: inline-flex;
+}
+.sg-speak {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px;
+  border-radius: 50%;
+}
+.sg-speak.is-speaking {
+  background: var(--st-accent-soft);
+  color: var(--st-accent);
+}
+
+/* ---------- tactile card / chip look shared by games ---------- */
+.sg-card,
+.sg-option,
+.sg-chip,
+.sg-bucket,
+.sg-blank,
+.sg-step {
+  box-shadow: var(--sg-lift);
+}
+.sg-chip {
+  font-size: 1.02rem;
+  min-height: 48px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.sg-chip.is-dragging,
+.sg-step.is-dragging {
+  opacity: 0.35;
+}
+.sg-chip[aria-disabled="true"] {
+  cursor: default;
+}
+.sg-ghost {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  margin: 0;
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.06);
+  box-shadow: var(--st-shadow-lift);
+  opacity: 0.96;
+}
+.is-over {
+  outline: 3px dashed var(--st-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- match ---------- */
+.sg-match {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: clamp(12px, 3vw, 36px);
+  align-items: start;
+}
+.sg-col {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+.sg-collabel {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--st-muted);
+  font-family: var(--st-font);
+  font-weight: 700;
+}
+.sg-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+.sg-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 14px;
+  background: var(--st-surface);
+  border: 2px solid var(--st-line-strong);
+  border-radius: var(--st-radius);
+  color: var(--st-ink);
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.3;
+  transition:
+    transform 0.12s,
+    border-color 0.15s,
+    background 0.15s,
+    box-shadow 0.12s;
+}
+.sg-term {
+  font-weight: 700;
+  font-size: 1.05rem;
+  touch-action: none;
+}
+.sg-term__icon {
+  font-size: 1.6em;
+  line-height: 1;
+}
+.sg-card:hover:not(.is-matched) {
+  border-color: var(--st-accent);
+  background: var(--st-accent-soft);
+}
+.sg-card:active:not(.is-matched),
+.sg-chip:active,
+.sg-option:active:not([aria-disabled="true"]) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--st-line-strong);
+}
+.sg-card.is-selected {
+  border-color: var(--st-accent);
+  background: var(--st-accent-soft);
+  box-shadow: 0 0 0 3px var(--st-accent);
+}
+.sg-card.is-matched {
+  border-color: var(--st-ok);
+  background: var(--st-ok-soft);
+  color: var(--st-ok-ink);
+  box-shadow: none;
+  cursor: default;
+}
+.sg-badge {
+  flex: none;
+  margin-left: auto;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--st-ok);
+  color: var(--st-surface);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.is-matched > .sg-badge {
+  display: inline-flex;
+}
+.sg-card__text {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* ---------- word_sort ---------- */
+.sg-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px;
+  border: 2px dashed var(--st-line-strong);
+  border-radius: var(--st-radius);
+  background: var(--st-surface-2);
+  min-height: 76px;
+  align-content: flex-start;
+}
+.sg-pool.is-empty {
+  display: none;
+}
+.sg-buckets {
+  display: grid;
+  grid-template-columns: repeat(var(--sg-cols, 2), minmax(0, 1fr));
+  gap: 14px;
+}
+.sg-bucket {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--st-line-strong);
+  border-radius: var(--st-radius);
+  background: var(--st-surface);
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  cursor: pointer;
+  min-height: 150px;
+}
+.sg-bucket__btn {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 14px 6px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--st-radius) var(--st-radius) 0 0;
+  cursor: pointer;
+}
+.sg-bucket__name {
+  font-family: var(--st-display);
+  font-weight: 700;
+  font-size: 1.08rem;
+}
+.sg-bucket__hint {
+  font-size: 0.82rem;
+  color: var(--st-muted);
+}
+.sg-bucket.is-ready {
+  border-color: var(--st-accent);
+  background: var(--st-accent-soft);
+  border-style: dashed;
+}
+.sg-bucket.is-ready .sg-bucket__hint {
+  color: var(--st-accent);
+  font-weight: 600;
+}
+.sg-bucket__list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 12px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+}
+.sg-placed {
+  cursor: default;
+  min-height: 38px;
+  padding: 4px 12px;
+  font-size: 0.95rem;
+}
+
+/* ---------- clue_game ---------- */
+.sg-score {
+  margin-left: auto;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--st-game-soft);
+  color: var(--st-game-ink);
+}
+.sg-mystery {
+  border: 2px solid var(--st-line-strong);
+  border-radius: var(--st-radius);
+  background: var(--st-surface);
+  box-shadow: var(--st-shadow);
+  padding: clamp(14px, 3vw, 24px);
+  display: grid;
+  gap: 14px;
+}
+.sg-mystery.is-solved {
+  border-color: var(--st-ok);
+  background: var(--st-ok-soft);
+}
+.sg-mystery__top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.sg-mystery__tag {
+  font-family: var(--st-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+.sg-worth {
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--st-game-soft);
+  color: var(--st-game-ink);
+  font-size: 0.9rem;
+}
+.sg-worth.is-low {
+  background: var(--st-hint-soft);
+  color: var(--st-hint-ink);
+}
+.sg-clues {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.sg-clue {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 14px;
+  border-radius: var(--st-radius-sm);
+  border: 2px dashed var(--st-line-strong);
+  color: var(--st-muted);
+  background: var(--st-surface-2);
+}
+.sg-clue.is-open {
+  border: 2px solid var(--st-line-strong);
+  background: var(--st-surface);
+  color: var(--st-ink);
+  font-size: 1.08rem;
+  font-weight: 500;
+}
+.sg-clue.is-new {
+  animation: sg-flip 0.45s ease both;
+}
+.sg-clue__n {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  background: var(--st-line);
+  color: var(--st-ink);
+}
+.sg-clue.is-open .sg-clue__n {
+  background: var(--st-accent);
+  color: var(--st-on-accent);
+}
+.sg-clue__text {
+  flex: 1;
+}
+.sg-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.sg-bank.is-locked .sg-chip:not(.st-chip--ok) {
+  opacity: 0.55;
+}
+.sg-chip[aria-disabled="true"]:hover {
+  transform: none;
+}
+.sg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.sg-actions--end {
+  justify-content: flex-end;
+}
+

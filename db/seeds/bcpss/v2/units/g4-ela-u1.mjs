@@ -1,0 +1,268 @@
+// BCPSS Language Studio v2 — g4-ela-u1 (Grade 4 ELA, Wit & Wisdom). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can one word, heart, name both a body part and a kind of character?",
+  can_do: {
+    content: "I can explain the literal job of the heart and the figurative meaning of a great heart.",
+    language: "I can compare two things with both, whereas, and in contrast.",
+  },
+  mentor: {
+    text: "Both hearts are important, but a literal heart pumps blood, whereas a figurative heart shows kindness.",
+    gist: "The speaker says the body heart and the kind heart are both important, then tells how they are different.",
+    chunks: [
+      { text: "Both hearts are important,", role: "The shared feature", tone: "concept", ask: "What do the two hearts have in common?" },
+      { text: "but a literal heart pumps blood,", role: "The first difference", tone: "precision", ask: "What is the job of the heart in your chest?" },
+      { text: "whereas", role: "The contrast signal", tone: "connector", ask: "Which word tells you a difference is coming?" },
+      { text: "a figurative heart shows kindness.", role: "The second difference", tone: "evidence", ask: "What does a figurative heart show about a person?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "A literal heart [pumps blood / beats].",
+      "A great heart [helps / cares].",
+      "Both hearts are [important / strong].",
+    ],
+    l3_4: [
+      "Both a literal heart and a figurative heart are [shared feature].",
+      "A literal heart [its job], whereas a figurative heart [its meaning].",
+      "In contrast to the muscle, a figurative heart shows [trait].",
+    ],
+    l5_6: [
+      "Although a literal heart [fact], a figurative heart [meaning], so readers must decide [question].",
+      "Both [person or thing] and [person or thing] [shared feature]; however, [difference].",
+      "In contrast to the heart muscle, [person]'s great heart is shown when [action].",
+    ],
+  },
+  connectors: ["both … and", "whereas", "in contrast", "while", "but", "however"],
+  vocab: [
+    { term: "literal", tier: 2, pos: "adjective", def: "the exact, word-for-word meaning", example: "The literal meaning of heart is the muscle that pumps blood.", nonexample: "Saying 'my heart is full of joy' is not a literal meaning.", es: "literal", es_note: "Cognate: sounds and means almost the same.", family: ["literally"], cue: "A finger pointing to a real heart on a body diagram." },
+    { term: "figurative", tier: 2, pos: "adjective", def: "meaning beyond the exact words, like a picture in the mind", example: "A figurative heart tells us about someone's character, not their muscle.", nonexample: "A doctor listening to your heartbeat is not using figurative language.", es: "figurado", es_note: "Cognate idea: 'sentido figurado' is the school phrase.", family: ["figure of speech"], cue: "A cartoon heart with arms hugging someone." },
+    { term: "compassion", tier: 2, pos: "noun", def: "deep care for someone who is hurting", example: "The nurse showed compassion when she sat with the scared child.", nonexample: "Laughing at a friend who fell is the opposite of compassion.", es: "compasión", es_note: "Cognate: sounds and means almost the same.", family: ["compassionate"], cue: "A hand resting gently on a sad friend's shoulder." },
+    { term: "trait", tier: 2, pos: "noun", def: "a quality that shows what a person is like", example: "Kindness is a trait that great-hearted people share.", nonexample: "A red backpack is something a person owns, not a trait.", es: "rasgo", es_note: "Not a cognate. Also 'característica'.", family: ["character trait"], cue: "A thought bubble over a person showing 'brave'." },
+    { term: "chamber", tier: 3, pos: "noun", def: "a hollow room inside the heart that fills with blood", example: "The heart has four chambers that fill and squeeze.", nonexample: "A bedroom is a room in a house, not a chamber of the heart.", es: "cámara", es_note: "Cognate: 'cámara' also means a hollow space. In the heart it is 'cavidad' or 'cámara'.", family: ["chambers"], cue: "A heart drawn with four colored rooms." },
+    { term: "artery", tier: 3, pos: "noun", def: "a tube that carries blood away from the heart", example: "Blood leaves the heart through a large artery.", nonexample: "A road is not an artery, even though cars travel on it.", es: "arteria", es_note: "Cognate: sounds and means almost the same.", family: ["arteries"], cue: "A red tube leaving the top of a heart." },
+    { term: "circulate", tier: 3, pos: "verb", def: "to move around and around through a path", example: "Blood circulates through your body again and again.", nonexample: "Water sitting still in a cup does not circulate.", es: "circular", es_note: "Cognate: 'la sangre circula'.", family: ["circulation", "circulatory"], cue: "Arrows going in a loop through a body outline." },
+    { term: "metaphor", tier: 3, pos: "noun", def: "a comparison that says one thing is another thing", example: "She is a lion is a metaphor for a brave girl.", nonexample: "'She runs as fast as a cheetah' uses 'as', so it is a simile.", es: "metáfora", es_note: "Cognate: sounds and means almost the same.", family: ["metaphorical"], cue: "A girl with a lion's shadow behind her." },
+    { term: "generous", tier: 2, pos: "adjective", def: "willing to give time or things to help others", example: "A generous neighbor shared her garden tomatoes with the whole block.", nonexample: "Keeping every cookie for yourself is not generous.", es: "generoso", es_note: "Cognate: sounds and means almost the same.", family: ["generosity"], cue: "Open hands holding out a basket of food." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Two Kinds of Heart", minutes: 12, grouping: "Partners",
+      mission: "Listen twice to the story about two hearts, then rebuild it with your partner.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and draw a heart while you listen.", l3_4: "Write key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one sentence that compares the two hearts." },
+      payload: {
+        text: "Your heart is a muscle about the size of your fist. It has four chambers that fill with blood and squeeze. Arteries carry the blood away from the heart. Mr. Reyes says his neighbor has a great heart. She brings soup to sick families on her block. That is a figurative heart, not a muscle.",
+        key_words: ["muscle", "chambers", "arteries", "great heart", "figurative"],
+        frame: "The literal heart ___. The neighbor's great heart ___.",
+        checks: ["the heart is a muscle the size of a fist", "it has four chambers and arteries carry blood", "the neighbor has a great heart", "she brings soup, so it is figurative"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Heart Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each heart word to its meaning. Wrong matches bounce back, so keep going until all nine click!",
+      tip: "Students can replay with the cue cards face down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know first, then use the picture cues.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words." },
+      payload: {
+        left_label: "Heart word", right_label: "What it means",
+        pairs: [
+          { l: "literal", r: "the exact, word-for-word meaning" },
+          { l: "figurative", r: "meaning beyond the exact words" },
+          { l: "compassion", r: "deep care for someone who is hurting" },
+          { l: "trait", r: "a quality that shows what a person is like" },
+          { l: "chamber", r: "a hollow room inside the heart that fills with blood" },
+          { l: "artery", r: "a tube that carries blood away from the heart" },
+          { l: "circulate", r: "to move around and around through a path" },
+          { l: "metaphor", r: "a comparison that says one thing is another thing" },
+          { l: "generous", r: "willing to give time or things to help others" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Muscle or Message?", minutes: 8, grouping: "Partners",
+      mission: "Sort each clue into the group it fits, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the clues you know first and point to the pictures.", l3_4: "Sort all clues and say 'I put ___ here because ___.'", l5_6: "Sort all clues, then add one clue of your own to each group." },
+      payload: {
+        categories: [{ name: "Literal heart (the body)" }, { name: "Figurative heart (character)" }],
+        items: [
+          { text: "pumps blood", cat: 0 }, { text: "has four chambers", cat: 0 }, { text: "beats about 100,000 times a day", cat: 0 },
+          { text: "sends blood through arteries", cat: 0 }, { text: "has a pulse you can feel", cat: 0 },
+          { text: "shares lunch with a new student", cat: 1 }, { text: "forgives a friend", cat: 1 }, { text: "speaks up for others", cat: 1 },
+          { text: "stays kind when things are hard", cat: 1 }, { text: "helps a neighbor in a storm", cat: 1 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Guess the Heart Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the picture cues to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "literal", clues: ["I mean exactly what the words say.", "A real heart is me; a heart drawn on a card is not.", "My partner word is figurative."] },
+          { term: "figurative", clues: ["I go beyond the exact words.", "'Her heart is gold' is an example of me.", "I use a picture in your mind."] },
+          { term: "compassion", clues: ["A nurse shows me to a scared child.", "I am deep care for someone who is hurting.", "Great-hearted people have a lot of me."] },
+          { term: "chamber", clues: ["The heart has four of me.", "I am a hollow room that fills with blood.", "I squeeze to push the blood on."] },
+          { term: "artery", clues: ["I am a tube.", "Blood leaves the heart through me.", "I carry blood away, not toward, the heart."] },
+          { term: "metaphor", clues: ["I say one thing is another thing.", "'My brother is a bear in the morning' uses me.", "I do not use the word like or as."] },
+          { term: "generous", clues: ["I share my snacks with the whole class.", "I give time and things to help.", "The opposite of me is selfish."] },
+          { term: "circulate", clues: ["Think of a loop that never stops.", "Blood does this through your body.", "It goes out from the heart and comes back again."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Compare Like a Pro", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card and comparing two things. Your partner pushes your thinking with a move.",
+      tip: "Listen for a shared feature first, then a difference with 'whereas' or 'in contrast'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the pictures and use the first frame.", l3_4: "Name one shared feature and one difference every turn.", l5_6: "Use 'in contrast' and 'however' in the same answer." },
+      payload: {
+        roles: { a: "Comparer", b: "Challenger" },
+        cards: [
+          { prompt: "Compare a heart muscle and a kind heart.", starter: "Both are important, but ___ whereas ___.", follow_up: "Which one can a doctor see on a scan?" },
+          { prompt: "Compare a literal heart and a heart on a Valentine card.", starter: "A literal heart ___, whereas the card heart ___.", follow_up: "Which meaning is figurative?" },
+          { prompt: "Compare an artery and a chamber.", starter: "Both are part of the heart, but ___.", follow_up: "What does each one do for the blood?" },
+          { prompt: "Compare two kind people you know.", starter: "Both ___ and ___ show compassion, but ___.", follow_up: "How do you know they are kind?" },
+          { prompt: "Compare 'the heart pumps blood' and 'the heart is a lion'.", starter: "The first is literal, whereas ___.", follow_up: "Why is the second one a metaphor?" },
+          { prompt: "Compare being generous with money and being generous with time.", starter: "Both ___, but in contrast ___.", follow_up: "Which one could a student do today?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Prove it", stem: "How do you know that ___?" },
+          { label: "Add a difference", stem: "In contrast, I think ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Heart Fact Swap", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts. Ask questions to complete the chart about the body heart and Nurse Alma.",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Fact cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the fact back to check.", l5_6: "After the chart is full, write two sentences that compare the two hearts." },
+      payload: {
+        goal: "Complete the comparison chart for the body heart and Nurse Alma's great heart.",
+        a: { title: "Partner A", has: [{ k: "Body heart: its job", v: "Pumps blood through the body" }, { k: "Nurse Alma: how she shows compassion", v: "Sits with scared patients and holds their hands" }], needs: ["Body heart: how many chambers", "Nurse Alma: where she works"] },
+        b: { title: "Partner B", has: [{ k: "Body heart: how many chambers", v: "Four" }, { k: "Nurse Alma: where she works", v: "A children's clinic in Baltimore" }], needs: ["Body heart: its job", "Nurse Alma: how she shows compassion"] },
+        ask_frames: ["What is the ___ of ___?", "Can you say that again, please?"],
+        tell_frames: ["The ___ of ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Heart Detective", minutes: 12, grouping: "Solo",
+      mission: "Read about Harriet Tubman. Mark the clues about her body and the clues about her character, then answer.",
+      tip: "Students highlight in two colors; the questions check the literal versus figurative reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the words 'great heart'.", l3_4: "Mark both kinds of clues and say why each one fits.", l5_6: "Mark everything, then rewrite one sentence with 'whereas'." },
+      payload: {
+        text: "Harriet Tubman was born in Maryland. As a young woman, she escaped from slavery and walked north to freedom. She could have stayed safe. Instead, she went back to Maryland many times. She guided other people along secret paths at night. Her body heart worked like anyone's heart. Yet people say she had a great heart. They mean she showed deep compassion and great courage.",
+        marks: [
+          { label: "Literal clue", instruction: "Highlight the words about the body.", targets: ["body heart", "worked like anyone's heart"] },
+          { label: "Figurative clues", instruction: "Highlight the words about her character.", targets: ["great heart", "deep compassion", "great courage", "went back to Maryland many times"] },
+        ],
+        questions: [
+          { q: "What does 'great heart' mean in this text?", options: ["She had a very large heart muscle.", "She showed compassion and courage.", "She had a heart problem."], answer: 1, why: "The text says people mean she 'showed deep compassion and great courage.'" },
+          { q: "Which detail shows Harriet Tubman's compassion?", options: ["She was born in Maryland.", "Her body heart worked like anyone's.", "She went back to guide other people."], answer: 2, why: "She risked her own safety to help others, which shows deep care." },
+          { q: "How is her 'body heart' different from her 'great heart'?", options: ["The body heart is a muscle, whereas the great heart is her character.", "The body heart is her character, whereas the great heart is a muscle.", "They are exactly the same thing."], answer: 0, why: "Literal means the muscle; figurative means the kind of person she was." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Heart Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong comparing sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the contrast word, then build around it.", l5_6: "After building, add a new difference of your own." },
+      payload: {
+        items: [
+          { parts: ["Both hearts", "are important,", "but they do different jobs."] },
+          { parts: ["A literal heart", "pumps blood", "through the body."] },
+          { parts: ["The muscle pumps blood,", "whereas a figurative heart", "shows kindness."] },
+          { parts: ["In contrast to the muscle,", "a figurative heart", "is a kind of character."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Mia's Heart", minutes: 8, grouping: "Solo",
+      mission: "Choose the right heart word for every gap in Mia's story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and listen for the word that fits.", l3_4: "Fill all gaps, then check that each sentence makes sense.", l5_6: "Fill all gaps, then swap one answer for a different word that also fits." },
+      payload: {
+        text: "Mia's heart is a muscle with four {1}. It helps {2} blood through her body. Blood leaves the heart through a tube called an {3}. When Mia shares her lunch, her friend says she has a great heart. That is a {4} meaning. Sharing shows she is {5}.",
+        answers: ["chambers", "circulate", "artery", "figurative", "generous"],
+        bank: ["chambers", "circulate", "artery", "figurative", "generous", "literal", "metaphor"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Whereas Workshop", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      tip: "More than one correct answer is possible, so compare partner versions.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change one word.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to start the sentence." },
+      payload: {
+        items: [
+          { sentences: ["A literal heart pumps blood.", "A figurative heart shows kindness."], connector: "whereas", model: "A literal heart pumps blood, whereas a figurative heart shows kindness." },
+          { sentences: ["The heart is a muscle.", "The heart is a symbol of love."], connector: "both", model: "The heart is both a muscle and a symbol of love." },
+          { sentences: ["The muscle has four chambers.", "A kind heart has no chambers."], connector: "in contrast", model: "The muscle has four chambers; in contrast, a kind heart has none." },
+          { sentences: ["Neighbors say Mr. Reyes has a heart of gold.", "He shops for his elderly neighbors."], connector: "because", model: "Neighbors say Mr. Reyes has a heart of gold because he shops for his elderly neighbors." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Heart Fixers", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and tell why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the word heart first. Is it the muscle or the kind heart?", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "A figurative heart pumps blood through your body.", options: ["A literal heart pumps blood through your body.", "A figurative heart pumps blood through your arteries.", "A figurative heart is a muscle in your chest."], answer: 0, why: "Only the muscle pumps blood. Figurative means beyond the exact words.", type: "wrong word" },
+          { wrong: "Tina has a heart of gold, so her chest muscle is huge.", options: ["Tina has a heart of gold, so she cares about others.", "Tina has a heart of gold, so her heart beats faster.", "Tina has a heart of gold, so she is tall."], answer: 0, why: "A figurative heart tells about character, not muscle size.", type: "mixed meanings" },
+          { wrong: "Both hearts are the same.", options: ["Both hearts are important, but they mean different things.", "Neither heart is important.", "Both hearts pump blood."], answer: 0, why: "A good comparison names a shared feature and a difference.", type: "no contrast" },
+          { wrong: "The heart has four chamber.", options: ["The heart has four chambers.", "The heart have four chamber.", "The heart has four chambered."], answer: 0, why: "Four means more than one, so the noun needs -s.", type: "plural noun" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Compare Two Hearts", minutes: 15, grouping: "Solo",
+      mission: "Write a short paragraph that compares the heart in your chest with Nurse Alma's great heart.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use one frame for each part and draw a heart first.", l3_4: "Write all three parts and use whereas once.", l5_6: "Write all three parts and add in contrast and a text detail." },
+      payload: {
+        prompt: "Compare the heart in your chest with the great heart of a nurse who comforts scared children.",
+        structure: [
+          { part: "Shared feature", frame: "Both the muscle and a kind heart are ___." },
+          { part: "Difference", frame: "A literal heart ___, whereas a figurative heart ___." },
+          { part: "Evidence", frame: "In contrast to the muscle, Nurse Alma's great heart shows when she ___." },
+        ],
+        word_bank: ["literal", "figurative", "compassion", "chambers", "pumps", "whereas", "in contrast", "both"],
+        checklist: ["I named something both hearts share.", "I used whereas or in contrast.", "I used at least three heart words.", "I gave one example of Nurse Alma's compassion."],
+        model: "Both the muscle in your chest and a kind heart are important. A literal heart pumps blood through four chambers, whereas a figurative heart shows compassion. In contrast to the muscle, Nurse Alma's great heart shows when she holds the hand of a scared child.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Compare the literal heart and a figurative heart. Use both, whereas, or in contrast, and at least two heart words.",
+    frame: "Both ___, but a literal heart ___, whereas a figurative heart ___.",
+    model: "Both are important, but a literal heart pumps blood through the body, whereas a figurative heart shows compassion for other people.",
+    rubric: {
+      emerging: "Names one thing about the muscle and one thing about a kind heart with a word bank.",
+      developing: "Uses the frame to state one shared feature and one difference with a contrast word.",
+      proficient: "Compares the two hearts with a contrast word and two heart words in clear sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Literal' looks like 'literal' in Spanish, but students may not know 'figurado', so they treat every heart as the muscle.", fix: "Say 'corazón' for both meanings, then label one 'body' and one 'character' on a two-column chart." },
+    { group: "Newcomers", issue: "Students hear 'great heart' and picture a large heart, because 'great' often means 'big'.", fix: "Show a photo of a kind act next to a heart diagram and ask which one 'great heart' describes." },
+  ],
+  misconception: {
+    pattern: "Students think the phrase great heart means a bigger or stronger heart muscle.",
+    redirect: "Ask 'Is this about the body or about the person?' and have them point to the matching side of the chart.",
+  },
+};

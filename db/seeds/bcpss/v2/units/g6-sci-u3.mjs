@@ -1,0 +1,273 @@
+// BCPSS Language Studio v2 — g6-sci-u3. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can population data and food webs prove what caused a species to disappear from an ecosystem?",
+  can_do: {
+    content: "I can use food webs and population data to explain how an invasive species can change an ecosystem.",
+    language: "I can make a claim, support it with evidence, and explain my reasoning with according to, because, and so.",
+  },
+  mentor: {
+    text: "According to the Mirror Lake graph, the lake trout population fell from 800 to 90 because the sea lamprey, a predator, fed on the trout.",
+    gist: "The speaker uses numbers from a graph and a fact about a predator to explain why a fish population dropped.",
+    chunks: [
+      { text: "According to the Mirror Lake graph,", role: "The evidence signal", tone: "connector", ask: "Which words tell you the speaker is using proof from a graph?" },
+      { text: "the lake trout population fell from 800 to 90", role: "The data", tone: "evidence", ask: "What numbers does the speaker use, and what do they show?" },
+      { text: "because", role: "The reason signal", tone: "connector", ask: "Which word tells you a cause is coming?" },
+      { text: "the sea lamprey, a predator, fed on the trout.", role: "The reasoning", tone: "concept", ask: "What fact explains why the numbers changed?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The [predator] eats the [prey].",
+      "There are [fewer / more] [fish] now.",
+      "I think the [invader] caused this.",
+    ],
+    l3_4: [
+      "I think the [species] population went [up / down] because [reason].",
+      "The graph shows that the number of [animals] changed from [number] to [number].",
+      "The [invasive species] competes with [native species] for [food / space].",
+    ],
+    l5_6: [
+      "According to the graph, the decline of [species] was caused by [factor], as shown by [data].",
+      "This evidence supports my claim because [reasoning].",
+      "Although [other factor] may also matter, [factor] is the strongest cause because [reason].",
+    ],
+  },
+  connectors: ["according to", "because", "as shown by", "this proves that", "so", "although"],
+  vocab: [
+    { term: "ecosystem", tier: 3, pos: "noun", def: "all the living things in one place and the air, water, and soil they share", example: "The Chesapeake Bay is an ecosystem with crabs, fish, grasses, and birds.", nonexample: "A single blue crab is not an ecosystem because it is only one living thing.", es: "ecosistema", es_note: "Cognate: sounds and means almost the same.", family: ["ecosystems"], cue: "A marsh scene with grass, fish, birds, and water." },
+    { term: "population", tier: 3, pos: "noun", def: "all the animals or plants of one kind living in one place", example: "The population of blue crabs in the Bay changes from year to year.", nonexample: "One osprey on a pole is not a population because a population is a whole group.", es: "población", es_note: "Cognate. In Spanish it also means a town or city.", family: ["populations"], cue: "A crowd of one kind of fish in a pond." },
+    { term: "native species", tier: 3, pos: "noun", def: "a kind of living thing that belongs naturally in a place", example: "The blue crab is a native species of the Chesapeake Bay.", nonexample: "The northern snakehead is not a native species because it came from Asia.", es: "especie nativa", es_note: "Cognate pair: especie / nativa.", family: ["native", "species"], cue: "A blue crab on a Bay pier." },
+    { term: "invasive species", tier: 3, pos: "noun", def: "a kind of living thing that came from somewhere else and harms the place where it now lives", example: "The sea lamprey is an invasive species in the Great Lakes.", nonexample: "A native oyster is not an invasive species because it belongs in the Bay.", es: "especie invasora", es_note: "Cognate pair: especie / invasora.", family: ["invade", "invasion"], cue: "A strange fish in a Maryland pond with a warning sign." },
+    { term: "predator", tier: 3, pos: "noun", def: "an animal that hunts and eats other animals", example: "A striped bass is a predator that hunts smaller fish.", nonexample: "A clam is not a predator because it filters tiny food from the water.", es: "depredador", es_note: "Cognate: sounds and means almost the same.", family: ["predators", "predation"], cue: "A large fish chasing a small fish." },
+    { term: "prey", tier: 3, pos: "noun", def: "an animal that is hunted and eaten by another animal", example: "Small fish are prey for striped bass and ospreys.", nonexample: "A hungry osprey is not prey in this moment because it is the hunter.", es: "presa", es_note: "Not a cognate. 'Presa' can also mean a dam or a piece of meat.", family: ["prey animal"], cue: "A small fish with an arrow pointing from a big fish." },
+    { term: "food web", tier: 3, pos: "noun", def: "a diagram of many food chains that shows who eats what in an ecosystem", example: "In the food web, algae feed small fish, and small fish feed lake trout.", nonexample: "A single arrow from a plant to a rabbit is only part of a food web.", es: "red alimentaria", es_note: "Also called 'red trófica'. 'Red' means web or network.", family: ["food chain"], cue: "A drawing with many arrows linking plants and animals." },
+    { term: "competition", tier: 3, pos: "noun", def: "a struggle between living things for the same limited food, space, or other resource", example: "Competition for food can make a native fish population smaller.", nonexample: "Two fish that eat different foods are not in competition for food.", es: "competencia", es_note: "Not a cognate. 'Competición' is mostly for sports.", family: ["compete"], cue: "Two fish reaching for the same worm." },
+    { term: "evidence", tier: 2, pos: "noun", def: "facts, numbers, or observations that help show that a claim is true", example: "The graph is evidence that the lake trout population dropped.", nonexample: "A guess with no facts behind it is not evidence.", es: "evidencia", es_note: "Cognate. Teachers also say 'pruebas' for evidence.", family: ["evident"], cue: "A magnifying glass over a line graph." },
+    { term: "decline", tier: 2, pos: "verb", def: "to become smaller in number or amount over time", example: "The lake trout population began to decline after the sea lamprey arrived.", nonexample: "A population that grows from 50 to 500 does not decline.", es: "disminuir", es_note: "The noun is 'disminución'. 'Declinar' is not used this way in science.", family: ["decrease", "drop"], cue: "A line graph sloping down." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "The Snakehead Surprise", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, jot key words, then rebuild it with your partner as close to the real words as you can.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame, and draw the pond while you listen.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one claim about what could happen next." },
+      payload: {
+        text: "In 2002, people found a strange fish in a pond in Crofton, Maryland. It was a northern snakehead, a fish from Asia. Snakeheads eat other fish, frogs, and crayfish, and they have few predators here. Scientists worried that snakeheads would compete with native fish for food. Today snakeheads live in the Potomac River, and scientists track their numbers.",
+        key_words: ["snakehead", "native", "predators", "compete", "Potomac", "track"],
+        frame: "In ___, people found a ___ in Maryland. It eats ___, and it has few ___. Scientists worry that it will ___.",
+        checks: ["people found a snakehead in a Maryland pond", "snakeheads eat fish, frogs, and crayfish", "they have few predators here", "scientists worry they will compete with native fish"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Ecosystem Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each science word to its meaning. Wrong matches bounce back, so keep going until all ten click!",
+      tip: "Let students replay with the meanings hidden to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words that look like Spanish words first.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write a sentence that uses two of the words." },
+      payload: {
+        left_label: "Science word", right_label: "What it means",
+        pairs: [
+          { l: "ecosystem", r: "living things in one place and the air, water, and soil they share" },
+          { l: "population", r: "all the animals or plants of one kind in one place" },
+          { l: "native species", r: "a living thing that belongs naturally in a place" },
+          { l: "invasive species", r: "a living thing from somewhere else that harms its new home" },
+          { l: "predator", r: "an animal that hunts and eats other animals" },
+          { l: "prey", r: "an animal that is hunted and eaten by another animal" },
+          { l: "food web", r: "a diagram that shows who eats what in an ecosystem" },
+          { l: "competition", r: "a struggle for the same limited resource" },
+          { l: "evidence", r: "facts or numbers that help show a claim is true" },
+          { l: "decline", r: "to become smaller in number over time" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Native or Invader?", minutes: 8, grouping: "Partners",
+      mission: "Sort each living thing into native or invasive in Maryland, then defend one choice to your partner.",
+      tip: "Listen for 'because' and for evidence when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the animals you know first, like the blue crab.", l3_4: "Sort all items and say 'I put ___ here because ___.'", l5_6: "Sort all items, then explain how one invader harms a native species." },
+      payload: {
+        categories: [{ name: "Native to Maryland" }, { name: "Invasive in Maryland" }],
+        items: [
+          { text: "blue crab", cat: 0 }, { text: "striped bass", cat: 0 }, { text: "eastern oyster", cat: 0 }, { text: "osprey", cat: 0 }, { text: "American shad", cat: 0 }, { text: "diamondback terrapin", cat: 0 },
+          { text: "northern snakehead", cat: 1 }, { text: "blue catfish", cat: 1 }, { text: "mute swan", cat: 1 }, { text: "nutria", cat: 1 }, { text: "hydrilla", cat: 1 }, { text: "emerald ash borer", cat: 1 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Ecosystem Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "ecosystem", clues: ["A marsh, a pond, and a forest are each one.", "It includes living things and the water and soil they share.", "The Chesapeake Bay is a big one."] },
+          { term: "population", clues: ["It is a group, not one animal.", "All the blue crabs in the Bay make up one.", "Scientists count it year after year."] },
+          { term: "predator", clues: ["A striped bass is one.", "It hunts other animals for food.", "A sea lamprey is one that feeds on fish."] },
+          { term: "prey", clues: ["A small fish is this for a bigger fish.", "It is the one being hunted.", "An arrow in a food web points to me."] },
+          { term: "food web", clues: ["It has many arrows.", "It shows who eats what.", "Algae, small fish, and lake trout are all linked in one."] },
+          { term: "invasive species", clues: ["I came from far away.", "I harm the place where I now live.", "The northern snakehead is an example in Maryland."] },
+          { term: "competition", clues: ["Two kinds of fish want the same food.", "There is not enough for everyone.", "It can make a population smaller."] },
+          { term: "evidence", clues: ["A graph can be this for a claim.", "Numbers and observations count.", "A guess without facts has none."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Claim and Proof Talk", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Make a claim, back it up with proof, then your partner pushes your thinking with a move.",
+      tip: "Listen for a claim, a piece of evidence, and a reason in every answer.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the picture and use the first frame.", l3_4: "Say your claim, then give one piece of proof with 'because'.", l5_6: "Add 'according to' and a number, then name another possible cause." },
+      payload: {
+        roles: { a: "Speaker", b: "Challenger" },
+        cards: [
+          { prompt: "Why could a new predator make a fish population decline?", starter: "I think the population will decline because the predator ___.", follow_up: "What number on a graph would prove it?" },
+          { prompt: "Why is a food web a better tool than a single food chain?", starter: "A food web shows ___, but a food chain shows only ___.", follow_up: "What could you learn from the extra arrows?" },
+          { prompt: "Snakeheads and native fish eat the same food. What might happen?", starter: "They will ___ for food, so ___.", follow_up: "Which population might decline first, and why?" },
+          { prompt: "A graph shows crab numbers going down for five years. What do you say?", starter: "According to the graph, ___.", follow_up: "What other evidence do you need to explain why?" },
+          { prompt: "Your friend says every new species harms an ecosystem. What do you say?", starter: "I disagree because ___.", follow_up: "What makes a species invasive and not just new?" },
+          { prompt: "Why do scientists keep counting populations every year?", starter: "Counting every year helps because ___.", follow_up: "What would a sudden drop tell you?" },
+        ],
+        moves: [
+          { label: "Prove it", stem: "What evidence shows that ___?" },
+          { label: "Another cause", stem: "Could ___ also be a cause of ___?" },
+          { label: "Say more", stem: "Can you explain how ___ leads to ___?" },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Graph Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds different facts about a pretend lake called Mirror Lake. Ask questions to find the missing numbers, then decide what caused the decline!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the number back.", l5_6: "After you finish, write a claim that uses both numbers and a reason." },
+      payload: {
+        goal: "Fill in all four numbers from Mirror Lake, then decide if the sea lamprey could have caused the lake trout decline.",
+        a: { title: "Scientist A: 1940 notes", has: [{ k: "Lake trout counted in 1940", v: "800 fish" }, { k: "Sea lampreys counted in 1940", v: "0 lampreys" }], needs: ["Lake trout counted in 1955", "Sea lampreys counted in 1955"] },
+        b: { title: "Scientist B: 1955 notes", has: [{ k: "Lake trout counted in 1955", v: "90 fish" }, { k: "Sea lampreys counted in 1955", v: "1,200 lampreys" }], needs: ["Lake trout counted in 1940", "Sea lampreys counted in 1940"] },
+        ask_frames: ["How many ___ were counted in ___?", "Can you repeat the number for ___, please?"],
+        tell_frames: ["In ___, scientists counted ___.", "I'm not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Evidence Hunt", minutes: 12, grouping: "Solo",
+      mission: "Read about the sea lamprey like a scientist. Mark the evidence and the reason words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the animals.", l3_4: "Mark the evidence and the reason words.", l5_6: "Mark everything, then write one claim that uses 'according to'." },
+      payload: {
+        text: "The sea lamprey is a fish with a round mouth full of teeth. It attaches to a larger fish, such as a lake trout, and feeds on its blood. Sea lampreys moved into the upper Great Lakes through canals, which are waterways built by people. By the 1950s, lake trout had almost disappeared from Lake Michigan. Overfishing also hurt the trout, so scientists needed more than one kind of evidence. Since the late 1950s, workers have controlled lampreys with dams and a chemical that targets young lampreys. Lake trout have recovered in some lakes.",
+        marks: [
+          { label: "Evidence", instruction: "Highlight facts and data that could prove a claim.", targets: ["feeds on its blood", "almost disappeared from Lake Michigan", "Lake trout have recovered in some lakes"] },
+          { label: "Reason words", instruction: "Highlight the words that link causes and effects.", targets: ["so scientists needed more than one kind of evidence", "Since the late 1950s", "which are waterways built by people"] },
+        ],
+        questions: [
+          { q: "How does the sea lamprey harm a lake trout?", options: ["It competes for algae.", "It feeds on the lake trout's blood.", "It builds canals in the lake."], answer: 1, why: "The text says it attaches to a larger fish and feeds on its blood." },
+          { q: "Why did scientists need more than one kind of evidence?", options: ["Sea lampreys were not a predator.", "Lake trout were never in Lake Michigan.", "Overfishing also hurt the trout."], answer: 2, why: "The text says overfishing also hurt the trout, so lampreys may not be the only cause." },
+          { q: "What evidence suggests that lamprey control helped?", options: ["Lake trout have recovered in some lakes.", "The lamprey has a round mouth.", "Canals connect the Great Lakes."], answer: 0, why: "After workers controlled lampreys, lake trout recovered in some lakes." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Claim Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong claim-and-proof sentences.",
+      tip: "Ask partners which piece is the claim and which piece is the evidence.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the signal word, then build around it.", l5_6: "After building, add a reason with 'because'." },
+      payload: {
+        items: [
+          { parts: ["According to the graph,", "the lake trout population", "declined after 1940."] },
+          { parts: ["The sea lamprey is invasive in the Great Lakes", "because it came from", "the Atlantic Ocean and harms native fish."] },
+          { parts: ["Snakeheads compete", "with native fish", "for the same food."] },
+          { parts: ["The food web shows", "that the predator", "eats many kinds of prey."] },
+        ],
+      },
+    },
+    {
+      kind: "quiz", domain: "Reading", title: "Graph Reading Quiz", minutes: 10, grouping: "Solo",
+      mission: "Read each pretend graph description and pick the claim that the evidence best supports.",
+      tip: "Have students point to the number in each question that proves their pick.",
+      materials: [],
+      support: { l1_2: "Look at the numbers and ask: up or down?", l3_4: "Pick an answer and find the number that proves it.", l5_6: "Pick an answer and explain why the other choices are weaker." },
+      payload: {
+        items: [
+          { q: "A graph shows 500 crabs in 2015 and 200 crabs in 2020. Which claim fits the data?", options: ["The crab population grew.", "The crab population declined.", "The crab population stayed the same."], answer: 1, why: "The number dropped from 500 to 200, so the population declined." },
+          { q: "A pond had 40 frogs in May and 40 frogs in June. Which claim fits?", options: ["The population declined.", "The population doubled.", "The population stayed the same."], answer: 2, why: "The count did not change, so the population stayed the same." },
+          { q: "A snakehead population rises from 10 to 300 while a native fish population falls from 400 to 150. What is the BEST next question?", options: ["Do the two species eat the same food?", "What color are the fish?", "How long is each fish?"], answer: 0, why: "Competition for food could explain why one population rises while the other falls." },
+          { q: "A scientist says, 'Lampreys caused the decline,' but shows no numbers. What is missing?", options: ["A new animal", "A claim", "Evidence"], answer: 2, why: "A claim needs evidence, such as population counts, to be convincing." },
+          { q: "In a food web, an arrow points from algae to small fish. What does it mean?", options: ["Small fish are eaten by algae.", "Small fish eat algae.", "Algae and fish are the same species."], answer: 1, why: "In a food web, an arrow points to the animal that eats the food." },
+          { q: "Which pair is a predator and its prey?", options: ["A striped bass and a small fish", "A crab and a crab", "An oyster and a rock"], answer: 0, why: "A striped bass hunts and eats smaller fish, so it is the predator." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link Claim and Proof", minutes: 10, grouping: "Partners",
+      mission: "Squeeze a claim and its proof into one strong sentence with the connector shown.",
+      tip: "Compare combinations because more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the animals.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["The lake trout population declined.", "The sea lamprey fed on lake trout."], connector: "because", model: "The lake trout population declined because the sea lamprey fed on lake trout." },
+          { sentences: ["The graph shows 800 fish in 1940.", "It shows only 90 fish in 1955."], connector: "while", model: "The graph shows 800 fish in 1940, while it shows only 90 fish in 1955." },
+          { sentences: ["Snakeheads eat the same food as native fish.", "The two kinds of fish compete."], connector: "so", model: "Snakeheads eat the same food as native fish, so the two kinds of fish compete." },
+          { sentences: ["The numbers dropped sharply.", "Scientists need more evidence about the cause."], connector: "although", model: "Although the numbers dropped sharply, scientists need more evidence about the cause." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Weak Claim", minutes: 10, grouping: "Partners",
+      mission: "Each claim has a problem hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look for the number first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own weak claim, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The lake trout died because of the lamprey.", options: ["According to the Mirror Lake graph, lake trout fell from 800 to 90 after sea lampreys arrived, so lampreys likely caused the decline.", "The lake trout died because lampreys are mean.", "The lake trout died because it was sad."], answer: 0, why: "A strong claim cites evidence from the graph and gives a reason.", type: "no evidence" },
+          { wrong: "Snakeheads are native to Maryland because they live in the Potomac.", options: ["Snakeheads are native because many people have seen them.", "Snakeheads are invasive because they came from Asia and harm native fish.", "Snakeheads are native because they eat fish."], answer: 1, why: "A native species belongs naturally in a place. Snakeheads came from Asia, so they are invasive.", type: "wrong word" },
+          { wrong: "A predator is an animal that is eaten.", options: ["A predator is an animal that is eaten by plants.", "A predator is an animal that hunts and eats other animals.", "A predator is an animal that lives in water."], answer: 1, why: "Predators hunt. The animal that is eaten is the prey.", type: "wrong word" },
+          { wrong: "The population of lake trout is one lake trout in the lake.", options: ["The population of lake trout is all the lake trout living in the lake.", "The population of lake trout is every fish living in the lake.", "The population of lake trout is the largest lake trout in the lake."], answer: 0, why: "A population is all the living things of one kind in one place, not one animal and not every kind of animal.", type: "wrong word" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Argue From the Data", minutes: 15, grouping: "Solo",
+      mission: "Write a short argument with a claim, evidence, and reasoning about what happened in Mirror Lake.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and circle the two numbers.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'although', and name another possible cause." },
+      payload: {
+        prompt: "In Mirror Lake, scientists counted 800 lake trout in 1940 and 90 in 1955. Sea lampreys rose from 0 to 1,200. Did sea lampreys cause the decline? Argue with evidence.",
+        structure: [
+          { part: "Claim", frame: "I claim that the decline of ___ was caused by ___." },
+          { part: "Evidence", frame: "According to the data, ___ fell from ___ to ___ while ___ rose to ___." },
+          { part: "Reasoning", frame: "This is because ___, so more ___ means fewer ___." },
+        ],
+        word_bank: ["population", "predator", "invasive species", "according to", "evidence", "decline", "because", "although"],
+        checklist: ["I stated a clear claim.", "I used two numbers as evidence.", "I explained why the evidence supports my claim.", "I used at least three science words."],
+        model: "I claim that the decline of lake trout was probably caused by sea lampreys. According to the data, lake trout fell from 800 to 90 while sea lampreys rose to 1,200. This is because lampreys are predators that attach to lake trout and feed on them, so more lampreys means fewer trout. Although other factors like overfishing may matter, the evidence points to lampreys.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A pond's frog population fell from 300 to 60 after an invasive fish arrived. Write a claim, one piece of evidence, and a reason. Use at least two science words.",
+    frame: "I claim that ___ caused the decline of ___. According to the data, ___. This is because ___.",
+    model: "I claim that the invasive fish caused the decline of the frog population. According to the data, the frogs fell from 300 to 60. This is because the fish is a predator that eats frog eggs and tadpoles.",
+    rubric: {
+      emerging: "States a claim with a word bank or a labeled graph.",
+      developing: "States a claim and uses one number as evidence.",
+      proficient: "States a claim, cites accurate data, and explains the reasoning that links the cause to the decline.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Population' (población) can mean a town, and 'evidence' (evidencia) is sometimes used for 'obvious', so students mix up the science meanings.", fix: "Connect 'población' to a group of one kind of animal using a drawing, and use 'pruebas' as a synonym when explaining evidence." },
+    { group: "All multilingual learners", issue: "Students write claims with no proof, such as 'The lamprey is bad,' because they do not know how to introduce evidence.", fix: "Require the frame 'According to the graph, ___' so each claim starts with a number." },
+  ],
+  misconception: {
+    pattern: "Students say that every new species is an invasive species, or that two things that happen together always prove a cause.",
+    redirect: "Ask 'Does the new species harm the ecosystem, and what evidence shows it?' until they separate a new species from an invasive one and ask for evidence of a cause.",
+  },
+};

@@ -1,8 +1,8 @@
 // BCPSS K–8 Curriculum & Language Bridge — Progressive 3-Step Workspace
 import { renderCreationStudio } from "./creation-studio.js";
-import { renderEsolPack } from "./esol-pack.js";
-import { renderInteractiveStudio } from "./interactive-labs.js";
 import { keepView } from "./keep-view.js";
+import { renderOverview } from "./overview-tab.js";
+import { renderStudioTab } from "./studio-tab.js";
 import { renderVocabReader } from "./vocab-reader.js";
 import { renderQrSvg } from "./qr-svg.js";
 import { renderVisualVocabStudio } from "./vocab-studio.js";
@@ -11,27 +11,27 @@ const GRADES = ["K", "1", "2", "3", "4", "5", "6", "7", "8"];
 const SUBJECTS = ["ELA", "Math", "Science", "Social Studies"];
 const KLU_FILTERS = ["All", "Narrate", "Inform", "Explain", "Argue"];
 const COMFORT_STORAGE_KEY = "bcpssTeachers:v1:comfort";
-const SEQUENCE_STORAGE_PREFIX = "bcpssTeachers:v1:seq:";
-const PUBLIC_SITE_ORIGIN = "https://thelanguagepage.com";
 const WIDA_TIERS = [
   { key: "1_2", label: "Levels 1–2", short: "Entering / Emerging" },
   { key: "3_4", label: "Levels 3–4", short: "Developing / Expanding" },
   { key: "5_6", label: "Levels 5–6", short: "Bridging / Reaching" },
 ];
-const VALID_TABS = ["connections", "vocab", "studio", "create", "esol", "reading", "activities", "family"];
+const VALID_TABS = ["studio", "overview", "vocab", "reading", "create", "family"];
+const DEFAULT_TAB = "studio";
+// Old bookmarks and shared links: map retired tab names onto the v2 tabs.
 const TAB_ALIASES = {
-  understand: "connections",
-  vocabulary: "vocab",
+  connections: "overview",
+  understand: "overview",
+  activities: "studio",
+  printables: "studio",
+  esol: "studio",
   labs: "studio",
+  vocabulary: "vocab",
   creator: "create",
-  printables: "activities",
   deconstruct: "family",
   evidence: "family",
 };
-const FAMILY_LANGS = [
-  { code: "en", label: "English", rtl: false },
-  { code: "es", label: "Español", rtl: false },
-];
+const PUBLIC_SITE_ORIGIN = "https://thelanguagepage.com";
 
 const SAMPLE_PASSAGES = {
   math: "A bakery uses 3 cups of flour for every 2 batches of rolls. If the baker needs to make 15 batches of rolls for a school event, determine how many cups of flour are required. Explain your reasoning using an equivalent ratio or unit rate.",
@@ -44,7 +44,7 @@ const state = {
   subject: "",
   unitId: "",
   wida: "3_4",
-  tab: "connections",
+  tab: DEFAULT_TAB,
   units: [],
   unitSearch: "",
   kluFilter: "All",
@@ -52,21 +52,15 @@ const state = {
   planMode: false,
   pinnedPlan: null,
   deconstructResult: null,
-  familyLang: "en",
   familySubview: "bridge", // bridge | deconstruct | evidence
   selectorCollapsed: false,
   projectionMode: false,
-  diveSelectedChunk: 0,
-  diveRevealAll: false,
-  previewActivityIdx: -1,
   comfort: {
     largeText: false,
     highContrast: false,
     roomySpacing: false,
   },
 };
-
-let lastPreviewTrigger = null;
 
 // Anonymous, FERPA-safe telemetry (zero PII; fire-and-forget)
 function trackTelemetry(unitId, widaTier, eventType) {
@@ -171,11 +165,6 @@ function toggleComfortPref(key) {
     roomySpacing: "Roomy spacing",
   };
   announce(`${labels[key]} ${state.comfort[key] ? "enabled" : "disabled"}.`);
-}
-
-function buildActivityUrl(unitId, activityId, wida, mode = "student", { absolute = false } = {}) {
-  const path = `/bcpss-teachers/activity/?unit=${encodeURIComponent(unitId)}&activity=${encodeURIComponent(activityId)}&wida=${encodeURIComponent(wida || "3_4")}&mode=${encodeURIComponent(mode)}`;
-  return absolute ? `${PUBLIC_SITE_ORIGIN}${path}` : path;
 }
 
 function curriculumFor(grade, subject) {
@@ -288,88 +277,6 @@ function normalizeVocab(raw) {
     .filter((v) => v?.word);
 }
 
-function isExcludedNonSpanishL1(label) {
-  const lower = String(label || "").toLowerCase();
-  return (
-    lower.includes("arabic") ||
-    lower === "ar" ||
-    lower.includes("french") ||
-    lower.includes("creole") ||
-    lower.includes("kreyol") ||
-    lower.includes("kreyòl") ||
-    lower === "fr" ||
-    lower === "fr_ht"
-  );
-}
-
-function normalizeL1Watchouts(raw) {
-  const parsed = safeParseJson(raw, {});
-  if (Array.isArray(parsed)) {
-    return parsed
-      .map((item) => {
-        if (typeof item === "string" && item.trim()) {
-          return {
-            language: "Spanish–English Bridge",
-            frictionPoint: "",
-            quickFix: "",
-            note: item.trim(),
-          };
-        }
-        if (!item || typeof item !== "object") return null;
-        const language = String(
-          item.l1_group || item.language || item.l1 || "Spanish–English Bridge",
-        ).trim();
-        if (isExcludedNonSpanishL1(language)) return null;
-        const frictionPoint = String(item.friction_point || "").trim();
-        const quickFix = String(item.quick_fix || "").trim();
-        const note = String(item.watchout || item.note || item.guidance || "").trim();
-        return { language, frictionPoint, quickFix, note };
-      })
-      .filter((i) => i && (i.frictionPoint || i.quickFix || i.note));
-  }
-  if (parsed && typeof parsed === "object") {
-    const labelMap = {
-      spanish: "Spanish (Español)",
-      es: "Spanish (Español)",
-      english: "Spanish–English Bridge",
-      spanish_english: "Spanish–English Bridge",
-    };
-    return Object.entries(parsed)
-      .filter(([k, v]) => Boolean(v) && !isExcludedNonSpanishL1(k))
-      .map(([k, v]) => {
-        const language = labelMap[k.toLowerCase()] || k;
-        if (v && typeof v === "object") {
-          const resolvedLang = String(v.l1_group || language).trim();
-          if (isExcludedNonSpanishL1(resolvedLang)) return null;
-          return {
-            language: resolvedLang,
-            frictionPoint: String(v.friction_point || "").trim(),
-            quickFix: String(v.quick_fix || "").trim(),
-            note: String(v.watchout || v.note || v.tip || "").trim(),
-          };
-        }
-        return {
-          language,
-          frictionPoint: "",
-          quickFix: "",
-          note: typeof v === "string" ? v.trim() : "",
-        };
-      })
-      .filter((i) => i && (i.frictionPoint || i.quickFix || i.note));
-  }
-  if (typeof raw === "string" && raw.trim()) {
-    return [
-      {
-        language: "Spanish–English Bridge",
-        frictionPoint: "",
-        quickFix: "",
-        note: raw.trim(),
-      },
-    ];
-  }
-  return [];
-}
-
 function normalizePublisherMeta(unit) {
   const raw = safeParseJson(unit?.publisher_meta, null);
   if (raw && typeof raw === "object") {
@@ -384,69 +291,6 @@ function normalizePublisherMeta(unit) {
     grade_band: "",
     signature_protocol: "",
   };
-}
-
-function normalizeColorToken(token) {
-  const t = String(token || "").toLowerCase().trim();
-  if (t === "connector" || t === "concept" || t === "evidence" || t === "precision") return t;
-  if (t.includes("connect") || t.includes("link") || t.includes("transition")) return "connector";
-  if (t.includes("evid") || t.includes("reason") || t.includes("proof")) return "evidence";
-  if (t.includes("precis") || t.includes("quant") || t.includes("detail")) return "precision";
-  return "concept";
-}
-
-function normalizeLanguageDive(conn) {
-  const raw = safeParseJson(conn?.mentor_sentence_unpacking, null);
-  if (!raw || typeof raw !== "object") return null;
-  const mentorSentence = String(raw.mentor_sentence || "").trim();
-  const chunks = Array.isArray(raw.chunks)
-    ? raw.chunks
-        .map((c) => {
-          if (!c || typeof c !== "object") return null;
-          const text = String(c.text || "").trim();
-          if (!text) return null;
-          return {
-            text,
-            role: String(c.role || "Syntactic Chunk").trim(),
-            color_token: normalizeColorToken(c.color_token),
-            student_question: String(c.student_question || "").trim(),
-          };
-        })
-        .filter(Boolean)
-    : [];
-  if (!mentorSentence && !chunks.length) return null;
-  return {
-    mentor_sentence: mentorSentence || chunks.map((c) => c.text).join(" "),
-    chunks,
-  };
-}
-
-function normalizeLessonArc(conn) {
-  const raw = safeParseJson(conn?.lesson_arc, []);
-  if (!Array.isArray(raw)) return [];
-  return raw
-    .map((step) => {
-      if (!step || typeof step !== "object") return null;
-      const phase = String(step.phase || "").trim();
-      if (!phase) return null;
-      return {
-        phase,
-        minutes: step.minutes != null ? String(step.minutes).trim() : "",
-        focus: String(step.focus || "").trim(),
-        teacher_move: String(step.teacher_move || "").trim(),
-        student_move: String(step.student_move || "").trim(),
-      };
-    })
-    .filter(Boolean);
-}
-
-function normalizeMisconception(conn) {
-  const raw = safeParseJson(conn?.common_language_misconception, null);
-  if (!raw || typeof raw !== "object") return null;
-  const misconception_pattern = String(raw.misconception_pattern || "").trim();
-  const teacher_redirect = String(raw.teacher_redirect || "").trim();
-  if (!misconception_pattern && !teacher_redirect) return null;
-  return { misconception_pattern, teacher_redirect };
 }
 
 function setProjectionMode(enabled) {
@@ -491,18 +335,7 @@ function applyWidaTier(next) {
   // Panels redraw at once; keep the reader exactly where they were.
   keepView($("#mainContent"), () => {
     renderResourceExportBar();
-    renderConnectionsTab();
-    renderVocabTab();
-    renderStudioTab();
-    renderCreateTab();
-    renderEsolTab();
-    renderReadingTab();
-    renderActivitiesTab();
-    if ($("#activityPreviewModal")?.open && state.previewActivityIdx >= 0) {
-      renderActivityPreviewModal();
-    }
-    renderFamilyTab();
-    renderPrintKit();
+    renderTabPanels();
   });
   trackTelemetry(state.unitId, state.wida, "scaffold_toggle");
   announce(`Switched to WIDA ${widaLabel(state.wida)} scaffolds.`);
@@ -716,8 +549,6 @@ async function loadUnits(preferredUnitId = "") {
 
 async function selectUnit(unitId, { skipFetchIfLoaded = false, userInitiated = false } = {}) {
   state.unitId = unitId;
-  state.diveSelectedChunk = 0;
-  state.diveRevealAll = false;
   renderUnitStrip();
   syncUrl();
   if (skipFetchIfLoaded && state.detail?.unit?.id === unitId) {
@@ -727,11 +558,11 @@ async function selectUnit(unitId, { skipFetchIfLoaded = false, userInitiated = f
     }
     return;
   }
-  $("#panel-connections").innerHTML = `<div class="bh-loading" role="status">Loading unit language bridge…</div>`;
+  $("#panel-studio").innerHTML = `<div class="bh-loading" role="status">Loading Language Studio…</div>`;
+  $("#panel-overview").innerHTML = `<div class="bh-loading" role="status">Loading unit overview…</div>`;
   $("#panel-vocab").innerHTML = `<div class="bh-loading" role="status">Loading Visual Vocabulary Studio…</div>`;
-  $("#panel-studio").innerHTML = `<div class="bh-loading" role="status">Loading interactive language studio…</div>`;
+  $("#panel-reading").innerHTML = `<div class="bh-loading" role="status">Loading vocabulary reading…</div>`;
   $("#panel-create").innerHTML = `<div class="bh-loading" role="status">Loading Teacher Creation Studio…</div>`;
-  $("#panel-activities").innerHTML = `<div class="bh-loading" role="status">Loading ready-to-use activities…</div>`;
   try {
     const detail = await fetchJson(`/api/bcpss/units/${encodeURIComponent(unitId)}`);
     state.detail = detail;
@@ -742,11 +573,36 @@ async function selectUnit(unitId, { skipFetchIfLoaded = false, userInitiated = f
     }
   } catch (err) {
     const errHtml = `<div class="bh-error" role="alert">Unable to load unit details: ${esc(err.message)}</div>`;
-    $("#panel-connections").innerHTML = errHtml;
-    $("#panel-vocab").innerHTML = errHtml;
-    $("#panel-studio").innerHTML = errHtml;
-    $("#panel-create").innerHTML = errHtml;
-    $("#panel-activities").innerHTML = errHtml;
+    for (const tab of ["studio", "overview", "vocab", "reading", "create"]) {
+      $(`#panel-${tab}`).innerHTML = errHtml;
+    }
+  }
+}
+
+/** Open any unit by id (cross-subject transfer): switch grade and subject first when it lives elsewhere. */
+async function openUnitById(unitId) {
+  if (!unitId) return;
+  state.planMode = false;
+  state.pinnedPlan = null;
+  $("#pinnedPlanBanner").hidden = true;
+  if (state.units.some((u) => u.id === unitId)) {
+    await selectUnit(unitId, { skipFetchIfLoaded: unitId === state.unitId, userInitiated: true });
+    return;
+  }
+  try {
+    const target = await fetchJson(`/api/bcpss/units/${encodeURIComponent(unitId)}`);
+    if (!target?.unit) return;
+    state.grade = String(target.unit.grade);
+    state.subject = target.unit.subject;
+    resetUnitFilters();
+    updateSubjectLabels();
+    await loadUnits(unitId);
+    $("#workspaceSection").scrollIntoView({
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "start",
+    });
+  } catch (err) {
+    announce(`Could not open that unit: ${err.message}`);
   }
 }
 
@@ -902,10 +758,10 @@ function renderResourceExportBar() {
     bar.innerHTML = "";
     return;
   }
-  const viewHtmlUrl = buildExportUrl(u.id, "html", state.wida);
-  const pdfUrl = buildExportUrl(u.id, "pdf", state.wida);
-  const docxUrl = buildExportUrl(u.id, "docx", state.wida);
-  const downloadHtmlUrl = buildExportUrl(u.id, "html", state.wida, "download=1");
+  const viewHtmlUrl = buildExportUrl(u.id, "html", state.wida, "part=packet");
+  const pdfUrl = buildExportUrl(u.id, "pdf", state.wida, "part=packet");
+  const docxUrl = buildExportUrl(u.id, "docx", state.wida, "part=packet");
+  const downloadHtmlUrl = buildExportUrl(u.id, "html", state.wida, "part=packet&download=1");
 
   bar.hidden = false;
   bar.innerHTML = `
@@ -977,18 +833,6 @@ const DEFAULT_SUBJECT_SUB = {
   "Social Studies": "Studies Weekly · BCPSS",
 };
 
-/** Copy a vocabulary term and say so on the card itself (the card used to react to nothing you could see). */
-async function copyVocabWord(card) {
-  trackTelemetry(state.unitId, state.wida, "vocab_lookup");
-  if (!(await copyToClipboard(card.dataset.vocabWord))) return;
-  if (card.querySelector(".bh-copied-chip")) return;
-  const chip = document.createElement("span");
-  chip.className = "bh-copied-chip";
-  chip.textContent = "Copied";
-  card.appendChild(chip);
-  setTimeout(() => chip.remove(), 1400);
-}
-
 function selectionAnnouncement() {
   if (hasSelection()) return `Selected ${gradeLabel(state.grade)} ${state.subject}.`;
   return state.grade
@@ -1043,11 +887,16 @@ function renderEmptyWorkspace() {
   renderResourceExportBar();
   $("#printKitBtn").disabled = true;
   $("#sharePlanBtn").disabled = true;
-  $("#panel-connections").innerHTML = `<div class="bh-empty">Choose a grade and content area above to load a unit.</div>`;
-  $("#panel-vocab").innerHTML = `<div class="bh-empty">Choose a grade and content area above to open the Visual Vocabulary Studio.</div>`;
-  $("#panel-studio").innerHTML = `<div class="bh-empty">Choose a grade and content area above to launch the Interactive Learning Labs.</div>`;
-  $("#panel-create").innerHTML = `<div class="bh-empty">Choose a grade and content area above to open the Teacher Creation Studio.</div>`;
-  $("#panel-activities").innerHTML = `<div class="bh-empty">Choose a grade and content area above to view classroom activities.</div>`;
+  const emptyPanels = {
+    studio: "launch the Language Studio",
+    overview: "see the unit overview",
+    vocab: "open the Visual Vocabulary Studio",
+    reading: "open the vocabulary reading",
+    create: "open the Teacher Creation Studio",
+  };
+  for (const [tab, goal] of Object.entries(emptyPanels)) {
+    $(`#panel-${tab}`).innerHTML = `<div class="bh-empty">Choose a grade and content area above to ${goal}.</div>`;
+  }
   const bridgeSub = $("#familyBridgeSubview");
   if (bridgeSub) bridgeSub.innerHTML = `<div class="bh-empty">Choose a grade and content area above to view the family bridge card.</div>`;
   const evSub = $("#familyEvidenceSubview");
@@ -1163,16 +1012,16 @@ function renderWorkspace() {
   $("#printKitBtn").disabled = false;
   $("#sharePlanBtn").disabled = false;
 
-  renderConnectionsTab();
+  renderTabPanels();
+}
+
+function renderTabPanels() {
+  const { detail, wida } = state;
+  renderStudioTab($("#panel-studio"), { detail, wida });
+  renderOverview($("#panel-overview"), { detail, wida });
   renderVocabTab();
-  renderStudioTab();
-  renderCreateTab();
-  renderEsolTab();
   renderReadingTab();
-  renderActivitiesTab();
-  if ($("#activityPreviewModal")?.open && state.previewActivityIdx >= 0) {
-    renderActivityPreviewModal();
-  }
+  renderCreateTab();
   renderFamilyTab();
   renderPrintKit();
 }
@@ -1226,1151 +1075,6 @@ function renderReadingTab() {
     wida: state.wida,
     onTelemetry: (eventType) => trackTelemetry(state.unitId, state.wida, eventType),
   });
-}
-
-function renderEsolTab() {
-  renderEsolPack($("#panel-esol"), {
-    unit: state.detail?.unit || null,
-    pack: state.detail?.esol_pack || null,
-    wida: state.wida,
-    onTelemetry: (eventType) => trackTelemetry(state.unitId, state.wida, eventType),
-  });
-}
-
-function renderStudioTab() {
-  const panel = $("#panel-studio");
-  if (!panel) return;
-  const detail = state.detail;
-  const unit = detail?.unit || null;
-  const conn = detail?.connections?.[0] || null;
-  renderInteractiveStudio(panel, {
-    unit,
-    connection: conn,
-    blueprint: blueprintOf(conn),
-    wida: state.wida,
-    onTelemetry: (eventType) => trackTelemetry(state.unitId, state.wida, eventType),
-    onWidaChange: (nextTier) => applyWidaTier(nextTier),
-  });
-}
-
-function renderLanguageDiveSection(dive) {
-  if (!dive) return "";
-  const chunks = dive.chunks || [];
-  const selectedIdx =
-    chunks.length > 0 ? Math.min(Math.max(0, state.diveSelectedChunk), chunks.length - 1) : -1;
-  const activeChunk = selectedIdx >= 0 ? chunks[selectedIdx] : null;
-
-  return `
-    <section class="bh-dive-card" aria-label="Interactive Mentor Sentence Language Dive">
-      <div class="bh-dive-head">
-        <div>
-          <span class="bh-dive-kicker">Interactive Language Dive · Mentor Sentence Unpacking</span>
-          <h4>Deconstruct the Target Academic Sentence</h4>
-        </div>
-        <div class="bh-dive-actions">
-          <button
-            type="button"
-            class="bh-btn bh-btn-secondary bh-btn-sm"
-            data-dive-read="${esc(dive.mentor_sentence)}"
-          >
-            🔊 Read Sentence
-          </button>
-          ${
-            chunks.length
-              ? `<button
-                  type="button"
-                  class="bh-btn bh-btn-ghost bh-btn-sm"
-                  data-dive-reveal-all
-                  aria-pressed="${state.diveRevealAll ? "true" : "false"}"
-                >
-                  ${state.diveRevealAll ? "Single-Chunk Focus" : "Reveal All Chunks"}
-                </button>`
-              : ""
-          }
-        </div>
-      </div>
-
-      <div class="bh-dive-legend" role="group" aria-label="Syntactic chunk color key">
-        <span class="bh-dive-key"><span class="bh-dive-dot is-connector" aria-hidden="true"></span> Connector</span>
-        <span class="bh-dive-key"><span class="bh-dive-dot is-concept" aria-hidden="true"></span> Concept</span>
-        <span class="bh-dive-key"><span class="bh-dive-dot is-evidence" aria-hidden="true"></span> Evidence</span>
-        <span class="bh-dive-key"><span class="bh-dive-dot is-precision" aria-hidden="true"></span> Precision</span>
-      </div>
-
-      ${
-        chunks.length
-          ? `<div class="bh-dive-chunks" role="group" aria-label="Clickable mentor sentence chunks">
-              ${chunks
-                .map((chunk, idx) => {
-                  const isActive = state.diveRevealAll || idx === selectedIdx;
-                  return `
-                    <button
-                      type="button"
-                      class="bh-dive-chunk is-${esc(chunk.color_token)}"
-                      data-dive-chunk="${idx}"
-                      aria-pressed="${isActive ? "true" : "false"}"
-                    >
-                      <span class="bh-dive-chunk-text">${esc(chunk.text)}</span>
-                      <span class="bh-dive-chunk-role">${esc(chunk.role)}</span>
-                    </button>
-                  `;
-                })
-                .join("")}
-            </div>`
-          : `<p class="bh-dive-fallback-sentence">“${esc(dive.mentor_sentence)}”</p>`
-      }
-
-      ${
-        chunks.length && !state.diveRevealAll && activeChunk
-          ? `<div class="bh-dive-inspector is-${esc(activeChunk.color_token)}" aria-live="polite">
-              <div class="bh-dive-inspector-top">
-                <span class="bh-dive-role-pill is-${esc(activeChunk.color_token)}">${esc(activeChunk.role)}</span>
-                <span class="bh-dive-selected-quote">“${esc(activeChunk.text)}”</span>
-              </div>
-              ${
-                activeChunk.student_question
-                  ? `<p class="bh-dive-question"><strong>Guiding Student Question:</strong> ${esc(activeChunk.student_question)}</p>`
-                  : ""
-              }
-            </div>`
-          : ""
-      }
-
-      ${
-        chunks.length && state.diveRevealAll
-          ? `<div class="bh-dive-all-grid" aria-live="polite">
-              ${chunks
-                .map(
-                  (chunk, idx) => `
-                    <article class="bh-dive-all-item is-${esc(chunk.color_token)}">
-                      <div class="bh-dive-inspector-top">
-                        <span class="bh-dive-role-pill is-${esc(chunk.color_token)}">${idx + 1}. ${esc(chunk.role)}</span>
-                      </div>
-                      <p class="bh-dive-all-quote">“${esc(chunk.text)}”</p>
-                      ${
-                        chunk.student_question
-                          ? `<p class="bh-dive-question"><strong>Ask Students:</strong> ${esc(chunk.student_question)}</p>`
-                          : ""
-                      }
-                    </article>
-                  `,
-                )
-                .join("")}
-            </div>`
-          : ""
-      }
-    </section>
-  `;
-}
-
-function renderLessonArcSection(lessonArc, misconception) {
-  if (!lessonArc.length && !misconception) return "";
-  return `
-    <section class="bh-arc-section" aria-label="4-Phase Language-Embedded Lesson Arc">
-      <div class="bh-arc-head">
-        <div>
-          <span class="bh-dive-kicker">Publisher Lesson Pacing · Language-Embedded Arc</span>
-          <h4>4-Phase Instructional Flow</h4>
-        </div>
-      </div>
-
-      ${
-        lessonArc.length
-          ? `<div class="bh-arc-rail">
-              ${lessonArc
-                .map(
-                  (step, idx) => `
-                    <article class="bh-arc-step">
-                      <div class="bh-arc-step-top">
-                        <span class="bh-arc-num">${idx + 1}</span>
-                        <strong class="bh-arc-phase">${esc(step.phase)}</strong>
-                        ${step.minutes ? `<span class="bh-arc-min">${esc(step.minutes)} min</span>` : ""}
-                      </div>
-                      ${step.focus ? `<p class="bh-arc-focus">${esc(step.focus)}</p>` : ""}
-                      ${
-                        step.teacher_move
-                          ? `<div class="bh-arc-move">
-                              <span class="bh-arc-move-label is-teacher">Teacher Move</span>
-                              <p>${esc(step.teacher_move)}</p>
-                            </div>`
-                          : ""
-                      }
-                      ${
-                        step.student_move
-                          ? `<div class="bh-arc-move">
-                              <span class="bh-arc-move-label is-student">Student Move</span>
-                              <p>${esc(step.student_move)}</p>
-                            </div>`
-                          : ""
-                      }
-                    </article>
-                  `,
-                )
-                .join("")}
-            </div>`
-          : ""
-      }
-
-      ${
-        misconception
-          ? `<div class="bh-misconception-box" role="note" aria-label="Common Language Misconception and Teacher Redirect">
-              <div class="bh-misconception-col is-pattern">
-                <span class="bh-misconception-tag">Common Language Misconception</span>
-                <p>${esc(misconception.misconception_pattern)}</p>
-              </div>
-              <div class="bh-misconception-col is-redirect">
-                <span class="bh-misconception-tag">High-Leverage Teacher Redirect</span>
-                <p>${esc(misconception.teacher_redirect)}</p>
-              </div>
-            </div>`
-          : ""
-      }
-    </section>
-  `;
-}
-
-function renderScaffoldFlowSection(unit, bp, scaffold, misconception) {
-  const klu = bp.wida_klu || unit?.primary_klu || "Explain";
-  const barrier =
-    misconception?.misconception_pattern ||
-    `Students may understand the ${unit?.subject || "content"} concept intuitively but drop causal or evidentiary connectors when explaining aloud or in writing.`;
-  const support =
-    scaffold?.teacherMove ||
-    "Model the target academic frame aloud once, rehearse with a partner, and keep the visual word bank visible during drafting.";
-  const evidence = `Students accurately use at least 2 unit terms and a WIDA ${klu} connector to justify their response without copying a model verbatim.`;
-  const fade =
-    state.wida === "1_2"
-      ? "Fade word-by-word sentence frames to open clause starters once students independently place key vocabulary."
-      : state.wida === "3_4"
-        ? "Remove starter stems during collaborative transfer; keep only the academic connector bank visible."
-        : "Fade all visual frames and ask students to self-critique academic precision and counter-evidence.";
-
-  return `
-    <section class="bh-scaffold-flow-card" aria-label="Language demand to fade progression">
-      <span class="bh-dive-kicker">WIDA Instructional Progression · ${esc(widaLabel(state.wida))}</span>
-      <h4 style="margin:0.2rem 0 0">Language Demand → Barrier → Support → Evidence → When to Fade</h4>
-      <div class="bh-scaffold-flow-grid">
-        <div class="bh-flow-step">
-          <span class="bh-flow-tag">1. Language Demand</span>
-          <p><strong>${esc(klu)}</strong>: ${esc(bp.move_name || "Academic explanation")} (${esc(bp.syntax_pattern || "Claim + connector + evidence")}).</p>
-        </div>
-        <div class="bh-flow-step is-barrier">
-          <span class="bh-flow-tag">2. Likely Barrier</span>
-          <p>${esc(barrier)}</p>
-        </div>
-        <div class="bh-flow-step is-support">
-          <span class="bh-flow-tag">3. Targeted Support</span>
-          <p>${esc(support)}</p>
-        </div>
-        <div class="bh-flow-step is-evidence">
-          <span class="bh-flow-tag">4. Evidence of Learning</span>
-          <p>${esc(evidence)}</p>
-        </div>
-        <div class="bh-flow-step is-fade">
-          <span class="bh-flow-tag">5. When to Fade</span>
-          <p>${esc(fade)}</p>
-        </div>
-      </div>
-    </section>
-  `;
-}
-
-function defaultSequenceForUnit(unit, lessonArc, bp) {
-  const klu = bp.wida_klu || unit?.primary_klu || "Explain";
-  const arc0 = lessonArc[0]?.teacher_move || `Activate prior knowledge around ${unit?.unit_title || "the unit"} with a quick Notice & Wonder visual.`;
-  const arc1 = lessonArc[1]?.teacher_move || `Think aloud using the mentor sentence and highlight the WIDA ${klu} connector.`;
-  const arc2 = lessonArc[2]?.teacher_move || `Co-construct one model response using TWR Because / But / So sentences.`;
-  const arc3 = lessonArc[3]?.student_move || `Partners rehearse orally with talk moves before revising their explanation.`;
-  return [
-    { phase: "1. Launch", twr: "Notice & Wonder / Kernel", text: arc0 },
-    { phase: "2. Model", twr: "TWR Appositives & Annotate", text: arc1 },
-    { phase: "3. Guided Practice", twr: "TWR Because / But / So", text: arc2 },
-    { phase: "4. Collaborative Task", twr: "Partner Talk & Expand", text: arc3 },
-    { phase: "5. Independent Transfer", twr: "TWR Summary Sentence", text: `Students apply ${unit?.unit_title || "unit"} vocabulary independently to a new prompt with faded frames.` },
-    { phase: "6. Check for Understanding", twr: "3-Min Exit Ticket", text: `Collect the unit language exit ticket and sort into Emerging, Developing, and Proficient look-fors.` },
-  ];
-}
-
-function loadUnitSequence(unit, lessonArc, bp) {
-  const defaults = defaultSequenceForUnit(unit, lessonArc, bp);
-  if (!unit?.id) return defaults;
-  try {
-    const raw = window.localStorage.getItem(`${SEQUENCE_STORAGE_PREFIX}${unit.id}`);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length === defaults.length) {
-        return defaults.map((d, idx) => ({ ...d, text: String(parsed[idx] ?? d.text) }));
-      }
-    }
-  } catch {
-    // Fallback to defaults
-  }
-  return defaults;
-}
-
-function renderEditableSequenceSection(unit, lessonArc, bp) {
-  const steps = loadUnitSequence(unit, lessonArc, bp);
-  return `
-    <section class="bh-seq-card" aria-label="Editable 6-phase instructional sequence">
-      <div class="bh-seq-head">
-        <div>
-          <span class="bh-dive-kicker">Editable Lesson Planner · TWR Embedded</span>
-          <h4 style="margin:0.2rem 0 0">6-Phase Instructional Sequence</h4>
-        </div>
-        <button type="button" class="bh-btn bh-btn-ghost bh-btn-sm" data-reset-sequence>Reset to Default</button>
-      </div>
-      <div class="bh-seq-grid">
-        ${steps
-          .map(
-            (s, idx) => `
-              <div class="bh-seq-step">
-                <div class="bh-seq-step-top">
-                  <span class="bh-seq-badge">${esc(s.phase)}</span>
-                  <span class="bh-seq-twr">${esc(s.twr)}</span>
-                </div>
-                <label for="seqInput-${idx}" class="visually-hidden">Notes for ${esc(s.phase)}</label>
-                <textarea id="seqInput-${idx}" class="bh-seq-input" data-seq-idx="${idx}">${esc(s.text)}</textarea>
-              </div>
-            `,
-          )
-          .join("")}
-      </div>
-    </section>
-  `;
-}
-
-function renderCurriculumIntelligenceSection(unit, bp, vocab, misconception, transfers) {
-  const klu = bp.wida_klu || unit?.primary_klu || "Explain";
-  const topWord = vocab[0]?.word || unit?.subject || "key vocabulary";
-  const hasMisc = Boolean(misconception?.misconception_pattern);
-  const recs = [
-    {
-      rule: `Rule · ${vocab.length} Verified Unit Terms`,
-      title: `Front-load "${topWord}" with Visual Models`,
-      desc: `Students in ${gradeLabel(unit.grade)} ${unit.subject} need concrete visual anchors before producing ${klu} sentences.`,
-      actionLabel: "Open Visual Vocabulary →",
-      targetTab: "vocab",
-    },
-    {
-      rule: hasMisc ? "Rule · Verified Misconception Flagged" : `Rule · WIDA ${klu} Practice`,
-      title: "Run Misconception Detective Before Independent Work",
-      desc: hasMisc
-        ? `Address the documented pattern: "${misconception.misconception_pattern.slice(0, 110)}…"`
-        : `Have partners test and revise an academic ${klu} sentence in the Interactive Learning Labs.`,
-      actionLabel: "Open Interactive Labs →",
-      targetTab: "studio",
-    },
-    {
-      rule: `Rule · WIDA ${widaLabel(state.wida)} Differentiation`,
-      title: "Generate a Custom Worksheet or Projector Activity",
-      desc: `Create an editable ${unit.subject} task tailored to ${widaLabel(state.wida)} with a separate Teacher Answer Key.`,
-      actionLabel: "Open Creation Studio →",
-      targetTab: "create",
-    },
-  ];
-  if (transfers.length) {
-    recs.push({
-      rule: `Rule · ${transfers.length} Cross-Subject Match${transfers.length === 1 ? "" : "es"}`,
-      title: `Reinforce ${bp.move_name || klu} Across ${transfers[0].subject}`,
-      desc: `Co-plan with ${transfers[0].subject} Unit ${transfers[0].unit_number} (${transfers[0].unit_title}) so students reuse the exact same language move.`,
-      actionLabel: "View Transfer Cards ↓",
-      targetTab: "",
-    });
-  }
-
-  return `
-    <section class="bh-intel-card" aria-label="Curriculum intelligence recommendations">
-      <span class="bh-dive-kicker">Curriculum Intelligence · Transparent Rule-Based Guidance</span>
-      <h4 style="margin:0.2rem 0 0">What should I teach next?</h4>
-      <div class="bh-intel-grid">
-        ${recs
-          .map(
-            (r) => `
-              <article class="bh-intel-item">
-                <div>
-                  <span class="bh-intel-rule">${esc(r.rule)}</span>
-                  <h5>${esc(r.title)}</h5>
-                  <p>${esc(r.desc)}</p>
-                </div>
-                ${
-                  r.targetTab
-                    ? `<button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-jump-tab="${esc(r.targetTab)}">${esc(r.actionLabel)}</button>`
-                    : `<span class="bh-muted" style="font-size:0.84rem;font-weight:600">${esc(r.actionLabel)}</span>`
-                }
-              </article>
-            `,
-          )
-          .join("")}
-      </div>
-    </section>
-  `;
-}
-
-function renderConnectionsTab() {
-  const panel = $("#panel-connections");
-  const detail = state.detail;
-  const conn = detail?.connections?.[0];
-  if (!conn) {
-    panel.innerHTML = `<div class="bh-empty">No WIDA language bridge connections recorded for this unit yet.</div>`;
-    return;
-  }
-  const bp = blueprintOf(conn);
-  const scaffold = extractScaffoldForTier(bp.scaffolds_json, state.wida);
-  const vocab = normalizeVocab(conn.tier2_tier3_vocab);
-  const l1List = normalizeL1Watchouts(conn.l1_watchouts);
-  const transfers = Array.isArray(detail.cross_subject_transfers) ? detail.cross_subject_transfers : [];
-  const languageDive = normalizeLanguageDive(conn);
-  const lessonArc = normalizeLessonArc(conn);
-  const misconception = normalizeMisconception(conn);
-
-  panel.innerHTML = `
-    <div class="bh-conn-grid">
-      <article class="bh-blueprint-card">
-        <div class="bh-blueprint-top">
-          <div>
-            <span class="bh-klu-pill ${kluClass(bp.wida_klu)}">WIDA Key Language Use: ${esc(bp.wida_klu || "Explain")}</span>
-            <h3>${esc(bp.move_name || "Academic Language Move")}</h3>
-            ${bp.syntax_pattern ? `<p class="bh-syntax-pattern"><strong>Syntax Pattern:</strong> ${esc(bp.syntax_pattern)}</p>` : ""}
-          </div>
-          <div class="bh-wida-toggle" role="group" aria-label="WIDA Proficiency Level">
-            ${WIDA_TIERS.map(
-              (t) => `
-                <button
-                  type="button"
-                  class="bh-wida-btn"
-                  data-wida-tier="${t.key}"
-                  aria-pressed="${state.wida === t.key ? "true" : "false"}"
-                >
-                  ${esc(t.label)}
-                </button>
-              `,
-            ).join("")}
-          </div>
-        </div>
-
-        <div class="bh-scaffold-box">
-          <div>
-            <h4>Sentence Frames (${esc(widaLabel(state.wida))})</h4>
-            ${
-              scaffold.frames.length
-                ? `<ul class="bh-frame-list">${scaffold.frames.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>`
-                : `<p class="bh-muted">Use the unit example frame below to scaffold student responses.</p>`
-            }
-          </div>
-          <div>
-            <h4>Target Word Bank</h4>
-            <div class="bh-wordbank-chips">
-              ${
-                scaffold.wordBank.length
-                  ? scaffold.wordBank.map((w) => `<span class="bh-word-chip">${esc(w)}</span>`).join("")
-                  : `<span class="bh-muted">See Tier 2/3 Vocabulary below</span>`
-              }
-            </div>
-            <h4>High-Leverage Teacher Move</h4>
-            <p class="bh-teacher-move">${esc(scaffold.teacherMove)}</p>
-          </div>
-        </div>
-
-        ${
-          conn.unit_example_frame
-            ? `<div class="bh-unit-example">
-                <strong>Unit Example Frame:</strong> ${esc(conn.unit_example_frame)}
-                ${conn.cross_subject_bridge_note ? `<p class="bh-bridge-note">${esc(conn.cross_subject_bridge_note)}</p>` : ""}
-              </div>`
-            : ""
-        }
-      </article>
-
-      ${renderScaffoldFlowSection(detail.unit, bp, scaffold, misconception)}
-
-      ${renderEditableSequenceSection(detail.unit, lessonArc, bp)}
-
-      ${renderCurriculumIntelligenceSection(detail.unit, bp, vocab, misconception, transfers)}
-
-      ${renderLanguageDiveSection(languageDive)}
-
-      ${renderLessonArcSection(lessonArc, misconception)}
-
-      <div class="bh-two-col">
-        <section class="bh-subpanel" aria-label="Tier 2 and Tier 3 Vocabulary">
-          <h4>Tier 2 &amp; Tier 3 Vocabulary + Cognates</h4>
-          ${
-            vocab.length
-              ? `<div class="bh-vocab-grid">
-                  ${vocab
-                    .map(
-                      (v) => `
-                        <div class="bh-vocab-card" data-vocab-word="${esc(v.word)}" tabindex="0" role="button" aria-label="Copy vocabulary term ${esc(v.word)}">
-                          <div class="bh-vocab-head">
-                            <span class="bh-vocab-word">${esc(v.word)}</span>
-                            <span class="bh-tier-badge">${esc(v.tier)}</span>
-                          </div>
-                          ${v.definition ? `<p class="bh-vocab-def">${esc(v.definition)}</p>` : ""}
-                          ${v.cognate ? `<p class="bh-vocab-cognate">${esc(v.cognate)}</p>` : ""}
-                        </div>
-                      `,
-                    )
-                    .join("")}
-                </div>`
-              : `<p class="bh-muted">No vocabulary entries listed for this unit.</p>`
-          }
-        </section>
-
-        <section class="bh-subpanel" aria-label="Spanish-English L1 Watchouts">
-          <h4>L1 Watchouts (Spanish–English Bridge)</h4>
-          ${
-            l1List.length
-              ? `<div class="bh-l1-list">
-                  ${l1List
-                    .map((item) => {
-                      const hasStructured = Boolean(item.frictionPoint || item.quickFix);
-                      return `
-                        <div class="bh-l1-item">
-                          <strong class="bh-l1-lang">${esc(item.language)}</strong>
-                          ${
-                            hasStructured
-                              ? `<div class="bh-l1-details">
-                                  ${
-                                    item.frictionPoint
-                                      ? `<p class="bh-l1-detail"><span class="bh-l1-tag bh-l1-tag-friction">Friction Point</span> ${esc(item.frictionPoint)}</p>`
-                                      : ""
-                                  }
-                                  ${
-                                    item.quickFix
-                                      ? `<p class="bh-l1-detail"><span class="bh-l1-tag bh-l1-tag-fix">Quick Fix</span> ${esc(item.quickFix)}</p>`
-                                      : ""
-                                  }
-                                </div>`
-                              : `<p>${esc(item.note)}</p>`
-                          }
-                        </div>
-                      `;
-                    })
-                    .join("")}
-                </div>`
-              : `<p class="bh-muted">No L1 watchouts recorded for this unit.</p>`
-          }
-        </section>
-      </div>
-
-      ${
-        transfers.length
-          ? `<section class="bh-transfers" aria-label="Cross-subject language transfer">
-              <h4>See How This Move Transfers</h4>
-              <p class="bh-transfers-lead">
-                Students practice this same <strong>${esc(bp.move_name || "language move")}</strong> across other ${esc(gradeLabel(detail.unit.grade))} BCPSS subjects. Click any card to jump directly to that unit:
-              </p>
-              <div class="bh-transfer-strip">
-                ${transfers
-                  .map(
-                    (tr) => `
-                      <button
-                        type="button"
-                        class="bh-transfer-card"
-                        data-transfer-unit="${esc(tr.unit_id)}"
-                        data-transfer-grade="${esc(tr.grade)}"
-                        data-transfer-subject="${esc(tr.subject)}"
-                      >
-                        <span class="bh-transfer-tag">${esc(tr.subject)} · ${esc(tr.curriculum_name || curriculumFor(tr.grade, tr.subject))} · Unit ${esc(tr.unit_number)}</span>
-                        <span class="bh-transfer-title">${esc(tr.unit_title)}</span>
-                        ${tr.unit_example_frame ? `<span class="bh-transfer-frame">“${esc(tr.unit_example_frame)}”</span>` : ""}
-                      </button>
-                    `,
-                  )
-                  .join("")}
-              </div>
-            </section>`
-          : ""
-      }
-    </div>
-  `;
-}
-
-function normalizeWorkedExample(raw) {
-  const parsed = safeParseJson(raw, raw);
-  if (!parsed) return "";
-  if (typeof parsed === "string") return parsed.trim();
-  if (Array.isArray(parsed)) {
-    return parsed
-      .map((item) => (typeof item === "string" ? item.trim() : ""))
-      .filter(Boolean)
-      .join("\n");
-  }
-  if (typeof parsed === "object") {
-    const parts = [
-      parsed.prompt ? `Prompt: ${parsed.prompt}` : "",
-      parsed.model_response || parsed.response || parsed.example || parsed.sample
-        ? `Model: ${parsed.model_response || parsed.response || parsed.example || parsed.sample}`
-        : "",
-      parsed.annotation || parsed.why_it_works || parsed.explanation
-        ? `Why it works: ${parsed.annotation || parsed.why_it_works || parsed.explanation}`
-        : "",
-    ].filter(Boolean);
-    return parts.join("\n");
-  }
-  return "";
-}
-
-function normalizeDifferentiatedTargets(raw) {
-  const parsed = safeParseJson(raw, null);
-  if (!parsed) return [];
-  if (Array.isArray(parsed)) {
-    return parsed
-      .map((item, idx) => {
-        if (typeof item === "string" && item.trim()) {
-          const tier = WIDA_TIERS[idx] || WIDA_TIERS[1];
-          return { key: tier.key, label: `WIDA ${tier.label}`, text: item.trim() };
-        }
-        if (item && typeof item === "object") {
-          const key = String(item.tier || item.key || WIDA_TIERS[idx]?.key || "3_4").replace(/^level_/, "");
-          const label = item.label || `WIDA ${widaLabel(key)}`;
-          const text = String(item.target || item.text || item.goal || "").trim();
-          return text ? { key, label, text } : null;
-        }
-        return null;
-      })
-      .filter(Boolean);
-  }
-  if (typeof parsed === "object") {
-    return WIDA_TIERS.map((tier) => {
-      const val =
-        parsed[`level_${tier.key}`] ||
-        parsed[tier.key] ||
-        parsed[`levels_${tier.key}`] ||
-        parsed[`L${tier.key}`];
-      const text =
-        typeof val === "string"
-          ? val.trim()
-          : val && typeof val === "object"
-            ? String(val.target || val.text || val.goal || "").trim()
-            : "";
-      return text ? { key: tier.key, label: `WIDA ${tier.label} (${tier.short})`, text } : null;
-    }).filter(Boolean);
-  }
-  return [];
-}
-
-function normalizeTeacherSteps(raw) {
-  const text = String(raw || "").trim();
-  if (!text) return [];
-  const byLines = text
-    .split(/\n+/)
-    .map((line) => line.replace(/^\s*(?:step\s*)?\d+[.):-]\s*/i, "").trim())
-    .filter(Boolean);
-  if (byLines.length > 1) return byLines;
-  const byNumbered = text
-    .split(/(?=(?:^|\s)\d+[.)]\s+)/)
-    .map((part) => part.replace(/^\s*\d+[.)]\s+/, "").trim())
-    .filter(Boolean);
-  if (byNumbered.length > 1) return byNumbered;
-  return [text];
-}
-
-function normalizeActivity(act, idx) {
-  const dayLabel = String(act.day_label || `Day ${idx + 1}`).trim();
-  const activityType = String(act.activity_type || "Classroom Move").trim();
-  const domain = String(act.domain || "").trim();
-  const grouping = String(act.grouping || "").trim();
-  const durationMinutes =
-    act.duration_minutes != null && !Number.isNaN(Number(act.duration_minutes))
-      ? Number(act.duration_minutes)
-      : null;
-  const prepMinutes =
-    act.prep_time_minutes != null && !Number.isNaN(Number(act.prep_time_minutes))
-      ? Number(act.prep_time_minutes)
-      : 5;
-  const metaParts = [];
-  if (durationMinutes != null) metaParts.push(`${durationMinutes} min`);
-  if (grouping) metaParts.push(grouping);
-  const metaLabel = metaParts.length ? metaParts.join(" · ") : `${prepMinutes} min prep`;
-
-  const rawMaterials = safeParseJson(act.materials, act.materials);
-  const materials = Array.isArray(rawMaterials)
-    ? rawMaterials.map((m) => String(m || "").trim()).filter(Boolean).join(", ")
-    : String(rawMaterials || "").trim();
-
-  const workedExample = normalizeWorkedExample(act.worked_example);
-  const differentiatedTargets = normalizeDifferentiatedTargets(act.differentiated_targets);
-
-  const rawCfu = safeParseJson(act.check_for_understanding, act.check_for_understanding);
-  const checkForUnderstanding =
-    typeof rawCfu === "string"
-      ? rawCfu.trim()
-      : rawCfu && typeof rawCfu === "object"
-        ? String(rawCfu.prompt || rawCfu.question || rawCfu.criteria || "").trim()
-        : "";
-
-  return {
-    raw: act,
-    id: act.id,
-    title: String(act.title || `Day ${idx + 1} Activity`).trim(),
-    dayLabel,
-    activityType,
-    domain,
-    grouping,
-    durationMinutes,
-    prepMinutes,
-    metaLabel,
-    materials,
-    teacherInstructions: String(act.teacher_instructions || "").trim(),
-    teacherSteps: normalizeTeacherSteps(act.teacher_instructions),
-    studentPrompt: String(act.student_prompt || "").trim(),
-    workedExample,
-    differentiatedTargets,
-    checkForUnderstanding,
-  };
-}
-
-function formatActivityForSlides(unit, act, idx) {
-  const norm = normalizeActivity(act, idx);
-  const activeTarget = norm.differentiatedTargets.find((t) => t.key === state.wida);
-  const studentLink = buildActivityUrl(unit.id, act.id, state.wida, "student", { absolute: true });
-  return [
-    `BCPSS ${gradeLabel(unit.grade)} ${unit.curriculum_name || curriculumFor(unit.grade, unit.subject)} — Unit ${unit.unit_number}: ${unit.unit_title}`,
-    `${norm.dayLabel}: ${norm.title}`,
-    [norm.activityType, norm.domain, norm.metaLabel].filter(Boolean).join(" · "),
-    "",
-    `Student Prompt:\n${norm.studentPrompt}`,
-    ...(norm.workedExample ? ["", `Worked Example:\n${norm.workedExample}`] : []),
-    ...(norm.teacherInstructions ? ["", `Teacher Script:\n${norm.teacherInstructions}`] : []),
-    ...(norm.materials ? ["", `Materials: ${norm.materials}`] : []),
-    ...(activeTarget ? ["", `WIDA ${widaLabel(state.wida)} Target:\n${activeTarget.text}`] : []),
-    ...(norm.checkForUnderstanding ? ["", `Check for Understanding:\n${norm.checkForUnderstanding}`] : []),
-    "",
-    `Student Activity Link: ${studentLink}`,
-  ].join("\n");
-}
-
-function formatPlaylistForCopy(unit, conn, acts) {
-  const scaffold = extractScaffoldForTier(blueprintOf(conn).scaffolds_json, state.wida);
-  const count = acts.length || 5;
-  return [
-    `BCPSS ${count}-Day Pre-Teaching Playlist — ${gradeLabel(unit.grade)} ${unit.curriculum_name || curriculumFor(unit.grade, unit.subject)}`,
-    `Unit ${unit.unit_number}: ${unit.unit_title} · WIDA ${widaLabel(state.wida)}`,
-    "",
-    "Target Sentence Frames:",
-    ...(scaffold.frames.length ? scaffold.frames.map((f) => `• ${f}`) : [conn?.unit_example_frame || ""]),
-    "",
-    ...acts.flatMap((a, i) => {
-      const norm = normalizeActivity(a, i);
-      const activeTarget = norm.differentiatedTargets.find((t) => t.key === state.wida);
-      const studentLink = buildActivityUrl(unit.id, a.id, state.wida, "student", { absolute: true });
-      return [
-        `--- ${norm.dayLabel}: ${norm.title} (${[norm.activityType, norm.domain, norm.metaLabel].filter(Boolean).join(" · ")}) ---`,
-        `Student Prompt: ${norm.studentPrompt}`,
-        ...(norm.workedExample ? [`Worked Example: ${norm.workedExample}`] : []),
-        ...(norm.teacherInstructions ? [`Teacher Script: ${norm.teacherInstructions}`] : []),
-        ...(activeTarget ? [`WIDA ${widaLabel(state.wida)} Target: ${activeTarget.text}`] : []),
-        ...(norm.checkForUnderstanding ? [`Check for Understanding: ${norm.checkForUnderstanding}`] : []),
-        `Student Activity Link: ${studentLink}`,
-        "",
-      ];
-    }),
-  ].join("\n");
-}
-
-function renderWidaTargetsHtml(targets) {
-  if (!targets.length) return "";
-  return `
-    <div class="bh-wida-targets-list">
-      ${targets
-        .map(
-          (t) => `
-            <div class="bh-wida-target-item ${t.key === state.wida ? "is-active-tier" : ""}">
-              <span class="bh-wida-target-tag">${esc(t.label)}${t.key === state.wida ? " · Active" : ""}</span>
-              <p style="margin:0">${esc(t.text)}</p>
-            </div>
-          `,
-        )
-        .join("")}
-    </div>
-  `;
-}
-
-function openActivityPreview(idx, triggerEl) {
-  const modal = $("#activityPreviewModal");
-  const unit = state.detail?.unit;
-  const act = state.detail?.activities?.[idx];
-  if (!modal || !unit || !act) return;
-
-  lastPreviewTrigger = triggerEl || document.activeElement;
-  state.previewActivityIdx = idx;
-  renderActivityPreviewModal();
-
-  if (!modal.open) {
-    modal.showModal();
-  }
-  $("#closeActivityPreviewBtn")?.focus();
-  announce(`Opened quick preview for ${act.title}.`);
-}
-
-function renderActivityPreviewModal() {
-  const unit = state.detail?.unit;
-  const act = state.detail?.activities?.[state.previewActivityIdx];
-  if (!unit || !act) return;
-
-  const norm = normalizeActivity(act, state.previewActivityIdx);
-  const studentHref = buildActivityUrl(unit.id, act.id, state.wida, "student");
-  const teacherHref = buildActivityUrl(unit.id, act.id, state.wida, "teacher");
-
-  const badgesEl = $("#activityPreviewBadges");
-  if (badgesEl) {
-    badgesEl.innerHTML = `
-      <span class="bh-badge-day">${esc(norm.dayLabel)}</span>
-      <span class="bh-badge-type">${esc(norm.activityType)}</span>
-      ${norm.domain ? `<span class="bh-badge-domain">${esc(norm.domain)}</span>` : ""}
-      <span class="bh-badge-meta">${esc(norm.metaLabel)}</span>
-    `;
-  }
-
-  const titleEl = $("#activityPreviewTitle");
-  if (titleEl) titleEl.textContent = norm.title;
-
-  const subtitleEl = $("#activityPreviewSubtitle");
-  if (subtitleEl) {
-    subtitleEl.textContent = `${gradeLabel(unit.grade)} · ${unit.curriculum_name || curriculumFor(unit.grade, unit.subject)} · Unit ${unit.unit_number} · WIDA ${widaLabel(state.wida)}`;
-  }
-
-  const bodyEl = $("#activityPreviewBody");
-  if (bodyEl) {
-    bodyEl.innerHTML = `
-      <section class="bh-preview-section">
-        <h3>Student Prompt</h3>
-        <div class="bh-student-prompt-box">${esc(norm.studentPrompt)}</div>
-      </section>
-
-      ${
-        norm.workedExample
-          ? `<section class="bh-preview-section">
-              <h3>Worked Example</h3>
-              <div class="bh-worked-example-box">${esc(norm.workedExample).replace(/\n/g, "<br />")}</div>
-            </section>`
-          : ""
-      }
-
-      ${
-        norm.teacherSteps.length
-          ? `<section class="bh-preview-section">
-              <h3>3-Step Teacher Script</h3>
-              ${
-                norm.teacherSteps.length > 1
-                  ? `<ol class="bh-script-steps">${norm.teacherSteps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`
-                  : `<p style="margin:0">${esc(norm.teacherSteps[0])}</p>`
-              }
-              ${
-                norm.materials
-                  ? `<p style="margin:0.4rem 0 0;font-size:0.88rem;color:var(--ink-2)"><strong>Materials:</strong> ${esc(norm.materials)}</p>`
-                  : ""
-              }
-              ${
-                norm.checkForUnderstanding
-                  ? `<p style="margin:0.4rem 0 0;font-size:0.88rem;color:var(--ink-2)"><strong>Check for Understanding:</strong> ${esc(norm.checkForUnderstanding)}</p>`
-                  : ""
-              }
-            </section>`
-          : ""
-      }
-
-      ${
-        norm.differentiatedTargets.length
-          ? `<section class="bh-preview-section">
-              <h3>Differentiated WIDA Targets</h3>
-              ${renderWidaTargetsHtml(norm.differentiatedTargets)}
-            </section>`
-          : ""
-      }
-    `;
-  }
-
-  const footerEl = $("#activityPreviewFooter");
-  if (footerEl) {
-    footerEl.innerHTML = `
-      <a
-        class="bh-btn bh-btn-primary bh-btn-sm"
-        href="${esc(studentHref)}"
-        target="_blank"
-        rel="noopener"
-        data-preview-open-student
-      >
-        Open Student View ↗
-      </a>
-      <a
-        class="bh-btn bh-btn-secondary bh-btn-sm"
-        href="${esc(teacherHref)}"
-        target="_blank"
-        rel="noopener"
-        data-preview-open-teacher
-      >
-        Open Teacher View ↗
-      </a>
-      <button
-        type="button"
-        class="bh-btn bh-btn-secondary bh-btn-sm"
-        data-preview-copy-link
-      >
-        Copy Student Link
-      </button>
-      <button
-        type="button"
-        class="bh-btn bh-btn-ghost bh-btn-sm"
-        data-preview-copy-slides
-      >
-        Copy for Slides / LMS
-      </button>
-    `;
-  }
-}
-
-function renderActivitiesTab() {
-  const panel = $("#panel-activities");
-  const detail = state.detail;
-  const unit = detail?.unit;
-  const conn = detail?.connections?.[0] || null;
-  const activities = Array.isArray(detail?.activities) ? detail.activities : [];
-  const exitTicket = safeParseJson(conn?.language_exit_ticket_json, null);
-
-  if (!unit) {
-    panel.innerHTML = `<div class="bh-empty">Choose a unit above to view classroom activities.</div>`;
-    return;
-  }
-
-  const dayCount = activities.length || 5;
-  const activitiesHtml = activities.length
-    ? `
-      <div class="bh-activities-toolbar">
-        <p><strong>${dayCount}-Day Pre-Teaching Sequence</strong> · Aligned to WIDA ${esc(widaLabel(state.wida))} frames</p>
-        <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" data-copy-playlist>
-          Copy Full 5-Day Pre-Teaching Playlist
-        </button>
-      </div>
-      <div class="bh-activities-grid">
-        ${activities
-          .map((act, idx) => {
-            const norm = normalizeActivity(act, idx);
-            const studentUrl = buildActivityUrl(unit.id, act.id, state.wida, "student");
-            return `
-              <article class="bh-activity-card">
-                <div class="bh-activity-badges">
-                  <span class="bh-badge-day">${esc(norm.dayLabel)}</span>
-                  <span class="bh-badge-type">${esc(norm.activityType)}</span>
-                  ${norm.domain ? `<span class="bh-badge-domain">${esc(norm.domain)}</span>` : ""}
-                  <span class="bh-badge-meta">${esc(norm.metaLabel)}</span>
-                </div>
-                <h3>${esc(norm.title)}</h3>
-                <div class="bh-activity-block">
-                  <strong>Student Prompt</strong>
-                  <div class="bh-student-prompt-box">${esc(norm.studentPrompt)}</div>
-                </div>
-                <details class="bh-activity-details">
-                  <summary>Teacher Script, Worked Example &amp; WIDA Targets</summary>
-                  <div class="bh-activity-details-body">
-                    ${
-                      norm.teacherSteps.length
-                        ? `<div class="bh-activity-block">
-                            <strong>Teacher Script</strong>
-                            ${
-                              norm.teacherSteps.length > 1
-                                ? `<ol class="bh-script-steps">${norm.teacherSteps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`
-                                : `<p style="margin:0">${esc(norm.teacherSteps[0])}</p>`
-                            }
-                          </div>`
-                        : ""
-                    }
-                    ${
-                      norm.materials
-                        ? `<div class="bh-activity-block">
-                            <strong>Materials</strong>
-                            <p style="margin:0">${esc(norm.materials)}</p>
-                          </div>`
-                        : ""
-                    }
-                    ${
-                      norm.workedExample
-                        ? `<div class="bh-activity-block">
-                            <strong>Worked Example</strong>
-                            <div class="bh-worked-example-box">${esc(norm.workedExample).replace(/\n/g, "<br />")}</div>
-                          </div>`
-                        : ""
-                    }
-                    ${
-                      norm.differentiatedTargets.length
-                        ? `<div class="bh-activity-block">
-                            <strong>Differentiated WIDA Targets</strong>
-                            ${renderWidaTargetsHtml(norm.differentiatedTargets)}
-                          </div>`
-                        : ""
-                    }
-                    ${
-                      norm.checkForUnderstanding
-                        ? `<div class="bh-activity-block">
-                            <strong>Check for Understanding</strong>
-                            <p style="margin:0">${esc(norm.checkForUnderstanding)}</p>
-                          </div>`
-                        : ""
-                    }
-                  </div>
-                </details>
-                <div class="bh-activity-actions">
-                  <a
-                    class="bh-btn bh-btn-primary bh-btn-sm"
-                    href="${esc(studentUrl)}"
-                    target="_blank"
-                    rel="noopener"
-                    data-lab-launch
-                  >
-                    Open Student Activity ↗
-                  </a>
-                  <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-preview-activity="${idx}">
-                    Quick Preview
-                  </button>
-                  <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-copy-student-link="${idx}">
-                    Copy Student Link
-                  </button>
-                  <button type="button" class="bh-btn bh-btn-ghost bh-btn-sm" data-copy-activity="${idx}">
-                    Copy for Slides / LMS
-                  </button>
-                </div>
-              </article>
-            `;
-          })
-          .join("")}
-      </div>
-    `
-    : `<div class="bh-empty">Classroom activities for this unit are scheduled in the next release. Use the Language Connections tab to view WIDA frames, vocabulary, and cross-subject bridges.</div>`;
-
-  const lookForsRaw = exitTicket?.look_fors || exitTicket?.success_criteria;
-  const lookFors = Array.isArray(lookForsRaw)
-    ? lookForsRaw.filter(Boolean)
-    : typeof lookForsRaw === "string" && lookForsRaw.trim()
-      ? [lookForsRaw.trim()]
-      : [];
-
-  const exitTicketHtml =
-    exitTicket && (exitTicket.prompt || exitTicket.quick_rubric || lookFors.length)
-      ? `
-        <details class="bh-exit-ticket">
-          <summary>
-            <span>3-Minute Language Exit Ticket &amp; Quick Rubric</span>
-            <span class="bh-muted">Expand</span>
-          </summary>
-          <div class="bh-exit-ticket-body">
-            ${
-              exitTicket.prompt
-                ? `<div class="bh-activity-block">
-                    <strong>Exit Ticket Prompt</strong>
-                    <div class="bh-student-prompt-box">${esc(exitTicket.prompt)}</div>
-                  </div>`
-                : ""
-            }
-            ${
-              lookFors.length
-                ? `<div class="bh-activity-block">
-                    <strong>Language Look-Fors</strong>
-                    <ul class="bh-frame-list">${lookFors.map((lf) => `<li>${esc(lf)}</li>`).join("")}</ul>
-                  </div>`
-                : ""
-            }
-            ${
-              exitTicket.quick_rubric
-                ? `<div class="bh-activity-block">
-                    <strong>Quick Formative Rubric</strong>
-                    <div class="bh-rubric-table-wrap">
-                      <table class="bh-rubric-table">
-                        <thead>
-                          <tr>
-                            <th scope="col" class="is-emerging">Emerging (L1–2)</th>
-                            <th scope="col" class="is-developing">Developing (L3–4)</th>
-                            <th scope="col" class="is-proficient">Proficient (L5–6)</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td data-label="Emerging (L1–2)">${esc(exitTicket.quick_rubric.emerging || "Uses single words, visuals, or teacher-modeled stems.")}</td>
-                            <td data-label="Developing (L3–4)">${esc(exitTicket.quick_rubric.developing || "Connects unit ideas using provided sentence frames and key vocabulary.")}</td>
-                            <td data-label="Proficient (L5–6)">${esc(exitTicket.quick_rubric.proficient || "Produces cohesive academic explanations independently with precise unit terms.")}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>`
-                : ""
-            }
-            <div>
-              <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-copy-exit-ticket>
-                Copy Exit Ticket
-              </button>
-            </div>
-          </div>
-        </details>
-      `
-      : "";
-
-  const unitTitle = detail?.unit?.unit_title || "this unit";
-  const templates = [
-    { id: "twr", title: "TWR Because / But / So", desc: `3-sentence expansion organizer grounded in ${unitTitle}.` },
-    { id: "cer", title: "CER Argument Frame", desc: `Claim, Evidence, and Reasoning scaffold for WIDA ${widaLabel(state.wida)}.` },
-    { id: "math-reason", title: "Math Reasoning Mat", desc: "Model, equation, and verbal justification template." },
-    { id: "sci-explain", title: "Science Explanation Organizer", desc: "Input → Mechanism → Observable Evidence chart." },
-    { id: "source-analysis", title: "Primary Source Analysis", desc: "Sourcing, perspective, and corroboration organizer." },
-    { id: "exit-ticket", title: "3-Minute Language Exit Ticket", desc: "Student prompt + separate Teacher Look-For rubric." },
-  ];
-
-  const templatesHtml = `
-    <section class="bh-templates-section" aria-label="Publisher-quality printable templates">
-      <div>
-        <span class="bh-dive-kicker">Publisher-Quality Printables</span>
-        <h4 style="margin:0.2rem 0 0">Ready-to-Print Classroom Templates</h4>
-      </div>
-      <div class="bh-templates-grid">
-        ${templates
-          .map(
-            (tpl) => `
-              <article class="bh-template-card">
-                <div>
-                  <h5>${esc(tpl.title)}</h5>
-                  <p>${esc(tpl.desc)}</p>
-                </div>
-                <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-print-template="${esc(tpl.id)}" data-template-title="${esc(tpl.title)}">
-                  Print Template
-                </button>
-              </article>
-            `,
-          )
-          .join("")}
-      </div>
-    </section>
-  `;
-
-  panel.innerHTML = `${activitiesHtml}${exitTicketHtml}${templatesHtml}`;
-}
-
-function normalizeFamilyBridge(detail, langCode) {
-  const unit = detail?.unit || {};
-  const conn = detail?.connections?.[0] || {};
-  const bridge = safeParseJson(unit.family_bridge_json || detail?.family_bridge || detail?.family, {}) || {};
-  const entry = bridge[langCode] || bridge.en || {};
-  const vocab = normalizeVocab(conn.tier2_tier3_vocab);
-  const questions = Array.isArray(entry.dinner_questions)
-    ? entry.dinner_questions
-    : Array.isArray(entry.questions)
-      ? entry.questions
-      : Array.isArray(entry.conversation_starters)
-        ? entry.conversation_starters
-        : [
-            `Ask your child to explain one new idea from Unit ${unit.unit_number} (${unit.unit_title}) in their own words.`,
-            `Invite your child to share a real-life example using one of this week's key vocabulary words.`,
-          ];
-  const keyWords = Array.isArray(entry.key_words)
-    ? entry.key_words
-    : Array.isArray(entry.vocabulary)
-      ? entry.vocabulary
-      : vocab.map((v) => ({ word: v.word, translation: v.hint }));
-  return {
-    title: entry.title || `Unit ${unit.unit_number}: ${unit.unit_title}`,
-    summary: entry.summary || unit.unit_summary || "Families can strengthen school learning by talking about unit ideas at home in any language.",
-    questions,
-    keyWords,
-  };
 }
 
 function setFamilySubview(subview) {
@@ -2432,89 +1136,40 @@ function renderEvidenceSubview() {
 
 function renderFamilyTab() {
   const panel = $("#familyBridgeSubview");
-  const detail = state.detail;
-  const unit = detail?.unit;
+  const unit = state.detail?.unit;
   setFamilySubview(state.familySubview);
   renderEvidenceSubview();
   if (!panel) return;
   if (!unit) {
-    panel.innerHTML = `<div class="bh-empty">Choose a unit above to preview the bilingual family card.</div>`;
+    panel.innerHTML = `<div class="bh-empty">Choose a unit above to open the family guide.</div>`;
     return;
   }
-  const langMeta = FAMILY_LANGS.find((l) => l.code === state.familyLang) || FAMILY_LANGS[0];
-  const card = normalizeFamilyBridge(detail, langMeta.code);
-  const familyUrl = `https://thelanguagepage.com/family/bcpss/${encodeURIComponent(unit.id)}`;
-  const localFamilyHref = `/family/bcpss/${encodeURIComponent(unit.id)}?lang=${encodeURIComponent(langMeta.code)}`;
-  const pdfPacketUrl = buildExportUrl(unit.id, "pdf", state.wida);
+  const guidePath = `/family/bcpss/?unit=${encodeURIComponent(unit.id)}`;
+  const familyUrl = `${PUBLIC_SITE_ORIGIN}${guidePath}`;
+  const pdfPacketUrl = buildExportUrl(unit.id, "pdf", state.wida, "part=packet");
   const qrSvg = renderQrSvg(familyUrl, { sizePx: 168, label: `QR code for ${familyUrl}` });
 
   panel.innerHTML = `
     <div class="bh-family-layout">
-      <div class="bh-family-preview">
-        <div class="bh-family-lang-bar" role="group" aria-label="Preview home language">
-          ${FAMILY_LANGS.map(
-            (l) => `
-              <button
-                type="button"
-                class="bh-lang-pill"
-                data-family-lang="${l.code}"
-                aria-pressed="${langMeta.code === l.code ? "true" : "false"}"
-              >
-                ${esc(l.label)}
-              </button>
-            `,
-          ).join("")}
-        </div>
-
-        <article class="bh-family-card-body" lang="${esc(langMeta.code)}" dir="${langMeta.rtl ? "rtl" : "ltr"}">
-          <div>
-            <span class="bh-klu-pill bh-klu-inform">${esc(gradeLabel(unit.grade))} · ${esc(unit.curriculum_name || curriculumFor(unit.grade, unit.subject))}</span>
-            <h3 style="margin-top:0.45rem">${esc(card.title)}</h3>
-            <p style="margin:0.4rem 0 0;color:var(--ink-2)">${esc(card.summary)}</p>
-          </div>
-
-          <div>
-            <h4 style="margin:0 0 0.4rem;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--sage-900)">
-              Dinner-Table Conversation Questions
-            </h4>
-            <ul class="bh-family-questions">
-              ${card.questions.map((q) => `<li>${esc(q)}</li>`).join("")}
-            </ul>
-          </div>
-
-          ${
-            card.keyWords.length
-              ? `<div>
-                  <h4 style="margin:0 0 0.4rem;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.04em;color:var(--sage-900)">
-                    Key Unit Words
-                  </h4>
-                  <div class="bh-wordbank-chips" style="margin-bottom:0">
-                    ${card.keyWords
-                      .map((w) => {
-                        const label = typeof w === "string" ? w : w.translation ? `${w.word} — ${w.translation}` : w.word;
-                        return `<span class="bh-word-chip">${esc(label)}</span>`;
-                      })
-                      .join("")}
-                  </div>
-                </div>`
-              : ""
-          }
-        </article>
-      </div>
+      <section class="bh-family-guide" aria-labelledby="familyGuideH">
+        <span class="bh-klu-pill bh-klu-inform">${esc(gradeLabel(unit.grade))} · ${esc(unit.curriculum_name || curriculumFor(unit.grade, unit.subject))}</span>
+        <h3 id="familyGuideH">Family guide for Unit ${esc(unit.unit_number)}: ${esc(unit.unit_title)}</h3>
+        <p>Families get the unit words, dinner-table questions, and home-language support in English and Spanish, on one page that works on any phone.</p>
+        <a class="bh-btn bh-btn-primary bh-family-guide-cta" href="${esc(guidePath)}" target="_blank" rel="noopener">
+          Open the full family guide ↗
+        </a>
+      </section>
 
       <aside class="bh-family-share-card" aria-label="Share with families">
         <h4 style="margin:0;font:600 1.1rem/1.2 var(--font-display)">Scan or Share Home Card</h4>
         <div class="bh-qr-frame">${qrSvg}</div>
         <p class="bh-family-url">${esc(familyUrl)}</p>
         <div class="bh-family-share-actions">
-          <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" data-copy-family-link="${esc(familyUrl)}">
+          <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-copy-family-link="${esc(familyUrl)}">
             Copy Family Link
           </button>
-          <a class="bh-btn bh-btn-secondary bh-btn-sm" href="${esc(pdfPacketUrl)}" download data-export-download="pdf">
+          <a class="bh-btn bh-btn-ghost bh-btn-sm" href="${esc(pdfPacketUrl)}" download data-export-download="pdf">
             Download Printable Packet (PDF)
-          </a>
-          <a class="bh-btn bh-btn-ghost bh-btn-sm" href="${esc(localFamilyHref)}" target="_blank" rel="noopener">
-            Open Family Page ↗
           </a>
         </div>
       </aside>
@@ -2635,7 +1290,7 @@ function setActiveTab(tabName, { focusTab = false } = {}) {
   } else if (TAB_ALIASES[resolved]) {
     resolved = TAB_ALIASES[resolved];
   }
-  if (!VALID_TABS.includes(resolved)) resolved = "connections";
+  if (!VALID_TABS.includes(resolved)) resolved = DEFAULT_TAB;
   state.tab = resolved;
   for (const name of VALID_TABS) {
     const btn = $(`#tab-${name}`);
@@ -2956,89 +1611,15 @@ function bindEvents() {
     setActiveTab(VALID_TABS[next], { focusTab: true });
   });
 
-  // Connections panel delegation (WIDA toggle + Language Dive + Vocab lookup + Cross-subject transfer cards)
-  $("#panel-connections").addEventListener("click", async (e) => {
-    const jumpTabBtn = e.target.closest("[data-jump-tab]");
-    if (jumpTabBtn) {
-      setActiveTab(jumpTabBtn.dataset.jumpTab, { focusTab: true });
+  // Overview panel: jump to another tab, or open another unit (cross-subject transfer)
+  $("#panel-overview").addEventListener("click", (e) => {
+    const tabBtn = e.target.closest("[data-ov-tab]");
+    if (tabBtn) {
+      setActiveTab(tabBtn.dataset.ovTab, { focusTab: true });
       return;
     }
-
-    if (e.target.closest("[data-reset-sequence]") && state.detail?.unit?.id) {
-      try {
-        window.localStorage.removeItem(`${SEQUENCE_STORAGE_PREFIX}${state.detail.unit.id}`);
-      } catch {
-        // Ignore
-      }
-      renderConnectionsTab();
-      announce("Reset instructional sequence to unit defaults.");
-      return;
-    }
-
-    const widaBtn = e.target.closest("[data-wida-tier]");
-    if (widaBtn) {
-      applyWidaTier(widaBtn.dataset.widaTier);
-      return;
-    }
-
-    const diveChunkBtn = e.target.closest("[data-dive-chunk]");
-    if (diveChunkBtn) {
-      const idx = Number(diveChunkBtn.dataset.diveChunk);
-      if (!Number.isNaN(idx)) {
-        state.diveSelectedChunk = idx;
-        state.diveRevealAll = false;
-        keepView($("#panel-connections"), renderConnectionsTab);
-      }
-      return;
-    }
-
-    if (e.target.closest("[data-dive-reveal-all]")) {
-      state.diveRevealAll = !state.diveRevealAll;
-      keepView($("#panel-connections"), renderConnectionsTab);
-      return;
-    }
-
-    const diveReadBtn = e.target.closest("[data-dive-read]");
-    if (diveReadBtn) {
-      const sentence = diveReadBtn.dataset.diveRead || "";
-      if (sentence && "speechSynthesis" in window) {
-        try {
-          window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(sentence);
-          utter.lang = "en-US";
-          utter.rate = 0.92;
-          window.speechSynthesis.speak(utter);
-          announce("Reading mentor sentence aloud.");
-        } catch {
-          announce("Read Aloud is unavailable in this browser.");
-        }
-      } else {
-        announce("Read Aloud is not supported in this browser.");
-      }
-      return;
-    }
-
-    const vocabCard = e.target.closest("[data-vocab-word]");
-    if (vocabCard) {
-      copyVocabWord(vocabCard);
-      return;
-    }
-
-    const transferBtn = e.target.closest("[data-transfer-unit]");
-    if (transferBtn) {
-      const targetUnit = transferBtn.dataset.transferUnit;
-      const targetGrade = transferBtn.dataset.transferGrade || state.grade;
-      const targetSubject = transferBtn.dataset.transferSubject || state.subject;
-      state.planMode = false;
-      state.pinnedPlan = null;
-      $("#pinnedPlanBanner").hidden = true;
-      state.grade = String(targetGrade);
-      state.subject = targetSubject;
-      resetUnitFilters();
-      updateSubjectLabels();
-      await loadUnits(targetUnit);
-      $("#workspaceSection").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-    }
+    const unitBtn = e.target.closest("[data-ov-unit]");
+    if (unitBtn) openUnitById(unitBtn.dataset.ovUnit);
   });
 
   // Classroom Projection Mode toggle + Exit button + Escape key
@@ -3052,34 +1633,9 @@ function bindEvents() {
     setProjectionMode(false);
   });
   document.addEventListener("keydown", (e) => {
-    if (
-      e.key === "Escape" &&
-      state.projectionMode &&
-      !$("#shareDialog")?.open &&
-      !$("#activityPreviewModal")?.open
-    ) {
+    if (e.key === "Escape" && state.projectionMode && !$("#shareDialog")?.open) {
       setProjectionMode(false);
     }
-  });
-
-  $("#panel-connections").addEventListener("input", (e) => {
-    const seqField = e.target.closest("[data-seq-idx]");
-    if (!seqField || !state.detail?.unit?.id) return;
-    const inputs = Array.from(document.querySelectorAll("#panel-connections [data-seq-idx]"));
-    const values = inputs.map((el) => el.value);
-    try {
-      window.localStorage.setItem(`${SEQUENCE_STORAGE_PREFIX}${state.detail.unit.id}`, JSON.stringify(values));
-    } catch {
-      // Ignore storage errors
-    }
-  });
-
-  $("#panel-connections").addEventListener("keydown", (e) => {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    const vocabCard = e.target.closest("[data-vocab-word]");
-    if (!vocabCard) return;
-    e.preventDefault();
-    copyVocabWord(vocabCard);
   });
 
   // Resource Export Bar telemetry + Quick Print Kit trigger
@@ -3102,153 +1658,6 @@ function bindEvents() {
     }
   });
 
-  // Activities panel delegation (Quick Preview, Copy Student Link, Copy for Slides / LMS, Full 5-Day Playlist, Exit Ticket, Open Student Activity)
-  $("#panel-activities").addEventListener("click", (e) => {
-    if (e.target.closest("[data-lab-launch]")) {
-      trackTelemetry(state.unitId, state.wida, "lab_launch");
-      return;
-    }
-
-    const previewBtn = e.target.closest("[data-preview-activity]");
-    if (previewBtn && state.detail?.unit) {
-      const idx = Number(previewBtn.dataset.previewActivity);
-      if (!Number.isNaN(idx)) {
-        openActivityPreview(idx, previewBtn);
-      }
-      return;
-    }
-
-    const copyLinkBtn = e.target.closest("[data-copy-student-link]");
-    if (copyLinkBtn && state.detail?.unit) {
-      const act = state.detail.activities?.[Number(copyLinkBtn.dataset.copyStudentLink)];
-      if (!act) return;
-      const studentUrl = buildActivityUrl(state.detail.unit.id, act.id, state.wida, "student", {
-        absolute: true,
-      });
-      trackTelemetry(state.unitId, state.wida, "activity_copy");
-      copyToClipboard(studentUrl, copyLinkBtn, "Link Copied!");
-      return;
-    }
-
-    const playlistBtn = e.target.closest("[data-copy-playlist]");
-    if (playlistBtn && state.detail?.unit) {
-      const u = state.detail.unit;
-      const conn = state.detail.connections?.[0] || {};
-      const acts = Array.isArray(state.detail.activities) ? state.detail.activities : [];
-      const text = formatPlaylistForCopy(u, conn, acts);
-      trackTelemetry(state.unitId, state.wida, "activity_copy");
-      copyToClipboard(text, playlistBtn, "Playlist Copied!");
-      return;
-    }
-
-    const exitBtn = e.target.closest("[data-copy-exit-ticket]");
-    if (exitBtn && state.detail?.unit) {
-      const u = state.detail.unit;
-      const exitTicket = safeParseJson(state.detail.connections?.[0]?.language_exit_ticket_json, null);
-      if (!exitTicket) return;
-      const rawLookFors = exitTicket.look_fors || exitTicket.success_criteria;
-      const lookForsList = Array.isArray(rawLookFors)
-        ? rawLookFors.filter(Boolean)
-        : typeof rawLookFors === "string" && rawLookFors.trim()
-          ? [rawLookFors.trim()]
-          : [];
-      const lines = [
-        `3-Minute Language Exit Ticket — Unit ${u.unit_number}: ${u.unit_title}`,
-        "",
-        `Prompt:\n${exitTicket.prompt || ""}`,
-        "",
-        ...(lookForsList.length
-          ? ["Look-Fors:", ...lookForsList.map((lf) => `• ${lf}`), ""]
-          : []),
-        ...(exitTicket.quick_rubric
-          ? [
-              "Quick Rubric:",
-              `• Emerging: ${exitTicket.quick_rubric.emerging || ""}`,
-              `• Developing: ${exitTicket.quick_rubric.developing || ""}`,
-              `• Proficient: ${exitTicket.quick_rubric.proficient || ""}`,
-            ]
-          : []),
-      ];
-      trackTelemetry(state.unitId, state.wida, "activity_copy");
-      copyToClipboard(lines.join("\n"), exitBtn, "Exit Ticket Copied!");
-      return;
-    }
-
-    const tplBtn = e.target.closest("[data-print-template]");
-    if (tplBtn && state.detail?.unit) {
-      const u = state.detail.unit;
-      const tplTitle = tplBtn.dataset.templateTitle || "Classroom Template";
-      const kit = $("#printKit");
-      if (kit) {
-        kit.innerHTML = `
-          <div style="padding:1rem">
-            <h1>${esc(tplTitle)} — Unit ${esc(u.unit_number)}: ${esc(u.unit_title)}</h1>
-            <p>${esc(gradeLabel(u.grade))} · ${esc(u.subject)} · WIDA ${esc(widaLabel(state.wida))}</p>
-            <p><strong>Essential Question:</strong> ${esc(u.essential_question || u.unit_summary || "")}</p>
-            <div style="height:18rem;border:1.5px solid #cbd5e1;border-radius:8px;margin-top:1rem;padding:1rem">
-              <strong>Student Response Workspace</strong>
-            </div>
-          </div>
-        `;
-      }
-      trackTelemetry(state.unitId, state.wida, "activity_copy");
-      window.print();
-      return;
-    }
-
-    const copyBtn = e.target.closest("[data-copy-activity]");
-    if (!copyBtn || !state.detail?.unit) return;
-    const idx = Number(copyBtn.dataset.copyActivity);
-    const act = state.detail.activities?.[idx];
-    if (!act) return;
-    const text = formatActivityForSlides(state.detail.unit, act, idx);
-    trackTelemetry(state.unitId, state.wida, "activity_copy");
-    copyToClipboard(text, copyBtn, "Copied!");
-  });
-
-  // Instant Activity Preview Drawer (<dialog id="activityPreviewModal">)
-  const previewModal = $("#activityPreviewModal");
-  $("#closeActivityPreviewBtn")?.addEventListener("click", () => {
-    previewModal?.close();
-  });
-  previewModal?.addEventListener("click", (e) => {
-    if (e.target === previewModal) {
-      previewModal.close();
-      return;
-    }
-    if (e.target.closest("[data-preview-open-student]") || e.target.closest("[data-preview-open-teacher]")) {
-      trackTelemetry(state.unitId, state.wida, "lab_launch");
-      return;
-    }
-    const copyLinkBtn = e.target.closest("[data-preview-copy-link]");
-    if (copyLinkBtn && state.detail?.unit) {
-      const act = state.detail.activities?.[state.previewActivityIdx];
-      if (!act) return;
-      const studentUrl = buildActivityUrl(state.detail.unit.id, act.id, state.wida, "student", {
-        absolute: true,
-      });
-      trackTelemetry(state.unitId, state.wida, "activity_copy");
-      copyToClipboard(studentUrl, copyLinkBtn, "Link Copied!");
-      return;
-    }
-    const copySlidesBtn = e.target.closest("[data-preview-copy-slides]");
-    if (copySlidesBtn && state.detail?.unit) {
-      const idx = state.previewActivityIdx;
-      const act = state.detail.activities?.[idx];
-      if (!act) return;
-      const text = formatActivityForSlides(state.detail.unit, act, idx);
-      trackTelemetry(state.unitId, state.wida, "activity_copy");
-      copyToClipboard(text, copySlidesBtn, "Copied!");
-    }
-  });
-  previewModal?.addEventListener("close", () => {
-    state.previewActivityIdx = -1;
-    if (lastPreviewTrigger && document.contains(lastPreviewTrigger)) {
-      lastPreviewTrigger.focus();
-    }
-    lastPreviewTrigger = null;
-  });
-
   // Family & Evidence panel delegation (Subview tabs + Language preview toggle + Copy Family Link + PDF Download)
   $("#panel-family").addEventListener("click", (e) => {
     const subBtn = e.target.closest("[data-family-subview]");
@@ -3258,16 +1667,6 @@ function bindEvents() {
     }
     if (e.target.closest("[data-export-download]")) {
       trackTelemetry(state.unitId, state.wida, "activity_copy");
-      return;
-    }
-    const langBtn = e.target.closest("[data-family-lang]");
-    if (langBtn) {
-      const code = langBtn.dataset.familyLang;
-      if (code && code !== state.familyLang) {
-        state.familyLang = code;
-        renderFamilyTab();
-        announce(`Switched family preview to ${FAMILY_LANGS.find((l) => l.code === code)?.label || code}.`);
-      }
       return;
     }
     const copyLinkBtn = e.target.closest("[data-copy-family-link]");
@@ -3400,7 +1799,7 @@ async function init() {
   // Check if URL is /bcpss-teachers/plan/{id}
   const planMatch = window.location.pathname.match(/^\/bcpss-teachers\/plan\/([^/]+)\/?$/);
   if (planMatch) {
-    setActiveTab("connections");
+    setActiveTab("overview");
     await loadSharedPlan(decodeURIComponent(planMatch[1]));
     return;
   }

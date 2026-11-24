@@ -1,0 +1,282 @@
+// BCPSS Language Studio v2 — g5-sci-u4 (Gravity, shadows, stars, and the night sky). Schema: ../schema.mjs
+
+export default {
+  essential_question: "Why does the Sun look so much brighter than other stars, and how do Earth's motions change what we see?",
+  can_do: {
+    content: "I can explain gravity, day and night, shadows, and why the Sun looks brighter than other stars.",
+    language: "I can compare two things using both, whereas, in contrast, and however.",
+  },
+  mentor: {
+    text: "Both the Sun and Sirius are stars that give off light, but the Sun looks much brighter because it is much closer to Earth.",
+    gist: "The speaker says two stars are alike, then explains why one looks brighter.",
+    chunks: [
+      { text: "Both the Sun and Sirius are stars that give off light,", role: "What is the same", tone: "concept", ask: "What do the Sun and Sirius have in common?" },
+      { text: "but", role: "The contrast signal", tone: "connector", ask: "Which word tells you a difference is coming?" },
+      { text: "the Sun looks much brighter", role: "The difference", tone: "precision", ask: "How do the two stars look different from Earth?" },
+      { text: "because it is much closer to Earth.", role: "The reason", tone: "evidence", ask: "What fact explains the difference?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The [Sun / star] is [close / far] from Earth.",
+      "Both [A] and [B] are [stars].",
+      "The Sun looks [brighter / dimmer].",
+    ],
+    l3_4: [
+      "Both the [Sun] and [Sirius] give off light, but the [Sun] looks brighter because [reason].",
+      "In the morning, the shadow is [long / short]; at noon, it is [long / short].",
+      "Gravity pulls [objects] toward [the center of Earth].",
+    ],
+    l5_6: [
+      "Both [A] and [B] are [shared feature]; in contrast, [A] [difference], whereas [B] [difference].",
+      "Although [star] may give off more light, it looks [dimmer] because it is [farther away].",
+      "As Earth [rotates / orbits], the [shadow / night sky] changes because [reason].",
+    ],
+  },
+  connectors: ["both", "whereas", "in contrast", "however", "although", "similarly"],
+  vocab: [
+    { term: "gravity", tier: 3, pos: "noun", def: "a force that pulls objects toward the center of Earth", example: "Gravity pulls a dropped pencil toward the floor.", nonexample: "A magnet pulls some metals, but that force is not gravity.", es: "gravedad", es_note: "Cognate. Careful: 'grave' in Spanish can also mean serious.", family: ["gravitational"], cue: "A ball falling toward the ground with an arrow pointing down." },
+    { term: "rotation", tier: 3, pos: "noun", def: "one full turn of Earth on its axis", example: "One rotation of Earth takes about 24 hours.", nonexample: "Earth's trip around the Sun is an orbit, not a rotation.", es: "rotación", es_note: "Cognate: sounds and means almost the same.", family: ["rotate", "rotates"], cue: "A globe spinning on its stand." },
+    { term: "axis", tier: 3, pos: "noun", def: "an imaginary line that Earth spins around, from the North Pole to the South Pole", example: "Earth spins on its axis, like a top.", nonexample: "The Equator is a line on maps, but it is not the axis.", es: "eje", es_note: "Not a cognate. 'Eje' also means the axle of a car.", family: ["axes"], cue: "A skewer through the middle of a spinning globe." },
+    { term: "orbit", tier: 3, pos: "noun", def: "the path one object takes as it travels around another object", example: "Earth makes one orbit around the Sun every year.", nonexample: "A spinning top turns in place, so that is rotation, not an orbit.", es: "órbita", es_note: "Cognate: sounds and means almost the same.", family: ["orbits"], cue: "A small ball circling a big lamp." },
+    { term: "star", tier: 2, pos: "noun", def: "a huge ball of hot, glowing gas that makes its own light", example: "The Sun is a star, and so is Sirius.", nonexample: "Mars does not make its own light, so it is not a star.", es: "estrella", es_note: "Not a cognate. Students may know 'estelar' (of the stars).", family: ["stars"], cue: "A bright dot twinkling in a dark sky." },
+    { term: "apparent brightness", tier: 3, pos: "noun", def: "how bright a star looks to us from Earth", example: "The Sun has a greater apparent brightness than Sirius because it is much closer.", nonexample: "How much light a star really gives off is a different idea from how bright it looks.", es: "brillo aparente", es_note: "'Aparente' is a cognate; 'brillo' means shine.", family: ["bright", "brighter"], cue: "A lamp near you and a lamp far away, the near one looking brighter." },
+    { term: "distance", tier: 2, pos: "noun", def: "how far one place or object is from another", example: "The distance from Baltimore to Washington, D.C. is about 40 miles.", nonexample: "How big a star is does not tell you its distance.", es: "distancia", es_note: "Cognate: sounds and means almost the same.", family: ["distant", "far"], cue: "A ruler or a road map with two cities marked." },
+    { term: "shadow", tier: 2, pos: "noun", def: "a dark area made when an object blocks light", example: "Your shadow is longest in the early morning.", nonexample: "Light itself is not a shadow.", es: "sombra", es_note: "Not a cognate. 'Sombra' also means shade.", family: ["shadows"], cue: "A child with a long dark shape stretching across the blacktop." },
+    { term: "constellation", tier: 3, pos: "noun", def: "a group of stars that forms a pattern in the night sky", example: "Orion is a constellation you can see on winter evenings.", nonexample: "One lone star is not a constellation; it takes a group.", es: "constelación", es_note: "Cognate: sounds and means almost the same.", family: ["constellations"], cue: "Dots in the night sky joined by lines to form a hunter." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Shadow Stick Walk", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner using the key words.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame while you draw the stick and its shadow.", l3_4: "Write the key words you hear, then rebuild four sentences.", l5_6: "Rebuild the whole text and add one sentence that explains why the shadow changes." },
+      payload: {
+        text: "Kiara pushes a stick into the ground on the schoolyard in the morning. Its shadow stretches long across the blacktop. Around the middle of the day, the shadow is short. In the afternoon, it grows long again, but it points the other way. Kiara claims that the Sun seems to move because Earth rotates.",
+        key_words: ["stick", "shadow", "long", "short", "rotates"],
+        frame: "In the morning, the shadow ___. At midday, ___. In the afternoon, ___. This happens because ___.",
+        checks: ["the morning shadow is long", "the shadow is short around the middle of the day", "in the afternoon the shadow is long again but points the other way", "the Sun seems to move because Earth rotates"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Space Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each space science word to its meaning. Wrong matches bounce back, so keep trying until all eight click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know from the pictures first.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
+      payload: {
+        left_label: "Space word", right_label: "What it means",
+        pairs: [
+          { l: "gravity", r: "a force that pulls objects toward the center of Earth" },
+          { l: "rotation", r: "one full turn of Earth on its axis" },
+          { l: "axis", r: "an imaginary line that Earth spins around" },
+          { l: "orbit", r: "the path one object takes as it travels around another" },
+          { l: "star", r: "a huge ball of hot, glowing gas that makes its own light" },
+          { l: "apparent brightness", r: "how bright a star looks to us from Earth" },
+          { l: "shadow", r: "a dark area made when an object blocks light" },
+          { l: "constellation", r: "a group of stars that forms a pattern in the night sky" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Spin, Trip, or Pull?", minutes: 8, grouping: "Partners",
+      mission: "Sort each event into the group that explains it, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the events you know first.", l3_4: "Sort every card and say 'I put ___ here because ___.'", l5_6: "Sort every card, then add one new event to each group." },
+      payload: {
+        categories: [{ name: "Earth's spin (one day)" }, { name: "Earth's trip around the Sun (one year)" }, { name: "Gravity's pull" }],
+        items: [
+          { text: "day turns to night", cat: 0 }, { text: "sunrise", cat: 0 }, { text: "shadow grows long in the evening", cat: 0 },
+          { text: "Orion shows up on winter evenings", cat: 1 }, { text: "Summer Triangle shines on July nights", cat: 1 }, { text: "different stars each season", cat: 1 },
+          { text: "a dropped pencil falls", cat: 2 }, { text: "a ball thrown up comes back down", cat: 2 }, { text: "rain falls to the ground", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Name That Space Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the space science word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "gravity", clues: ["I am why a dropped pencil falls.", "I pull things toward Earth's center.", "I keep you on the ground in Baltimore and in Australia."] },
+          { term: "rotation", clues: ["A spinning top does me.", "Earth does me once about every 24 hours.", "I give us day and night."] },
+          { term: "orbit", clues: ["A planet follows this path.", "Earth takes one year to finish it.", "It is a trip around the Sun."] },
+          { term: "shadow", clues: ["You make me when you block sunlight.", "I am longest in the early morning and late afternoon.", "A sundial uses me to show the time."] },
+          { term: "constellation", clues: ["Orion is one of me.", "People long ago saw heroes and animals in me.", "I am a pattern of stars."] },
+          { term: "axis", clues: ["I am an imaginary line.", "Earth spins around me.", "I run from the North Pole to the South Pole."] },
+          { term: "apparent brightness", clues: ["I tell how bright a star looks to you.", "Distance changes me.", "A far-away star has less of me than a close one."] },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Compare It", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong compare-and-contrast sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the contrast word, then build around it.", l5_6: "After building, add a new fact of your own." },
+      payload: {
+        items: [
+          { parts: ["Both the Sun and Sirius", "are stars", "that give off light."] },
+          { parts: ["The Sun looks brighter,", "whereas Sirius looks like a tiny dot,", "because the Sun is much closer."] },
+          { parts: ["Earth rotates once", "about every 24 hours,", "which gives us day and night."] },
+          { parts: ["In contrast to the morning,", "a shadow at midday", "is short."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Compare and Contrast Talk", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Compare two things out loud, then your partner asks a follow-up move.",
+      tip: "Listen for a shared feature, a contrast word, and a reason in every answer.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the picture and use the first frame.", l3_4: "Use 'both' and 'but' every turn.", l5_6: "Add 'whereas' or 'in contrast' to show a difference." },
+      payload: {
+        roles: { a: "Speaker", b: "Challenger" },
+        cards: [
+          { prompt: "How are the Sun and other stars alike? How are they different?", starter: "Both ___, but ___.", follow_up: "Which difference is the most important?" },
+          { prompt: "Why does a shadow change length during the day?", starter: "The shadow is ___ in the morning and ___ at midday because ___.", follow_up: "Which way does the shadow point?" },
+          { prompt: "How is rotation different from an orbit?", starter: "Rotation is ___, whereas an orbit is ___.", follow_up: "Which one gives us day and night?" },
+          { prompt: "Gravity pulls a ball down in Baltimore. What happens on the other side of the world?", starter: "Gravity pulls toward ___ everywhere, so ___.", follow_up: "What does 'down' really mean?" },
+          { prompt: "Why can we see different constellations in winter and summer?", starter: "We see different stars because ___.", follow_up: "Which constellation can you find on a winter evening?" },
+          { prompt: "Is a faraway star really dim? Defend your idea.", starter: "A faraway star may ___, but it looks ___ because ___.", follow_up: "What would the Sun look like from very far away?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Compare", stem: "I think they are alike because ___." },
+          { label: "In contrast", stem: "In contrast, I think ___ because ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Sun Versus Sirius", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds half of the facts about two stars. Ask questions to fill in what is missing, with no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud, then compare the two stars with 'whereas'.",
+      materials: ["Fact cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat each fact back to check.", l5_6: "After you finish, write one compare sentence that uses 'whereas'." },
+      payload: {
+        goal: "Collect all four facts, then explain why the Sun looks brighter than Sirius.",
+        a: { title: "Scientist A", has: [{ k: "Sun distance from Earth", v: "about 150 million kilometers" }, { k: "Sirius look in our sky", v: "the brightest star at night, but only a tiny dot" }], needs: ["Sirius distance from Earth", "Sun look in our sky"] },
+        b: { title: "Scientist B", has: [{ k: "Sirius distance from Earth", v: "about 81 trillion kilometers" }, { k: "Sun look in our sky", v: "so bright it lights the whole daytime sky" }], needs: ["Sun distance from Earth", "Sirius look in our sky"] },
+        ask_frames: ["What is the ___ ?", "Can you say that again, please?"],
+        tell_frames: ["The ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Why Is the Sun Brighter?", minutes: 12, grouping: "Solo",
+      mission: "Read about two lamps and two stars. Mark the compare words and the clues about distance, then answer the questions.",
+      tip: "Students highlight in colors; the questions check whether they can link distance to brightness.",
+      materials: [],
+      support: { l1_2: "Mark only the word 'brighter'.", l3_4: "Mark both the compare words and the distance clues.", l5_6: "Mark everything, then rewrite one sentence using 'whereas'." },
+      payload: {
+        text: "Imagine two lamps. One lamp is close to you, and the other is across a huge field. Both lamps give off light, but the close lamp looks brighter. Stars work the same way. The Sun is the closest star to Earth, so it looks brilliant. Sirius is the brightest star in our night sky, yet it looks like a tiny dot. In fact, Sirius gives off more light than the Sun does. It is just so far away that its light looks faint. Distance is the reason the Sun looks brighter.",
+        marks: [
+          { label: "Compare words", instruction: "Highlight the words and phrases that compare.", targets: ["Both lamps give off light", "but the close lamp looks brighter", "yet it looks like a tiny dot"] },
+          { label: "Distance clues", instruction: "Highlight the clues about how far away things are.", targets: ["closest star to Earth", "so far away", "Distance is the reason the Sun looks brighter"] },
+        ],
+        questions: [
+          { q: "Why does the close lamp look brighter?", options: ["It is a different color.", "It is closer to you.", "It is turned on more often."], answer: 1, why: "The text says both lamps give off light, but the close one looks brighter." },
+          { q: "How is Sirius different from the Sun?", options: ["Sirius is closer to Earth.", "Sirius is not a star.", "Sirius gives off more light but looks fainter."], answer: 2, why: "Sirius gives off more light, but it is so far away that it looks like a dot." },
+          { q: "Which word shows a contrast in the text?", options: ["yet", "both", "imagine"], answer: 0, why: "'Yet' shows that Sirius is bright but still looks like a tiny dot." },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Night Sky Watch", minutes: 8, grouping: "Solo",
+      mission: "Choose the right space word for every gap in Omar's night sky story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and think about what makes sense.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then change one sentence to use a different word from the bank." },
+      payload: {
+        text: "On a winter evening in Maryland, Omar looks up and finds the {1} Orion. In July, he cannot see it in the evening sky. Instead, he sees different stars. This happens because Earth makes one {2} around the Sun each year, so the night sky changes with the seasons. Each day, Earth also makes one {3} on its {4}, which is why the stars seem to move across the sky. The pull of {5} keeps Omar on the ground while Earth moves.",
+        answers: ["constellation", "orbit", "rotation", "axis", "gravity"],
+        bank: ["constellation", "orbit", "rotation", "axis", "gravity", "star", "shadow"],
+      },
+    },
+    {
+      kind: "quiz", domain: "Game", title: "Space Check", minutes: 10, grouping: "Solo",
+      mission: "Pick the best answer for each question. Every wrong answer teaches you something!",
+      tip: "Have students explain one wrong choice aloud before moving on.",
+      materials: [],
+      support: { l1_2: "Picture the answer in your head before you pick.", l3_4: "Say why each wrong choice does not work.", l5_6: "Rewrite one question so a different answer is correct." },
+      payload: {
+        items: [
+          { q: "Which direction does gravity pull objects?", options: ["Up, away from Earth", "Toward the center of Earth", "Toward the Sun"], answer: 1, why: "Gravity pulls toward the center of Earth, wherever you stand on Earth." },
+          { q: "About how long does one rotation of Earth take?", options: ["One year", "One week", "About 24 hours"], answer: 2, why: "Earth spins once about every 24 hours, which gives us day and night." },
+          { q: "Why does the Sun look brighter than other stars?", options: ["It is much closer to Earth.", "It is the only real star.", "It is the hottest star of all."], answer: 0, why: "Distance is the reason. Other stars are far away, so they look dim." },
+          { q: "When is your shadow shortest?", options: ["Early in the morning", "Around the middle of the day", "Late in the afternoon"], answer: 1, why: "The Sun is highest in the sky near midday, so shadows are shortest then." },
+          { q: "What causes different constellations to show up in different seasons?", options: ["Earth's orbit around the Sun", "Clouds in the sky", "Earth's gravity"], answer: 0, why: "As Earth orbits the Sun, we face different parts of the night sky." },
+          { q: "Which sentence is a strong compare sentence?", options: ["The Sun bright. Sirius.", "Sirius and the Sun because stars.", "Both the Sun and Sirius are stars; however, the Sun looks brighter."], answer: 2, why: "It names what is alike, uses 'however' to show a difference, and is a full sentence." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong compare-and-contrast sentence with the connector shown.",
+      tip: "Compare combos: more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the words.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["Earth rotates on its axis.", "We get day and night."], connector: "so", model: "Earth rotates on its axis, so we get day and night." },
+          { sentences: ["The Sun is a star.", "Sirius is a star."], connector: "both", model: "Both the Sun and Sirius are stars." },
+          { sentences: ["The Sun looks bright.", "Sirius looks like a tiny dot."], connector: "whereas", model: "The Sun looks bright, whereas Sirius looks like a tiny dot." },
+          { sentences: ["Sirius gives off more light than the Sun.", "Sirius looks much fainter."], connector: "however", model: "Sirius gives off more light than the Sun; however, it looks much fainter." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Comparison", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why it works.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the science words first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "Gravity pulls objects up into the sky.", options: ["Gravity pulls objects toward the center of Earth.", "Gravity pulls objects toward the Moon.", "Gravity pulls objects away from Earth."], answer: 0, why: "Gravity pulls objects toward the center of Earth, so things fall down.", type: "wrong fact" },
+          { wrong: "Earth rotates around the Sun once a year.", options: ["Earth rotates once a year on its axis.", "Earth orbits the Sun once a year.", "Earth orbits the Sun once a day."], answer: 1, why: "Going around the Sun is an orbit. Rotation is spinning on the axis.", type: "wrong word" },
+          { wrong: "The Sun looks brighter because it is the biggest star.", options: ["The Sun looks brighter because it is not a star.", "The Sun looks brighter because it is hotter than every star.", "The Sun looks brighter because it is much closer."], answer: 2, why: "Many stars are bigger than the Sun. Distance is the reason it looks brighter.", type: "wrong reason" },
+          { wrong: "Both the Sun and Sirius are stars, whereas they give off light.", options: ["Both the Sun and Sirius are stars, in contrast they give off light.", "Both the Sun and Sirius are stars, and they both give off light.", "Both the Sun and Sirius are stars, whereas they give off light."], answer: 1, why: "'Whereas' and 'in contrast' show differences. 'Both' and 'and' show what is the same.", type: "wrong connector" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Compare the Sun and Sirius", minutes: 15, grouping: "Solo",
+      mission: "Write a short paragraph that compares the Sun and Sirius and explains why they look different.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw both stars.", l3_4: "Write all three parts and use 'both' and 'whereas'.", l5_6: "Write all three parts, add 'in contrast', and use two vocabulary words." },
+      payload: {
+        prompt: "Write a paragraph that compares the Sun and Sirius. Tell how they are alike, how they are different, and why the Sun looks brighter.",
+        structure: [
+          { part: "Alike", frame: "Both ___ and ___ are ___." },
+          { part: "Different", frame: "In contrast, the Sun ___, whereas Sirius ___." },
+          { part: "Reason", frame: "The Sun looks brighter because ___." },
+        ],
+        word_bank: ["both", "whereas", "in contrast", "star", "distance", "apparent brightness", "closer", "farther"],
+        checklist: ["I told what is alike.", "I told what is different.", "I used a contrast word.", "I gave a reason about distance."],
+        model: "Both the Sun and Sirius are stars that give off light. In contrast, the Sun looks huge and bright, whereas Sirius looks like a tiny dot. The Sun looks brighter because it is much closer to Earth. Sirius actually gives off more light, but its distance makes it look faint.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Compare the Sun and a faraway star. Use both and whereas, and explain why they look different.",
+    frame: "Both ___ and ___ are ___, whereas ___ because ___.",
+    model: "Both the Sun and a faraway star give off light, whereas the Sun looks much brighter because it is much closer to Earth.",
+    rubric: {
+      emerging: "Names the Sun and a star with a word bank or a labeled drawing.",
+      developing: "Uses the frame to tell one way they are alike and one way they are different.",
+      proficient: "Compares the two with both and whereas, and explains the difference with a reason about distance.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Órbita' and 'rotación' are cognates, but students swap them because both mean 'turning'.", fix: "Use two gestures: spin in place for rotation, and walk a circle around a lamp for orbit." },
+    { group: "All multilingual learners", issue: "'Looks brighter' and 'is brighter' sound alike, so students mix up how bright a star looks with how much light it gives off.", fix: "Use two frames: 'It looks ___ from Earth' and 'It really gives off ___ light.'" },
+  ],
+  misconception: {
+    pattern: "Students say the Sun looks brighter because it is the biggest or brightest star.",
+    redirect: "Ask 'If you carry a flashlight far away, what happens to how bright it looks?' and link the answer to distance.",
+  },
+};

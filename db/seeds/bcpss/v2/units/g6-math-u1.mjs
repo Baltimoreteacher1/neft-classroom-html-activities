@@ -1,0 +1,265 @@
+// BCPSS Language Studio v2 — g6-math-u1. Gold-standard exemplar. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can you prove that a shape's area, surface area, or volume is right?",
+  can_do: {
+    content: "I can find the area of a polygon, the surface area of a box, and the volume of a prism.",
+    language: "I can explain my strategy with because, so, and if…then.",
+  },
+  mentor: {
+    text: "To find the surface area of the box, I decomposed its net into six rectangles because every face of a rectangular prism is a rectangle.",
+    gist: "The speaker splits a flat pattern into rectangles and explains why that works.",
+    chunks: [
+      { text: "To find the surface area of the box,", role: "The goal", tone: "concept", ask: "What does the speaker want to find out?" },
+      { text: "I decomposed its net into six rectangles", role: "The strategy", tone: "precision", ask: "What did the speaker do, and how many pieces did it make?" },
+      { text: "because", role: "The reason signal", tone: "connector", ask: "Which word tells you a reason is coming?" },
+      { text: "every face of a rectangular prism is a rectangle.", role: "The proof", tone: "evidence", ask: "What fact about the box makes the strategy work?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The [shape] has [number] faces.",
+      "I broke the [shape] into [number] [rectangles / triangles].",
+      "The surface area is [number] square [units].",
+    ],
+    l3_4: [
+      "I decomposed the [polygon / net] into [shapes] because [reason].",
+      "The surface area is [number] square [units] because I added the area of every [face / piece].",
+      "To find the volume, I multiplied [length] × [width] × [height], so the volume is [number] cubic [units].",
+    ],
+    l5_6: [
+      "Since every face of the [prism] is a [shape], I can find its surface area by [strategy].",
+      "If I [action], then [result], which proves that [claim].",
+      "Although [other strategy] also works, I chose [my strategy] because [reason].",
+    ],
+  },
+  connectors: ["because", "so", "since", "if … then", "therefore", "although"],
+  vocab: [
+    { term: "decompose", tier: 3, pos: "verb", def: "to break a shape into smaller, simpler shapes", example: "I can decompose this L-shape into two rectangles.", nonexample: "Gluing two rectangles together is the opposite of decomposing.", es: "descomponer", es_note: "Cognate: sounds and means almost the same.", family: ["decomposition", "compose"], cue: "A cracker snapping into two clean rectangles." },
+    { term: "net", tier: 3, pos: "noun", def: "a flat pattern that folds up into a 3D shape", example: "The net of a cube has six squares.", nonexample: "A fishing net is not a math net; it catches fish, not shapes.", es: "red", es_note: "Spanish 'red' also means 'network' — here it means a flat pattern.", family: ["unfold"], cue: "A cereal box cut open and laid flat." },
+    { term: "face", tier: 2, pos: "noun", def: "one flat side of a 3D shape", example: "A cube has six faces, and every face is a square.", nonexample: "The face of a clock is a circle, but it is not a face of a prism.", es: "cara", es_note: "Not a cognate. 'Face' here is a side, not a person's face.", family: ["faces"], cue: "A die with one side highlighted." },
+    { term: "surface area", tier: 3, pos: "noun", def: "the total area of all the faces of a 3D shape", example: "The surface area tells us how much paper we need to wrap the box.", nonexample: "How much the box can hold is volume, not surface area.", es: "área de superficie", es_note: "Cognate pair: área / superficie.", family: ["area", "surface"], cue: "A gift box covered in wrapping paper." },
+    { term: "polygon", tier: 3, pos: "noun", def: "a flat, closed shape made of straight sides", example: "A pentagon is a polygon with five sides.", nonexample: "A circle is not a polygon because it has no straight sides.", es: "polígono", es_note: "Cognate: sounds and means almost the same.", family: ["polygons"], cue: "A hexagon traced with a bright marker." },
+    { term: "volume", tier: 3, pos: "noun", def: "how much space a 3D shape takes up inside", example: "The volume of the box is 24 cubic inches.", nonexample: "The volume knob on a speaker is not a math volume.", es: "volumen", es_note: "Cognate. Careful: 'volume' on a speaker is a different meaning.", family: ["volumes"], cue: "A fish tank filling with water." },
+    { term: "cubic unit", tier: 3, pos: "noun", def: "a cube used to measure volume, like a cube that is 1 inch on each side", example: "We count cubic units to find the volume of a prism.", nonexample: "A square unit covers a flat surface, so it measures area instead.", es: "unidad cúbica", es_note: "Cognate pair: unidad / cúbica.", family: ["cubic", "unit"], cue: "A single sugar cube." },
+    { term: "edge", tier: 2, pos: "noun", def: "the line where two faces of a 3D shape meet", example: "A cube has twelve edges, and all of them are the same length.", nonexample: "The edge of a table is not the same as an edge of a prism.", es: "arista", es_note: "Not a cognate. In Spanish math, 'borde' is the everyday word.", family: ["edges"], cue: "A finger tracing the corner line of a box." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Wrap It Up", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner — as close to the real words as you can.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame; draw the box while you listen.", l3_4: "Write the key words you hear, then rebuild 4–5 sentences.", l5_6: "Rebuild the whole text and add one sentence about why her strategy works." },
+      payload: {
+        text: "Mia wants to wrap a gift box. First, she draws a net of the box on paper. Next, she decomposes the net into six rectangles. Then she finds the area of each rectangle and adds all six areas. The surface area tells her how much wrapping paper to buy.",
+        key_words: ["net", "decomposes", "rectangles", "area", "surface area"],
+        frame: "First, Mia ___. Next, she ___. Then she ___. The surface area tells her ___.",
+        checks: ["Mia draws a net of the box", "she decomposes the net into six rectangles", "she adds the areas of all six rectangles", "surface area tells how much paper to buy"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match every math word to its meaning. Wrong matches bounce back — keep going until all eight click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match words to the picture cues first, then to the meanings.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write a sentence that uses two words together." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "decompose", r: "to break a shape into smaller, simpler shapes" },
+          { l: "net", r: "a flat pattern that folds up into a 3D shape" },
+          { l: "face", r: "one flat side of a 3D shape" },
+          { l: "surface area", r: "the total area of all the faces of a 3D shape" },
+          { l: "polygon", r: "a flat, closed shape made of straight sides" },
+          { l: "volume", r: "how much space a 3D shape takes up inside" },
+          { l: "cubic unit", r: "a cube used to measure volume" },
+          { l: "edge", r: "the line where two faces meet" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Flat, Solid, or Measure?", minutes: 8, grouping: "Partners",
+      mission: "Sort each word into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the pictures and words you know first.", l3_4: "Sort all words and say 'I put ___ here because ___.'", l5_6: "Sort all words, then make a fourth category of your own." },
+      payload: {
+        categories: [{ name: "Flat shapes (2D)" }, { name: "Solid shapes (3D)" }, { name: "Ways to measure" }],
+        items: [
+          { text: "polygon", cat: 0 }, { text: "rectangle", cat: 0 }, { text: "triangle", cat: 0 }, { text: "net", cat: 0 },
+          { text: "face", cat: 1 }, { text: "edge", cat: 1 }, { text: "cube", cat: 1 }, { text: "rectangular prism", cat: 1 },
+          { text: "surface area", cat: 2 }, { text: "volume", cat: 2 }, { text: "cubic unit", cat: 2 }, { text: "square unit", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used = more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "net", clues: ["I am flat, but I can fold up.", "A cereal box cut open looks like me.", "I show every face of a 3D shape at once."] },
+          { term: "face", clues: ["A cube has six of me.", "I am one flat side of a solid.", "You can find my area."] },
+          { term: "volume", clues: ["A fish tank holds this much water.", "I tell how much space is inside.", "I am measured in cubic units."] },
+          { term: "decompose", clues: ["Think of snapping a cracker in two.", "I break a big shape into small shapes.", "An L-shape needs me to find its area."] },
+          { term: "surface area", clues: ["Wrapping paper covers me.", "I add up every face.", "I am measured in square units."] },
+          { term: "polygon", clues: ["Triangles and hexagons are my family.", "I am closed and flat.", "All my sides are straight."] },
+          { term: "edge", clues: ["A cube has twelve of me.", "Two faces meet at my line.", "I am where the paper folds."] },
+          { term: "cubic unit", clues: ["I am like a tiny sugar cube.", "Count me to fill a box.", "I measure volume, not area."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Prove It to Your Partner", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      tip: "Listen for a reason after every 'because'.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the shape and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'although' to compare two strategies." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "How do you find the area of an L-shaped polygon?", starter: "I decomposed the L-shape into ___ because ___.", follow_up: "Is there another way to split it?" },
+          { prompt: "Why does a net help you find surface area?", starter: "A net helps because it shows ___.", follow_up: "How many faces does your net have?" },
+          { prompt: "A box is 5 cm by 3 cm by 2 cm. How do you find its volume?", starter: "I multiplied ___ × ___ × ___, so ___.", follow_up: "What unit do you write at the end, and why?" },
+          { prompt: "What is the difference between area and surface area?", starter: "Area measures ___, but surface area measures ___.", follow_up: "Give a real object for each." },
+          { prompt: "Why do we use cubic units for volume?", starter: "We use cubic units because ___.", follow_up: "What would go wrong with square units?" },
+          { prompt: "Your friend says surface area and volume mean the same thing. What do you say?", starter: "I disagree because ___.", follow_up: "Which one tells you how much paper to buy?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where ___ is in the shape?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Box Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret clues about two boxes. Ask questions to find the missing facts — no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then confirm by repeating the number back.", l5_6: "Check each other's numbers by recomputing the surface area." },
+      payload: {
+        goal: "Fill in the missing facts for Box 1 and Box 2.",
+        a: { title: "Detective A", has: [{ k: "Box 1 dimensions", v: "5 cm × 3 cm × 2 cm" }, { k: "Box 2 surface area", v: "80 square cm" }], needs: ["Box 1 surface area", "Box 2 dimensions"] },
+        b: { title: "Detective B", has: [{ k: "Box 1 surface area", v: "62 square cm" }, { k: "Box 2 dimensions", v: "4 cm × 4 cm × 3 cm" }], needs: ["Box 1 dimensions", "Box 2 surface area"] },
+        ask_frames: ["What is the ___ of Box ___?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ of Box ___ is ___.", "I'm not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Reason Radar", minutes: 12, grouping: "Solo",
+      mission: "Read Jaylen's plan like a detective. Mark the reason words and the math words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the reason word 'because'.", l3_4: "Mark both reason words and math words.", l5_6: "Mark everything, then rewrite one sentence with 'since'." },
+      payload: {
+        text: "Jaylen wants to paint a toy box. He needs to know how much paint to buy, so he finds the surface area. The box is a rectangular prism, so every face is a rectangle. He decomposes the net into six rectangles because that makes each area easy to find. The box needs paint on the outside only, so volume does not help him. Surface area is the right measure because paint covers faces, not the space inside.",
+        marks: [
+          { label: "Reason words", instruction: "Highlight the words that tell why.", targets: ["so he finds the surface area", "because that makes each area easy to find", "because paint covers faces"] },
+          { label: "Math words", instruction: "Highlight the math vocabulary.", targets: ["rectangular prism", "decomposes the net", "surface area", "volume"] },
+        ],
+        questions: [
+          { q: "Why does Jaylen decompose the net?", options: ["It makes each area easy to find.", "It makes the box bigger.", "It tells him the volume."], answer: 0, why: "The text says he decomposes the net 'because that makes each area easy to find.'" },
+          { q: "Why is volume the wrong measure for painting the box?", options: ["Paint covers the faces, not the space inside.", "The box has no volume.", "Volume is only for liquids."], answer: 0, why: "Paint goes on the outside faces, so surface area is the right measure." },
+          { q: "What signal word gives a reason in the last sentence?", options: ["Surface", "because", "paint"], answer: 1, why: "'Because' signals the reason." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["I decomposed the net", "into six rectangles", "because every face is a rectangle."] },
+          { parts: ["The surface area is 62 square centimeters", "because I added", "the areas of all six faces."] },
+          { parts: ["Volume is measured", "in cubic units", "because it counts the space inside."] },
+          { parts: ["Since the polygon is an L-shape,", "I decomposed it", "into two rectangles."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: The Gift Box", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Sofia's gift-box story.",
+      tip: "Two bank words are extras — students must reject them.",
+      materials: [],
+      support: { l1_2: "Read the sentence aloud with the first letter hint in mind.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then replace one answer with a synonym phrase." },
+      payload: {
+        text: "Sofia drew a flat {1} of her gift box. She wanted to {2} it into rectangles. Each {3} of the box is a rectangle. When she added all the areas, she found the {4}. That told her how much paper to buy. If she wanted to know how much the box could hold, she would find the {5} instead.",
+        answers: ["net", "decompose", "face", "surface area", "volume"],
+        bank: ["net", "decompose", "face", "surface area", "volume", "polygon", "edge"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos: more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to start the sentence." },
+      payload: {
+        items: [
+          { sentences: ["I decomposed the shape.", "It is not a rectangle."], connector: "because", model: "I decomposed the shape because it is not a rectangle." },
+          { sentences: ["The box has six faces.", "I need to find six areas."], connector: "so", model: "The box has six faces, so I need to find six areas." },
+          { sentences: ["Every face is a rectangle.", "I can multiply length times width."], connector: "since", model: "Since every face is a rectangle, I can multiply length times width." },
+          { sentences: ["Surface area covers the outside.", "Volume fills the inside."], connector: "while", model: "Surface area covers the outside, while volume fills the inside." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the units first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The surface area of the box is 62 cubic centimeters.", options: ["The surface area of the box is 62 square centimeters.", "The surface area of the box is 62 centimeters.", "The surface area of the box is 62 cubes."], answer: 0, why: "Surface area covers faces, so it uses square units.", type: "wrong unit" },
+          { wrong: "The volume is 24 square inches.", options: ["The volume is 24 square inches long.", "The volume is 24 cubic inches.", "The volume is 24 inches."], answer: 1, why: "Volume counts cubes, so it uses cubic units.", type: "wrong unit" },
+          { wrong: "I decomposed the net.", options: ["I decomposed the net because the net is blue.", "I decomposed the net into rectangles because every face is a rectangle.", "I decomposed the net, then I was done."], answer: 1, why: "A strong math sentence gives a reason, not just an action.", type: "missing reason" },
+          { wrong: "A circle is a polygon because it is flat.", options: ["A circle is a polygon because it is round.", "A circle is not a polygon because it has no straight sides.", "A circle is a polygon because it has sides."], answer: 1, why: "Polygons need straight sides, so a circle is not one.", type: "wrong fact" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Prove Your Strategy", minutes: 15, grouping: "Solo",
+      mission: "Write a short proof that shows your strategy works — claim, reason, and evidence.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw your shape first.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'although', and cite a number." },
+      payload: {
+        prompt: "A box is 6 cm long, 4 cm wide, and 3 cm tall. Explain how to find its surface area and why your strategy works.",
+        structure: [
+          { part: "Claim", frame: "To find the surface area, I ___ the net into ___." },
+          { part: "Reason", frame: "This works because ___." },
+          { part: "Evidence", frame: "The faces are ___ square cm, ___ square cm, and ___ square cm, so the surface area is ___." },
+        ],
+        word_bank: ["decompose", "net", "faces", "rectangles", "surface area", "because", "so", "square centimeters"],
+        checklist: ["I named my strategy.", "I gave a reason with because or since.", "I used at least three math words.", "I used square units."],
+        model: "To find the surface area, I decompose the net into six rectangles. This works because every face of a rectangular prism is a rectangle. The faces are 24, 24, 18, 18, 12, and 12 square centimeters, so the surface area is 108 square centimeters.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A box is 5 cm by 3 cm by 2 cm. Explain how to find its surface area. Use at least two math words and one reason word.",
+    frame: "I decomposed the ___ into ___ because ___, so the surface area is ___.",
+    model: "I decomposed the net into six rectangles because every face is a rectangle, so the surface area is 62 square centimeters.",
+    rubric: {
+      emerging: "Names the strategy with a word bank or a labeled drawing.",
+      developing: "Uses the frame with two math words and a correct unit.",
+      proficient: "Explains the strategy with a clear reason and correct numbers in two or more sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Net' is read as 'red' (network) and 'face' as 'cara' (a person's face), which hides the math meaning.", fix: "Pair each word with a drawing of the cereal-box net and a die before using it in a sentence." },
+    { group: "All multilingual learners", issue: "Square units and cubic units sound alike, so students write the wrong unit for surface area and volume.", fix: "Chant 'flat = square, fill = cubic' and have students check every answer's unit aloud." },
+  ],
+  misconception: {
+    pattern: "Students say 'the answer is 62' and stop, without naming what was measured or giving a reason.",
+    redirect: "Ask 'Sixty-two what, and how do you know?' until they answer with a unit and a because-clause.",
+  },
+};

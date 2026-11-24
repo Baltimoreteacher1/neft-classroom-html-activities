@@ -1,0 +1,352 @@
+/* Language Studio Player — shell, tokens and shared components (agent S).
+   Kind-specific CSS: studio-games.css (self-checking kinds), studio-open.css (open-ended kinds), studio-home.css (home). */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(/assets/fonts/inter-1dc044f4.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 600 700;
+  font-display: swap;
+  src: url(/assets/fonts/plus-jakarta-sans-069be307.woff2) format("woff2");
+}
+@font-face {
+  font-family: "Source Serif 4";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(/assets/fonts/source-serif-4-beaf4e42.woff2) format("woff2");
+}
+
+:root {
+  color-scheme: light dark;
+  --st-ink: #182230;
+  --st-muted: #475467;
+  --st-bg: #faf9f6;
+  --st-surface: #ffffff;
+  --st-surface-2: #f2efe9;
+  --st-line: #e4e0d8;
+  --st-line-strong: #cbd5e1;
+  --st-control: #7c8799;
+  --st-accent: #1e3a5f;
+  --st-accent-hover: #152944;
+  --st-accent-soft: #e8eef6;
+  --st-on-accent: #ffffff;
+  --st-teal: #0f766e;
+  --st-focus: #0b63ce;
+  --st-ok: #0f766e;
+  --st-ok-soft: #ecfdf3;
+  --st-ok-ink: #065f46;
+  --st-ok-line: #a7f3d0;
+  --st-no: #b42318;
+  --st-no-soft: #fef2f2;
+  --st-no-ink: #991b1b;
+  --st-no-line: #fecaca;
+  --st-hint-soft: #fffbeb;
+  --st-hint-ink: #92400e;
+  --st-hint-line: #fde68a;
+  --st-star: #d97706;
+  --st-star-off: #d6d3cb;
+  --st-shadow: 0 1px 2px rgb(24 34 48 / 6%), 0 8px 24px rgb(24 34 48 / 7%);
+  --st-shadow-lift: 0 2px 4px rgb(24 34 48 / 8%), 0 14px 32px rgb(24 34 48 / 12%);
+  /* language domains: fill (white text), ink (text on surface), soft (tint) */
+  --st-listening: #075568;
+  --st-listening-ink: #075568;
+  --st-listening-soft: #d9f0ec;
+  --st-reading: #2e4a94;
+  --st-reading-ink: #2a4386;
+  --st-reading-soft: #e4eafa;
+  --st-speaking: #8a3a5c;
+  --st-speaking-ink: #7d3354;
+  --st-speaking-soft: #f7e6ed;
+  --st-writing: #9a4a26;
+  --st-writing-ink: #884326;
+  --st-writing-soft: #fbead9;
+  --st-vocab: #0f766e;
+  --st-vocab-ink: #0f766e;
+  --st-vocab-soft: #e1f2ef;
+  --st-game: #92400e;
+  --st-game-ink: #92400e;
+  --st-game-soft: #fef3c7;
+  /* mentor-sentence tones */
+  --st-tone-concept: #1e3a5f;
+  --st-tone-concept-soft: #e3ebf6;
+  --st-tone-connector: #9a3412;
+  --st-tone-connector-soft: #ffedd5;
+  --st-tone-evidence: #0f766e;
+  --st-tone-evidence-soft: #d8f1ec;
+  --st-tone-precision: #8a3a5c;
+  --st-tone-precision-soft: #f7e0ea;
+  --st-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --st-display: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --st-serif: "Source Serif 4", Georgia, serif;
+  /* grade-band defaults (g68) */
+  --st-radius: 12px;
+  --st-radius-sm: 8px;
+  --st-base: 1rem;
+  --st-gap: 1rem;
+  --st-title-weight: 600;
+}
+:root[data-band="g35"] {
+  --st-radius: 16px;
+  --st-radius-sm: 11px;
+  --st-base: 1.0625rem;
+  --st-title-weight: 700;
+}
+:root[data-band="k2"] {
+  --st-radius: 24px;
+  --st-radius-sm: 16px;
+  --st-base: 1.25rem;
+  --st-gap: 1.25rem;
+  --st-title-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --st-ink: #eef2f7;
+    --st-muted: #b4bfce;
+    --st-bg: #0e1520;
+    --st-surface: #172131;
+    --st-surface-2: #1e2b3e;
+    --st-line: #2a384d;
+    --st-line-strong: #3b4c66;
+    --st-control: #8796ad;
+    --st-accent: #8fb4ec;
+    --st-accent-hover: #b0c9f2;
+    --st-accent-soft: #1d2f4a;
+    --st-on-accent: #0b1626;
+    --st-teal: #5fd0c4;
+    --st-focus: #7db4ff;
+    --st-ok: #5fd0c4;
+    --st-ok-soft: #0f2d29;
+    --st-ok-ink: #8be8d9;
+    --st-ok-line: #1f5b52;
+    --st-no: #ff8a7d;
+    --st-no-soft: #34161a;
+    --st-no-ink: #ffb4ab;
+    --st-no-line: #6a2a2f;
+    --st-hint-soft: #33260c;
+    --st-hint-ink: #f6c97a;
+    --st-hint-line: #6b4d12;
+    --st-star: #fbbf24;
+    --st-star-off: #3b4c66;
+    --st-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 28%);
+    --st-shadow-lift: 0 2px 4px rgb(0 0 0 / 35%), 0 14px 32px rgb(0 0 0 / 42%);
+    --st-listening: #0c6b82;
+    --st-listening-ink: #7fd6e4;
+    --st-listening-soft: #0f2f38;
+    --st-reading: #3d5db0;
+    --st-reading-ink: #a9bff5;
+    --st-reading-soft: #1a2545;
+    --st-speaking: #a24f72;
+    --st-speaking-ink: #f0a8c6;
+    --st-speaking-soft: #3a1c2b;
+    --st-writing: #a85a33;
+    --st-writing-ink: #f2b48f;
+    --st-writing-soft: #3b2418;
+    --st-vocab: #12857c;
+    --st-vocab-ink: #6fdacf;
+    --st-vocab-soft: #0f2d2a;
+    --st-game: #b45309;
+    --st-game-ink: #f6c97a;
+    --st-game-soft: #33260c;
+    --st-tone-concept: #9fc0f2;
+    --st-tone-concept-soft: #1b2b45;
+    --st-tone-connector: #fdba74;
+    --st-tone-connector-soft: #3a2310;
+    --st-tone-evidence: #6fdacf;
+    --st-tone-evidence-soft: #0f2d2a;
+    --st-tone-precision: #f0a8c6;
+    --st-tone-precision-soft: #3a1c2b;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+}
+body {
+  margin: 0;
+  background: var(--st-bg);
+  color: var(--st-ink);
+  font: 400 var(--st-base) / 1.55 var(--st-font);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--st-display);
+  font-weight: var(--st-title-weight);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
+}
+p {
+  margin: 0;
+}
+[hidden] {
+  display: none !important;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+img,
+svg {
+  max-width: 100%;
+}
+:focus-visible {
+  outline: 3px solid var(--st-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.st-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.st-skip {
+  position: absolute;
+  left: 12px;
+  top: -80px;
+  z-index: 100;
+  background: var(--st-accent);
+  color: var(--st-on-accent);
+  padding: 10px 16px;
+  border-radius: var(--st-radius-sm);
+  font-weight: 600;
+}
+.st-skip:focus {
+  top: 12px;
+}
+
+/* ---------- top bar ---------- */
+.st-top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--st-surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--st-line);
+}
+.st-top__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+}
+.st-top__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 10px 0 6px;
+  border-radius: 999px;
+  color: var(--st-accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+.st-top__back:hover {
+  background: var(--st-accent-soft);
+}
+.st-top__brand {
+  font: 700 1rem / 1 var(--st-display);
+  letter-spacing: -0.01em;
+  color: var(--st-muted);
+  margin-right: auto;
+}
+.st-level {
+  display: inline-flex;
+  padding: 4px;
+  gap: 2px;
+  background: var(--st-surface-2);
+  border: 1px solid var(--st-line);
+  border-radius: 999px;
+  margin-left: auto;
+}
+.st-level button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--st-muted);
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    box-shadow 0.18s;
+}
+.st-level button:hover {
+  color: var(--st-ink);
+}
+.st-level button[aria-pressed="true"] {
+  background: var(--st-accent);
+  color: var(--st-on-accent);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+}
+
+/* ---------- page frame ---------- */
+.st-main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 16px 120px;
+  outline: none;
+}
+.st-loading {
+  padding: 80px 0;
+  text-align: center;
+  color: var(--st-muted);
+}
+.st-fail {
+  max-width: 560px;
+  margin: 48px auto;
+  text-align: center;
+}
+.st-fail h1 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+.st-view {
+  animation: st-rise 0.35s ease both;
+}
+@keyframes st-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+

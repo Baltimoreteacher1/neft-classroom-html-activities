@@ -245,7 +245,8 @@ async function main() {
       },
       { label: "bcpss-pathways-g6", path: "/bcpss-teachers/pathways/?grade=6" },
       { label: "bcpss-insights", path: "/bcpss-teachers/insights/" },
-      { label: "bcpss-activity-g6-math", path: "/bcpss-teachers/activity/?unit=g6-math-u2" },
+      { label: "bcpss-hub-studio-g6-math", path: "/bcpss-teachers/?grade=6&subject=Math&unit=g6-math-u1" },
+      { label: "bcpss-studio-player-g6-math", path: "/bcpss-teachers/language-studio/?unit=g6-math-u1" },
       { label: "family-bcpss-g6-math", path: "/family/bcpss/?unit=g6-math-u2" },
     ];
 
@@ -279,17 +280,9 @@ async function main() {
       `  PASS [Above-the-fold Unit Teaching Studio (y=${Math.round(wsBox.y)}px) & hidden projection bar]`,
     );
 
-    // Verify Understand & Teach enhancements (Demand->Fade, Editable Sequence, Curriculum Intelligence)
-    await page.locator(".bh-scaffold-flow-card").waitFor({ state: "visible", timeout: 8000 });
-    await page.locator(".bh-seq-card").waitFor({ state: "visible" });
-    await page.locator(".bh-intel-card").waitFor({ state: "visible" });
-    console.log(
-      "  PASS [Understand & Teach: Demand->Fade, Editable Sequence, Curriculum Intelligence]",
-    );
-
     // Verify Differentiation keeps core standards intact
     const stdBefore = await page.locator("#workspaceStandards").innerText();
-    await page.locator('#panel-connections [data-wida-tier="1_2"]').click();
+    await page.locator('[data-quick-wida="1_2"]').click();
     await page.waitForTimeout(100);
     const stdAfter = await page.locator("#workspaceStandards").innerText();
     assert.equal(
@@ -316,44 +309,52 @@ async function main() {
       `  PASS [Visual Vocabulary Studio: ${svgCount} SVGs + all 3 classroom modes + axe 0]`,
     );
 
-    // Journey: Interactive Learning Labs (all 5 engines)
-    await page.locator("#tab-studio").click();
-    for (const labKey of ["architect", "explorer", "discourse", "detective", "quest"]) {
-      await page.locator(`#studio-tab-${labKey}`).click();
-      await page.locator(`#studio-panel-${labKey}`).waitFor({ state: "visible" });
-    }
-    // Exercise Misconception Detective + Learning Quest
-    await page.locator("#studio-tab-detective").click();
-    await page.locator('[data-detective-choice="thinking"]').click();
-    await page
-      .locator("#detectiveRevisionInput")
-      .fill("The ratio stays equivalent because both quantities are scaled by the same factor.");
-    await page.locator("[data-detective-check]").click();
-    const detFeedback = await page
-      .locator("#studio-panel-detective .vs-feedback")
-      .last()
-      .innerText();
-    assert.ok(
-      detFeedback.includes("Great revision"),
-      "Misconception Detective should validate strong revision",
+    // Journey: Language Studio (default tab) + Unit Overview on the authored unit g6-math-u1
+    await page.goto(`${baseUrl}/bcpss-teachers/?grade=6&subject=Math&unit=g6-math-u1`, {
+      waitUntil: "networkidle",
+    });
+    assert.equal(
+      await page.locator("#tab-studio").getAttribute("aria-selected"),
+      "true",
+      "Language Studio must be the default tab",
     );
+    await page.locator(".stt-list li").first().waitFor({ state: "visible", timeout: 8000 });
+    const studioHref = await page.locator(".stt-launch").getAttribute("href");
+    assert.ok(
+      studioHref?.startsWith("/bcpss-teachers/language-studio/?") && studioHref.includes("unit=g6-math-u1"),
+      `Open Language Studio must link to the player for this unit, got ${studioHref}`,
+    );
+    const studioRows = await page.locator(".stt-list li").count();
+    assert.ok(studioRows >= 1, "Language Studio must list the unit's activities");
+    await runAxe(page, "bcpss-language-studio");
+    await page.locator("#tab-overview").click();
+    await page.locator(".ov").waitFor({ state: "visible" });
+    await page.locator('.ov [data-ov-tab="vocab"]').first().click();
+    await page.locator("#panel-vocab").waitFor({ state: "visible" });
+    assert.equal(
+      await page.locator("#tab-vocab").getAttribute("aria-selected"),
+      "true",
+      "data-ov-tab buttons must switch the hub tab",
+    );
+    await page.locator("#tab-overview").click();
+    await page.waitForTimeout(300); // let the tab-panel fade-in finish before measuring contrast
+    await runAxe(page, "bcpss-unit-overview");
+    console.log(`  PASS [Language Studio (${studioRows} activities) + Overview + tab jump + axe 0]`);
 
-    await page.locator("#studio-tab-quest").click();
-    await page.locator("[data-quest-vocab]").first().click();
-    await page.locator('[data-quest-reason="strong"]').click();
-    await page
-      .locator("#questFinalInput")
-      .fill(
-        "We use equivalent ratios because both quantities grow proportionally by the same multiplier.",
-      );
-    await page.locator("[data-quest-submit]").click();
-    const questFb = await page.locator("#studio-panel-quest .vs-feedback").innerText();
-    assert.ok(
-      questFb.includes("Quest Complete"),
-      "Learning Quest should unlock and complete all 3 checkpoints",
-    );
-    await runAxe(page, "bcpss-interactive-labs-5");
-    console.log("  PASS [Interactive Learning Labs: all 5 engines verified + axe 0]");
+    // Legacy bookmarks map onto the v2 tabs
+    for (const [legacy, expected] of [
+      ["connections", "overview"],
+      ["activities", "studio"],
+      ["esol", "studio"],
+    ]) {
+      await page.goto(`${baseUrl}/bcpss-teachers/?unit=g6-math-u1&tab=${legacy}`, { waitUntil: "load" });
+      await page.locator(`#tab-${expected}[aria-selected="true"]`).waitFor({ timeout: 5000 });
+    }
+    console.log("  PASS [Legacy tab bookmarks: connections, activities, esol]");
+
+    await page.goto(`${baseUrl}/bcpss-teachers/?grade=6&subject=Math&unit=g6-math-u2`, {
+      waitUntil: "networkidle",
+    });
 
     // Journey: Teacher Creation Studio (Interactive, Worksheet with Answer Key, Presentation, inline edit, save)
     await page.locator("#tab-create").click();
@@ -371,10 +372,14 @@ async function main() {
       "  PASS [Teacher Creation Studio: Worksheet/Answer Key, Preview Dialog, Local Save + axe 0]",
     );
 
-    // Journey: Activities & Printables + Family & Evidence (Bridge, Deconstruct, Evidence) + Share Plan
-    await page.locator("#tab-activities").click();
-    await page.locator(".bh-templates-section").waitFor({ state: "visible" });
+    // Journey: Family & Evidence (Bridge link, Deconstruct, Evidence) + Share Plan
     await page.locator("#tab-family").click();
+    const guideHref = await page.locator(".bh-family-guide-cta").getAttribute("href");
+    assert.equal(
+      guideHref,
+      "/family/bcpss/?unit=g6-math-u2",
+      "Family Bridge must link to the full family guide for this unit",
+    );
     await page.locator('[data-family-subview="deconstruct"]').click();
     await page.locator("#sampleMathBtn").click();
     await page.locator("#deconstructSubmitBtn").click();
@@ -406,7 +411,7 @@ async function main() {
       `Expected shareable plan URL, got ${sharedUrl}`,
     );
     await page.locator("#closeShareDialogBtn").click();
-    console.log("  PASS [Activities Printables, Passage Deconstruct, Evidence View, Share Plan]");
+    console.log("  PASS [Family guide link, Passage Deconstruct, Evidence View, Share Plan]");
 
     // Multi-grade spot checks: K–2 (g1-ela-u1), 3–5 (g4-science-u1), 6–8 (g7-ss-u1)
     for (const [unitId, expectedBand] of [

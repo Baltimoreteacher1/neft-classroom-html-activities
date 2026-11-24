@@ -1,0 +1,103 @@
+/* Family Guide chooser (grade -> subject -> unit) and print. */
+
+/* Chooser */
+.fb-tiles {
+  display: grid;
+  gap: 0.6rem;
+}
+.fb-tiles-grade {
+  grid-template-columns: repeat(3, 1fr);
+}
+.fb-tiles-subject {
+  grid-template-columns: 1fr 1fr;
+}
+.fb-tile {
+  display: grid;
+  place-items: center;
+  gap: 0.15rem;
+  min-height: 4.25rem;
+  padding: 0.5rem;
+  border: 1.5px solid var(--edge);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 700 1.7rem/1 var(--font-display);
+  cursor: pointer;
+}
+.fb-tiles-subject .fb-tile {
+  min-height: 5.5rem;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+.fb-tile-icon {
+  font-size: 1.6rem;
+}
+.fb-tile-label {
+  font-size: 1rem;
+}
+.fb-tile:hover {
+  background: var(--sage-tint);
+}
+.fb-tile[aria-pressed="true"] {
+  background: var(--accent-fill);
+  border-color: var(--accent-fill);
+  color: var(--on-accent);
+}
+.fb-unit-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+.fb-unit-num {
+  font: 700 0.8rem var(--font);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ocean);
+}
+.fb-unit-title {
+  font: 700 1.2rem/1.3 var(--font-display);
+}
+.fb-unit-sum {
+  font-size: 0.97rem;
+  color: var(--ink-2);
+}
+.fb-unit-go {
+  font-weight: 700;
+  color: var(--accent);
+}
+.fb-hero-dir .fb-lead {
+  max-width: 34rem;
+}
+
+@media (min-width: 640px) {
+  .fb-tiles-grade {
+    grid-template-columns: repeat(9, 1fr);
+  }
+  .fb-tiles-subject {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media print {
+  .fb-header,
+  .fb-footer,
+  .fb-next,
+  .fb-say,
+  .fb-nav,
+  .fb-check,
+  .skip-link {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .fb-hero,
+  .fb-section {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

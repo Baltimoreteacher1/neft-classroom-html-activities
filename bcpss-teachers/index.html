@@ -16,6 +16,7 @@
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/inter-1dc044f4.woff2" />
     <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/plus-jakarta-sans-069be307.woff2" />
     <link rel="stylesheet" href="/bcpss-teachers/bcpss-teachers.css" />
+    <link rel="stylesheet" href="/bcpss-teachers/overview.css" />
     <link rel="stylesheet" href="/bcpss-teachers/esol-pack.css" />
     <link rel="stylesheet" href="/bcpss-teachers/vocab-reader.css" />
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -334,13 +335,25 @@
           <button
             type="button"
             role="tab"
-            id="tab-connections"
+            id="tab-studio"
             class="bh-tab"
             aria-selected="true"
-            aria-controls="panel-connections"
-            data-tab="connections"
+            aria-controls="panel-studio"
+            data-tab="studio"
           >
-            Understand &amp; Teach
+            Language Studio
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="tab-overview"
+            class="bh-tab"
+            aria-selected="false"
+            aria-controls="panel-overview"
+            data-tab="overview"
+            tabindex="-1"
+          >
+            Unit Overview
           </button>
           <button
             type="button"
@@ -357,14 +370,14 @@
           <button
             type="button"
             role="tab"
-            id="tab-studio"
+            id="tab-reading"
             class="bh-tab"
             aria-selected="false"
-            aria-controls="panel-studio"
-            data-tab="studio"
+            aria-controls="panel-reading"
+            data-tab="reading"
             tabindex="-1"
           >
-            Interactive Labs
+            Vocabulary Reading
           </button>
           <button
             type="button"
@@ -381,42 +394,6 @@
           <button
             type="button"
             role="tab"
-            id="tab-esol"
-            class="bh-tab"
-            aria-selected="false"
-            aria-controls="panel-esol"
-            data-tab="esol"
-            tabindex="-1"
-          >
-            ESOL Power Pack
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tab-reading"
-            class="bh-tab"
-            aria-selected="false"
-            aria-controls="panel-reading"
-            data-tab="reading"
-            tabindex="-1"
-          >
-            Vocabulary Reading
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="tab-activities"
-            class="bh-tab"
-            aria-selected="false"
-            aria-controls="panel-activities"
-            data-tab="activities"
-            tabindex="-1"
-          >
-            Activities &amp; Printables
-          </button>
-          <button
-            type="button"
-            role="tab"
             id="tab-family"
             class="bh-tab"
             aria-selected="false"
@@ -428,42 +405,27 @@
           </button>
         </div>
 
-        <!-- Tab 1: Understand & Teach -->
-        <div id="panel-connections" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-connections">
-          <div class="bh-loading" role="status">Loading language bridge…</div>
+        <div id="panel-studio" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-studio">
+          <div class="bh-loading" role="status">Loading Language Studio…</div>
         </div>
 
-        <!-- Tab 2: Visual Vocabulary Studio -->
+        <div id="panel-overview" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-overview" hidden>
+          <div class="bh-loading" role="status">Loading unit overview…</div>
+        </div>
+
         <div id="panel-vocab" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-vocab" hidden>
           <div class="bh-loading" role="status">Loading Visual Vocabulary Studio…</div>
         </div>
 
-        <!-- Tab 3: Interactive Learning Labs -->
-        <div id="panel-studio" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-studio" hidden>
-          <div class="bh-loading" role="status">Loading Interactive Learning Labs…</div>
-        </div>
-
-        <!-- Tab 4: Teacher Creation Studio -->
-        <div id="panel-create" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-create" hidden>
-          <div class="bh-loading" role="status">Loading Teacher Creation Studio…</div>
-        </div>
-
-        <!-- ESOL Power Pack -->
-        <div id="panel-esol" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-esol" hidden>
-          <div class="bh-loading" role="status">Loading ESOL Power Pack…</div>
-        </div>
-
-        <!-- Vocabulary Reading -->
         <div id="panel-reading" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-reading" hidden>
           <div class="bh-loading" role="status">Loading vocabulary reading…</div>
         </div>
 
-        <!-- Activities & Printables -->
-        <div id="panel-activities" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-activities" hidden>
-          <div class="bh-loading" role="status">Loading classroom activities…</div>
+        <div id="panel-create" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-create" hidden>
+          <div class="bh-loading" role="status">Loading Teacher Creation Studio…</div>
         </div>
 
-        <!-- Tab 6: Family & Evidence (Bilingual Family Bridge + Passage Deconstruction + Evidence & Next Steps) -->
+<!-- Family & Evidence (Bilingual Family Bridge + Passage Deconstruction + Evidence & Next Steps) -->
         <div id="panel-family" class="bh-tabpanel" role="tabpanel" aria-labelledby="tab-family" hidden>
           <div class="bh-family-subnav" role="group" aria-label="Family and evidence views">
             <button type="button" class="bh-subnav-pill" data-family-subview="bridge" aria-pressed="true">
@@ -571,33 +533,6 @@
           <button type="button" class="bh-btn bh-btn-primary" id="saveSharePlanBtn">Save &amp; Copy Link</button>
         </div>
       </form>
-    </dialog>
-
-    <!-- Instant Activity Preview Drawer -->
-    <dialog
-      id="activityPreviewModal"
-      class="bh-dialog bh-preview-drawer no-print"
-      aria-labelledby="activityPreviewTitle"
-    >
-      <div class="bh-preview-drawer-inner">
-        <div class="bh-preview-drawer-head">
-          <div id="activityPreviewBadges" class="bh-activity-badges"></div>
-          <button
-            type="button"
-            class="bh-icon-btn"
-            id="closeActivityPreviewBtn"
-            aria-label="Close activity preview"
-          >
-            &times;
-          </button>
-        </div>
-        <div class="bh-preview-drawer-scroll">
-          <h2 id="activityPreviewTitle" class="bh-preview-title">Activity Preview</h2>
-          <p id="activityPreviewSubtitle" class="bh-preview-subtitle"></p>
-          <div id="activityPreviewBody" class="bh-preview-body"></div>
-        </div>
-        <div id="activityPreviewFooter" class="bh-preview-drawer-footer"></div>
-      </div>
     </dialog>
 
     <!-- Creation Studio Student Preview Dialog -->

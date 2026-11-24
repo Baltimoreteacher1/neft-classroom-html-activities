@@ -1,0 +1,265 @@
+// BCPSS Language Studio v2 — g6-math-u2. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can ratios and rates help you compare amounts and make fair choices?",
+  can_do: {
+    content: "I can write a ratio, find a unit rate, and build equivalent ratios with a table or a diagram.",
+    language: "I can explain a ratio with 'for every', 'so', and 'because'.",
+  },
+  mentor: {
+    text: "For every 3 red beads, the bracelet has 5 blue beads, so 9 red beads go with 15 blue beads because I multiplied both numbers by 3.",
+    gist: "The speaker states a ratio, makes a bigger matching ratio, and explains why it still matches.",
+    chunks: [
+      { text: "For every 3 red beads, the bracelet has 5 blue beads,", role: "The ratio", tone: "concept", ask: "Which two amounts are being compared, and in what order?" },
+      { text: "so", role: "The result signal", tone: "connector", ask: "Which word tells you a new ratio is coming?" },
+      { text: "9 red beads go with 15 blue beads", role: "The equivalent ratio", tone: "precision", ask: "What are the two new numbers?" },
+      { text: "because I multiplied both numbers by 3.", role: "The proof", tone: "evidence", ask: "What did the speaker do to both numbers?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "For every [number] [thing A], there are [number] [thing B].",
+      "The ratio is [number] to [number].",
+      "One [thing] costs [number] dollars.",
+    ],
+    l3_4: [
+      "The ratio of [thing A] to [thing B] is [number] to [number] because [reason].",
+      "I multiplied both numbers by [number], so the equivalent ratio is [number] to [number].",
+      "The unit rate is [number] [unit] per [one thing] because [number] ÷ [number] = [number].",
+    ],
+    l5_6: [
+      "Since both quantities were [multiplied / divided] by [number], the ratios are equivalent.",
+      "If [stand A] costs [amount] per [unit] and [stand B] costs [amount] per [unit], then [conclusion].",
+      "Although [other choice] looks good, the unit rates show that [conclusion].",
+    ],
+  },
+  connectors: ["because", "so", "since", "if … then", "while", "although"],
+  vocab: [
+    { term: "ratio", tier: 3, pos: "noun", def: "a comparison of two amounts that tells how many of one there are for every so many of another", example: "The ratio of red beads to blue beads is 3 to 5.", nonexample: "A single number, like 8 beads, is not a ratio because nothing is compared.", es: "razón", es_note: "Cognate-like, but 'razón' also means 'reason'. Here it means a comparison.", family: ["ratios", "ratio table"], cue: "Three red beads and five blue beads on a string." },
+    { term: "equivalent ratio", tier: 3, pos: "noun", def: "another pair of numbers that compares the same way after you multiply or divide both numbers by the same amount", example: "6 to 10 is an equivalent ratio of 3 to 5 because both numbers were doubled.", nonexample: "4 to 8 is not an equivalent ratio of 3 to 5, because only one number changed by the same amount.", es: "razón equivalente", es_note: "Cognate: 'equivalente' sounds and means almost the same.", family: ["equivalent", "equal"], cue: "Two bead bracelets, one small and one double-size, with the same color pattern." },
+    { term: "rate", tier: 3, pos: "noun", def: "a comparison of two amounts that have different units, like miles and hours", example: "A rate of 60 miles in 2 hours compares distance to time.", nonexample: "3 red beads to 5 blue beads compares the same kind of thing, so it is not a rate.", es: "tasa", es_note: "Not a cognate. 'Rate' in English also means 'to score' in other settings.", family: ["rates", "per"], cue: "A bus on North Avenue with a distance sign and a clock." },
+    { term: "unit rate", tier: 3, pos: "noun", def: "the amount for exactly 1 of something, like the cost of one bottle", example: "The unit rate is 2 dollars per bottle.", nonexample: "12 dollars for 6 bottles is a rate, but it is not a unit rate yet.", es: "tasa unitaria", es_note: "Pair: 'tasa' (rate) and 'unitaria' (cognate of 'unit').", family: ["unit", "per"], cue: "One bottle of water with a price tag." },
+    { term: "tape diagram", tier: 3, pos: "noun", def: "a drawing of bars in rows that shows how amounts compare", example: "My tape diagram has 3 blocks for red beads and 5 blocks for blue beads.", nonexample: "A bar graph shows counts for different groups, so it is not a tape diagram.", es: "diagrama de cinta", es_note: "'Cinta' means tape or ribbon. 'Diagrama' is a cognate.", family: ["diagram", "tape"], cue: "Two rows of equal rectangles lined up like a strip of tape." },
+    { term: "double number line", tier: 3, pos: "noun", def: "two number lines, one above the other, that show matching amounts", example: "On the double number line, 2 hours lines up with 120 miles.", nonexample: "One number line with only one set of numbers is not a double number line.", es: "recta numérica doble", es_note: "In school Spanish, 'recta numérica' means number line.", family: ["number line", "double"], cue: "Hours on one line, miles on the line below, tick marks lined up." },
+    { term: "ratio table", tier: 3, pos: "noun", def: "a table with rows of numbers that all keep the same comparison", example: "Each row of the ratio table doubles the row before it.", nonexample: "A table of random scores is not a ratio table because the rows do not match one comparison.", es: "tabla de razones", es_note: "Cognate pair: 'tabla' and 'razones'.", family: ["table", "ratios"], cue: "A two-column table with rows 3 and 5, 6 and 10, 9 and 15." },
+    { term: "percent", tier: 2, pos: "noun", def: "a rate that compares a number to 100", example: "25 percent means 25 out of every 100.", nonexample: "Saying 25 out of 50 is not the same as 25 percent, because the whole is not 100.", es: "porcentaje", es_note: "Also 'por ciento'. Cognate with 'percent'.", family: ["percentage", "per cent"], cue: "A 10-by-10 grid with 25 squares shaded." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Mural Paint Mix", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, then rebuild it with your partner as close to the real words as you can.",
+      tip: "Read at natural speed twice; students jot numbers and color words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and draw cans of paint while you listen.", l3_4: "Write the key words and numbers you hear, then rebuild 4 sentences.", l5_6: "Rebuild the whole text and add one sentence about why both numbers doubled." },
+      payload: {
+        text: "Zoe and Marcus paint a mural on a wall near North Avenue. Their green paint uses 2 cans of blue for every 3 cans of yellow. They need more paint, so they use 4 cans of blue. Now they need 6 cans of yellow. The new mix is an equivalent ratio because both numbers doubled.",
+        key_words: ["blue", "yellow", "equivalent", "ratio", "doubled"],
+        frame: "Zoe and Marcus use ___ cans of blue for every ___ cans of yellow. They use ___ and ___ because ___.",
+        checks: ["2 cans of blue for every 3 cans of yellow", "they use 4 cans of blue", "they need 6 cans of yellow", "both numbers doubled so the ratio is equivalent"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Ratio Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match every ratio word to its meaning. Wrong matches bounce back, so keep going until all eight click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match words to the picture cues first, then to the meanings.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two words together." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "ratio", r: "a comparison of two amounts, like 3 red beads for every 5 blue beads" },
+          { l: "equivalent ratio", r: "a pair of numbers that compares the same way after you multiply or divide both by the same amount" },
+          { l: "rate", r: "a comparison of two amounts with different units, like miles and hours" },
+          { l: "unit rate", r: "the amount for exactly 1 of something" },
+          { l: "tape diagram", r: "a drawing of bars in rows that shows how amounts compare" },
+          { l: "double number line", r: "two number lines, one above the other, that show matching amounts" },
+          { l: "ratio table", r: "a table whose rows all keep the same comparison" },
+          { l: "percent", r: "a rate that compares a number to 100" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Ratio, Rate, or Percent?", minutes: 8, grouping: "Partners",
+      mission: "Sort each situation into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the situations with numbers you know first.", l3_4: "Sort all of them and say 'I put ___ here because ___.'", l5_6: "Sort all of them, then write one new example for each group." },
+      payload: {
+        categories: [{ name: "Ratio: same kind of thing" }, { name: "Rate: different units" }, { name: "Percent: out of 100" }],
+        items: [
+          { text: "3 red beads to 5 blue beads", cat: 0 }, { text: "2 cups of flour to 1 cup of sugar", cat: 0 }, { text: "4 boys to 6 girls", cat: 0 }, { text: "7 cats for every 2 dogs", cat: 0 },
+          { text: "60 miles in 2 hours", cat: 1 }, { text: "9 dollars for 3 tickets", cat: 1 }, { text: "150 words in 5 minutes", cat: 1 }, { text: "12 dollars for 3 pounds", cat: 1 },
+          { text: "35 out of 100", cat: 2 }, { text: "50 out of 100", cat: 2 }, { text: "9 out of every 100", cat: 2 }, { text: "75 out of 100", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Ratio Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the picture cues to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "ratio", clues: ["I compare two amounts.", "You can write me as 3 to 5 or as 3:5.", "The order of my numbers matters."] },
+          { term: "rate", clues: ["Miles per hour is one of me.", "I compare two amounts with different units.", "Dollars for pounds? That is me."] },
+          { term: "unit rate", clues: ["I tell you the price of just one apple.", "My second number is always 1.", "Divide to find me."] },
+          { term: "equivalent ratio", clues: ["2 to 3 and 4 to 6 are twins.", "Multiply both numbers by the same amount to make me.", "I keep the same relationship."] },
+          { term: "tape diagram", clues: ["I look like bars lined up in rows.", "Every block is the same size.", "I show how amounts compare."] },
+          { term: "double number line", clues: ["I have two lines, one above the other.", "Matching tick marks show matching amounts.", "Miles go on top and hours go on the bottom."] },
+          { term: "ratio table", clues: ["I have rows and columns of numbers.", "Every row keeps the same relationship.", "Add a row by multiplying both numbers."] },
+          { term: "percent", clues: ["I always mean out of 100.", "50 of me is one half.", "My symbol is %."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Scale It Up", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer, then your partner pushes your thinking with a move.",
+      tip: "Listen for a reason after every 'because' and for numbers said in order.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the numbers and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'although' or 'since' to explain a second way." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "A bracelet has 3 red beads for every 5 blue beads. What is the ratio of red to blue?", starter: "The ratio of red beads to blue beads is ___ to ___.", follow_up: "What is the ratio of blue to red? Is it the same?" },
+          { prompt: "How can you make an equivalent ratio for 3 to 5?", starter: "I multiplied both numbers by ___, so the new ratio is ___.", follow_up: "Why must you change both numbers?" },
+          { prompt: "Sam walks 6 miles in 2 hours. How do you find the unit rate?", starter: "I divided ___ by ___, so Sam walks ___ miles per hour.", follow_up: "What does the word 'per' tell us?" },
+          { prompt: "A ratio table has rows 2 to 1, 4 to 2, and 6 to 3. What pattern do you see?", starter: "Each row is ___ because ___.", follow_up: "What would the next row be?" },
+          { prompt: "Your friend says 25 percent means 25 out of 25. What do you say?", starter: "I disagree because percent means out of ___.", follow_up: "How would you show 25 percent on a grid?" },
+          { prompt: "When would a double number line help you?", starter: "A double number line helps when ___ because ___.", follow_up: "Which two amounts would you put on the lines?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me that on a table or a drawing?" },
+          { label: "Compare", stem: "I did it a different way. I ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Park Race Secrets", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts about two runners. Ask questions to find the missing facts, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Runner cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the number back.", l5_6: "Check each other's numbers by dividing to find each unit rate." },
+      payload: {
+        goal: "Fill in the missing facts for Kai and Dee, two runners in Patterson Park.",
+        a: { title: "Partner A", has: [{ k: "Kai's distance and time", v: "3 miles in 24 minutes" }, { k: "Dee's minutes per mile", v: "10 minutes per mile" }], needs: ["Kai's minutes per mile", "Dee's distance and time"] },
+        b: { title: "Partner B", has: [{ k: "Kai's minutes per mile", v: "8 minutes per mile" }, { k: "Dee's distance and time", v: "4 miles in 40 minutes" }], needs: ["Kai's distance and time", "Dee's minutes per mile"] },
+        ask_frames: ["What is ___'s ___?", "Can you repeat the numbers, please?"],
+        tell_frames: ["___'s ___ is ___.", "I'm not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Best Buy Detective", minutes: 12, grouping: "Solo",
+      mission: "Read Tia's plan like a detective. Mark the rate words and the reason words, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the prices.", l3_4: "Mark both the rate words and the reason words.", l5_6: "Mark everything, then rewrite one sentence with 'since'." },
+      payload: {
+        text: "Tia compares apple prices at two stands at the Waverly farmers market. Stand A sells 4 apples for 6 dollars. Stand B sells 5 apples for 6 dollars. To compare, Tia finds the unit rate for each stand. Stand A costs 1.50 dollars per apple because 6 divided by 4 is 1.50. Stand B costs 1.20 dollars per apple because 6 divided by 5 is 1.20. Stand B is the better buy since each apple costs less.",
+        marks: [
+          { label: "Rate words", instruction: "Highlight the prices Tia compares.", targets: ["4 apples for 6 dollars", "5 apples for 6 dollars", "1.50 dollars per apple", "1.20 dollars per apple"] },
+          { label: "Reason words", instruction: "Highlight the words that tell why.", targets: ["because 6 divided by 4 is 1.50", "because 6 divided by 5 is 1.20", "since each apple costs less"] },
+        ],
+        questions: [
+          { q: "Why does Tia find the unit rate for each stand?", options: ["To compare the price of one apple at each stand.", "To count how many apples each stand has.", "To find the stand that is closest."], answer: 0, why: "A unit rate gives the price for exactly 1 apple, so the stands are easy to compare." },
+          { q: "Which stand is the better buy?", options: ["Stand A", "Stand B", "They cost the same."], answer: 1, why: "Stand B costs 1.20 dollars per apple, which is less than 1.50 dollars." },
+          { q: "How does Tia know the unit rate for Stand B?", options: ["She multiplied 6 by 5.", "She divided 6 by 5.", "She added 6 and 5."], answer: 1, why: "She divides the cost by the number of apples: 6 ÷ 5 = 1.20." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Ratio Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong ratio sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["For every 3 red beads,", "there are 5 blue beads", "in the bracelet."] },
+          { parts: ["I multiplied both numbers by 4,", "so the equivalent ratio", "is 12 to 20."] },
+          { parts: ["The unit rate is 3 miles per hour", "because 6 divided by 2", "equals 3."] },
+          { parts: ["Since 25 out of 100 students chose pizza,", "25 percent of the class", "chose pizza."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Lemonade Stand", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Maya's lemonade story.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and listen for the word that fits.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then explain why one extra word does not fit." },
+      payload: {
+        text: "Maya mixes lemonade with 3 cups of water for every 1 cup of lemon juice. She writes the numbers in a {1} table. Doubling both numbers gives 6 cups of water and 2 cups of juice, which is an {2} ratio. Her stand sells 5 cups for 10 dollars. The {3} rate is 2 dollars per cup. Maya compares two amounts with different units, and that comparison is a {4}. Of every 100 customers, 25 want pink lemonade, so that is 25 {5}.",
+        answers: ["ratio", "equivalent", "unit", "rate", "percent"],
+        bank: ["ratio", "equivalent", "unit", "rate", "percent", "tape", "double"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link the Ratios", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combinations: more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the front of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["4 to 6 and 2 to 3 are equivalent ratios.", "Dividing both numbers by 2 changes 4 to 6 into 2 to 3."], connector: "because", model: "4 to 6 and 2 to 3 are equivalent ratios because dividing both numbers by 2 changes 4 to 6 into 2 to 3." },
+          { sentences: ["A ratio compares two amounts.", "A unit rate tells the amount for exactly 1."], connector: "while", model: "A ratio compares two amounts, while a unit rate tells the amount for exactly 1." },
+          { sentences: ["Sam walked 6 miles in 2 hours.", "His unit rate is 3 miles per hour."], connector: "so", model: "Sam walked 6 miles in 2 hours, so his unit rate is 3 miles per hour." },
+          { sentences: ["Each row of the table has the same relationship.", "I can add more rows by multiplying."], connector: "since", model: "Since each row of the table has the same relationship, I can add more rows by multiplying." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Spot the Ratio Slip", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the order of the numbers first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The ratio of 3 dogs to 5 cats is 5 to 3.", options: ["The ratio of 3 dogs to 5 cats is 3 to 5.", "The ratio of 3 dogs to 5 cats is 8 to 5.", "The ratio of 3 dogs to 5 cats is 3 to 8."], answer: 0, why: "The amount named first goes first, so dogs to cats is 3 to 5.", type: "wrong order" },
+          { wrong: "Sam walked 6 miles in 2 hours, so his unit rate is 12 miles per hour.", options: ["His unit rate is 12 miles per hour because 6 × 2 = 12.", "His unit rate is 3 miles per hour because 6 ÷ 2 = 3.", "His unit rate is 4 miles per hour because 6 − 2 = 4."], answer: 1, why: "A unit rate means the amount for 1 hour, so you divide the miles by the hours.", type: "wrong operation" },
+          { wrong: "2 to 3 and 4 to 5 are equivalent ratios because both numbers went up by 2.", options: ["2 to 3 and 4 to 5 are equivalent ratios because both numbers are bigger.", "2 to 3 and 4 to 5 are equivalent ratios because 2 + 2 = 4.", "2 to 3 and 4 to 6 are equivalent ratios because both numbers were multiplied by 2."], answer: 2, why: "Equivalent ratios come from multiplying or dividing both numbers by the same amount, not from adding.", type: "wrong operation" },
+          { wrong: "25 percent of 80 students is 25 students.", options: ["25 percent of 80 students is 20 students because 25 out of 100 is 1 out of 4, and 80 ÷ 4 = 20.", "25 percent of 80 students is 105 students.", "25 percent of 80 students is 55 students."], answer: 0, why: "25 percent is the same as 1 out of 4, so you find one fourth of 80.", type: "wrong fact" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Best Buy Report", minutes: 15, grouping: "Solo",
+      mission: "Write a short report that shows which store has the better price, with a claim, a reason, and proof.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and write the prices first.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'since', and cite both unit rates." },
+      payload: {
+        prompt: "Store A sells 4 bottles of water for 8 dollars. Store B sells 6 bottles for 9 dollars. Which store has the better price? Explain with unit rates.",
+        structure: [
+          { part: "Claim", frame: "Store ___ is the better buy." },
+          { part: "Reason", frame: "I found the unit rate for each store because ___." },
+          { part: "Evidence", frame: "Store A costs ___ per bottle and Store B costs ___ per bottle, so ___." },
+        ],
+        word_bank: ["unit rate", "per", "divided by", "better buy", "because", "so", "dollars", "bottle"],
+        checklist: ["I named the better store.", "I gave a reason with because or since.", "I used the word unit rate and the word per.", "I showed the division for both stores."],
+        model: "Store B is the better buy. I found the unit rate for each store because the unit rate tells the price of one bottle. Store A costs 2 dollars per bottle since 8 divided by 4 is 2. Store B costs 1.50 dollars per bottle since 9 divided by 6 is 1.50, so Store B costs less for each bottle.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "A rice recipe uses 2 cups of rice for every 5 cups of water. How much water goes with 6 cups of rice? Explain how you know.",
+    frame: "I multiplied both numbers by ___ because ___, so ___ cups of rice go with ___ cups of water.",
+    model: "I multiplied both numbers by 3 because equivalent ratios keep the same relationship, so 6 cups of rice go with 15 cups of water.",
+    rubric: {
+      emerging: "Writes the ratio 2 to 5 or finds 15 with a table or drawing.",
+      developing: "Uses the frame to find 15 cups and names the number multiplied.",
+      proficient: "Finds 15 cups and explains with a clear reason that both numbers change by the same amount.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Razón' means both 'ratio' and 'reason', so students may say 'the reason of 3 to 5' or confuse the two meanings.", fix: "Pair 'ratio' with a tape diagram and the frame 'for every', and keep 'reason' for the word because." },
+    { group: "All multilingual learners", issue: "Small words like 'to', 'for every', and 'per' change the order of a ratio, so students flip the numbers.", fix: "Point to each amount in the order it is named and say the sentence aloud before writing the numbers." },
+  ],
+  misconception: {
+    pattern: "Students add the same number to both parts, turning 2 to 3 into 4 to 5, and call it an equivalent ratio.",
+    redirect: "Draw tape diagrams and ask 'Are there still equal groups of 2 and 3?' until they see that both parts must be multiplied by the same number.",
+  },
+};

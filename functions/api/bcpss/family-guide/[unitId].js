@@ -7,7 +7,7 @@ export const onRequest = handler({
   async handle({ params }) {
     const unitId = String(params?.unitId || "").trim();
     if (!/^[a-zA-Z0-9_-]{2,80}$/.test(unitId)) return badRequest("Invalid unitId parameter.");
-    const guide = buildFamilyGuide(unitId);
+    const guide = await buildFamilyGuide(unitId);
     return guide
       ? json(guide, 200, { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400" })
       : notFound("unit not found");

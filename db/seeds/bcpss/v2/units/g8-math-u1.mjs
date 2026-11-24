@@ -1,0 +1,267 @@
+// BCPSS Language Studio v2 — g8-math-u1. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do exponents and special notation help you describe numbers that are huge, tiny, or never-ending?",
+  can_do: {
+    content: "I can use exponent rules, write numbers in scientific notation, and place square roots on a number line.",
+    language: "I can define and classify a number with 'is a type of', 'that', and 'is not'.",
+  },
+  mentor: {
+    text: "An irrational number is a type of real number that has a decimal that never ends or repeats, so it cannot be written as a fraction.",
+    gist: "The speaker names the category, describes the special decimal, and explains what that means.",
+    chunks: [
+      { text: "An irrational number is a type of real number", role: "The word and its group", tone: "concept", ask: "What group does an irrational number belong to?" },
+      { text: "that has a decimal that never ends or repeats,", role: "The defining detail", tone: "precision", ask: "What two things never happen to the decimal?" },
+      { text: "so", role: "The result signal", tone: "connector", ask: "Which word tells you a result is coming?" },
+      { text: "it cannot be written as a fraction.", role: "What it means", tone: "evidence", ask: "What can you not do with this kind of number?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "[Number] is a [rational / irrational] number.",
+      "The decimal [ends / repeats / never ends].",
+      "The exponent is [number].",
+    ],
+    l3_4: [
+      "[Number] is a type of [rational / irrational] number that [description].",
+      "The exponent [number] tells me to move the decimal point [number] places to the [left / right].",
+      "[Number] is not [type] because [reason].",
+    ],
+    l5_6: [
+      "Since [number] is not a perfect square, its square root is irrational, so I can only estimate it as [value].",
+      "Although [number A] and [number B] look alike, [number A] is [type], whereas [number B] is [type].",
+      "[Number] belongs in [category] because [reason], which means [result].",
+    ],
+  },
+  connectors: ["because", "so", "since", "whereas", "while", "not … but"],
+  vocab: [
+    { term: "exponent", tier: 3, pos: "noun", def: "the small raised number that tells how many times to multiply the base", example: "In 2⁵, the exponent 5 means we multiply 2 by itself five times.", nonexample: "The 5 in 5 × 2 is a factor, not an exponent, because it is not raised.", es: "exponente", es_note: "Cognate: sounds and means almost the same.", family: ["exponents", "power"], cue: "A tiny 3 floating above a big 4, like a flag on a pole." },
+    { term: "base", tier: 3, pos: "noun", def: "the number that gets multiplied by itself in a power", example: "In 10⁴, the base is 10, and we multiply it four times.", nonexample: "A base in baseball is a place to stand, not a number in a power.", es: "base", es_note: "Same word. It also means the bottom face of a shape in geometry.", family: ["power"], cue: "A big 10 with a small raised 4 pointing at it." },
+    { term: "scientific notation", tier: 3, pos: "noun", def: "a short way to write very large or very small numbers as a number from 1 to 10 times a power of 10", example: "Scientific notation writes 93,000,000 as 9.3 × 10⁷.", nonexample: "Writing 93,000,000 with all its zeros is standard form, not the short version.", es: "notación científica", es_note: "Cognate pair: notación / científica.", family: ["notation", "scientific"], cue: "A giant number shrinking into a neat 9.3 × 10⁷ label." },
+    { term: "rational number", tier: 3, pos: "noun", def: "a number that can be written as a fraction of two integers", example: "The number 0.75 is a rational number because it equals 3/4.", nonexample: "Pi is not a rational number because no fraction equals it exactly.", es: "número racional", es_note: "Cognate pair: número / racional.", family: ["ratio", "rational"], cue: "A number with a fraction bar shaking hands with its decimal." },
+    { term: "irrational number", tier: 3, pos: "noun", def: "a number whose decimal never ends and never repeats, so it cannot be a fraction of two integers", example: "Pi is an irrational number, so its decimal goes on forever with no pattern.", nonexample: "The number 0.5 is not irrational because its decimal stops.", es: "número irracional", es_note: "Cognate. In math it does not mean 'crazy'; it means 'not a ratio'.", family: ["rational", "irrationality"], cue: "A decimal ribbon that keeps unrolling off the page." },
+    { term: "square root", tier: 3, pos: "noun", def: "a number that you multiply by itself to get a given number", example: "The square root of 49 is 7 because 7 × 7 = 49.", nonexample: "The root of a tree is not a square root; it does not undo squaring.", es: "raíz cuadrada", es_note: "Not a cognate. 'Raíz' also means the root of a plant.", family: ["roots", "radical"], cue: "A square with area 49 and one side marked 7." },
+    { term: "perfect square", tier: 3, pos: "noun", def: "a number you get by multiplying a whole number by itself", example: "The number 36 is a perfect square because 6 × 6 = 36.", nonexample: "The number 20 is not a perfect square because no whole number times itself makes 20.", es: "cuadrado perfecto", es_note: "Cognate pair: cuadrado / perfecto.", family: ["squares"], cue: "A 6-by-6 grid of tiles with no gaps." },
+    { term: "estimate", tier: 2, pos: "verb", def: "to find a number that is close to the exact answer", example: "I can estimate the square root of 10 as about 3.2.", nonexample: "An exact answer like 2 + 2 = 4 does not need an estimate.", es: "estimar", es_note: "Cognate: sounds and means almost the same.", family: ["estimation", "approximate"], cue: "A finger pointing between the 3 and the 4 on a number line." },
+    { term: "terminating decimal", tier: 3, pos: "noun", def: "a decimal that stops after a certain number of digits", example: "The number 0.125 is a terminating decimal because it stops after three digits.", nonexample: "The number 0.333… repeats forever, so it does not stop.", es: "decimal finito", es_note: "Also called 'decimal exacto'. 'Finito' is a cognate of 'finite'.", family: ["terminate", "decimal"], cue: "A row of digits that ends at a clear stop sign." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Zeros Be Gone", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, jot key words, then rebuild it with your partner.",
+      tip: "Read at natural speed twice; students write key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame while you listen.", l3_4: "Jot the key words, then rebuild four sentences.", l5_6: "Rebuild the whole text and add why the exponent is 7." },
+      payload: {
+        text: "Maya researches the distance from Earth to the Sun. It is about 93,000,000 miles. She moves the decimal point seven places to the left and gets 9.3. Then she writes 9.3 times 10 to the 7th power. The exponent tells her how many places she moved the decimal point. Scientific notation saves her from writing all those zeros.",
+        key_words: ["decimal point", "seven places", "exponent", "scientific notation", "zeros"],
+        frame: "First, Maya ___. Next, she ___. The exponent tells her ___. Scientific notation saves ___.",
+        checks: ["The distance is about 93,000,000 miles", "She moves the decimal point seven places and gets 9.3", "The exponent 7 shows how many places she moved", "Scientific notation saves writing many zeros"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Word Match Showdown", minutes: 8, grouping: "Solo",
+      mission: "Match each math word to its meaning. Wrong matches bounce back, so keep going until all nine click!",
+      tip: "Students can replay with the cue cards face-down to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words you know first, then use the cues.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence using two of the words." },
+      payload: {
+        left_label: "Math word", right_label: "What it means",
+        pairs: [
+          { l: "exponent", r: "the small raised number that tells how many times to multiply the base" },
+          { l: "base", r: "the number that gets multiplied by itself in a power" },
+          { l: "scientific notation", r: "a number from 1 to 10 times a power of 10" },
+          { l: "rational number", r: "a number that can be written as a fraction of two integers" },
+          { l: "irrational number", r: "a number whose decimal never ends and never repeats" },
+          { l: "square root", r: "a number that you multiply by itself to get a given number" },
+          { l: "perfect square", r: "a number you get by multiplying a whole number by itself" },
+          { l: "estimate", r: "to find a number that is close to the exact answer" },
+          { l: "terminating decimal", r: "a decimal that stops after a certain number of digits" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Rational or Not?", minutes: 8, grouping: "Partners",
+      mission: "Sort each number into the group where it belongs, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort; accept any correct reason.",
+      materials: [],
+      support: { l1_2: "Start with the numbers that stop, like 0.75.", l3_4: "Sort all numbers and say 'I put ___ here because ___.'", l5_6: "Sort all numbers, then add two more of your own to each group." },
+      payload: {
+        categories: [{ name: "Rational (a fraction can name it)" }, { name: "Irrational (never ends, never repeats)" }],
+        items: [
+          { text: "0.75", cat: 0 }, { text: "1/3", cat: 0 }, { text: "−6", cat: 0 }, { text: "√49", cat: 0 }, { text: "0.121212…", cat: 0 }, { text: "2.5", cat: 0 },
+          { text: "√2", cat: 1 }, { text: "π", cat: 1 }, { text: "√5", cat: 1 }, { text: "√11", cat: 1 }, { text: "√50", cat: 1 }, { text: "√17", cat: 1 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Math Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used earns more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word list and guess after the first clue.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "exponent", clues: ["In 5³, I am the small raised 3.", "I tell how many times to multiply.", "I sit above and to the right of the big number."] },
+          { term: "base", clues: ["In 5³, I am the big 5.", "I am the number that gets multiplied again and again.", "In 10⁴, I am the 10."] },
+          { term: "scientific notation", clues: ["I write 93,000,000 as 9.3 × 10⁷.", "Astronomers and biologists use me for giant and tiny numbers.", "I need a number from 1 up to 10, times a power of 10."] },
+          { term: "irrational number", clues: ["Pi is my most famous member.", "My decimal never ends and never repeats.", "No fraction of two integers can equal me."] },
+          { term: "square root", clues: ["I undo squaring.", "The √ sign is my symbol.", "For 49, I am 7."] },
+          { term: "perfect square", clues: ["1, 4, 9, 16, and 25 all belong to me.", "A floor of 36 square tiles makes a 6-by-6 example.", "My root is a whole number."] },
+          { term: "terminating decimal", clues: ["0.25 is one of me.", "I stop after a few digits.", "I can always be written as a fraction."] },
+          { term: "estimate", clues: ["Calling √10 about 3.2 is an example of me.", "I give a close answer, not an exact one.", "I help you place a number between 3 and 4 on a number line."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Defend Your Number", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain your answer with a reason, then your partner pushes your thinking.",
+      tip: "Listen for a defining phrase and a reason in every answer.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the number and use the first frame.", l3_4: "Give a reason with 'because' every turn.", l5_6: "Add 'whereas' to compare two numbers." },
+      payload: {
+        roles: { a: "Explainer", b: "Challenger" },
+        cards: [
+          { prompt: "Is 0.5 rational or irrational? How do you know?", starter: "The number 0.5 is ___ because ___.", follow_up: "Can you write it as a fraction?" },
+          { prompt: "Why is √49 rational, but √50 irrational?", starter: "√49 is rational because ___, but √50 ___.", follow_up: "Which whole number times itself gives 49?" },
+          { prompt: "Write 4,500,000 in scientific notation. Explain each part.", starter: "I moved the decimal point ___ places, so the exponent is ___.", follow_up: "Why is the exponent positive?" },
+          { prompt: "What does 10⁻² mean?", starter: "A negative exponent means ___.", follow_up: "What is 10⁻² as a fraction?" },
+          { prompt: "Which is greater, 3 × 10⁵ or 9 × 10⁴? Explain.", starter: "___ is greater because its exponent is ___.", follow_up: "What are both numbers in standard form?" },
+          { prompt: "Your friend says π is exactly 3.14. What do you say?", starter: "I disagree because ___.", follow_up: "What is a better way to write it?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Prove it", stem: "How do you know that ___?" },
+          { label: "Compare", stem: "I think ___ is different because ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Number Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you holds secret facts about three numbers. Ask questions to find the missing facts, and no peeking!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the number back to check.", l5_6: "Check each fact by converting or estimating it yourself." },
+      payload: {
+        goal: "Fill in every missing fact about Number 1, Number 2, and Number 3.",
+        a: { title: "Detective A", has: [{ k: "Number 1 in scientific notation", v: "6.2 × 10⁴" }, { k: "Number 2 in standard form", v: "0.0007" }, { k: "Number 3 type", v: "irrational, because 30 is not a perfect square" }], needs: ["Number 1 in standard form", "Number 2 in scientific notation", "Number 3 lies between"] },
+        b: { title: "Detective B", has: [{ k: "Number 1 in standard form", v: "62,000" }, { k: "Number 2 in scientific notation", v: "7 × 10⁻⁴" }, { k: "Number 3 lies between", v: "5 and 6" }], needs: ["Number 1 in scientific notation", "Number 2 in standard form", "Number 3 type"] },
+        ask_frames: ["What is ___ for Number ___?", "Can you repeat the ___, please?"],
+        tell_frames: ["The ___ for Number ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Poster Detectives", minutes: 12, grouping: "Solo",
+      mission: "Read Zoe's poster notes like a detective. Mark the defining phrases and the examples, then answer the questions.",
+      tip: "Students highlight in two colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the numbers in the text.", l3_4: "Mark both defining phrases and examples.", l5_6: "Mark everything, then rewrite one sentence with 'since'." },
+      payload: {
+        text: "Zoe is making a poster that sorts numbers. She learns that a rational number is a type of number that can be written as a fraction of two integers. Its decimal either stops or repeats, so 0.75 and 0.333… both count. An irrational number is different because its decimal never stops and never repeats. The square root of 2 is irrational, and so is pi. The square root of 49 is not irrational, since it equals 7. Zoe writes on her poster that only the square roots of whole numbers that are not perfect squares are irrational.",
+        marks: [
+          { label: "Defining phrases", instruction: "Highlight the words that tell what the number type is.", targets: ["a type of number", "that can be written as a fraction of two integers", "its decimal never stops and never repeats"] },
+          { label: "Examples and non-examples", instruction: "Highlight the example numbers.", targets: ["0.75", "The square root of 2", "is not irrational"] },
+          { label: "Reason words", instruction: "Highlight the phrases that give a reason.", targets: ["so 0.75 and 0.333… both count", "since it equals 7"] },
+        ],
+        questions: [
+          { q: "Why does 0.75 count as a rational number?", options: ["Its decimal stops, so a fraction can name it.", "Its decimal never ends.", "It is a square root."], answer: 0, why: "A decimal that stops can be written as a fraction, so it is rational." },
+          { q: "Why is the square root of 49 not irrational?", options: ["Its decimal never repeats.", "It has no square root.", "It equals the whole number 7."], answer: 2, why: "The text says it equals 7, and 7 can be written as 7/1." },
+          { q: "Which square roots does Zoe say are irrational?", options: ["Roots of perfect squares", "Roots of whole numbers that are not perfect squares", "All square roots"], answer: 1, why: "Her poster says the roots of non-perfect squares are irrational." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Sentence Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong math sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the reason word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["An exponent tells", "how many times", "you multiply the base by itself."] },
+          { parts: ["Scientific notation", "writes 93,000,000", "as 9.3 × 10⁷."] },
+          { parts: ["The square root of 49", "is a rational number", "because it equals 7."] },
+          { parts: ["Pi is an irrational number", "that has a decimal", "that never ends or repeats."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Tiny Cell", minutes: 8, grouping: "Solo",
+      mission: "Choose the right math word for every gap in Ana's science-fair story.",
+      tip: "Three bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and try each word.", l3_4: "Fill all gaps, then check that every sentence makes sense.", l5_6: "Fill all gaps, then explain why one extra word does not fit." },
+      payload: {
+        text: "Ana measures a tiny cell that is 0.000005 meters wide. She writes it in {1} as 5 × 10⁻⁶. The {2} is −6 because she moved the decimal point six places to the right. The 10 is the {3}. Later she finds the {4} of 40. Since 40 is not a perfect square, the answer is an {5} number, so she can only {6} it as about 6.3.",
+        answers: ["scientific notation", "exponent", "base", "square root", "irrational", "estimate"],
+        bank: ["scientific notation", "exponent", "base", "square root", "irrational", "estimate", "rational", "perfect square", "terminating decimal"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link It Up", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combos; more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the numbers.", l3_4: "Combine with the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["0.75 is a rational number.", "Its decimal ends."], connector: "because", model: "0.75 is a rational number because its decimal ends." },
+          { sentences: ["The square root of 49 is rational.", "It equals 7."], connector: "since", model: "The square root of 49 is rational since it equals 7." },
+          { sentences: ["4 is a perfect square.", "10 is not a perfect square."], connector: "whereas", model: "4 is a perfect square, whereas 10 is not." },
+          { sentences: ["A negative power of 10 gives a small number.", "A positive power of 10 gives a large number."], connector: "while", model: "A negative power of 10 gives a small number, while a positive power of 10 gives a large number." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Mistake", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Check the numbers first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "The exponent in 2³ means 2 × 3, which is 6.", options: ["The exponent in 2³ means 2 × 2 × 2, which is 8.", "The exponent in 2³ means 3 × 3, which is 9.", "The exponent in 2³ means 2 + 2 + 2, which is 6."], answer: 0, why: "An exponent tells how many times to multiply the base by itself: 2 × 2 × 2 = 8.", type: "wrong word meaning" },
+          { wrong: "In scientific notation, 4,500,000 is 45 × 10⁵.", options: ["In scientific notation, 4,500,000 is 4.5 × 10⁵.", "In scientific notation, 4,500,000 is 4.5 × 10⁷.", "In scientific notation, 4,500,000 is 4.5 × 10⁶."], answer: 2, why: "The first number must be from 1 to 10, and moving the decimal point six places gives 10⁶.", type: "wrong form" },
+          { wrong: "The square root of 20 is irrational because 20 is a big number.", options: ["The square root of 20 is irrational because 20 is even.", "The square root of 20 is irrational because 20 is not a perfect square.", "The square root of 20 is irrational because 20 has two digits."], answer: 1, why: "Size does not decide it. A whole number that is not a perfect square has an irrational square root.", type: "wrong reason" },
+          { wrong: "Pi equals 3.14, so pi is a terminating decimal.", options: ["Pi equals 3.14, so pi is rational.", "Pi equals 3.14159 exactly.", "Pi is about 3.14, and it is irrational because its decimal never ends or repeats."], answer: 2, why: "3.14 is only an estimate. The real decimal for pi never ends and never repeats.", type: "wrong fact" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Classify and Define", minutes: 15, grouping: "Solo",
+      mission: "Write a short paragraph that classifies a number, defines its type, and gives one non-example.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and say the number aloud first.", l3_4: "Write all three parts and use 'because' once.", l5_6: "Write all three parts, add 'whereas', and name two numbers." },
+      payload: {
+        prompt: "Classify the number √30. Define its type and tell between which two whole numbers it lies.",
+        structure: [
+          { part: "Classify", frame: "The square root of ___ is a(n) ___ number." },
+          { part: "Define", frame: "This type of number is a type of ___ that has a decimal that ___." },
+          { part: "Place and contrast", frame: "It lies between ___ and ___ because ___, whereas ___ is not irrational." },
+        ],
+        word_bank: ["irrational", "rational", "perfect square", "square root", "estimate", "because", "whereas", "never ends"],
+        checklist: ["I named the number type.", "I wrote a defining phrase with 'that'.", "I gave a reason with because or since.", "I gave one non-example."],
+        model: "The square root of 30 is an irrational number. An irrational number is a type of real number that has a decimal that never ends or repeats. It lies between 5 and 6 because 25 is less than 30 and 30 is less than 36. The square root of 36 is not irrational, since it equals 6.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Is the square root of 36 rational or irrational? Define the type of number and give a reason.",
+    frame: "The square root of ___ is a ___ number that ___ because ___.",
+    model: "The square root of 36 is a rational number that can be written as a fraction because it equals 6, which is 6/1.",
+    rubric: {
+      emerging: "Names the type with a word bank or a labeled number line.",
+      developing: "Uses the frame to name the type and give the value 6.",
+      proficient: "Classifies the number, defines the type, and gives a correct reason in one or two sentences.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Irracional' also means 'illogical' in everyday Spanish, so students may think an irrational number is a crazy number.", fix: "Say that irrational means 'no ratio': a fraction cannot name it. Link it to 'razón' for ratio." },
+    { group: "All multilingual learners", issue: "Some countries write decimals with a comma and thousands with a point, so 93.000 can be read as a small number.", fix: "Read large numbers aloud with place-value words and show the U.S. format next to the home format." },
+  ],
+  misconception: {
+    pattern: "Students read 10⁻³ as −1000 or as a negative number.",
+    redirect: "Ask 'Is 10⁻³ below zero?' Show 10⁻³ = 1/1000 = 0.001, so a negative exponent means a tiny positive number.",
+  },
+};

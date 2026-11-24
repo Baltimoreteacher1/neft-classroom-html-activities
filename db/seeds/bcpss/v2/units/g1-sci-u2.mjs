@@ -1,0 +1,268 @@
+// BCPSS Language Studio v2 — g1-sci-u2 (Grade 1 Science, SABES 5E: plant and animal parts). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How do the parts of plants and animals help them stay alive?",
+  can_do: {
+    content: "I can name a part of a plant or animal and tell its job.",
+    language: "I can tell what a part is and what it does.",
+  },
+  mentor: {
+    text: "A beak is a part of a bird that picks up food. A tail is not a beak.",
+    gist: "The speaker names the part, says what group it belongs to, tells its job, and then says what it is not.",
+    chunks: [
+      { text: "A beak is a part", role: "The word and its group", tone: "concept", ask: "What is a beak?" },
+      { text: "of a bird", role: "Where it is found", tone: "precision", ask: "Which animal has a beak?" },
+      { text: "that picks up food.", role: "The joining word and the job", tone: "connector", ask: "What is the job of a beak?" },
+      { text: "A tail is not a beak.", role: "The not-example", tone: "evidence", ask: "What is not a beak?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "A [beak] is a part of a [bird].",
+      "A [shell] keeps the [turtle] safe.",
+      "The baby is like its [parent].",
+    ],
+    l3_4: [
+      "A [part] is a part of a [plant / animal].",
+      "The job of a [part] is to [job].",
+      "A [part] is not a [other part].",
+    ],
+    l5_6: [
+      "A [part] is a [kind of thing] that [does a job].",
+      "A [part] helps the [plant / animal] [survive / protect itself / grow].",
+      "A [part] is not a [other part] because [reason].",
+    ],
+  },
+  connectors: ["that", "because", "so", "and", "but", "like"],
+  vocab: [
+    { term: "structure", tier: 3, pos: "noun", icon: "🦴", def: "a part of a living thing", example: "A shell is a structure of a turtle.", nonexample: "A shadow is not a structure of a turtle.", es: "estructura", es_note: "Cognate: estructura. Sounds and means almost the same.", family: ["structures"], cue: "A bird with a circle and a label on its beak." },
+    { term: "function", tier: 3, pos: "noun", icon: "🛠️", def: "the job a part does", example: "The function of roots is to hold the plant.", nonexample: "The color of a leaf is not its function.", es: "función", es_note: "Cognate: función. Watch the accent mark.", family: ["functions"], cue: "A beak with an arrow pointing to a worm in it." },
+    { term: "survive", tier: 2, pos: "verb", icon: "❤️", def: "to stay alive", example: "A crab uses its shell to survive.", nonexample: "A toy crab does not need to survive.", es: "sobrevivir", es_note: "Cognate-like: sobrevivir. Sounds and means almost the same.", family: ["survives", "survived", "survival"], cue: "A little crab safe inside its hard shell." },
+    { term: "protect", tier: 2, pos: "verb", icon: "🛡️", def: "to keep safe from harm", example: "A shell can protect a turtle.", nonexample: "Dropping a turtle does not protect it.", es: "proteger", es_note: "Cognate: proteger. Sounds and means almost the same.", family: ["protects", "protected", "protection"], cue: "A turtle pulled into its shell while a raccoon looks on." },
+    { term: "offspring", tier: 3, pos: "noun", icon: "🐣", def: "a baby plant or animal", example: "The osprey chick is the offspring of its parents.", nonexample: "A grown-up osprey is not an offspring.", es: "cría", es_note: "No exact cognate. Say 'cría' for animals and 'planta nueva' for plants.", family: ["young"], cue: "A big osprey and a small chick next to it." },
+    { term: "parent", tier: 2, pos: "noun", icon: "🦅", def: "the grown-up animal or plant a baby comes from", example: "The parent osprey brings fish to the nest.", nonexample: "A friend is not a parent.", es: "padre o madre", es_note: "False friend: 'parientes' means relatives. Parent = padre o madre.", family: ["parents"], cue: "A big bird feeding a small bird in a nest." },
+    { term: "mimic", tier: 3, pos: "verb", icon: "🪞", def: "to copy how something looks or works", example: "Velcro mimics how burrs stick to fur.", nonexample: "Making up a brand new thing is not mimicking.", es: "imitar", es_note: "Mimic = imitar. 'Mimetizar' also exists for animals that blend in.", family: ["mimics", "mimicked", "mimicking"], cue: "A burr on a sock next to a strip of Velcro." },
+    { term: "beak", tier: 2, pos: "noun", icon: "🐦", def: "the hard pointy part of a bird's mouth", example: "A beak picks up food.", nonexample: "A tail is not a beak.", es: "pico", es_note: "Beak = pico. Also 'pico' means mountain peak.", family: ["beaks"], cue: "A bird's head with its beak circled." },
+    { term: "root", tier: 2, pos: "noun", icon: "🌱", def: "the part of a plant that grows in the soil", example: "A root holds the plant in the soil.", nonexample: "A flower petal is not a root.", es: "raíz", es_note: "Root = raíz. The plural is raíces.", family: ["roots"], cue: "A plant with thin lines under the ground." },
+    { term: "shell", tier: 2, pos: "noun", icon: "🐚", def: "a hard cover on an animal's body", example: "A blue crab has a hard shell.", nonexample: "A feather is not a shell.", es: "caparazón", es_note: "Shell = caparazón for crabs and turtles. An egg's shell = cáscara.", family: ["shells"], cue: "A blue crab with its hard back circled." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Osprey Chick Story", minutes: 10, grouping: "Partners",
+      mission: "Listen to the osprey story twice. Tell it back!",
+      tip: "Read slowly twice while children jot picture clues, then listen for parts and jobs in their retelling.",
+      materials: ["Picture of an osprey and its nest"],
+      support: { l1_2: "Point to the picture of the parent, the fish, and the chick.", l3_4: "Say one sentence about the parent and one about the chick.", l5_6: "Retell the story and name the part the parent uses to grab fish." },
+      payload: {
+        text: "An osprey nests on the Chesapeake Bay. The parent flies off. It grabs a fish with sharp claws. The chick cheeps. The parent feeds the chick. The chick grows big.",
+        key_words: ["osprey", "parent", "fish", "claws", "chick", "feeds"],
+        frame: "The ___ grabs a fish with its ___. The ___ cheeps. The parent ___ the chick.",
+        checks: ["an osprey nests on the Bay", "the parent grabs a fish with sharp claws", "the chick cheeps", "the parent feeds the chick"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Part and Job Match", minutes: 8, grouping: "Solo",
+      mission: "Match each word to its meaning.",
+      tip: "Have children point to the part on a picture as they say each word.",
+      materials: [],
+      support: { l1_2: "Match the picture words first: beak, shell, root.", l3_4: "Match all eight words and say a sentence for two.", l5_6: "Match all eight, then use two words in one sentence." },
+      payload: {
+        left_label: "Word", right_label: "What it means",
+        pairs: [
+          { l: "structure", r: "🦴 a part of a living thing" },
+          { l: "function", r: "🛠️ the job a part does" },
+          { l: "survive", r: "❤️ to stay alive" },
+          { l: "protect", r: "🛡️ to keep safe from harm" },
+          { l: "offspring", r: "🐣 a baby plant or animal" },
+          { l: "mimic", r: "🪞 to copy how something works" },
+          { l: "beak", r: "🐦 the hard pointy part of a bird's mouth" },
+          { l: "root", r: "🌱 the part of a plant in the soil" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "What Does It Do?", minutes: 8, grouping: "Partners",
+      mission: "Sort each part by its job.",
+      tip: "Listen for the frame 'The job of a ___ is to ___' while partners explain their sorts.",
+      materials: [],
+      support: { l1_2: "Sort the parts you know first and say the job.", l3_4: "Sort all twelve and say 'The job is to ___.'", l5_6: "Sort all twelve and add one new part to each group." },
+      payload: {
+        categories: [{ name: "🛡️ Protects" }, { name: "🍽️ Helps get food" }, { name: "🏃 Helps move or hold on" }],
+        items: [
+          { text: "turtle shell", cat: 0 }, { text: "rose thorns", cat: 0 }, { text: "crab shell", cat: 0 }, { text: "tree bark", cat: 0 },
+          { text: "bird beak", cat: 1 }, { text: "osprey claws", cat: 1 }, { text: "green leaf", cat: 1 }, { text: "squirrel teeth", cat: 1 },
+          { text: "duck feet", cat: 2 }, { text: "frog legs", cat: 2 }, { text: "deer legs", cat: 2 }, { text: "ivy vine", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Whose Part Is This?", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the part!",
+      tip: "Fewer clues means a bigger win; there is no clock, so give thinking time.",
+      materials: [],
+      support: { l1_2: "Look at the picture cards to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
+      payload: {
+        cards: [
+          { term: "beak", clues: ["I am on a bird's face.", "I am hard and pointy.", "I help a bird pick up food."] },
+          { term: "shell", clues: ["I cover a turtle's back.", "I am hard.", "I keep the soft body safe."] },
+          { term: "root", clues: ["I grow under the ground.", "I take in water for the plant.", "I hold the plant in place."] },
+          { term: "claw", clues: ["Ospreys have me on their feet.", "I am sharp and curved.", "I grab fish from the water."] },
+          { term: "thorn", clues: ["I am on a rose stem.", "I am sharp.", "I keep hungry animals away."] },
+          { term: "petal", clues: ["I am a colorful part of a flower.", "I am soft.", "I help bees find the flower."] },
+          { term: "wing", clues: ["I am on a bird.", "I am covered in feathers.", "I help the bird fly."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Parts and Parents Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner what you think.",
+      tip: "Model one turn, then listen for a part, its job, and one joining word.",
+      materials: ["Animal and plant picture cards"],
+      support: { l1_2: "Point to a picture and say the first words of the starter.", l3_4: "Say the starter and add the job.", l5_6: "Say the starter, tell the job, and say why it helps." },
+      payload: {
+        roles: { a: "Asker", b: "Explainer" },
+        cards: [
+          { prompt: "Name a part of a bird. What does it do?", starter: "A bird has a ___. It helps the bird ___.", follow_up: "How do you know?" },
+          { prompt: "Name a part of a plant.", starter: "A plant has a ___.", follow_up: "What is its job?" },
+          { prompt: "Why does a turtle have a shell?", starter: "A turtle has a shell to ___.", follow_up: "What could happen without it?" },
+          { prompt: "How are you like your parent?", starter: "I am like my parent. We both have ___.", follow_up: "How are you not exactly the same?" },
+          { prompt: "Tell about a baby animal you know.", starter: "A baby ___ is the offspring of a ___.", follow_up: "How does the parent help it?" },
+          { prompt: "A burr sticks to your sock. How did that give people an idea?", starter: "People copied the burr to make ___.", follow_up: "What does Velcro do?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "How do you know?", stem: "How do you know that?" },
+          { label: "Me too", stem: "I also know a ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Job Swap Detectives", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to find the missing jobs.",
+      tip: "Partners keep their cards hidden and ask and answer aloud, then check each other's list.",
+      materials: ["Job cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to the picture.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up, like 'Does it protect or help get food?'" },
+      payload: {
+        goal: "Find out the job of each plant and animal part.",
+        a: { title: "Detective A", has: [{ k: "Crab shell", v: "keeps the soft body safe" }, { k: "Osprey claws", v: "grab fish" }, { k: "Tree roots", v: "take in water" }], needs: ["Duck feet", "Rose thorns", "Green leaf"] },
+        b: { title: "Detective B", has: [{ k: "Duck feet", v: "push the duck through water" }, { k: "Rose thorns", v: "keep hungry animals away" }, { k: "Green leaf", v: "makes food for the plant" }], needs: ["Crab shell", "Osprey claws", "Tree roots"] },
+        ask_frames: ["What is the job of the ___?", "How does the ___ help?"],
+        tell_frames: ["The job of the ___ is to ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Blue Crab Detective", minutes: 10, grouping: "Whole Class",
+      mission: "Read about the blue crab. Find the parts and their jobs!",
+      tip: "Read aloud twice; children circle and underline on a big chart before answering aloud.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the part words.", l3_4: "Find part words and job words.", l5_6: "Find both, then write one new fact about a crab." },
+      payload: {
+        text: "A blue crab lives in the Chesapeake Bay. Its shell is a structure. The shell protects the soft body inside. A crab also has two claws. The claws grab food. A baby crab is an offspring. It looks different from its parent at first.",
+        marks: [
+          { label: "Part words", instruction: "Circle the parts of the crab.", targets: ["shell", "claws"] },
+          { label: "Job words", instruction: "Underline what the parts do.", targets: ["protects the soft body", "grab food"] },
+        ],
+        questions: [
+          { q: "What does the shell do?", options: ["Grabs food", "Protects the soft body", "Swims fast"], answer: 1, why: "The text says the shell protects the soft body inside." },
+          { q: "Which part grabs food?", options: ["The claws", "The shell", "The offspring"], answer: 0, why: "The claws grab food." },
+          { q: "What is an offspring?", options: ["A part of a crab", "A baby animal", "A kind of food"], answer: 1, why: "An offspring is a baby plant or animal." },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Build a Part Sentence", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence.",
+      tip: "Ask which piece starts the sentence and which word tells the job.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece that ends the sentence.", l5_6: "After building, add the job of the part." },
+      payload: {
+        items: [
+          { parts: ["A beak", "is a part", "of a bird."] },
+          { parts: ["The shell", "protects", "the turtle."] },
+          { parts: ["A root", "holds", "the plant", "in the soil."] },
+          { parts: ["The claws", "grab", "the fish."] },
+          { parts: ["A baby bird", "is an offspring", "of its parents."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Maryland Garden Gaps", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap.",
+      tip: "Two bank words are extras; children must decide which ones do not fit.",
+      materials: [],
+      support: { l1_2: "Look at the picture clue in each sentence.", l3_4: "Fill the gaps, then read the story aloud.", l5_6: "Fill the gaps, then write one more sentence about a plant part." },
+      payload: {
+        text: "A black-eyed Susan grows in a Maryland garden. Its {1} hold it in the soil. Its {2} are yellow and help bees find it. A rose has {3} that keep animals away. These parts are {4} that help plants survive.",
+        answers: ["roots", "petals", "thorns", "structures"],
+        bank: ["roots", "petals", "thorns", "structures", "beak", "shell"],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Vocabulary", title: "Fix the Part Sentence", minutes: 10, grouping: "Partners",
+      mission: "Find the mistake. Pick the best fix.",
+      tip: "Have children say why the first sentence is not right before choosing the fix.",
+      materials: [],
+      support: { l1_2: "Look at the picture, then pick the fix.", l3_4: "Pick the fix and read it aloud.", l5_6: "Pick the fix and tell what was wrong." },
+      payload: {
+        items: [
+          { wrong: "A shell helps the turtle sing.", options: ["A shell protects the turtle.", "A shell is a kind of food.", "A shell is blue."], answer: 0, why: "A shell is a structure with the job of protecting the turtle." },
+          { wrong: "The job of a beak is to swim.", options: ["The job of a beak is to hear.", "The job of a beak is to pick up food.", "The job of a beak is to run."], answer: 1, why: "A beak helps a bird pick up food." },
+          { wrong: "A baby bird is a parent.", options: ["A baby bird is a shell.", "A baby bird is a root.", "A baby bird is an offspring."], answer: 2, why: "A baby animal is an offspring. The grown-up is the parent." },
+          { wrong: "A beak is a type of plant.", options: ["A beak is a part of a bird.", "A beak is a part of a tree.", "A beak is a kind of fish."], answer: 0, why: "A beak is a part of a bird, not a plant." },
+          { wrong: "Roots are the flowers of a plant.", options: ["Roots are the leaves of a plant.", "Roots are the part of a plant in the soil.", "Roots are the seeds of a plant."], answer: 1, why: "Roots grow in the soil and hold the plant in place." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "That Tells the Job", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one; more than one answer can work.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["A beak is a part.", "It picks up food."], connector: "that", model: "A beak is a part that picks up food." },
+          { sentences: ["A shell is a structure.", "It protects a turtle."], connector: "that", model: "A shell is a structure that protects a turtle." },
+          { sentences: ["A thorn is sharp.", "It keeps animals away."], connector: "so", model: "A thorn is sharp, so it keeps animals away." },
+          { sentences: ["Velcro is like a burr.", "A burr sticks to fur."], connector: "because", model: "Velcro is like a burr because a burr sticks to fur." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Part Fact Card", minutes: 15, grouping: "Solo",
+      mission: "Pick one part. Draw it. Write a fact card.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings from emerging writers.",
+      materials: ["Crayons", "Index card"],
+      support: { l1_2: "Draw your part. Copy the first frame and label it.", l3_4: "Write what the part is and its job.", l5_6: "Write all three parts, including what it is not." },
+      payload: {
+        prompt: "Pick one part of an animal or plant. Write what it is, what it does, and what it is not.",
+        structure: [
+          { part: "What it is", frame: "A [part] is a part of a [plant / animal]." },
+          { part: "Its job", frame: "It is a part that [does a job]." },
+          { part: "What it is not", frame: "A [other part] is not a [part]." },
+        ],
+        word_bank: ["beak", "shell", "root", "thorn", "claw", "petal", "protects", "picks up", "holds", "grabs"],
+        checklist: ["I named my part.", "I told its job.", "I told what it is not.", "I drew a picture."],
+        model: "A beak is a part of a bird. It is a part that picks up food. A tail is not a beak.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Pick one part. Tell what it is and what job it does.",
+    frame: "A [part] is a part of a [plant / animal] that [job].",
+    model: "A shell is a part of a turtle that protects it.",
+    rubric: {
+      emerging: "Points to a part on a picture and says its name.",
+      developing: "Uses the frame to name a part and tell its job.",
+      proficient: "Names the part, its group, and its job, and says one thing it is not.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Children may say 'The beak is for eat' or leave out the verb, because Spanish uses 'sirve para comer'.", fix: "Use the frame 'The job of a ___ is to ___' and clap the word to before the verb." },
+    { group: "All multilingual learners", issue: "Children give a color or size ('The shell is big') when asked for the function, so the job is missing.", fix: "Ask 'What does it do?' and have them act out the job, then say it with the frame." },
+  ],
+  misconception: {
+    pattern: "Children say baby animals look exactly like their parents, or that every animal part has the same job.",
+    redirect: "Show a photo of a chick and its parent and ask, 'How are they the same? How are they different?' Then compare two parts with two different jobs.",
+  },
+};

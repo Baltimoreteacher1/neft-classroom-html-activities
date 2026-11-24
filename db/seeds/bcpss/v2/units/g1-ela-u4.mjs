@@ -1,0 +1,268 @@
+// BCPSS Language Studio v2 — g1-ela-u4 (Grade 1 ELA, Wit & Wisdom + Fundations). Schema: ../schema.mjs
+
+export default {
+  essential_question: "How are one story's versions alike and different, and what makes a character admirable?",
+  can_do: {
+    content: "I can tell how two versions of a story are alike and different.",
+    language: "I can use 'both' and 'but' to compare two stories.",
+  },
+  mentor: {
+    text: "Both stories have a kind girl, but one has a fairy and one has a fish.",
+    gist: "The speaker uses 'Both' to say what is the same and 'but' to say what is different.",
+    chunks: [
+      { text: "Both stories have a kind girl,", role: "What is the same", tone: "concept", ask: "What do both stories have?" },
+      { text: "but", role: "The contrast word", tone: "connector", ask: "Which little word tells us something is different?" },
+      { text: "one has a fairy", role: "Difference one", tone: "evidence", ask: "What helper does the first story have?" },
+      { text: "and one has a fish.", role: "Difference two", tone: "evidence", ask: "What helper does the other story have?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "The girl is [kind / brave].",
+      "Both stories have a [thing].",
+      "One has a [thing].",
+    ],
+    l3_4: [
+      "Both [story A] and [story B] have a [thing].",
+      "In [story A], a [helper] helps. In [story B], a [helper] helps.",
+      "I think [character] is admirable because [reason].",
+    ],
+    l5_6: [
+      "Both stories have [similarity], but [story B] has [difference].",
+      "The girl in [place] is [trait] when she [action].",
+      "I think [character] is the most admirable because [reason].",
+    ],
+  },
+  connectors: ["both", "but", "also", "different", "because", "like"],
+  vocab: [
+    { term: "culture", tier: 3, pos: "noun", icon: "🌍", def: "the ways a group of people live, eat, dress, and tell stories", example: "Each culture has its own songs and stories.", nonexample: "One person's snack is not a whole culture.", es: "cultura", es_note: "Cognate: sounds and means almost the same.", family: ["cultures", "cultural"], cue: "Children from around the world dancing, cooking, and telling stories." },
+    { term: "version", tier: 3, pos: "noun", icon: "📖", def: "one telling of a story", example: "I know a French version of this story.", nonexample: "A brand-new story is not another version.", es: "versión", es_note: "Cognate: sounds and means almost the same.", family: ["versions"], cue: "Two storybooks with different covers but the same title." },
+    { term: "trait", tier: 3, pos: "noun", icon: "🏷️", def: "a way a person acts, like kind or brave", example: "Brave is a trait of the girl.", nonexample: "A red dress is not a trait.", es: "rasgo", es_note: "Trait = rasgo. A character trait = rasgo de personalidad.", family: ["traits"], cue: "A girl with word tags: kind, brave, funny." },
+    { term: "admirable", tier: 2, pos: "adjective", icon: "🌟", def: "so good that people look up to you", example: "A kind helper is admirable.", nonexample: "Telling a lie is not admirable.", es: "admirable", es_note: "Cognate: sounds and means almost the same.", family: ["admire", "admired"], cue: "A child with a gold star above her head and friends clapping." },
+    { term: "kind", tier: 2, pos: "adjective", icon: "💛", def: "caring and nice to other people", example: "A kind girl shares her food.", nonexample: "Pushing a friend is not kind.", es: "amable", es_note: "Kind = amable or bondadoso. Careful: 'kind' can also mean 'type' (tipo).", family: ["kinder", "kindness"], cue: "A girl handing half her bread to a hungry bird." },
+    { term: "brave", tier: 2, pos: "adjective", icon: "🦁", def: "ready to do a hard thing even when you feel scared", example: "The brave girl walks into the dark woods.", nonexample: "Hiding from a toy is not brave.", es: "valiente", es_note: "Brave = valiente. Do not confuse with 'bravo', which can mean 'angry'.", family: ["braver", "bravely"], cue: "A girl standing tall at the edge of a dark forest." },
+    { term: "alike", tier: 2, pos: "adjective", icon: "👯", def: "the same in some way", example: "The two stories are alike.", nonexample: "A fish and a bird are not alike in how they move.", es: "parecido", es_note: "Alike = parecido or igual. 'Both' = los dos or ambos.", family: ["like"], cue: "Two matching slippers side by side." },
+    { term: "different", tier: 2, pos: "adjective", icon: "🔀", def: "not the same", example: "The two shoes in the stories are different.", nonexample: "Two copies of one book are not different.", es: "diferente", es_note: "Cognate: sounds and means almost the same.", family: ["difference", "differently"], cue: "A glass slipper and a golden slipper next to each other." },
+    { term: "compare", tier: 2, pos: "verb", icon: "⚖️", def: "to look at two things to see how they are alike and different", example: "We compare two versions of a story.", nonexample: "Looking at only one story is not comparing.", es: "comparar", es_note: "Cognate: sounds and means almost the same.", family: ["compares", "compared", "comparing"], cue: "A balance scale with one storybook on each side." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Two Different Slippers", minutes: 10, grouping: "Partners",
+      mission: "Listen to the story about two slippers twice. Tell it back!",
+      tip: "Read slowly twice; children jot picture words, then rebuild the comparison orally with a partner.",
+      materials: ["Picture cards: glass slipper, golden slipper, France, China"],
+      support: { l1_2: "Point to the picture cards as you hear each slipper.", l3_4: "Say one sentence about each slipper.", l5_6: "Retell the story and use 'both' and 'but' to compare the two girls." },
+      payload: {
+        text: "In one story, a girl wears a glass slipper. In another story, she wears a golden slipper. Both girls are kind. One story comes from France. The other comes from China.",
+        key_words: ["glass", "golden", "kind", "both", "China"],
+        frame: "In one story, the girl wears a ___ slipper. In the other, she wears a ___ slipper. Both girls are ___.",
+        checks: ["one girl wears a glass slipper", "the other girl wears a golden slipper", "both girls are kind", "one story is from France and one is from China"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Trait and Word Match", minutes: 8, grouping: "Solo",
+      mission: "Tap a word. Tap the picture clue that goes with it.",
+      tip: "Have children say each word and act it out with a face or pose before they tap the match.",
+      materials: [],
+      support: { l1_2: "Match kind, brave, alike, and different first.", l3_4: "Match all nine and say a sentence for two of them.", l5_6: "Match all nine and tell a partner about a person you admire." },
+      payload: {
+        left_label: "Word", right_label: "Picture clue",
+        pairs: [
+          { l: "culture", r: "🌍 how a group lives and tells stories" },
+          { l: "version", r: "📖 one telling of a story" },
+          { l: "trait", r: "🏷️ a way a person acts" },
+          { l: "admirable", r: "🌟 so good people look up to you" },
+          { l: "kind", r: "💛 caring and nice to others" },
+          { l: "brave", r: "🦁 ready to do a hard thing" },
+          { l: "alike", r: "👯 the same in some way" },
+          { l: "different", r: "🔀 not the same" },
+          { l: "compare", r: "⚖️ see how two things are alike and different" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Magic E Sort", minutes: 8, grouping: "Partners",
+      mission: "Say each word. Sort it by its long vowel sound.",
+      tip: "Fundations link: have children tap the sounds, then show the silent e that makes the vowel say its name.",
+      materials: ["Fundations keyword cards: cake, kite, rose"],
+      support: { l1_2: "Say the word slowly and listen for the vowel name.", l3_4: "Say the vowel sound, then the whole word.", l5_6: "Add one new magic e word to each group." },
+      payload: {
+        categories: [{ name: "a_e like cake" }, { name: "i_e like kite" }, { name: "o_e like rose" }],
+        items: [
+          { text: "cake", cat: 0 }, { text: "gate", cat: 0 }, { text: "name", cat: 0 }, { text: "late", cat: 0 },
+          { text: "kite", cat: 1 }, { text: "ride", cat: 1 }, { text: "time", cat: 1 }, { text: "smile", cat: 1 },
+          { text: "rose", cat: 2 }, { text: "home", cat: 2 }, { text: "hope", cat: 2 }, { text: "stone", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Story Part", minutes: 10, grouping: "Small Group",
+      mission: "Open one clue at a time. Guess the part of the story!",
+      tip: "Fewer clues used means more points; there is no clock, so let children think and whisper to a partner.",
+      materials: [],
+      support: { l1_2: "Look at the picture cards to help you guess.", l3_4: "Try to guess before you open the third clue.", l5_6: "Write a fourth clue for one card." },
+      payload: {
+        cards: [
+          { term: "slipper", clues: ["I go on your foot.", "I am small and fit just one girl.", "The prince uses me to find her."] },
+          { term: "pumpkin", clues: ["I am orange and round.", "In one story, I turn into a coach.", "People carve me at Halloween."] },
+          { term: "fairy", clues: ["I have little wings.", "I use a magic wand.", "In a French version, I help the girl go to the ball."] },
+          { term: "prince", clues: ["I live in a castle.", "I give a big party.", "I look for the girl who lost her shoe."] },
+          { term: "fish", clues: ["I swim in water.", "In a Chinese story, my bones give a girl gifts.", "I am the helper in one version."] },
+          { term: "stepmother", clues: ["I joined the girl's family.", "I give her too many chores.", "I am not kind to her."] },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Both and But Builder", minutes: 8, grouping: "Partners",
+      mission: "Put the pieces in order to build a sentence that compares.",
+      tip: "Ask which piece starts with a capital letter and which little word shows a difference.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the piece with the period, then read it aloud.", l5_6: "After building, add one more difference of your own." },
+      payload: {
+        items: [
+          { parts: ["Both girls", "are kind", "and brave."] },
+          { parts: ["The French girl", "has a fairy,", "but the Chinese girl", "has a fish."] },
+          { parts: ["Both stories", "have a", "magic helper."] },
+          { parts: ["One shoe", "is glass,", "but one shoe", "is golden."] },
+          { parts: ["The stories", "come from", "different cultures."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Compare Two Stories Talk", minutes: 10, grouping: "Partners",
+      mission: "Pick a card. Tell your partner what is alike and different.",
+      tip: "Model one turn first; listen for 'both' and 'but' and one trait word in each answer.",
+      materials: ["Story talk cards"],
+      support: { l1_2: "Point to a picture and say the first frame.", l3_4: "Say the frame and add 'both' or 'but'.", l5_6: "Say one way alike, one way different, and why." },
+      payload: {
+        roles: { a: "Comparer", b: "Listener" },
+        cards: [
+          { prompt: "Name a story with a kind character.", starter: "___ is kind because ___.", follow_up: "What does the character do?" },
+          { prompt: "Tell how two stories you know are alike.", starter: "Both stories have ___.", follow_up: "What else is the same?" },
+          { prompt: "Tell how two stories you know are different.", starter: "In one story, ___, but in the other, ___.", follow_up: "Which part do you like more?" },
+          { prompt: "What does your family do that is special, like a food, a song, or a story?", starter: "In my family, we ___.", follow_up: "Why is it special?" },
+          { prompt: "Who is the most admirable character you know?", starter: "I think ___ is admirable because ___.", follow_up: "Which trait does the character show?" },
+          { prompt: "Tell about a time you were brave.", starter: "I was brave when ___.", follow_up: "How did you feel?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Tell me more about ___." },
+          { label: "Show me", stem: "Can you point to ___?" },
+          { label: "Me too", stem: "I also ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Story Twins Gap", minutes: 10, grouping: "Partners",
+      mission: "Ask your partner questions to find the details of the other version.",
+      tip: "Partners keep cards hidden and ask and answer aloud; no peeking at each other's card.",
+      materials: ["Story cards A and B"],
+      support: { l1_2: "Use the ask frame word for word and point to pictures.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Ask a follow-up question, like 'How is that different from mine?'" },
+      payload: {
+        goal: "Find the helper, the shoe, and the gift in the other version, then tell how the two versions are alike and different.",
+        a: { title: "French version A", has: [{ k: "French helper", v: "a fairy" }, { k: "French shoe", v: "a glass slipper" }, { k: "French ride", v: "a pumpkin coach" }], needs: ["Chinese helper", "Chinese shoe", "Chinese gift"] },
+        b: { title: "Chinese version B", has: [{ k: "Chinese helper", v: "a magic fish" }, { k: "Chinese shoe", v: "a golden slipper" }, { k: "Chinese gift", v: "a pretty gown" }], needs: ["French helper", "French shoe", "French ride"] },
+        ask_frames: ["Who is the ___?", "What is the ___ like?"],
+        tell_frames: ["The ___ is ___.", "I am not sure. Let me look again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Mei and the Festival", minutes: 10, grouping: "Whole Class",
+      mission: "Read Mei's story. Find the trait words and the story parts!",
+      tip: "Read aloud twice; children circle trait words in one color and shared story parts in another on a big chart.",
+      materials: ["Big chart paper"],
+      support: { l1_2: "Find only the trait words.", l3_4: "Find trait words and story parts.", l5_6: "Find both, then say which part also happens in the French version." },
+      payload: {
+        text: "Mei lives by a wide river. Her new family is not kind. They give Mei all the chores. Mei stays kind and brave. A magic bird gives her a pretty gown. She goes to the spring festival. She loses one golden shoe. The king finds Mei by the shoe.",
+        marks: [
+          { label: "Trait words", instruction: "Circle the words that tell how a person acts.", targets: ["not kind", "kind and brave"] },
+          { label: "Story parts", instruction: "Underline the parts that many versions share.", targets: ["new family", "magic bird", "festival", "one golden shoe"] },
+        ],
+        questions: [
+          { q: "What traits does Mei show?", options: ["She is kind and brave.", "She is mean.", "She is lazy."], answer: 0, why: "The story says Mei stays kind and brave, even when her family is not kind." },
+          { q: "Who helps Mei?", options: ["A king", "A magic bird", "Her new family"], answer: 1, why: "A magic bird gives Mei a pretty gown." },
+          { q: "How does the king find Mei?", options: ["By her song", "By her gown", "By her shoe"], answer: 2, why: "Mei loses one golden shoe, and the king finds her by the shoe." },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Compare the Versions", minutes: 8, grouping: "Solo",
+      mission: "Pick the right word for each gap to compare two versions.",
+      tip: "Two bank words are extras; children decide which ones do not fit the story.",
+      materials: [],
+      support: { l1_2: "Read the sentence and look for a picture clue.", l3_4: "Fill the gaps, then read the story to a partner.", l5_6: "Fill the gaps, then write one more way the stories are different." },
+      payload: {
+        text: "A French story and a Chinese story are {1}. {2} girls are kind. In France, a fairy helps the girl. In China, a fish helps her. The helpers are {3}. We {4} the two stories.",
+        answers: ["alike", "Both", "different", "compare"],
+        bank: ["alike", "Both", "different", "compare", "version", "brave"],
+      },
+    },
+    {
+      kind: "quiz", domain: "Vocabulary", title: "Admirable or Not Quiz", minutes: 8, grouping: "Whole Class",
+      mission: "Think. Pick the best answer. Say why!",
+      tip: "Read each question aloud; children answer with a card or thumbs, no clock.",
+      materials: [],
+      support: { l1_2: "Look at the picture, then pick.", l3_4: "Pick, then say 'I know because ___.'", l5_6: "Pick, then say why each wrong answer does not fit." },
+      payload: {
+        items: [
+          { q: "Which character is admirable?", options: ["A girl who shares her food", "A girl who tells a lie", "A girl who yells at a friend"], answer: 0, why: "Sharing food is kind and good, so people look up to her." },
+          { q: "Which word means one telling of a story?", options: ["Culture", "Version", "Trait"], answer: 1, why: "A version is one telling of a story." },
+          { q: "Which word tells that two things are the same?", options: ["Different", "Brave", "Alike"], answer: 2, why: "Alike means the same in some way." },
+          { q: "A girl walks into dark woods to help a friend. Which trait is it?", options: ["Brave", "Lazy", "Silly"], answer: 0, why: "Brave means doing a hard thing even when you feel scared." },
+          { q: "Which word means not the same?", options: ["Alike", "Different", "Kind"], answer: 1, why: "Different means not the same." },
+          { q: "What is culture?", options: ["The ways a group lives and tells stories", "One person's lunch", "A tall building"], answer: 0, why: "Culture is how a group of people live, eat, dress, and tell stories." },
+        ],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Both and But Joiners", minutes: 10, grouping: "Partners",
+      mission: "Join two short sentences with the joining word.",
+      tip: "Say both sentences, then the joined one; more than one correct answer is fine.",
+      materials: [],
+      support: { l1_2: "Copy the model and change one word.", l3_4: "Join the sentences and read them aloud.", l5_6: "Join them, then write a new sentence with the same joining word." },
+      payload: {
+        items: [
+          { sentences: ["The French girl has a fairy.", "The Chinese girl has a fish."], connector: "but", model: "The French girl has a fairy, but the Chinese girl has a fish." },
+          { sentences: ["Mei is kind.", "Mei is brave."], connector: "and", model: "Mei is kind and brave." },
+          { sentences: ["One shoe is glass.", "One shoe is golden."], connector: "but", model: "One shoe is glass, but one shoe is golden." },
+          { sentences: ["The girl is kind.", "She is brave."], connector: "also", model: "The girl is kind, and she is also brave." },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "My Two Stories Chart", minutes: 15, grouping: "Solo",
+      mission: "Pick two stories. Write one way alike and one way different.",
+      tip: "Children draw first, then dictate or write; accept labeled drawings for emerging writers.",
+      materials: ["Crayons", "Two-column chart template"],
+      support: { l1_2: "Draw one thing from each story and label them.", l3_4: "Write one way alike and one way different.", l5_6: "Write alike, different, and who is admirable." },
+      payload: {
+        prompt: "Pick two versions of a story. Draw one thing that is alike and one thing that is different. Write about them.",
+        structure: [
+          { part: "Alike", frame: "Both [story A] and [story B] have [similarity]." },
+          { part: "Different", frame: "[Story A] has [thing], but [story B] has [thing]." },
+          { part: "Admirable", frame: "I think [character] is admirable because [reason]." },
+        ],
+        word_bank: ["both", "but", "alike", "different", "kind", "brave", "version", "culture", "fairy", "fish"],
+        checklist: ["I drew both stories.", "I wrote one way alike.", "I wrote one way different.", "I used both and but."],
+        model: "Both stories have a kind girl. The French story has a fairy, but the Chinese story has a fish. I think the girl is admirable because she stays kind.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Compare two versions of a story. Tell one way they are alike and one way they are different.",
+    frame: "Both stories have [similarity], but [story B] has [difference].",
+    model: "Both stories have a kind girl, but one has a fairy and one has a fish.",
+    rubric: {
+      emerging: "Points to two pictures and says one word, like 'kind' or 'fish'.",
+      developing: "Uses the frame to tell one way alike or one way different.",
+      proficient: "Uses 'both' and 'but' to tell one way alike and one way different.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "Children may say 'the both stories' or skip 'both', because Spanish says 'las dos historias'.", fix: "Hold up two fingers and practice 'Both stories have...' with a picture of two books." },
+    { group: "All multilingual learners", issue: "Children say 'different' but do not say how, so the comparison has no details.", fix: "Use the frame 'In one story, ___; in the other, ___' and point to a picture for each side." },
+  ],
+  misconception: {
+    pattern: "Children think only one version is the real story, or that stories from other cultures are wrong.",
+    redirect: "Say 'Every version is a real telling. Each culture tells the story its own way.' Compare the versions; do not rank them.",
+  },
+};

@@ -1,104 +1,135 @@
-// Every word a family reads on the Family Bridge pages, in English and Spanish (the two home languages
-// this site supports). One place, so the two languages cannot drift apart.
+// Every word a family reads on the Family Guide pages, authored in English and Spanish side by side
+// ({ en, es } pairs), so the two languages cannot drift apart. Spanish: adults in "ustedes", child lines in "tú".
 
-export const LANGS = {
-  en: {
-    skip: "Skip to family guide",
-    footer: "No login required. Talking about school ideas in your home language builds stronger English and deeper learning.",
-    kickerPrefix: "What We Are Learning",
-    questionsHeading: "Talk Together at Home",
-    wordsHeading: "Words to Practice",
-    tip: "Tip: Ask these questions in the language your family feels most comfortable speaking.",
-    tryHeading: "Try It Together (10 minutes)",
-    steps: [
-      { title: "Say it", text: "Ask your child to finish this sentence out loud. Any language is fine to start." },
-      { title: "Show it", text: "Draw or point to something from this unit, then explain it in one or two sentences." },
-      { title: "Find it", text: "Look for the words below in books, signs, packages or on screens at home." },
-    ],
-    inEnglish: "In English",
-    practiceHeading: "Practice Online",
-    practiceNote: "Opens a short activity for your child. No login needed.",
-    labs: {
-      words: { name: "Word Lab", text: "Hear, say and match this unit's words." },
-      speak: { name: "Speaking Practice", text: "Say ideas out loud and hear them back." },
-      sentences: { name: "Sentence Builder", text: "Build clear sentences with the unit's words." },
-      prep: { name: "ACCESS Prep", text: "Short practice for the yearly English language test (ACCESS)." },
-    },
-    print: "Print the fridge sheet",
-    copy: "Copy link",
-    copied: "Link copied",
-    prev: "Previous unit",
-    next: "Next unit",
-    another: "Choose another unit",
-    scanToOpen: "Scan to open this guide",
-    dirTitle: "Find Your Child's Family Guide",
-    dirIntro: "Pick your child's grade and subject. Each guide has questions to talk about, words to practice and short activities.",
-    gradeStep: "1. Grade",
-    subjectStep: "2. Subject",
-    unitsStep: "3. Unit",
-    chooseGrade: "Choose a grade to begin.",
-    chooseSubject: "Now choose a subject.",
-    loadingUnits: "Loading units…",
-    noUnits: "No units found.",
-    unitWord: "Unit",
-    open: "Open guide",
-    noUnit: "We could not find that unit.",
-    kinder: "Kindergarten",
-    gradeWord: "Grade",
-    subjects: { ELA: "Reading & Writing (ELA)", Math: "Math", Science: "Science", "Social Studies": "Social Studies" },
-  },
-  es: {
-    skip: "Saltar a la guía familiar",
-    footer: "No se necesita iniciar sesión. Hablar de las ideas de la escuela en el idioma del hogar fortalece el inglés y el aprendizaje.",
-    kickerPrefix: "Lo que estamos aprendiendo",
-    questionsHeading: "Preguntas para conversar en casa",
-    wordsHeading: "Palabras para practicar",
-    tip: "Consejo: Hagan estas preguntas en el idioma en que su familia se sienta más cómoda.",
-    tryHeading: "Para hacer juntos (10 minutos)",
-    steps: [
-      { title: "Decirlo", text: "Pídanle a su hijo/a que termine esta oración en voz alta. Para empezar, sirve cualquier idioma." },
-      { title: "Mostrarlo", text: "Dibujar o señalar algo de esta unidad y explicarlo en una o dos oraciones." },
-      { title: "Encontrarlo", text: "Buscar las palabras de abajo en libros, letreros, paquetes o pantallas de la casa." },
-    ],
-    inEnglish: "En inglés",
-    practiceHeading: "Practicar en línea",
-    practiceNote: "Abre una actividad corta para su hijo/a. No se necesita iniciar sesión.",
-    labs: {
-      words: { name: "Laboratorio de palabras", text: "Escuchar, decir y relacionar las palabras de la unidad." },
-      speak: { name: "Práctica de conversación", text: "Decir ideas en voz alta y escucharlas." },
-      sentences: { name: "Constructor de oraciones", text: "Armar oraciones claras con las palabras de la unidad." },
-      prep: { name: "Preparación ACCESS", text: "Práctica breve para el examen anual de inglés (ACCESS)." },
-    },
-    print: "Imprimir la hoja para el refrigerador",
-    copy: "Copiar enlace",
-    copied: "Enlace copiado",
-    prev: "Unidad anterior",
-    next: "Unidad siguiente",
-    another: "Elegir otra unidad",
-    scanToOpen: "Escanee para abrir esta guía",
-    dirTitle: "Encuentre la guía familiar de su hijo/a",
-    dirIntro: "Elijan el grado y la materia de su hijo/a. Cada guía tiene preguntas para conversar, palabras para practicar y actividades cortas.",
-    gradeStep: "1. Grado",
-    subjectStep: "2. Materia",
-    unitsStep: "3. Unidad",
-    chooseGrade: "Elijan un grado para empezar.",
-    chooseSubject: "Ahora elijan una materia.",
-    loadingUnits: "Cargando unidades…",
-    noUnits: "No se encontraron unidades.",
-    unitWord: "Unidad",
-    open: "Abrir guía",
-    noUnit: "No pudimos encontrar esa unidad.",
-    kinder: "Kínder",
-    gradeWord: "Grado",
-    subjects: { ELA: "Lectura y escritura (ELA)", Math: "Matemáticas", Science: "Ciencias", "Social Studies": "Estudios sociales" },
-  },
-};
+const p = (en, es) => ({ en, es });
 
 export const GRADES = ["K", "1", "2", "3", "4", "5", "6", "7", "8"];
 export const SUBJECTS = ["ELA", "Math", "Science", "Social Studies"];
 
-export const gradeText = (t, grade) => (grade === "K" ? t.kinder : `${t.gradeWord} ${grade}`);
+export const SUBJECT_NAMES = {
+  ELA: p("Reading & Writing", "Lectura y escritura"),
+  Math: p("Math", "Matemáticas"),
+  Science: p("Science", "Ciencias"),
+  "Social Studies": p("Social Studies", "Estudios sociales"),
+};
 
-export function esc(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
-}
+export const SUBJECT_ICONS = { ELA: "📖", Math: "➗", Science: "🔬", "Social Studies": "🗺️" };
+
+export const gradeName = (g) => (g === "K" ? p("Kindergarten", "Kínder") : p(`Grade ${g}`, `Grado ${g}`));
+
+export const KIND_LABELS = {
+  match: p("Match the words", "Relacionar palabras"),
+  word_sort: p("Sort the words", "Clasificar palabras"),
+  clue_game: p("Guess the word", "Adivinar la palabra"),
+  cloze: p("Fill the gaps", "Completar espacios"),
+  unscramble: p("Build the sentence", "Armar la oración"),
+  quiz: p("Quick quiz", "Preguntas rápidas"),
+  sequence: p("Put in order", "Poner en orden"),
+  talk_cards: p("Talk cards", "Tarjetas para conversar"),
+};
+
+export const C = {
+  skip: p("Skip to the family guide", "Saltar a la guía familiar"),
+  brand: p("Family Guide", "Guía familiar"),
+  langGroup: p("Language", "Idioma"),
+  langEn: p("English", "Inglés"),
+  langEs: p("Spanish", "Español"),
+  langBoth: p("English and Spanish together", "Inglés y español juntos"),
+  footer: p(
+    "No login required. Talking about school ideas in your home language builds stronger English and deeper learning.",
+    "No se necesita iniciar sesión. Hablar de las ideas de la escuela en el idioma del hogar fortalece el inglés y el aprendizaje.",
+  ),
+  loading: p("Loading your family guide…", "Cargando su guía familiar…"),
+  noUnit: p("We could not find that unit.", "No pudimos encontrar esa unidad."),
+  retry: p("Choose another unit", "Elegir otra unidad"),
+  onlyEnglish: p("English only", "Solo en inglés"),
+
+  // Hero
+  unitWord: p("Unit", "Unidad"),
+  startHere: p("Start here", "Empiecen aquí"),
+  heroHelp: p("A short guide for your family. Read what you can, in the language you like.", "Una guía corta para su familia. Lean lo que puedan, en el idioma que prefieran."),
+  stepOf: p("Step", "Paso"),
+  nextUp: p("Next", "Siguiente"),
+
+  // Sections
+  learnHead: p("What your child is learning", "Lo que su hijo o hija está aprendiendo"),
+  goalsLead: p("By the end, your child will be able to say:", "Al final, su hijo o hija podrá decir:"),
+  goalContent: p("Math and ideas goal", "Meta de contenido"),
+  goalLanguage: p("Language goal", "Meta de idioma"),
+  wordsHead: p("Words to know", "Palabras para conocer"),
+  wordsIntro: p(
+    "Tap the speaker to hear each word. Words marked Cognate look and sound alike in both languages, so your child may already know them.",
+    "Toquen el altavoz para escuchar cada palabra. Las palabras con la etiqueta Cognado se parecen y suenan parecido en los dos idiomas, así que su hijo o hija quizá ya las conoce.",
+  ),
+  cognate: p("Cognate", "Cognado"),
+  meaning: p("Meaning", "Significado"),
+  example: p("Example", "Ejemplo"),
+  hearEn: p("Hear in English", "Escuchar en inglés"),
+  hearEs: p("Hear in Spanish", "Escuchar en español"),
+  hear: p("Hear it", "Escucharlo"),
+  talkHead: p("Talk about it", "Conversen sobre esto"),
+  talkIntro: p(
+    "Ask in any language. Your child can answer in the language they think in best. You do not need to know the answer.",
+    "Pregunten en cualquier idioma. Su hijo o hija puede responder en el idioma en que piense mejor. No necesitan saber la respuesta.",
+  ),
+  anyLanguage: p("Ask in any language", "Pregunten en cualquier idioma"),
+  tryHead: p("Try at home", "Para probar en casa"),
+  tryIntro: p(
+    "Pick one to start. No printing and no devices needed. Check the box when you have tried it.",
+    "Elijan una para empezar. No hay que imprimir ni usar aparatos. Marquen la casilla cuando la hayan probado.",
+  ),
+  youNeed: p("You will need:", "Van a necesitar:"),
+  triedIt: p("We tried this", "Lo probamos"),
+  playHead: p("Play together", "Jueguen juntos"),
+  playIntro: p(
+    "Short games for your child. Sit beside them and ask: how did you know? There is no timer and no score.",
+    "Juegos cortos para su hijo o hija. Siéntense a su lado y pregunten: ¿cómo lo supiste? No hay reloj ni puntaje.",
+  ),
+  play: p("Play", "Jugar"),
+  playEnglish: p("Game in English", "Juego en inglés"),
+  labWords: p("Word Lab: hear, say and match the words", "Laboratorio de palabras: escuchar, decir y relacionar"),
+  labSpeak: p("Speaking practice: say ideas out loud", "Práctica de conversación: decir ideas en voz alta"),
+  sayHead: p("Say it", "Díganlo"),
+  sayIntro: p(
+    "Your child practices these sentences out loud, filling each blank with their own words. Any language is fine to start.",
+    "Su hijo o hija practica estas oraciones en voz alta y llena cada espacio con sus propias palabras. Para empezar, sirve cualquier idioma.",
+  ),
+  helpHead: p("How to help", "Cómo ayudar"),
+  languageHead: p("Language tips", "Consejos de idioma"),
+  languageIntro: p("Your home language is a strength. It helps your child learn English.", "El idioma del hogar es una fortaleza. Ayuda a su hijo o hija a aprender inglés."),
+  celebrateHead: p("Celebrate", "Celebren"),
+  resourcesHead: p("Resources", "Recursos"),
+  resourcesIntro: p("Keep this guide on the fridge or send it to a phone.", "Guarden esta guía en el refrigerador o envíenla a un teléfono."),
+  printPdf: p("Print the Family Guide (PDF)", "Imprimir la guía familiar (PDF)"),
+  wordFile: p("Download for Word (.docx)", "Descargar para Word (.docx)"),
+  sendPhone: p("Send to my phone", "Enviar a mi teléfono"),
+  share: p("Share this guide", "Compartir esta guía"),
+  copy: p("Copy link", "Copiar enlace"),
+  copied: p("Link copied", "Enlace copiado"),
+  whatsapp: p("Send by WhatsApp", "Enviar por WhatsApp"),
+  fallbackNote: p(
+    "More hands-on activities for this unit are on the way. These ideas work for any unit.",
+    "Pronto habrá más actividades prácticas para esta unidad. Estas ideas sirven para cualquier unidad.",
+  ),
+
+  // Navigation
+  prev: p("Previous unit", "Unidad anterior"),
+  next: p("Next unit", "Unidad siguiente"),
+  another: p("Choose another unit", "Elegir otra unidad"),
+  navLabel: p("More units", "Más unidades"),
+  tried: (n, total) => p(`Tried ${n} of ${total}`, `Probadas ${n} de ${total}`),
+  tryDone: p("Wonderful. Every try builds your child's confidence.", "Qué bueno. Cada intento le da más confianza a su hijo o hija."),
+
+  // Chooser
+  dirTitle: p("Find your child's Family Guide", "Encuentren la guía familiar de su hijo o hija"),
+  dirIntro: p(
+    "Three quick taps. Each guide has words, questions, activities and games, in English and Spanish.",
+    "Tres toques rápidos. Cada guía tiene palabras, preguntas, actividades y juegos, en inglés y español.",
+  ),
+  gradeStep: p("Choose a grade", "Elijan un grado"),
+  subjectStep: p("Choose a subject", "Elijan una materia"),
+  unitsStep: p("Choose a unit", "Elijan una unidad"),
+  loadingUnits: p("Loading units…", "Cargando unidades…"),
+  noUnits: p("No units found for this choice.", "No se encontraron unidades para esta elección."),
+  openGuide: p("Open guide", "Abrir guía"),
+};

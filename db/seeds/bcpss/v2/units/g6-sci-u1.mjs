@@ -1,0 +1,268 @@
+// BCPSS Language Studio v2 — g6-sci-u1. Schema: ../schema.mjs
+
+export default {
+  essential_question: "How can you use evidence about light to explain why we see what we see, even when our eyes are fooled?",
+  can_do: {
+    content: "I can explain how light travels from a source, bounces or is absorbed, and enters the eye so we can see.",
+    language: "I can explain a process in order with first, next, then, because, and so.",
+  },
+  mentor: {
+    text: "Light from the lamp scatters off the red apple and enters my eye, so my brain can build a picture of the apple.",
+    gist: "The speaker follows the light from the lamp to the apple to the eye, and explains the result.",
+    chunks: [
+      { text: "Light from the lamp", role: "Where it starts", tone: "concept", ask: "Where does the light begin its trip?" },
+      { text: "scatters off the red apple and enters my eye,", role: "What the light does", tone: "precision", ask: "What happens to the light at the apple, and where does it go next?" },
+      { text: "so", role: "The result signal", tone: "connector", ask: "Which word tells you a result is coming?" },
+      { text: "my brain can build a picture of the apple.", role: "The result", tone: "evidence", ask: "What happens after the light reaches the eye?" },
+    ],
+  },
+  frames: {
+    l1_2: [
+      "Light comes from the [source].",
+      "The [object] makes the light [bounce / go through / stay inside].",
+      "I see the [object] because light goes into my [eye].",
+    ],
+    l3_4: [
+      "Light from the [source] [reflects / scatters] off the [object] and enters my eye, so I can see it.",
+      "The [object] is [transparent / opaque] because light [passes through / cannot pass through] it.",
+      "A [dark / light] surface [absorbs / reflects] more light, so it gets [warmer / cooler].",
+    ],
+    l5_6: [
+      "According to the model, light travels from the [source] to the [object] and then to the [eye], so [claim].",
+      "Because the surface is [rough / smooth], the light [scatters / reflects], which means [result].",
+      "Although the [eyes] work correctly, the brain can be fooled when [reason].",
+    ],
+  },
+  connectors: ["because", "so", "which means", "as a result", "since", "although"],
+  vocab: [
+    { term: "light source", tier: 3, pos: "noun", def: "an object that makes its own light", example: "The sun is the biggest light source in the sky.", nonexample: "The moon looks bright, but it is not a light source because it only bounces sunlight.", es: "fuente de luz", es_note: "Not a cognate. 'Fuente' can also mean a fountain or a serving dish.", family: ["source", "lamp"], cue: "A flashlight beam shining across a dark room." },
+    { term: "reflection", tier: 3, pos: "noun", def: "light bouncing off a smooth surface", example: "Calm water at the Inner Harbor makes a clear reflection of the buildings.", nonexample: "A rough rock gives no clear reflection because it spreads the light in every direction.", es: "reflexión", es_note: "Cognate: sounds and means almost the same.", family: ["reflect", "reflective"], cue: "The Baltimore skyline mirrored upside down in still water." },
+    { term: "scattering", tier: 3, pos: "noun", def: "light bouncing off a rough surface in many directions", example: "Scattering lets you see the classroom wall from every seat in the room.", nonexample: "A mirror makes a sharp picture, so it shows reflection, not scattering.", es: "dispersión", es_note: "Not a cognate. 'Esparcir' is the everyday word for scatter.", family: ["scatter", "scattered"], cue: "A flashlight beam hitting a bumpy wall and spraying everywhere." },
+    { term: "absorption", tier: 3, pos: "noun", def: "a surface taking in light energy instead of bouncing it away", example: "Absorption is why a black T-shirt feels hot in the sun.", nonexample: "Light going through a clear window is not absorption because the light keeps moving.", es: "absorción", es_note: "Cognate: sounds and means almost the same.", family: ["absorb", "absorbent"], cue: "A black shirt on a sunny day with heat waves rising." },
+    { term: "transparent", tier: 2, pos: "adjective", def: "letting light pass straight through so you can see clearly", example: "Clean water in a glass is transparent, so you can see the bottom.", nonexample: "Frosted glass is not transparent because you cannot see clear shapes through it.", es: "transparente", es_note: "Cognate: sounds and means almost the same.", family: ["transparency"], cue: "A clear window with a bright street scene behind it." },
+    { term: "opaque", tier: 2, pos: "adjective", def: "blocking all light so you cannot see through", example: "A wooden door is opaque, so you cannot see the hallway through it.", nonexample: "A clear plastic cup is not opaque because light passes through it.", es: "opaco", es_note: "Cognate: sounds and means almost the same.", family: ["opacity"], cue: "A thick brick wall with a flashlight shining on it." },
+    { term: "pupil", tier: 3, pos: "noun", def: "the dark opening in the middle of the eye that lets light in", example: "In bright sunlight, the pupil gets smaller to let in less light.", nonexample: "A pupil can also be a student, but here it is a part of the eye.", es: "pupila", es_note: "Cognate: sounds and means almost the same.", family: ["pupils"], cue: "A close-up of an eye with a small black circle in the center." },
+    { term: "retina", tier: 3, pos: "noun", def: "the layer of light-sensing cells at the back of the eye", example: "The retina turns light into signals that travel to the brain.", nonexample: "The lens helps focus light, but it is the retina that senses the light.", es: "retina", es_note: "Cognate: spelled the same in both languages.", family: ["retinas"], cue: "A cutaway eye with the back wall glowing." },
+    { term: "illusion", tier: 3, pos: "noun", def: "a picture that tricks the brain into seeing something that is not true", example: "The two lines are the same length, but the arrow tips make the picture an illusion.", nonexample: "Your shadow is not an illusion because it is real and made when your body blocks light.", es: "ilusión óptica", es_note: "Cognate. In Spanish, 'ilusión' can also mean hope or excitement.", family: ["illusions"], cue: "Two equal lines with arrow tips pointing in and out." },
+  ],
+  activities: [
+    {
+      kind: "dictogloss", domain: "Listening", title: "Harbor Lights", minutes: 12, grouping: "Partners",
+      mission: "Listen to the story twice, jot key words, then rebuild it with your partner as close to the real words as you can.",
+      tip: "Read at natural speed twice; students jot key words only, then rebuild in pairs.",
+      materials: [],
+      support: { l1_2: "Use the key words and the first frame, and draw the harbor while you listen.", l3_4: "Write the key words you hear, then rebuild four or five sentences.", l5_6: "Rebuild the whole text and add one sentence that explains why the picture breaks." },
+      payload: {
+        text: "At night, Jordan stands by the Inner Harbor. The water is smooth and calm. Light from the buildings hits the water and reflects, so he sees the skyline upside down. When the wind blows, ripples cover the water. Now the light scatters in many directions, and the picture breaks into pieces.",
+        key_words: ["smooth", "reflects", "skyline", "ripples", "scatters"],
+        frame: "When the water is ___, light ___ and Jordan sees ___. When ripples form, the light ___.",
+        checks: ["the harbor water is smooth and calm", "light reflects and Jordan sees the skyline upside down", "wind makes ripples", "the light scatters and the picture breaks up"],
+      },
+    },
+    {
+      kind: "match", domain: "Vocabulary", title: "Light Word Match", minutes: 8, grouping: "Solo",
+      mission: "Match each science word to its meaning. Wrong matches bounce back, so keep going until all nine click!",
+      tip: "Let students replay with the meanings hidden to build recall.",
+      materials: [],
+      support: { l1_2: "Match the words that look like Spanish words first.", l3_4: "Match all pairs, then say each word in a sentence aloud.", l5_6: "Match all pairs, then write one sentence that uses two of the words." },
+      payload: {
+        left_label: "Science word", right_label: "What it means",
+        pairs: [
+          { l: "light source", r: "an object that makes its own light" },
+          { l: "reflection", r: "light bouncing off a smooth surface" },
+          { l: "scattering", r: "light bouncing off a rough surface in many directions" },
+          { l: "absorption", r: "a surface taking in light energy instead of bouncing it" },
+          { l: "transparent", r: "letting light pass straight through" },
+          { l: "opaque", r: "blocking all light so you cannot see through" },
+          { l: "pupil", r: "the dark opening in the eye that lets light in" },
+          { l: "retina", r: "the layer of light-sensing cells at the back of the eye" },
+          { l: "illusion", r: "a picture that tricks the brain" },
+        ],
+      },
+    },
+    {
+      kind: "word_sort", domain: "Vocabulary", title: "Bounce, Soak, or Pass?", minutes: 8, grouping: "Partners",
+      mission: "Sort each object by what it does to light, then defend one choice to your partner.",
+      tip: "Listen for 'because' when partners defend a sort.",
+      materials: [],
+      support: { l1_2: "Sort the objects you know first, like the mirror and the window.", l3_4: "Sort all objects and say 'I put ___ here because ___.'", l5_6: "Sort all objects, then add one more object to each group." },
+      payload: {
+        categories: [{ name: "Mostly bounces light" }, { name: "Mostly absorbs light" }, { name: "Lets light pass through" }],
+        items: [
+          { text: "mirror", cat: 0 }, { text: "shiny spoon", cat: 0 }, { text: "aluminum foil", cat: 0 }, { text: "white paper", cat: 0 },
+          { text: "black T-shirt", cat: 1 }, { text: "dark asphalt", cat: 1 }, { text: "black velvet", cat: 1 }, { text: "dark paint", cat: 1 },
+          { text: "clear window", cat: 2 }, { text: "plastic wrap", cat: 2 }, { text: "clean water", cat: 2 }, { text: "eyeglass lens", cat: 2 },
+        ],
+      },
+    },
+    {
+      kind: "clue_game", domain: "Game", title: "Mystery Light Word", minutes: 10, grouping: "Small Group",
+      mission: "Flip the clues one at a time. Guess the mystery word with as few clues as you can!",
+      tip: "Fewer clues used means more points; there is no clock.",
+      materials: [],
+      support: { l1_2: "Use the word bank and the picture cue to guess.", l3_4: "Guess before you open the third clue.", l5_6: "Write your own fourth clue for each card." },
+      payload: {
+        cards: [
+          { term: "reflection", clues: ["A mirror does this to light.", "Light bounces off at the same angle it came in.", "Calm water at the harbor shows the skyline upside down because of me."] },
+          { term: "scattering", clues: ["A bumpy wall does this to light.", "Light goes off in many directions.", "I am why you can see a wall from every seat in a room."] },
+          { term: "absorption", clues: ["A black shirt gets hot in the sun because of me.", "A surface takes in the light energy.", "Dark things do more of me than light things."] },
+          { term: "transparent", clues: ["Clean window glass is like this.", "Light goes straight through me.", "You can see a clear picture on the other side."] },
+          { term: "opaque", clues: ["A wooden door is like this.", "Light cannot get through me.", "You cannot see anything on the other side."] },
+          { term: "retina", clues: ["I am at the back of the eye.", "I am covered with cells that sense light.", "I send signals to the brain."] },
+          { term: "pupil", clues: ["I am the dark circle in the middle of the eye.", "I get smaller in bright light.", "I let light into the eye."] },
+          { term: "illusion", clues: ["Two lines look different, but they are the same.", "My trick fools the brain.", "The eyes work fine, but the brain makes a wrong guess."] },
+        ],
+      },
+    },
+    {
+      kind: "talk_cards", domain: "Speaking", title: "Follow the Light", minutes: 12, grouping: "Partners",
+      mission: "Take turns drawing a card. Explain the light's path, then your partner pushes your thinking with a move.",
+      tip: "Listen for a signal word like first, next, because, or so in every answer.",
+      materials: ["Partner role cards"],
+      support: { l1_2: "Point to the picture and use the first frame.", l3_4: "Explain the path in order with first, next, and then.", l5_6: "Add 'because' to explain why the light behaves that way." },
+      payload: {
+        roles: { a: "Explainer", b: "Questioner" },
+        cards: [
+          { prompt: "How can you see a book on your desk?", starter: "First, light from the ___ hits the book. Next, ___.", follow_up: "What would happen in a completely dark room?" },
+          { prompt: "Why can you see yourself in a mirror but not in a wall?", starter: "A mirror ___ light, but a wall ___ light.", follow_up: "What is different about the two surfaces?" },
+          { prompt: "Why does a black car feel hotter than a white car in the sun?", starter: "The black car ___ more light, so ___.", follow_up: "Where does the light energy go?" },
+          { prompt: "Why can you see a fish through clear water but not through muddy water?", starter: "Clear water is ___, so ___.", follow_up: "What does the mud do to the light?" },
+          { prompt: "What happens in your eye when you walk from a dark room into sunlight?", starter: "The pupil gets ___ because ___.", follow_up: "Why is that helpful?" },
+          { prompt: "Your friend says an optical illusion proves our eyes are broken. What do you say?", starter: "I disagree because the eyes ___, but the brain ___.", follow_up: "Can you give an example of an illusion?" },
+        ],
+        moves: [
+          { label: "Say more", stem: "Can you tell me more about ___?" },
+          { label: "Show me", stem: "Can you show me where the light goes at ___?" },
+          { label: "Compare", stem: "I think it works a different way. The light ___, so ___." },
+        ],
+      },
+    },
+    {
+      kind: "info_gap", domain: "Speaking", title: "Surface Detectives", minutes: 12, grouping: "Partners",
+      mission: "Each of you tested two materials with a flashlight. Ask questions to find out what happened to the light for the other two!",
+      tip: "Partners must not show their cards; they ask and answer aloud.",
+      materials: ["Detective cards A and B"],
+      support: { l1_2: "Use the ask frames word for word.", l3_4: "Ask in your own words, then repeat the answer back.", l5_6: "After you finish, explain why each result happened using 'because'." },
+      payload: {
+        goal: "Fill in what the light did for all four materials.",
+        a: { title: "Tester A", has: [{ k: "Flat aluminum foil result", v: "Most of the light bounced off in one direction" }, { k: "Black felt result", v: "Most of the light was absorbed" }], needs: ["Clear plastic result", "White paper result"] },
+        b: { title: "Tester B", has: [{ k: "Clear plastic result", v: "Most of the light passed straight through" }, { k: "White paper result", v: "The light scattered in every direction" }], needs: ["Flat aluminum foil result", "Black felt result"] },
+        ask_frames: ["What happened to the light with the ___?", "Can you repeat the result for the ___, please?"],
+        tell_frames: ["With the ___, the light ___.", "I'm not sure. Let me check my card again."],
+      },
+    },
+    {
+      kind: "read_annotate", domain: "Reading", title: "Eye Spy Evidence", minutes: 12, grouping: "Solo",
+      mission: "Read about Maya's bus ride like a scientist. Mark the light's journey, the eye parts, and the reason words, then answer the questions.",
+      tip: "Students highlight in three colors; the questions check the reasoning.",
+      materials: [],
+      support: { l1_2: "Mark only the eye parts.", l3_4: "Mark the light's journey and the eye parts.", l5_6: "Mark everything, then rewrite one sentence with 'since'." },
+      payload: {
+        text: "Maya waits for a yellow school bus on North Avenue. Sunlight is the light source. The yellow paint absorbs most other colors and scatters yellow light in every direction. Some of that light enters Maya's eye through the pupil. The lens focuses it onto the retina, a layer of cells at the back of the eye. The cells send signals to the brain, and the brain builds a picture. Maya sees a yellow bus because yellow light from the paint reached her eye.",
+        marks: [
+          { label: "Light's journey", instruction: "Highlight each step of the light's trip.", targets: ["Sunlight is the light source", "scatters yellow light in every direction", "enters Maya's eye through the pupil", "focuses it onto the retina"] },
+          { label: "Eye parts", instruction: "Highlight the parts of the eye and the brain.", targets: ["pupil", "lens", "retina", "brain"] },
+          { label: "Reason words", instruction: "Highlight the words that tell why Maya sees the bus.", targets: ["because yellow light from the paint reached her eye", "and the brain builds a picture"] },
+        ],
+        questions: [
+          { q: "Where does the light in the story start?", options: ["In the yellow paint", "In the sun, the light source", "In Maya's retina"], answer: 1, why: "The text says 'Sunlight is the light source.'" },
+          { q: "What does the retina do?", options: ["It makes light for the eye.", "It blocks light from the eye.", "It senses light and sends signals to the brain."], answer: 2, why: "The text says the cells in the retina send signals to the brain." },
+          { q: "Why does Maya see a yellow bus?", options: ["Yellow light from the paint reached her eye.", "Her eye sent yellow light to the bus.", "The bus is a light source."], answer: 0, why: "The last sentence gives the reason after 'because.'" },
+        ],
+      },
+    },
+    {
+      kind: "unscramble", domain: "Game", title: "Light Path Builder", minutes: 8, grouping: "Partners",
+      mission: "Drag the pieces into the right order to build four strong science sentences.",
+      tip: "Ask partners which piece comes first and how they know.",
+      materials: [],
+      support: { l1_2: "Look for the capital letter first.", l3_4: "Find the signal word, then build around it.", l5_6: "After building, add a new reason of your own." },
+      payload: {
+        items: [
+          { parts: ["Light from the lamp", "scatters off the page", "and enters my eye."] },
+          { parts: ["A black shirt absorbs", "most of the light,", "so it feels hot in the sun."] },
+          { parts: ["Because the harbor water is smooth,", "it reflects the skyline", "like a mirror."] },
+          { parts: ["The retina senses the light", "and sends signals", "to the brain."] },
+        ],
+      },
+    },
+    {
+      kind: "cloze", domain: "Reading", title: "Fill the Gaps: Bay Grasses", minutes: 8, grouping: "Solo",
+      mission: "Choose the right science word for every gap in the story about underwater grasses in the Chesapeake Bay.",
+      tip: "Two bank words are extras, so students must reject them.",
+      materials: [],
+      support: { l1_2: "Read each sentence aloud and think about what the light does.", l3_4: "Fill all gaps, then check that each sentence still makes sense.", l5_6: "Fill all gaps, then add one sentence about why the grasses need light." },
+      payload: {
+        text: "Underwater grasses in the Chesapeake Bay need sunlight to grow. The sun is the {1} for the whole Bay. Clear water is {2}, so light reaches the plants on the bottom. Muddy water makes the particles {3} the light in many directions. Algae can {4} some of the light, so less of it reaches the grasses. A thick mat of algae floating on top can act like an {5} lid.",
+        answers: ["light source", "transparent", "scatter", "absorb", "opaque"],
+        bank: ["light source", "transparent", "scatter", "absorb", "opaque", "retina", "illusion"],
+      },
+    },
+    {
+      kind: "sentence_combine", domain: "Writing", title: "Link the Light", minutes: 10, grouping: "Partners",
+      mission: "Squeeze two short sentences into one strong sentence with the connector shown.",
+      tip: "Compare combinations because more than one correct answer is possible.",
+      materials: [],
+      support: { l1_2: "Copy the model, then change the objects.", l3_4: "Combine using the connector and read it aloud.", l5_6: "Combine, then move the connector to the start of the sentence." },
+      payload: {
+        items: [
+          { sentences: ["The window is transparent.", "Light passes straight through it."], connector: "so", model: "The window is transparent, so light passes straight through it." },
+          { sentences: ["The wall is rough.", "Light scatters in many directions."], connector: "because", model: "Light scatters in many directions because the wall is rough." },
+          { sentences: ["A mirror is smooth.", "It reflects light in an orderly way."], connector: "since", model: "Since a mirror is smooth, it reflects light in an orderly way." },
+          { sentences: ["Dark surfaces absorb more light.", "Light surfaces reflect more light."], connector: "while", model: "Dark surfaces absorb more light, while light surfaces reflect more light." },
+        ],
+      },
+    },
+    {
+      kind: "error_analysis", domain: "Writing", title: "Fix the Light Claim", minutes: 10, grouping: "Partners",
+      mission: "Each sentence has a science mistake hiding in it. Find the best fix and explain why.",
+      tip: "Press for the reason a fix works, not just which one is right.",
+      materials: [],
+      support: { l1_2: "Look at the light's direction first.", l3_4: "Say why each wrong choice does not work.", l5_6: "Write your own sentence with the same mistake, then fix it." },
+      payload: {
+        items: [
+          { wrong: "We see a lamp because our eyes send out light.", options: ["We see a lamp because our eyes make the lamp bright.", "We see a lamp because the lamp sends out our eyes.", "We see a lamp because light from the lamp enters our eyes."], answer: 2, why: "We see things when light enters our eyes. Our eyes do not send out light.", type: "wrong direction" },
+          { wrong: "A mirror absorbs light, so we see a picture of ourselves.", options: ["A mirror reflects light, so we see a picture of ourselves.", "A mirror is opaque, so we see through it.", "A mirror scatters light, so we see a sharp picture."], answer: 0, why: "A smooth mirror reflects light in an orderly way, so we see a clear picture.", type: "wrong word" },
+          { wrong: "The window is opaque, so we can see through it.", options: ["The window is opaque, so we cannot see through it.", "The window is transparent, so we can see through it.", "The window is transparent, so we cannot see through it."], answer: 1, why: "Transparent materials let light pass straight through, so we can see through them.", type: "wrong word" },
+          { wrong: "The picture is an illusion because the eye is broken.", options: ["The picture is an illusion because the brain makes a wrong guess from the signals.", "The picture is an illusion because the light disappears.", "The picture is an illusion because the retina is gone."], answer: 0, why: "In an illusion, healthy eyes work correctly, but the brain interprets the signals in a way that does not match reality.", type: "missing reason" },
+        ],
+      },
+    },
+    {
+      kind: "write_scaffold", domain: "Writing", title: "Explain How You See", minutes: 15, grouping: "Solo",
+      mission: "Write a short explanation that follows the light from its source to your brain.",
+      tip: "Score with the checklist; the model is a target, not a script.",
+      materials: [],
+      support: { l1_2: "Use the frame for each part and draw the light's path first.", l3_4: "Write all three parts and use 'because' or 'so' once.", l5_6: "Write all three parts, add 'although', and use four science words." },
+      payload: {
+        prompt: "Explain how you can see a red apple on a table in a classroom. Follow the light from the source to your brain.",
+        structure: [
+          { part: "Start", frame: "First, light from the ___ hits the ___." },
+          { part: "Middle", frame: "Next, the apple ___ the light, and some of it ___." },
+          { part: "End", frame: "Then my ___ senses the light and sends signals to my ___, so I ___." },
+        ],
+        word_bank: ["light source", "scatters", "absorbs", "pupil", "retina", "brain", "because", "so"],
+        checklist: ["I started with the light source.", "I told the steps in order.", "I used a signal word like because or so.", "I used at least three science words."],
+        model: "First, light from the ceiling lamp hits the red apple. Next, the apple absorbs most other colors and scatters red light in every direction. Some of that light enters my eye through the pupil. Then my retina senses the light and sends signals to my brain, so I see a red apple.",
+      },
+    },
+  ],
+  exit_ticket: {
+    prompt: "Explain how you see a yellow school bus outside. Follow the light from the sun to your brain, and use at least two science words and one signal word.",
+    frame: "First, light from the ___ hits the bus. Next, ___. Then it enters my ___, so ___.",
+    model: "First, light from the sun hits the bus. Next, the yellow paint scatters yellow light in every direction. Then some light enters my eye through the pupil, so my brain builds a picture of a yellow bus.",
+    rubric: {
+      emerging: "Names the light source and the eye with a word bank or a labeled drawing.",
+      developing: "Tells two or three steps in order with a signal word and two science words.",
+      proficient: "Follows the light from source to object to eye to brain with a clear reason and accurate science words.",
+    },
+  },
+  watchouts: [
+    { group: "Spanish speakers", issue: "'Scattering' has no cognate, and some students use 'reflection' for every time light bounces.", fix: "Pair 'reflexión' (mirror) with 'dispersión' (rough wall) using two flashlight demos and two labeled drawings." },
+    { group: "All multilingual learners", issue: "Students say 'the eye sends out light to see,' because the verb 'look' sounds like the eye does the action.", fix: "Have students draw the arrow from the object to the eye and say 'Light enters my eye' before writing." },
+  ],
+  misconception: {
+    pattern: "Students say 'we see because our eyes shoot out light' or that dark objects 'make' darkness.",
+    redirect: "Ask 'In a totally dark room, can you see your hand? Where does the light come from?' until they say light from a source must reach the eye.",
+  },
+};

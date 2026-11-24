@@ -6,7 +6,7 @@
  * dependencies.
  */
 
-import { zipStore } from "../../../assets/lib/zip-store.js";
+import { docxPackage, wCell, wDocument, wParagraph, wRun } from "./docx-kit.js";
 import { renderEsolPacketPage } from "./esol-packet-html.js";
 
 const WIDA_TIERS = [
@@ -84,43 +84,6 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
-}
-
-/**
- * Strip illegal XML 1.0 control characters without using regex control-char
- * literals, then escape XML entities.
- */
-function sanitizeXmlText(value) {
-  const str = String(value ?? "");
-  let out = "";
-  for (let i = 0; i < str.length; i++) {
-    const code = str.charCodeAt(i);
-    if (
-      code === 0x09 ||
-      code === 0x0a ||
-      code === 0x0d ||
-      (code >= 0x20 && code <= 0xd7ff) ||
-      (code >= 0xe000 && code <= 0xfffd)
-    ) {
-      out += str[i];
-    } else if (code >= 0xd800 && code <= 0xdbff && i + 1 < str.length) {
-      const next = str.charCodeAt(i + 1);
-      if (next >= 0xdc00 && next <= 0xdfff) {
-        out += str[i] + str[i + 1];
-        i++;
-      }
-    }
-  }
-  return out;
-}
-
-function escapeXml(value) {
-  return sanitizeXmlText(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
 }
 
 function capitalizeSentence(text) {
@@ -2210,24 +2173,6 @@ export function renderUnitHtmlPacket(detail, wida = "3_4") {
 // 2. OOXML (.docx) Classroom Packet Builder (via zipStore)
 // ---------------------------------------------------------------------------
 
-const CONTENT_TYPES_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
-  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
-</Types>`;
-
-const ROOT_RELS_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-</Relationships>`;
-
-const DOCUMENT_RELS_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
-</Relationships>`;
-
 const STYLES_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
   <w:docDefaults>
@@ -2293,73 +2238,6 @@ const STYLES_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     </w:rPr>
   </w:style>
 </w:styles>`;
-
-function wRun(text, opts = {}) {
-  const rPrParts = [];
-  if (opts.font) {
-    rPrParts.push(`<w:rFonts w:ascii="${opts.font}" w:hAnsi="${opts.font}"/>`);
-  }
-  if (opts.bold) rPrParts.push("<w:b/>");
-  if (opts.italic) rPrParts.push("<w:i/>");
-  if (opts.color) rPrParts.push(`<w:color w:val="${opts.color}"/>`);
-  if (opts.size) rPrParts.push(`<w:sz w:val="${opts.size}"/><w:szCs w:val="${opts.size}"/>`);
-  if (opts.rtl) rPrParts.push("<w:rtl/>");
-  const rPr = rPrParts.length ? `<w:rPr>${rPrParts.join("")}</w:rPr>` : "";
-  return `<w:r>${rPr}<w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r>`;
-}
-
-function wParagraph(runs, opts = {}) {
-  const pPrParts = [];
-  if (opts.style) pPrParts.push(`<w:pStyle w:val="${opts.style}"/>`);
-  if (opts.pageBreakBefore) pPrParts.push("<w:pageBreakBefore/>");
-  if (opts.keepNext) pPrParts.push("<w:keepNext/>");
-  if (opts.rtl) pPrParts.push("<w:bidi/>");
-  if (opts.align) pPrParts.push(`<w:jc w:val="${opts.align}"/>`);
-  if (opts.shading) {
-    pPrParts.push(`<w:shd w:val="clear" w:color="auto" w:fill="${opts.shading}"/>`);
-  }
-  if (opts.borderLeft || opts.borderBottomDashed || opts.boxBorder) {
-    const borders = [];
-    if (opts.borderLeft) {
-      borders.push(`<w:left w:val="single" w:sz="18" w:space="8" w:color="${opts.borderLeft}"/>`);
-    }
-    if (opts.borderBottomDashed) {
-      borders.push(`<w:bottom w:val="dashed" w:sz="10" w:space="6" w:color="64748B"/>`);
-    }
-    if (opts.boxBorder) {
-      borders.push(
-        `<w:top w:val="single" w:sz="6" w:space="4" w:color="${opts.boxBorder}"/>`,
-        `<w:bottom w:val="single" w:sz="6" w:space="4" w:color="${opts.boxBorder}"/>`,
-        `<w:left w:val="single" w:sz="6" w:space="6" w:color="${opts.boxBorder}"/>`,
-        `<w:right w:val="single" w:sz="6" w:space="6" w:color="${opts.boxBorder}"/>`,
-      );
-    }
-    pPrParts.push(`<w:pBdr>${borders.join("")}</w:pBdr>`);
-  }
-  if (opts.indentLeft) {
-    pPrParts.push(`<w:ind w:left="${opts.indentLeft}"/>`);
-  }
-  if (opts.spaceBefore !== undefined || opts.spaceAfter !== undefined) {
-    const before = opts.spaceBefore !== undefined ? ` w:before="${opts.spaceBefore}"` : "";
-    const after = opts.spaceAfter !== undefined ? ` w:after="${opts.spaceAfter}"` : "";
-    pPrParts.push(`<w:spacing${before}${after} w:line="252" w:lineRule="auto"/>`);
-  }
-  const pPr = pPrParts.length ? `<w:pPr>${pPrParts.join("")}</w:pPr>` : "";
-  const content = typeof runs === "string" ? wRun(runs, opts.runOpts) : runs.join("");
-  return `<w:p>${pPr}${content}</w:p>`;
-}
-
-function wCell(paragraphs, { widthDxa, fill, vAlign = "top" } = {}) {
-  const tcPrParts = [];
-  if (widthDxa) tcPrParts.push(`<w:tcW w:w="${widthDxa}" w:type="dxa"/>`);
-  if (fill) tcPrParts.push(`<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>`);
-  tcPrParts.push(
-    `<w:tcMar><w:top w:w="90" w:type="dxa"/><w:bottom w:w="90" w:type="dxa"/><w:left w:w="130" w:type="dxa"/><w:right w:w="130" w:type="dxa"/></w:tcMar>`,
-  );
-  tcPrParts.push(`<w:vAlign w:val="${vAlign}"/>`);
-  const body = Array.isArray(paragraphs) ? paragraphs.join("") : paragraphs;
-  return `<w:tc><w:tcPr>${tcPrParts.join("")}</w:tcPr>${body}</w:tc>`;
-}
 
 function wTable(headers, rows, colWidths) {
   const totalWidth = colWidths.reduce((a, b) => a + b, 0);
@@ -3066,22 +2944,15 @@ export function renderUnitDocxPacket(detail, wida = "3_4") {
     ),
   );
 
-  const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-  <w:body>
-    ${parts.join("\n    ")}
+  const bodyXml = `${parts.join("\n    ")}
     <w:sectPr>
       <w:pgSz w:w="12240" w:h="15840"/>
       <w:pgMar w:top="936" w:right="936" w:bottom="936" w:left="936" w:header="432" w:footer="432" w:gutter="0"/>
-    </w:sectPr>
-  </w:body>
-</w:document>`;
+    </w:sectPr>`;
 
-  return zipStore({
-    "[Content_Types].xml": CONTENT_TYPES_XML,
-    "_rels/.rels": ROOT_RELS_XML,
-    "word/_rels/document.xml.rels": DOCUMENT_RELS_XML,
-    "word/styles.xml": STYLES_XML,
-    "word/document.xml": documentXml,
+  return docxPackage({
+    documentXml: wDocument(bodyXml),
+    stylesXml: STYLES_XML,
+    title: unit.unit_title || "BCPSS Classroom Language Packet",
   });
 }
