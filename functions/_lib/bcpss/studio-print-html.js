@@ -8,6 +8,7 @@ import { buildKey } from "./studio-doc-key.js";
 import { buildKit } from "./studio-doc-kits.js";
 import { buildPacket } from "./studio-doc-packet.js";
 import { buildWriting, buildWritingKey } from "./studio-doc-writing.js";
+import { buildWritingWork } from "./studio-doc-writing-work.js";
 import { iconSvg } from "./studio-icons.js";
 import { printCss } from "./studio-print-css.js";
 
@@ -261,18 +262,20 @@ export const PRINT_PARTS = [
   "family",
   "writing",
   "writing-key",
+  "writing-work",
 ];
 const KITS = new Set(["cards", "bingo", "wall", "poster", "strips", "talk"]);
 
 // part: packet | book | key | cards | bingo | wall | poster | strips | talk | family | writing | writing-key | activity-<n>
 export function buildStudioDocument(
   detail,
-  { part = "packet", level = "l3_4", answerKey = false } = {},
+  { part = "packet", level = "l3_4", answerKey = false, work = null } = {},
 ) {
-  const opts = { level: levelFromWida(level), part, answerKey };
+  const opts = { level: levelFromWida(level), part, answerKey, work };
   if (part === "family") return buildFamily(detail, opts);
   if (part === "writing") return buildWriting(detail, opts);
   if (part === "writing-key") return buildWritingKey(detail, opts);
+  if (part === "writing-work") return buildWritingWork(detail, opts);
   if (!detail?.studio) throw new Error("studio content not authored for this unit");
   if (part === "packet") return buildPacket(detail, opts);
   if (part === "book") return buildBook(detail, opts);

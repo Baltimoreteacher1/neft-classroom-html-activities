@@ -102,9 +102,9 @@ export function documentBody(doc) {
 
 export function renderStudioDocx(
   detail,
-  { part = "packet", wida = "3_4", answerKey = false } = {},
+  { part = "packet", wida = "3_4", answerKey = false, work = null } = {},
 ) {
-  const doc = buildStudioDocument(detail, { part, level: wida, answerKey });
+  const doc = buildStudioDocument(detail, { part, level: wida, answerKey, work });
   return docxPackage({
     documentXml: wDocument(documentBody(doc)),
     stylesXml: stylesXml(),

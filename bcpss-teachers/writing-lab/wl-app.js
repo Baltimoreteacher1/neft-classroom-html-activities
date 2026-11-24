@@ -4,7 +4,8 @@ import { LEVELS, gradeBand, reducedMotion, stopSpeaking } from "../language-stud
 import { LEVEL_INFO, announce, byLevel, flush, h, isDone, loadState, wl } from "./wl-core.js";
 import { stepBBS, stepExpand, stepNotes } from "./wl-steps-a.js";
 import { stepAppositives, stepFragments, stepSubordinate } from "./wl-steps-b.js";
-import { stepDraft, stepMPO, stepPlan, stepRevise } from "./wl-steps-c.js";
+import { workDownloads } from "./wl-export.js";
+import { reviseDone, stepDraft, stepMPO, stepPlan, stepRevise } from "./wl-steps-c.js";
 
 const STEPS = [
   {
@@ -179,6 +180,13 @@ function printables() {
       ),
       row("Teacher guide & answer key", "All three levels, models, answers, rubric", "writing-key"),
     ),
+    h("h3", { class: "wl-sub" }, "Download what I wrote"),
+    h(
+      "p",
+      { class: "wl-field__hint" },
+      "Your paragraph, plan and practice so far, as a Word or PDF file.",
+    ),
+    workDownloads(reviseDone),
   );
 }
 

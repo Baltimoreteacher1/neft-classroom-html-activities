@@ -1,5 +1,6 @@
 // Writing Lab steps 7-10: Plan (Single-Paragraph Outline), Draft, Revise & Publish, Multi-Paragraph Plan.
 import { copyText } from "../language-studio/studio-core.js";
+import { workDownloads } from "./wl-export.js";
 import {
   byLevel,
   feedback,
@@ -274,6 +275,7 @@ export function stepDraft(root) {
             "Read my paragraph aloud",
           ),
         ),
+        workDownloads(reviseDone),
         h(
           "div",
           { class: "wl-model" },
@@ -325,8 +327,11 @@ const RUBRIC = [
     ],
   },
 ];
+const reviseChecks = () => [...wl.w.revise, ...TWR_CHECKS.slice(0, isStarter() ? 3 : 6)];
+/** Text of the revise checks the student has ticked (for the downloaded file). */
+export const reviseDone = () => reviseChecks().filter((_, i) => get("revise")[`c${i}`]);
 export function stepRevise(root) {
-  const checks = [...wl.w.revise, ...TWR_CHECKS.slice(0, isStarter() ? 3 : 6)];
+  const checks = reviseChecks();
   const r = get("revise");
   const list = h(
     "ul",
@@ -407,6 +412,9 @@ export function stepRevise(root) {
         "Copy my paragraph",
       ),
     ),
+    h("h3", { class: "wl-sub" }, "Download my work"),
+    h("p", { class: "wl-field__hint" }, "Your paragraph, plan and practice as a file you can print, edit or turn in."),
+    workDownloads(reviseDone),
     fb,
   );
   markDone("revise");

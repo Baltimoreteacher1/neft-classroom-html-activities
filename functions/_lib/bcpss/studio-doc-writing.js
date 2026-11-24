@@ -18,8 +18,8 @@ import {
   t,
 } from "./studio-doc.js";
 
-const LEVEL_NAME = { l1_2: "Starter", l3_4: "Core", l5_6: "Stretch" };
-const GENRE = { explain: "Explain", argue: "Argue", inform: "Inform", narrate: "Narrate" };
+export const LEVEL_NAME = { l1_2: "Starter", l3_4: "Core", l5_6: "Stretch" };
+export const GENRE = { explain: "Explain", argue: "Argue", inform: "Inform", narrate: "Narrate" };
 const SYMBOLS = [
   "→ leads to",
   "= means",
@@ -30,12 +30,12 @@ const SYMBOLS = [
   "ex. example",
   "@ at",
 ];
-const CONJ = [
+export const CONJ = [
   ["because", "gives a reason", "Vocabulary"],
   ["but", "shows a change", "Game"],
   ["so", "tells a result", "Reading"],
 ];
-const RUBRIC = [
+export const RUBRIC = [
   [
     "Ideas",
     "I wrote my main idea.",

@@ -11,16 +11,30 @@ import {
   renderUnitDocxPacket,
   renderUnitHtmlPacket,
 } from "../../../_lib/bcpss/unit-packet.js";
-import { badRequest, handler, json, notFound } from "../../../_lib/http.js";
+import { sanitizeWork } from "../../../_lib/bcpss/writing-work.js";
+import {
+  badRequest,
+  clientIp,
+  createRateLimiter,
+  handler,
+  json,
+  notFound,
+  tooManyRequests,
+} from "../../../_lib/http.js";
 
 const VALID_FORMATS = new Set(["html", "pdf", "docx"]);
 const VALID_WIDA = new Set(["1_2", "3_4", "5_6"]);
 
 // Parts: packet (teacher overview, default), book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family,
 // writing (Writing Lab student packet), writing-key (Writing Lab teacher guide).
+// POST (body { work }) renders the part "writing-work": a student's own Writing Lab answers as Word/PDF/HTML.
+// It is never cached and nothing is stored.
 const PARTS_HELP =
   "packet, book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family, writing, writing-key";
-const WRITING_PARTS = new Set(["writing", "writing-key"]);
+const WRITING_PARTS = new Set(["writing", "writing-key", "writing-work"]);
+// Student files are rendered on demand (PDF uses Browser Rendering), so POST is rate-limited per client.
+const workRateLimited = createRateLimiter({ max: 12, windowMs: 60_000 });
+const MAX_WORK_BODY_BYTES = 200_000;
 
 const AUTO_PRINT_SCRIPT = `<script>window.addEventListener("load",function(){setTimeout(function(){window.print();},150);});</script>`;
 
@@ -32,8 +46,11 @@ function injectAutoPrint(html) {
 }
 
 export const onRequest = handler({
-  methods: ["GET"],
-  async handle({ request, params, env }) {
+  methods: ["GET", "POST"],
+  maxBodyBytes: MAX_WORK_BODY_BYTES,
+  async handle({ request, params, env, body }) {
+    const isWork = request.method === "POST";
+    if (isWork && workRateLimited(clientIp(request))) return tooManyRequests();
     const unitId = String(params?.unitId || "").trim();
     if (!unitId || !/^[a-zA-Z0-9_-]{2,80}$/.test(unitId)) {
       return badRequest("Invalid unitId parameter.");
@@ -52,14 +69,24 @@ export const onRequest = handler({
       return badRequest('Invalid wida parameter. Expected "1_2", "3_4", or "5_6".');
     }
 
-    const part = String(url.searchParams.get("part") || "packet")
-      .trim()
-      .toLowerCase();
-    if (!isKnownPart(part)) {
+    const part = isWork
+      ? "writing-work"
+      : String(url.searchParams.get("part") || "packet")
+          .trim()
+          .toLowerCase();
+    if (!isKnownPart(part) || (!isWork && part === "writing-work")) {
       return badRequest(`Invalid part parameter. Expected one of: ${PARTS_HELP}.`);
     }
 
     const download = url.searchParams.get("download") === "1";
+
+    let work = null;
+    if (isWork) {
+      const clean = sanitizeWork(body?.work);
+      if (!clean.ok) return badRequest(clean.error);
+      work = clean.work;
+    }
+    const cacheControl = isWork ? "no-store" : "public, s-maxage=3600";
 
     const { backend, detail } = await getUnitDetail(env, unitId);
     if (!detail?.unit) {
@@ -86,7 +113,7 @@ export const onRequest = handler({
       try {
         docxBytes = legacyPacket
           ? renderUnitDocxPacket(detail, wida)
-          : renderStudioDocx(detail, { part, wida });
+          : renderStudioDocx(detail, { part, wida, work });
       } catch (err) {
         return notFound(
           `Part "${part}" is not available for unit "${unitId}": ${err?.message || err}`,
@@ -98,7 +125,7 @@ export const onRequest = handler({
         headers: {
           "Content-Type": DOCX_MIME,
           "Content-Disposition": `attachment; filename="${filename}"`,
-          "Cache-Control": "public, s-maxage=3600",
+          "Cache-Control": cacheControl,
           "X-BCPSS-Backend": backend,
         },
       });
@@ -110,7 +137,7 @@ export const onRequest = handler({
     } else {
       if (missing) return missing;
       try {
-        html = renderStudioPart(detail, { part, level: wida });
+        html = renderStudioPart(detail, { part, level: wida, work });
       } catch (err) {
         return notFound(
           `Part "${part}" is not available for unit "${unitId}": ${err?.message || err}`,
@@ -123,7 +150,9 @@ export const onRequest = handler({
     if (format === "html") {
       const headers = new Headers({
         "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        "Cache-Control": isWork
+          ? "no-store"
+          : "public, s-maxage=3600, stale-while-revalidate=86400",
         "X-BCPSS-Backend": backend,
       });
       if (download) headers.set("Content-Disposition", `attachment; filename="${filename}"`);
@@ -144,7 +173,7 @@ export const onRequest = handler({
           headers: {
             "Content-Type": "application/pdf",
             "Content-Disposition": `attachment; filename="${filename}"`,
-            "Cache-Control": "public, s-maxage=3600",
+            "Cache-Control": cacheControl,
             "X-BCPSS-Backend": backend,
           },
         });
