@@ -263,7 +263,7 @@ if (routes?.redirects) {
 // 3+8. Broken internal links + case-sensitivity across every HTML file
 // --------------------------------------------------------------------------
 const htmlFiles = walk(root).filter((f) => f.endsWith(".html"));
-const LINK_RE = /(?:href|src)\s*=\s*"([^"]+)"/gi;
+const LINK_RE = /(?<![-\w])(?:href|src)\s*=\s*"([^"]+)"/gi;
 // Cap noise: only report each unique (file, link) once
 const seenBroken = new Set();
 
@@ -345,7 +345,7 @@ for (const name of lessonDirs) {
     if (!existsSync(hp)) continue;
     const html = readFileSync(hp, "utf8");
     let m;
-    const re = /(?:href|src)\s*=\s*"(\.\/downloads\/[^"]+)"/gi;
+    const re = /(?<![-\w])(?:href|src)\s*=\s*"(\.\/downloads\/[^"]+)"/gi;
     while ((m = re.exec(html)) !== null) {
       const target = resolve(dir, m[1]);
       if (!existsSync(target)) {
