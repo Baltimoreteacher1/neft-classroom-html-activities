@@ -555,6 +555,17 @@ export const HOME_CARDS = [
     text: ["Prefixes, roots and academic words.", "Prefijos, raíces y palabras académicas."],
   },
   {
+    id: "lingua",
+    group: "explore",
+    href: "lingua",
+    icon: "conversation",
+    title: ["Everyday English", "Inglés cotidiano"],
+    text: [
+      "Nine short tasks: words, listening, speaking, reading, writing, grammar.",
+      "Nueve tareas cortas: palabras, escucha, conversación, lectura, escritura, gramática.",
+    ],
+  },
+  {
     id: "ladder",
     group: "explore",
     href: "ladder",

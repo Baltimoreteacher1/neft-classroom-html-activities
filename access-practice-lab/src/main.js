@@ -108,6 +108,7 @@ const VIEW_LOADERS = {
   worlds: () => import("./views/worlds.js"),
   classroom: () => import("./views/classroom.js"),
   vocabulary: () => import("./views/vocabulary.js"),
+  lingua: () => import("./views/lingua.js"),
   flashcards: () => import("./views/flashcards.js"),
   reading: () => import("./views/reading-room.js"),
   games: () => import("./views/games.js"),
@@ -246,7 +247,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     return { ...r, view: "vocab-academy", path: parts.slice(1), q: Object.fromEntries(q) };
   if (a === "vocabulary" && b === "mastery")
     return { ...r, view: "vocab-curriculum", id: c || "", lessonId: d || "" };
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "task-packs", "write", "detective", "launch", "launch-studio", "teacher-launch", "lesson-builder", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "ready-plan", "explore", "language-labs", "communication", "choice-boards", "talk-table", "bridge", "architect", "simulator", "radar", "family-bridge", "skill-arcade", "dialogue-studio"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "task-packs", "write", "detective", "launch", "launch-studio", "teacher-launch", "lesson-builder", "classroom", "vocabulary", "lingua", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar", "reader", "access-prep", "ready-plan", "explore", "language-labs", "communication", "choice-boards", "talk-table", "bridge", "architect", "simulator", "radar", "family-bridge", "skill-arcade", "dialogue-studio"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "class")
