@@ -1,6 +1,6 @@
 # Language Page award program — state
 
-Last updated: 2026-11-25 (after tranche 3). Source of truth for what is done, blocked and next. Audit:
+Last updated: 2026-11-25 (after tranche 3 shipped). Source of truth for what is done, blocked and next. Audit:
 `docs/language-page/award-panel-audit-2026-11-24.md`. Build prompt: `docs/language-page/award-program-prompt.md`.
 (Program records live under `docs/language-page/`; the repository's `reports/` folder is git-ignored.)
 
@@ -37,7 +37,7 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 | Claims gate scans studios' visible prose; "publication-grade" removed | X4 | `tools/access-lab-claims.test.mjs` |
 | logic model, efficacy plan, usability protocol, pilot kit, ACR draft, privacy doc | X3 | `docs/language-page/*.md`; privacy.md is generated and tested |
 
-**Tranche 3 (this change)**
+**Tranche 3 (live on `ce40e6f9`, 2026-11-25; smoke:live 41/41, network gate passes live on 79 routes)**
 | Item | Finding | Proof |
 | --- | --- | --- |
 | AI model cards for the 7 AI routes the host serves, 17 routes listed; PLATFORM.md AI list completed | X5, WS9 | `tools/language-page-ai-cards.test.mjs` finds every model-calling file and checks each row's hosting against the host code |
@@ -51,7 +51,7 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 
 ## Not started
 WS2 chrome budget · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
-sustained reading · WS4 recorded audio (H-19), Spanish for grades 3–8 directions, language packs, SLIFE path · WS5 writing volume and
+sustained reading · WS4 recorded audio (H-19), Spanish activity titles and review (the grade 3–8 directions already exist in `es-guide.json`; audit E3 corrected), language packs, SLIFE path · WS5 writing volume and
 audience loop · WS6 meeting the CSS and request budget (held, not met: 124 blocking stylesheets on the shell) · WS7–WS14 as in the prompt.
 
 ## Human-required

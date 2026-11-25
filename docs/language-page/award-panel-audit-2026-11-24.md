@@ -160,3 +160,16 @@ script with a hash; recordings register in `data/language-page-audio-recordings.
 recording whose script changed) · **T1** is measured and ratcheted (`data/language-page-perf-budget.json`; the budgets are not met, only held) ·
 **C1** has a `/method` page (how it works, in EN and ES, no efficacy claim) · **T5** closed for the `/studios/language/*` pages (each now
 has its own title). Still open: everything that needs a person (reviews, recordings, sessions) and the larger content work.
+
+### Correction to E3, 2026-11-25
+E3 said "0 / 749 grade 3–8 activities have Spanish directions". That measured only the `directionsEs` field, which the K–3 files use. Grades
+3–8 keep their Spanish in `content/es-guide.json`, keyed by activity id (skill goal for caregivers, directions for children), and
+`tools/access-es-strings.test.mjs` requires an entry for every activity. A grade 3–5 listening activity opened in Spanish mode shows its
+Spanish directions beside the English ones. What E3 gets right: the Spanish is machine-drafted and unreviewed (H-05), and an activity's
+**title** stays English in Spanish mode. So the open work is review plus Spanish titles, not "complete grade 3–8 directions".
+This is the second finding (after E4) that measured the wrong field; the lesson for later audits is to read how the app loads
+a language before counting a field.
+
+### Tranche 3 is live (2026-11-25)
+Production serves `ce40e6f9`; `smoke:live` 41/41; the live network gate passes on 79 routes; `/studios/language/speaking` and `/writing`
+carry their own titles; `/method` answers 200 and is in the sitemap.
