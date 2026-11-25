@@ -11,6 +11,8 @@ import { analyze } from "../teachback/check.js";
 import { CONCEPTS, conceptById, isTeachBand } from "../teachback/concepts.js";
 import { MAX_TEXT, attemptsFor, currentId, endSession, markExplained, recordAttempt, startOwn, startRevision } from "../teachback/session.js";
 import * as store from "../teachback/store.js";
+import { ACADEMIC } from "../lang/lexicon.js";
+import { noteWords, trackedWordsIn } from "../lang/word-encounters.js";
 import { learnHTML, pickHTML, planHTML, stepperHTML } from "../teachback/ui.js";
 import { doneHTML, feedbackHTML, ownHTML, teachHTML } from "../teachback/ui-teach.js";
 import { BASE, announce, copyText, html, icon } from "../util.js";
@@ -136,6 +138,10 @@ function submit(ctx, I) {
   const analysis = hasWords ? analyze(concept, text, { plan: s.plan }) : null;
   const attempt = recordAttempt(ui.state, { text, analysis });
   store.writeLedger(concept, attempt, ctx.band);
+  // Words from the idea's key terms and the lab's academic list that the learner typed. The text itself is not kept.
+  // Typed words are "wrote" even in record mode: the recording is not transcribed, so nothing is claimed as said.
+  const vocabulary = new Set([...ACADEMIC, ...concept.terms.map((term) => String(term.w).toLowerCase())]);
+  noteWords(trackedWordsIn(text, vocabulary), { src: "teach-back", mode: "wrote", supported: Boolean(attempt.supported) });
   s.step = "feedback";
   return show(ctx);
 }

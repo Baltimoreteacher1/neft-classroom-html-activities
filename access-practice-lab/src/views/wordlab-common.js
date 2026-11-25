@@ -3,6 +3,7 @@ import { FALSE_FRIENDS, MORPHEMES } from "../content/wordlab-lab.js";
 import { WORDS } from "../content/wordlab-words.js";
 import { collectWord, kindOfWord, wordsForBand } from "../lang/wordlab.js";
 import { depthOf } from "../lang/wordlab-depth.js";
+import { noteWords } from "../lang/word-encounters.js";
 import { BASE, esc, html, icon, raw } from "../util.js";
 import {
   bandFor,
@@ -15,6 +16,12 @@ import {
 } from "./studio-kit.js";
 
 export const WL_KEY = "accessPracticeLab:v1:wordlab";
+
+/** One Language Lens encounter for a Word Lab word (src/lang/word-encounters.js). A failed write never blocks the learner. */
+export const lensNote = (id, mode, opts = {}) => {
+  const w = WORDS.find((x) => x.id === id)?.w;
+  return w ? noteWords([w], { src: "wordlab", mode, ...opts }) : false;
+};
 export const WL_DEFAULT = {
   level: "B",
   garden: {},

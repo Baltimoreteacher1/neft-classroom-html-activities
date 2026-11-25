@@ -1611,6 +1611,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "lens",
+    section: "progress",
+    skill: "Words",
+    kind: "progress",
+    for: ST,
+    top: false,
+    href: "lens",
+    icon: "words",
+    title: P("My Words", "Mis palabras"),
+    text: P(
+      "The words you have met across the lab, and which ones you have said or written. A record, not a score.",
+      "Las palabras que has conocido en el laboratorio y cuáles has dicho o escrito. Un registro, no una calificación.",
+    ),
+  },
+  {
     id: "activity-studio",
     section: "teach",
     skill: "Mixed",

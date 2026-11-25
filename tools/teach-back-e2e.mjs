@@ -257,6 +257,24 @@ try {
     "the done card suggests what to try next",
   );
   await checkStep("done");
+  // The Language Lens: finished explanations leave words (not sentences), supported and independent kept apart.
+  const lensRaw = await page.evaluate(
+    () => localStorage.getItem("accessPracticeLab:v1:word-encounters") || "",
+  );
+  const lens = lensRaw ? JSON.parse(lensRaw).words : {};
+  const lensEvents = Object.values(lens).flatMap((rec) => rec.ev);
+  ok(
+    Object.values(lens).some((rec) => rec.n.wrote > 0 && rec.s["teach-back"] > 0),
+    "the Lens recorded words the learner wrote in Teach It Back",
+  );
+  ok(
+    lensEvents.some((e) => e.i === 0) && lensEvents.some((e) => e.i === 1),
+    "the Lens kept the frames try (supported) apart from the on-my-own try (independent)",
+  );
+  ok(
+    !/less than zero|multiplying both numbers/.test(lensRaw),
+    "no sentence the learner typed is in the Lens record",
+  );
   const ledger = await page.evaluate(
     () => JSON.parse(localStorage.getItem("accessPracticeLab:v1:ledger") || "{}").entries || [],
   );

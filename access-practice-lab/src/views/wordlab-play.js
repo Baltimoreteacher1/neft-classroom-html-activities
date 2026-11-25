@@ -23,6 +23,7 @@ import {
   bandWords,
   collectOnce,
   gloss,
+  lensNote,
   morphemeOf,
   showEs,
   wlEvidence,
@@ -282,6 +283,7 @@ export const build = {
 function finishWord(ctx, st, word) {
   if (!st.build.done.includes(word.id)) st.build.done.push(word.id);
   collectOnce(st, word.id);
+  lensNote(word.id, "chose", { supported: st.build.helped.includes(word.id) });
   const n = st.build.done.length;
   if (n % 5 === 0) {
     const helped = st.build.done.slice(-5).filter((id) => st.build.helped.includes(id)).length;

@@ -7,6 +7,7 @@
 // answers in per-type maps (selected/multi/cloze/hot/order/sortAnswers); they are
 // read transparently and new answers are written to `answers`.
 import { mergeLedgers } from "./lang/ledger.js";
+import { cleanWords, mergeWords } from "./lang/word-encounters.js";
 import { mergeStudio, validStudio } from "./lang/studio.js";
 import { mergeGames, validGames } from "./games/state.js";
 import { mergeLab } from "./lab/store.js";
@@ -254,7 +255,7 @@ export function importProgressData(data) {
     const progress = isProgressKey(key);
     if (
       !progress &&
-      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|sor|subjectReading|vocabCurriculum|vocabAcademy|tlp_lab_v2|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|sor|subjectReading|vocabCurriculum|vocabAcademy|word-encounters|tlp_lab_v2|test:[a-zA-Z0-9_-]+)$/.test(suffix)
     )
       continue;
     const current = storage.get(key);
@@ -279,6 +280,19 @@ export function importProgressData(data) {
       }
       const serialized = JSON.stringify(merged);
       if (serialized !== current) writes.push([key, serialized]);
+      continue;
+    }
+    if (suffix === "word-encounters") {
+      // Language Lens word record (src/lang/word-encounters.js): larger counter per word, union of tested dates.
+      // Importing the same backup twice changes nothing.
+      const incoming = safeJson(value, null);
+      if (!isObject(incoming) || incoming.v !== 1 || !isObject(incoming.words))
+        throw new Error("That backup has an invalid word record. Nothing was loaded.");
+      const local = current === null ? null : safeJson(current, null);
+      if (current !== null && !isObject(local)) continue;
+      const merged = mergeWords(local, incoming);
+      const canonical = (v) => JSON.stringify(Object.entries(v.words).sort(([a], [b]) => (a < b ? -1 : 1)));
+      if (local === null || canonical(merged) !== canonical(cleanWords(local))) writes.push([key, JSON.stringify(merged)]);
       continue;
     }
     if (suffix === "vocabAcademy") {

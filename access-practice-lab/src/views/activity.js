@@ -55,6 +55,7 @@ import { answerOf, loadRecord, saveRecord } from "../store.js";
 import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
 import { analyzeResponse, bankKey, bankWordsUsed, compareDrafts } from "../lang/analyze.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
+import { noteWords, trackedWordsIn } from "../lang/word-encounters.js";
 import { pathwayBannerHTML } from "../pathways/banner.js";
 import { SURE, normalizeSure, sureFlag } from "../lang/calibration.js";
 import { retellHTML, toggleRetellCheck } from "./retell.js";
@@ -1275,6 +1276,8 @@ export function onClick(e, ctx) {
     const used = Boolean(helpUsed.has(a.id) || cur.record.supportUsed?.[a.id]);
     appendEntry(ledger, { src: "writing", task: a.id, band: cur.band, domain: cur.domain, use: keyUseOf(a), stage: mode === "independent" && !used ? "independent" : "supported", kind: first ? "first" : "revision", supports: { bank: mode !== "independent", help: used, coach: !first }, m: coachFeedback.ledger });
     saveLedger(ledger);
+    // Lab academic words in the draft (words only; the draft is not kept). Used with a coach open counts as supported.
+    noteWords(trackedWordsIn(text), { src: "writing", mode: "wrote", supported: !(mode === "independent" && !used) });
     ctx.rerender({ keepFocus: true });
     announce(I.S("The Language Coach looked at your draft.", "El Entrenador de lenguaje revisó tu borrador."));
     return true;

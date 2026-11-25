@@ -15,7 +15,7 @@ import {
 } from "../lang/wordlab-depth.js";
 import { announce, html, icon } from "../util.js";
 import { levelOf, speakBtn } from "./studio-kit.js";
-import { WORDS, gloss, showEs, wlEvidence, wlSave } from "./wordlab-common.js";
+import { WORDS, gloss, lensNote, showEs, wlEvidence, wlSave } from "./wordlab-common.js";
 
 const byId = (id) => WORDS.find((w) => w.id === id);
 
@@ -246,6 +246,8 @@ export const plotStep = (I, rec) => {
 
 function finish(ctx, I, st, ui, ok, independent, kind) {
   const rev = ui.rev;
+  // "use" and "transfer" ask the learner to write the word in a sentence; every other kind is a choice.
+  lensNote(rev.id, kind === "use" || kind === "transfer" ? "wrote" : "chose", { ok, supported: !independent });
   if (ui.mix) {
     practiceWord(st, rev.id, { ok, independent, kind });
     ui.mix.res.push({ id: rev.id, ok: ok && independent });

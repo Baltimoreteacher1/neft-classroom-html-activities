@@ -1,0 +1,117 @@
+/* My Words (src/views/lens.js). Tokens only (ds.css): no raw colors, no gradients. Nothing here is color alone: every
+   group carries a title and a count. Targets are 44px or more. */
+
+.ln {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 52rem;
+  margin-inline: auto;
+}
+.ln-head h1 {
+  margin: 0 0 var(--s-2);
+}
+.ln-head .lead {
+  margin: 0;
+  max-width: 46rem;
+}
+.ln h2 {
+  margin: 0 0 var(--s-2);
+}
+.ln .icon {
+  flex: none;
+  margin-inline-end: 0.25em;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: -0.15em;
+}
+
+.ln-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+}
+.ln-fact {
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.ln-fact dt {
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+.ln-fact dd {
+  margin: var(--s-1) 0 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.ln-chips,
+.ln-due,
+.ln-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-3) 0;
+  padding: 0;
+  list-style: none;
+}
+.ln-chips li {
+  padding: var(--s-1) var(--s-3);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  color: var(--ink);
+}
+.ln-due {
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.ln-sources {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: var(--s-2);
+  max-width: 24rem;
+}
+.ln-sources li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+.ln-count {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.ln-group {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 0 var(--s-4);
+  margin-bottom: var(--s-3);
+}
+.ln-group summary {
+  min-height: var(--target-min);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  cursor: pointer;
+  font-weight: 600;
+}
+.ln-group[open] {
+  padding-bottom: var(--s-3);
+}
+.ln-next .row-actions,
+.ln-empty .row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+@media (max-width: 480px) {
+  .ln-fact dd {
+    font-size: 1.5rem;
+  }
+}
