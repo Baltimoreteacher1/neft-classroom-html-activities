@@ -3,6 +3,7 @@ import { anonTokenHeaders } from "../shared/anon-token/anon-token.js";
 import { INTERNAL_TRAFFIC_FLAG } from "../shared/bcpss-telemetry-schema.js";
 import { renderCreationStudio } from "./creation-studio.js";
 import { DRAFT_NOTICE } from "../shared/bcpss-provenance.js";
+import { normalizeText } from "../shared/bcpss/unified-search.js";
 import { keepView } from "./keep-view.js";
 import { mountFamilyTips } from "./family-tips.js";
 import { renderOverview } from "./overview-tab.js";
@@ -555,7 +556,7 @@ function resetUnitFilters() {
 }
 
 function getFilteredUnits() {
-  const query = state.unitSearch.trim().toLowerCase();
+  const query = normalizeText(state.unitSearch);
   const klu = state.kluFilter;
   return state.units.filter((u) => {
     if (klu && klu !== "All") {
@@ -564,18 +565,19 @@ function getFilteredUnits() {
     }
     if (!query) return true;
     const standards = parseStandardsList(u.core_standards).join(" ");
-    const haystack = [
-      `unit ${u.unit_number}`,
-      u.unit_title,
-      u.unit_summary,
-      u.essential_question,
-      u.primary_klu,
-      u.curriculum_name,
-      standards,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    const haystack = normalizeText(
+      [
+        `unit ${u.unit_number}`,
+        u.unit_title,
+        u.unit_summary,
+        u.essential_question,
+        u.primary_klu,
+        u.curriculum_name,
+        standards,
+      ]
+        .filter(Boolean)
+        .join(" "),
+    );
     return haystack.includes(query);
   });
 }
