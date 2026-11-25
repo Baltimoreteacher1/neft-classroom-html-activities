@@ -1,0 +1,97 @@
+/* Weekly family plan: English and Spanish side by side (stacked on a phone), tight enough to print on one page. */
+.fb-plan-days {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fb-plan-day {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  break-inside: avoid;
+}
+.fb-plan-day.is-done {
+  background: var(--sage-tint);
+}
+.fb-plan-day h4,
+.fb-plan-day p,
+.fb-plan-day ul,
+.fb-plan-day ol {
+  margin: 0;
+}
+/* Both languages always show here, whatever the page toggle says. */
+html[data-view] .fb-plan .fb-pair > .fb-es,
+html[data-view] .fb-plan .fb-pair > .fb-en {
+  display: grid;
+}
+html[data-view] .fb-plan .fb-pair > .fb-es:not(.fb-only) {
+  padding-inline-start: 0.7rem;
+  border-inline-start: 3px solid var(--copper);
+}
+@media (min-width: 640px) {
+  .fb-plan .fb-pair {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+}
+@media print {
+  body[data-printing="plan"] .fb-section:not(#plan),
+  body[data-printing="plan"] .fb-hero,
+  body[data-printing="plan"] .fb-check,
+  body[data-printing="plan"] .fb-actions {
+    display: none !important;
+  }
+  .fb-plan .fb-pair {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .fb-plan-day {
+    padding: 0.4rem 0.6rem;
+    gap: 0.2rem;
+  }
+  .fb-plan-days {
+    gap: 0.4rem;
+  }
+}
+
+/* The steps counter continues where the first half of a two-day task stopped (a CSS counter ignores the start attribute). */
+.fb-from-1 { counter-reset: step 1; }
+.fb-from-2 { counter-reset: step 2; }
+.fb-from-3 { counter-reset: step 3; }
+.fb-from-4 { counter-reset: step 4; }
+.fb-from-5 { counter-reset: step 5; }
+.fb-from-6 { counter-reset: step 6; }
+.fb-from-7 { counter-reset: step 7; }
+@media print {
+  body[data-printing="plan"] #plan {
+    break-inside: auto;
+    padding: 0;
+    border: 0;
+    gap: 0.3rem;
+  }
+  body[data-printing="plan"] .fb-plan .fb-say-list li {
+    padding: 0.1rem 0.4rem;
+    font: 400 0.85rem/1.35 var(--font);
+  }
+  body[data-printing="plan"] .fb-plan .fb-steps li,
+  body[data-printing="plan"] .fb-plan .fb-celebrate {
+    font: 400 0.85rem/1.35 var(--font);
+  }
+  body[data-printing="plan"] .fb-plan .fb-celebrate {
+    padding: 0.3rem 0.5rem;
+  }
+  body[data-printing="plan"] .fb-plan .fb-subhead {
+    margin: 0.1rem 0 0;
+    font-size: 0.85rem;
+  }
+  body[data-printing="plan"] .fb-plan .fb-intro,
+  body[data-printing="plan"] .fb-plan .fb-note {
+    font-size: 0.8rem;
+    margin: 0;
+  }
+}

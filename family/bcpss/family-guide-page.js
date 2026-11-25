@@ -4,11 +4,13 @@
 
 import { C } from "./family-copy.js";
 import { bi, esc } from "./family-util.js";
+import { PLAN, planHtml } from "./family-plan-view.js";
 import { heroHtml, learnHtml, talkHtml, wordsHtml } from "./family-view-learn.js";
 import { celebrateHtml, helpHtml, languageHtml, navHtml, playHtml, resourcesHtml, sayHtml, tryHtml } from "./family-view-do.js";
 
 const SECTIONS = [
   { id: "learn", head: C.learnHead, icon: "🌱", body: (g) => learnHtml(g) },
+  { id: "plan", head: PLAN.head, icon: "📅", body: (g, s) => (s.planOn ? planHtml(g, s.week, s.planDone) : "") },
   { id: "words", head: C.wordsHead, icon: "🔤", body: (g) => wordsHtml(g) },
   { id: "talk", head: C.talkHead, icon: "💬", body: (g) => talkHtml(g), badge: C.anyLanguage },
   { id: "try", head: C.tryHead, icon: "🧪", body: (g, s) => tryHtml(g, s.done) },

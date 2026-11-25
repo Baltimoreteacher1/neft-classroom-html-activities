@@ -4,6 +4,7 @@ import { INTERNAL_TRAFFIC_FLAG } from "../shared/bcpss-telemetry-schema.js";
 import { renderCreationStudio } from "./creation-studio.js";
 import { DRAFT_NOTICE } from "../shared/bcpss-provenance.js";
 import { keepView } from "./keep-view.js";
+import { mountFamilyTips } from "./family-tips.js";
 import { renderOverview } from "./overview-tab.js";
 import { chipHtml, primeLive, refreshChips } from "./provenance-live.js";
 import { renderStudioTab } from "./studio-tab.js";
@@ -1195,6 +1196,11 @@ function renderFamilyTab() {
       </aside>
     </div>
   `;
+  const tipsBox = document.createElement("section");
+  tipsBox.className = "bh-family-tips";
+  tipsBox.setAttribute("aria-label", "Text-message tips for families");
+  panel.append(tipsBox);
+  mountFamilyTips(tipsBox, unit.id);
 }
 
 function renderPrintKit() {

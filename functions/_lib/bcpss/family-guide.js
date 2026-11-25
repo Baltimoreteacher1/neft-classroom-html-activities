@@ -5,7 +5,9 @@
 
 import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
 import { FAMILY_LOADERS } from "../../../db/seeds/bcpss/v2/index.mjs";
+import { provenanceOf } from "../../../shared/bcpss-provenance.js";
 import { fallbackFamily } from "./family-fallback.js";
+import { loadLessons } from "./lessons.js";
 import { loadFamily, loadStudio } from "./studio.js";
 
 const UNITS = seed.BCPSS_UNITS || [];
@@ -129,6 +131,8 @@ export async function buildFamilyGuide(unitId) {
       curriculum: unit.curriculum_name,
     },
     authored: Boolean(authoredFamily),
+    // Same derivation as the unit detail: the family plan carries the draft notice until a person reviews the lessons.
+    provenance: provenanceOf(await loadLessons(unit.id)),
     summary,
     can_do: studio?.can_do || null,
     goals: authoredFamily?.goals || null,
