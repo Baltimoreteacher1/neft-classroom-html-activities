@@ -1,10 +1,10 @@
 /**
- * Bound flag API: the committed registry (flags.json) plus the pure evaluator.
+ * Bound flag API: the committed registry (registry.js) plus the pure evaluator.
  * This is the one import for app code; tools and tests that need another registry
  * (negative controls) call evaluate.js directly.
  */
 import * as evaluator from "./evaluate.js";
-import registry from "./flags.json" with { type: "json" };
+import registry from "./registry.js";
 
 export {
   canonicalJson,

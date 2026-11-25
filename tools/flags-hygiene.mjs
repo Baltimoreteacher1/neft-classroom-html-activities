@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * G-39 flag hygiene gate. Fails when a flag in shared/flags/flags.json has no owner, default,
+ * G-39 flag hygiene gate. Fails when a flag in shared/flags/registry.js has no owner, default,
  * description or removal date; is past its removal date; has a malformed environments/cohorts
  * block; has a requires graph that dangles or cycles; or breaks the egress rules (the egress
  * master defaults OFF; every flag that sends student content requires it, directly or not).
@@ -148,14 +148,12 @@ function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
 }
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   const nowArg = args.find((a) => a.startsWith("--now="))?.slice(6);
   const now = nowArg ? new Date(`${nowArg}T00:00:00Z`) : new Date();
   if (Number.isNaN(now.getTime())) throw new Error(`bad --now value "${nowArg}"`);
-  const registryPath =
-    args.find((a) => a.startsWith("--registry="))?.slice(11) ??
-    fileURLToPath(new URL("../shared/flags/flags.json", import.meta.url));
+  const registryArg = args.find((a) => a.startsWith("--registry="))?.slice(11);
   const badPath = fileURLToPath(
     new URL("../shared/flags/negative/bad-registry.json", import.meta.url),
   );
@@ -172,7 +170,10 @@ function main() {
     process.exit(3);
   }
 
-  const registry = readJson(registryPath);
+  // Default: the real registry module. --registry=<path.json> checks any other JSON registry (the negative control).
+  const registry = registryArg
+    ? readJson(registryArg)
+    : (await import("../shared/flags/registry.js")).default;
   const findings = checkRegistry(registry, { now });
   if (findings.length) {
     for (const f of findings) console.error(`FAIL ${f.code} ${f.flag ?? ""}: ${f.message}`);
@@ -186,7 +187,7 @@ function main() {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
-    main();
+    await main();
   } catch (err) {
     console.error(`flags-hygiene error: ${err.message}`);
     process.exit(3);

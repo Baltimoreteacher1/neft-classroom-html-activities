@@ -14,7 +14,7 @@
  * flag key fails a test rather than silently shipping a feature that is always off.
  *
  * KILL SWITCH: a flag with killSwitch true can be turned OFF by a signed override, but a
- * signed override can never turn it ON. Turning it on is a reviewed change to flags.json.
+ * signed override can never turn it ON. Turning it on is a reviewed change to registry.js.
  *
  * UNVERIFIED IDS: teacherId / classId arriving over the public /api/flags endpoint are
  * caller-asserted. With ctx.trustedIds === false the cohort layer is skipped for the
@@ -94,7 +94,7 @@ function evaluate(index, key, ctx, overrides, strict, visiting) {
 }
 
 /**
- * @param {object} registry parsed flags.json
+ * @param {object} registry the registry object (registry.js)
  * @param {string} flagKey
  * @param {{env?: string, teacherId?: string, classId?: string, demo?: string, trustedIds?: boolean}} [ctx]
  * @param {Record<string, boolean>} [overrides] VERIFIED overrides only (see verifyOverrides)

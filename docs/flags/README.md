@@ -4,7 +4,7 @@ One committed registry, one pure evaluator, one read endpoint.
 
 | Piece | Path |
 | --- | --- |
-| Registry (single source of truth) | `shared/flags/flags.json` |
+| Registry (single source of truth) | `shared/flags/registry.js` |
 | Evaluator + signing (pure, no deps) | `shared/flags/evaluate.js` |
 | Bound API (`isEnabled`, `evaluateAll`) | `shared/flags/index.js` |
 | Environment + header glue | `functions/_lib/flags.js` |
@@ -26,7 +26,7 @@ is applied: a flag is on only if every required flag is on for the same caller, 
 override included, can turn a flag on while a required flag is off.
 
 - Unknown flag: `false`. With `FLAGS_STRICT=1` (or `{ strict: true }`) it throws, so a typo fails a test.
-- `killSwitch: true`: a signed override can turn it **off** but never **on**. Turning it on is a reviewed change to `flags.json`.
+- `killSwitch: true`: a signed override can turn it **off** but never **on**. Turning it on is a reviewed change to `registry.js`.
 - `student_content_egress` is the master switch for anything that sends student content off the device. It defaults off, and every flag with `sendsStudentContent: true` must `require` it (the hygiene gate enforces this transitively).
 - `/api/flags` receives caller-asserted `teacherId`/`classId`/`demo`, so the egress master flag ignores cohorts on that path (`trustedIds: false`). Server code that has verified ids itself calls `evaluateAll` or `isEnabled` directly without that field. A UI that hides a feature because `/api/flags` says off is failing closed; server-side code must never trust the endpoint's answer to allow egress.
 - Environment: `FLAGS_ENV` binding if set, else `localhost` is local, `staging.*` is staging, `*.pages.dev` is preview, anything else is production.

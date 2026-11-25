@@ -503,6 +503,12 @@ const COVERAGE = [
     /^(tools\/(access-integration-e2e|generate-access-finder-metadata|generate-access-packs|generate-newcomer-packs|generate-program-content)\.mjs|tools\/(access-finder-facets|access-packs|family-today-plan|lesson-pack|live-rooms|newcomer-packs|program-content|speaking-enterprise|speaking-task-packs)\.test\.mjs)$/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
+  // FUNCTIONS BUNDLE SYNTAX — Cloudflare's Pages Functions bundler rejects JSON import attributes anywhere under
+  // functions/ or shared/ (it failed the build of 39ab247b90 and 07c72b6ab9). Static scan, no browser.
+  [
+    /^tools\/functions-bundle-syntax\.test\.mjs$/,
+    ["test:bundle-syntax", "validate:gate-coverage", "validate:js-syntax", "check"],
+  ],
   // CONTENT SCHEMA v2 (Prompt 3 Wave 1) — shared/content-schema (v2 + migration), the conditional-read helpers and
   // the unit detail endpoint they wrap. G-25 round trip over all 162 units, G-26 provenance and hash invalidation.
   [
