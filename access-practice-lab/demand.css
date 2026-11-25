@@ -1,0 +1,215 @@
+/* Language Demand Analyzer (src/views/demand.js). Tokens only (ds.css). Flags are never colour-only: every mark carries a
+   number and every list entry names its kind. */
+
+.dm-form {
+  display: grid;
+  gap: var(--s-3);
+}
+.dm-text {
+  width: 100%;
+  min-height: 9rem;
+  padding: var(--s-3);
+  font: inherit;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+.dm-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3) var(--s-4);
+  align-items: end;
+}
+.dm-band {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.dm-band legend {
+  padding: 0;
+  margin-bottom: var(--s-1);
+  font-weight: 600;
+}
+.dm-chip {
+  display: inline-flex;
+  gap: var(--s-2);
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.dm-chip:has(input:checked) {
+  background: var(--surface-2);
+  border-color: var(--brand-primary);
+  font-weight: 600;
+}
+.dm-subject {
+  display: grid;
+  gap: var(--s-1);
+  font-weight: 600;
+}
+.dm-subject select {
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  font: inherit;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius);
+}
+
+.dm-results {
+  display: grid;
+  gap: var(--s-4);
+}
+.dm-marked {
+  padding: var(--s-4);
+  margin: 0;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.dm-mark {
+  padding: 0 0.15em;
+  color: inherit;
+  background: var(--surface-2);
+  border-bottom: 2px solid var(--brand-brass);
+}
+.dm-mark[data-sev="high"] {
+  border-bottom: 3px solid var(--brand-gold);
+}
+.dm-mark sup {
+  margin-left: 0.1em;
+  font-size: 0.75em;
+  font-weight: 700;
+  color: var(--brand-gold);
+}
+.dm-findings {
+  display: grid;
+  gap: var(--s-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.dm-finding {
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--brand-brass);
+  border-radius: var(--radius);
+}
+.dm-finding p {
+  margin: var(--s-1) 0;
+}
+.dm-kind {
+  font-weight: 700;
+}
+.dm-n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6em;
+  height: 1.6em;
+  margin-inline-end: var(--s-1);
+  font-size: 0.85em;
+  color: var(--surface);
+  background: var(--brand-primary);
+  border-radius: 999px;
+}
+.dm-sev {
+  margin-inline-start: var(--s-2);
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--brand-gold);
+}
+.dm-quote {
+  font-style: italic;
+  color: var(--ink-2);
+}
+.dm-tip {
+  color: var(--ink);
+}
+
+.dm-results summary {
+  cursor: pointer;
+}
+.dm-results summary h3 {
+  display: inline;
+  margin: 0;
+}
+.dm-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dm-table th,
+.dm-table td {
+  padding: var(--s-2) var(--s-3);
+  text-align: start;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+.dm-table thead th {
+  background: var(--surface-2);
+}
+.dm-tag {
+  padding: 0 var(--s-2);
+  font-size: 0.8em;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+}
+.dm-warn {
+  font-size: 0.9em;
+  color: var(--ink-2);
+}
+.dm-purpose {
+  padding: var(--s-3) 0;
+  border-top: 1px solid var(--line);
+}
+.dm-purpose h4 {
+  margin: 0 0 var(--s-2);
+}
+.dm-step-label {
+  margin: var(--s-3) 0 var(--s-1);
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.dm-print h1,
+.dm-print h2 {
+  margin: 0.6em 0 0.3em;
+}
+
+@media (max-width: 40rem) {
+  .dm-table thead {
+    display: none;
+  }
+  .dm-table tr {
+    display: block;
+    padding: var(--s-2) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .dm-table th,
+  .dm-table td {
+    display: block;
+    border: 0;
+    padding: var(--s-1) 0;
+  }
+}
+@media print {
+  .dm-print {
+    color: #000;
+  }
+}

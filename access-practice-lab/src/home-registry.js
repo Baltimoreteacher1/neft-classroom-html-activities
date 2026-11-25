@@ -795,6 +795,17 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "demand",
+    group: "teach",
+    href: "demand",
+    icon: "search",
+    title: ["Language Demand Analyzer", "Analizador de demanda lingüística"],
+    text: [
+      "Paste a task. See where the language may slow students down and what supports help.",
+      "Pega una tarea. Mira dónde el lenguaje puede frenar a los estudiantes y qué apoyos ayudan.",
+    ],
+  },
+  {
     id: "classroom",
     group: "teach",
     href: "classroom",

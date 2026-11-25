@@ -152,6 +152,9 @@ const VIEW_LOADERS = {
   "activity-studio": () => import("./views/activity-studio.js"),
   do: () => import("./views/do-activity.js"),
   "time-machine": () => import("./views/time-machine.js"),
+  demand: () => import("./views/demand.js"),
+  "teach-back": () => import("./views/teach-back.js"),
+  "claim-check": () => import("./views/claim-check.js"),
   pathways: () => import("./views/pathways.js"),
   "choice-boards": () => import("./views/choice-boards.js"),
   "talk-table": () => import("./views/talk-table.js"),
@@ -212,7 +215,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "access-prep") return { ...r, view: a, id: b || "", setId: c || "", tab: q.get("tab") || "" };
   // TWR: /twr, /twr/<strategy>, /twr/<strategy>/<set> (src/views/twr.js, src/twr/view.js).
   if (a === "twr") return { ...r, view: a, id: b || "", setId: c || "" };
-  if (a === "goals") return { ...r, view: a, id: b || "" };
+  if (["goals", "demand", "teach-back", "claim-check"].includes(a)) return { ...r, view: a, id: b || "" };
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
