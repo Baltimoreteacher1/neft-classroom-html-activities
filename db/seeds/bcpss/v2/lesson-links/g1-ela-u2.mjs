@@ -15,18 +15,20 @@ export default {
   {"n":9,"kind":"cloze","title":"Blue Crab at the Bay","lessons":[{"id":"g1-ela-u2-l03","sequence":3,"title":"Notice how the sentence works","how":"terms","terms":["quill","survive","claw","beak"]},{"id":"g1-ela-u2-l12","sequence":12,"title":"Show what you know","how":"terms","terms":["quill","survive","claw","beak"]}]},
   {"n":10,"kind":"sentence_combine","title":"Because Builders","lessons":[{"id":"g1-ela-u2-l04","sequence":4,"title":"Join ideas around “protect”","how":"uses"}]},
   {"n":11,"kind":"write_scaffold","title":"My Animal Fact Page","lessons":[{"id":"g1-ela-u2-l07","sequence":7,"title":"Ask and answer to find the facts","how":"uses","terms":["claw","quill","beak","shell"]},{"id":"g1-ela-u2-l11","sequence":11,"title":"Give a reason for “beak”","how":"uses","terms":["beak","claw","shell","feature"]},{"id":"g1-ela-u2-l02","sequence":2,"title":"Say it with “beak”","how":"uses","terms":["beak","claw","shell","feature"]}]},
-  {"n":12,"kind":"error_analysis","title":"Feature Fix-It","lessons":[{"id":"g1-ela-u2-l05","sequence":5,"title":"Find and fix the mistake","how":"uses","terms":["feature","protect"]}]}
+  {"n":12,"kind":"error_analysis","title":"Feature Fix-It","lessons":[{"id":"g1-ela-u2-l05","sequence":5,"title":"Find and fix the mistake","how":"uses","terms":["feature","protect"]}]},
+  {"n":13,"kind":"listen_and_show","title":"Meaning Detectives","lessons":[{"id":"g1-ela-u2-l09","sequence":9,"title":"Listen and retell","how":"terms","terms":["danger","catch","protect","survive"]},{"id":"g1-ela-u2-l05","sequence":5,"title":"Find and fix the mistake","how":"terms","terms":["catch","feature","danger","protect"]}]},
+  {"n":14,"kind":"listen_and_show","title":"Sort by Ear","lessons":[{"id":"g1-ela-u2-l06","sequence":6,"title":"Sort and explain with “shell”","how":"topic"}]}
  ],
  "lessons": [
   {"id":"g1-ela-u2-l01","sequence":1,"title":"Meet “feature” and “shell”","activities":[{"n":4,"kind":"clue_game","title":"Mystery Animal Features","how":"terms"},{"n":6,"kind":"talk_cards","title":"Animal Feature Talk","how":"uses"}]},
   {"id":"g1-ela-u2-l02","sequence":2,"title":"Say it with “beak”","activities":[{"n":11,"kind":"write_scaffold","title":"My Animal Fact Page","how":"uses"}]},
   {"id":"g1-ela-u2-l03","sequence":3,"title":"Notice how the sentence works","activities":[{"n":2,"kind":"match","title":"Feature Match-Up","how":"terms"},{"n":9,"kind":"cloze","title":"Blue Crab at the Bay","how":"terms"}]},
   {"id":"g1-ela-u2-l04","sequence":4,"title":"Join ideas around “protect”","activities":[{"n":10,"kind":"sentence_combine","title":"Because Builders","how":"uses"}]},
-  {"id":"g1-ela-u2-l05","sequence":5,"title":"Find and fix the mistake","activities":[{"n":12,"kind":"error_analysis","title":"Feature Fix-It","how":"uses"}]},
-  {"id":"g1-ela-u2-l06","sequence":6,"title":"Sort and explain with “shell”","activities":[{"n":3,"kind":"word_sort","title":"Ending Sound Safari","how":"uses"}]},
+  {"id":"g1-ela-u2-l05","sequence":5,"title":"Find and fix the mistake","activities":[{"n":12,"kind":"error_analysis","title":"Feature Fix-It","how":"uses"},{"n":13,"kind":"listen_and_show","title":"Meaning Detectives","how":"terms"}]},
+  {"id":"g1-ela-u2-l06","sequence":6,"title":"Sort and explain with “shell”","activities":[{"n":3,"kind":"word_sort","title":"Ending Sound Safari","how":"uses"},{"n":14,"kind":"listen_and_show","title":"Sort by Ear","how":"topic"}]},
   {"id":"g1-ela-u2-l07","sequence":7,"title":"Ask and answer to find the facts","activities":[{"n":4,"kind":"clue_game","title":"Mystery Animal Features","how":"terms"},{"n":7,"kind":"info_gap","title":"Animal Card Swap","how":"uses"},{"n":11,"kind":"write_scaffold","title":"My Animal Fact Page","how":"uses"}]},
   {"id":"g1-ela-u2-l08","sequence":8,"title":"Read like a detective","activities":[{"n":8,"kind":"read_annotate","title":"Porcupine and Fox","how":"uses"}]},
-  {"id":"g1-ela-u2-l09","sequence":9,"title":"Listen and retell","activities":[{"n":1,"kind":"dictogloss","title":"Heron by the Bay","how":"uses"}]},
+  {"id":"g1-ela-u2-l09","sequence":9,"title":"Listen and retell","activities":[{"n":1,"kind":"dictogloss","title":"Heron by the Bay","how":"uses"},{"n":13,"kind":"listen_and_show","title":"Meaning Detectives","how":"terms"}]},
   {"id":"g1-ela-u2-l10","sequence":10,"title":"Put the ideas in order with “feature”","activities":[{"n":5,"kind":"unscramble","title":"Feature Sentence Puzzle","how":"uses"}]},
   {"id":"g1-ela-u2-l11","sequence":11,"title":"Give a reason for “beak”","activities":[{"n":11,"kind":"write_scaffold","title":"My Animal Fact Page","how":"uses"}]},
   {"id":"g1-ela-u2-l12","sequence":12,"title":"Show what you know","activities":[{"n":2,"kind":"match","title":"Feature Match-Up","how":"terms"},{"n":9,"kind":"cloze","title":"Blue Crab at the Bay","how":"terms"}]}

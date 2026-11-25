@@ -6,12 +6,15 @@ import {
   STUDIO_LOADERS,
   WRITING_LOADERS,
 } from "../../../db/seeds/bcpss/v2/index.mjs";
+import { withListeningLab } from "../../../db/seeds/bcpss/v2/listening-lab.mjs";
 
 export async function loadStudio(unitId) {
   const load = STUDIO_LOADERS[unitId];
   if (!load) return null;
   const mod = await load();
-  return mod.default || null;
+  // Listening Lab: two more listening activities per unit, derived from the unit's own authored data and appended
+  // after the authored ones (so existing activity numbers, links and saved progress never move).
+  return mod.default ? withListeningLab(unitId, mod.default) : null;
 }
 
 export async function loadFamily(unitId) {

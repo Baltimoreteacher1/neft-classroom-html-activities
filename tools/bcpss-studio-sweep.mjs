@@ -71,6 +71,7 @@ const PROMPTS = {
   clue_game: (p) => p.cards.map((c) => c.term),
   info_gap: (p) => [p.goal],
   dictogloss: (p) => [p.text],
+  listen_and_show: (p) => p.items.map((i) => i.say),
   cloze: (p) => [p.text],
   match: (p) => p.pairs.map((x) => x.l),
   word_sort: (p) => p.items.map((i) => i.text),
