@@ -78,20 +78,29 @@ export async function render({ root, params = {}, shell }) {
   }
 
   function logLink() {
-    const b = h("button", { class: "st-btn", type: "button" }, "Download the review log (CSV)");
     const note = h("span", { role: "status" });
-    b.addEventListener("click", async () => {
-      const res = await apiText("/api/review/log.csv");
-      if (!res.ok) return note.replaceChildren(explain(res));
-      const url = URL.createObjectURL(new Blob([res.text], { type: "text/csv;charset=utf-8" }));
-      const a = h("a", { href: url, download: "review-log.csv" });
-      document.body.append(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      note.replaceChildren("Downloaded.");
-    });
-    return h("p", { class: "st-rv-actions" }, b, note);
+    const button = (label, path, file, type) => {
+      const b = h("button", { class: "st-btn", type: "button" }, label);
+      b.addEventListener("click", async () => {
+        const res = await apiText(path);
+        if (!res.ok) return note.replaceChildren(explain(res));
+        const url = URL.createObjectURL(new Blob([res.text], { type: `${type};charset=utf-8` }));
+        const a = h("a", { href: url, download: file });
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        note.replaceChildren(`Downloaded ${file}.`);
+      });
+      return b;
+    };
+    return h(
+      "p",
+      { class: "st-rv-actions" },
+      button("Download the review log (CSV)", "/api/review/log.csv", "review-log.csv", "text/csv"),
+      button("Download the review log (JSON)", "/api/review/log.json", "review-log.json", "application/json"),
+      note,
+    );
   }
 
   const retryButton = () => {

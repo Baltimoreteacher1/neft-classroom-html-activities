@@ -4,6 +4,7 @@ import { VERIFIER_COUNTS } from "../../../shared/content-schema/review-verifier-
 import { indexRows, isUnitId, loadBlock, subjectKey, unitRows } from "./blocks.js";
 import { logCsv } from "./csv.js";
 import { applyOverlay, DecisionError, effectiveStates, rollupBadge } from "./decide.js";
+import { logJson } from "./log-json.js";
 import { buildQueue, parseFilters, summarizeUnit } from "./queue.js";
 import { diffManifests } from "./release.js";
 import { currentRelease, releaseById } from "./release-store.js";
@@ -85,6 +86,14 @@ export async function logExport({ db, params }) {
   const rows = await listEvents(db, { afterSeq, limit: limit + 1 });
   const page = rows.slice(0, limit);
   return { csv: logCsv(page), next: rows.length > limit ? page.at(-1).seq : null };
+}
+
+export async function logExportJson({ db, params, now = Date.now() }) {
+  const afterSeq = Math.max(0, Number(params.get("afterSeq")) || 0);
+  const limit = Math.min(20000, Math.max(1, Number(params.get("limit")) || 5000));
+  const rows = await listEvents(db, { afterSeq, limit: limit + 1 });
+  const page = rows.slice(0, limit);
+  return logJson(page, { next: rows.length > limit ? page.at(-1).seq : null, now });
 }
 
 export async function verifyLog({ db }) {

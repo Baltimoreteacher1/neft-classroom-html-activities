@@ -57,7 +57,7 @@ API overlays on the migrated defaults; replaying the log reproduces it.
 | `GET /api/review/block/:id` | Current content, last approved snapshot, recent decisions |
 | `POST /api/review/decide` | One decision |
 | `POST /api/review/bulk/sample`, `POST /api/review/bulk` | Bulk, with the sample check |
-| `GET /api/review/log.csv`, `GET /api/review/verify` | Export, chain check |
+| `GET /api/review/log.csv`, `GET /api/review/log.json`, `GET /api/review/verify` | Export (CSV or JSON, same columns and rows), chain check |
 | `GET/POST /api/review/releases`, `GET /api/review/releases/current`, `/releases/:id`, `POST /releases/rollback` | Release trains |
 | `GET /api/review/summary[?unit=]` | **Open read** (no key): badge states and counts only, cached 60 s |
 
@@ -78,6 +78,20 @@ is returned byte for byte because it was never touched. A release cut after a ro
 was current. `GET /releases/current?drift=1` counts live blocks added, removed or changed since the current release.
 Cutting a release does not require every block to be reviewed: decision D19 keeps "Reviewed units only" off by
 default, so a release records state, it does not gate on it.
+
+## Review log as JSON
+
+`GET /api/review/log.json[?afterSeq=&limit=]` returns `{ schema: "ewl-review-log/1", columns, generated_at, count,
+next_after_seq, events[] }`. Each event has exactly the CSV's columns in the CSV's order (`created_at` ISO, `seq` a number,
+no snapshots). `functions/_lib/review/log-json.js` holds the one schema both exports are checked against (gate G-35).
+
+## Badges beyond the unit page (Phase 3)
+
+Lesson cards in the Language Studio, vocabulary cards (and the printable set), the Quick Print Kit and the exports all
+carry a provenance chip from `shared/bcpss-provenance.js`. The chip always renders from what the content says about
+itself (`lessons[].review`, `source`); when `GET /api/review/summary?unit=` can be reached, `bcpss-teachers/provenance-live.js`
+upgrades it to In review / Reviewed. The overlay only reads. Vocabulary carries its unit's state (it has no review record of
+its own). Gates: G-31 (state integrity), G-32 (badges and claims), G-35 (log export schema).
 
 ## Studio
 

@@ -23,7 +23,7 @@ export const ACCURACY_SUBJECTS = ["math", "science"];
 export const REVIEWER_ROLES = ["author", "pedagogy", "language", "accessibility", "admin"];
 
 // draft -> in_review -> reviewed | needs_changes; reviewed -> in_review on edit; retired is terminal.
-const TRANSITIONS = {
+export const TRANSITIONS = {
   draft: ["in_review", "retired"],
   in_review: ["reviewed", "needs_changes", "retired"],
   needs_changes: ["in_review", "retired"],

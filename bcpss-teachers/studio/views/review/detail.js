@@ -81,10 +81,19 @@ export async function renderDetail({ root, id, shell }) {
     const d = res.data;
     const title = d.block.content.title || d.block.content.unit_title || d.block.id;
     shell?.setTitle?.(`Review: ${title}`);
-    const states = Object.entries(d.states).flatMap(([k, v]) => (k === "translation" ? Object.entries(v).map(([l, s]) => [`Translation (${l})`, s]) : [[DIM_NAME[k] || k, v]]));
+    // Who and when, from the block's own review record (empty until a human has decided). Never filled in here.
+    const who = (dim) => {
+      const r = dim?.reviewers?.at(-1);
+      return r ? ` · ${r.name} (${r.role}), ${r.date}` : " · no reviewer yet";
+    };
+    const states = Object.entries(d.states).flatMap(([k, v]) =>
+      k === "translation"
+        ? Object.entries(v).map(([l, s]) => [`Translation (${l})`, s, who(d.block.review.translation?.[l])])
+        : [[DIM_NAME[k] || k, v, who(d.block.review[k])]],
+    );
     body.replaceChildren(
       h("p", { class: "st-meta" }, badge(d.badge), ` ${d.block.id} · grade ${d.block.grade} · ${d.block.subject} · ${d.block.provenance.origin}, version ${d.block.provenance.version}`),
-      h("ul", { class: "st-rv-dims" }, states.map(([n, s]) => h("li", {}, `${n}: ${STATE_NAME[s] || s}`))),
+      h("ul", { class: "st-rv-dims" }, states.map(([n, s, by]) => h("li", {}, `${n}: ${STATE_NAME[s] || s}${by}`))),
       decisionForm(d, load),
       diffView(d.lastReviewed, d.block.content),
       h("section", {}, h("h2", {}, "Current content"), h("pre", { class: "st-rv-panel", tabindex: "0", "aria-label": "Current content as data" }, linesOf(d.block.content).join("\n"))),
