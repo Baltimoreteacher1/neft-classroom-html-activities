@@ -5,6 +5,7 @@
 // supplies the route, the page frame, the language and the breadcrumb. Drafts live on this device and, if the teacher
 // saves to a class, in that class (src/studio/drafts.js).
 import { crumbsHTML } from "../components.js";
+import { applyHandoff, takeHandoff } from "../demand/handoff.js";
 import { i18nFor, langMode } from "../i18n.js";
 import { vocabSample } from "../studio/core/fixtures.js";
 import { SUBJECTS } from "../studio/core/curriculum.js";
@@ -22,13 +23,14 @@ const WELCOME_KEY = "accessPracticeLab:v1:studio-welcome";
 let current = null; // { destroy }
 let wizard = null; // create-flow state, kept while the teacher moves between steps
 
-const freshWizard = (q = {}) => ({
+const freshWizard = (q = {}, handoff = null) => ({
   kind: KIND_IDS.includes(q.kind) ? q.kind : "",
   mode: q.unit ? "lesson" : "content",
-  text: "",
+  text: handoff?.text || "",
+  handoff,
   context: {
     grade: q.grade || "",
-    subject: SUBJECTS.includes(q.subject) ? q.subject : "",
+    subject: SUBJECTS.includes(q.subject) ? q.subject : SUBJECTS.includes(handoff?.subject) ? handoff.subject : "",
     unitId: q.unit || "",
   },
   units: null,
@@ -112,8 +114,9 @@ export async function mount(rootEl, ctx) {
   }
 
   // Create flow. A lesson page can open it with ?kind=&grade=&subject=&unit= and the choices are already made.
-  const sig = JSON.stringify([id, q.kind, q.unit, q.grade, q.subject]);
-  if (!wizard || wizard.sig !== sig) wizard = { ...freshWizard(q), sig };
+  const sig = JSON.stringify([id, q.kind, q.unit, q.grade, q.subject, q.from]);
+  // From the Language Demand Analyzer (?from=demand): the task, its word help and frames arrive once, ready to build.
+  if (!wizard || wizard.sig !== sig) wizard = { ...freshWizard(q, q.from === "demand" ? takeHandoff() : null), sig };
   wizard.ai = (await aiAvailable()) ? aiCall : null;
   const available = Boolean(wizard.ai);
 
@@ -144,7 +147,7 @@ export async function mount(rootEl, ctx) {
   };
   function onCreate(res) {
     const activity = {
-      ...res.activity,
+      ...applyHandoff(res.activity, wizard?.handoff),
       id: newActivityId(),
       rev: 0,
       createdAt: Date.now(),

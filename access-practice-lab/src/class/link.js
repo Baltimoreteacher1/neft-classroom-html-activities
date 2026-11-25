@@ -16,6 +16,7 @@ import { KEY_USES } from "../../../shared/class-platform/contract.js";
 import { loadLedger } from "../lang/ledger.js";
 import { allRecords, isActivityComplete, practiceDays, PREFIX, importProgressData } from "../store.js";
 import { safeJson, storage } from "../util.js";
+import { explainDone } from "./assign-explain.js";
 import { applyClassSupport, clearClassSupport } from "./support.js";
 
 export { LINK_KEY };
@@ -74,6 +75,7 @@ export function languageSummary({ assignmentIds = [], now = Date.now() } = {}) {
       }
     }
   }
+  for (const id of assignmentIds) if (explainDone(id)) done.add(id);
   const weekDays = practiceDays().filter((d) => now - Date.parse(`${d}T12:00:00`) <= WEEK_MS).length;
   return {
     domains,

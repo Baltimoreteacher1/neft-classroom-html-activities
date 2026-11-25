@@ -216,7 +216,7 @@ function triesHTML(I, list) {
     : html`<p>${I.T("None this time.", "Ninguno esta vez.")}</p>`;
 }
 
-export function doneHTML(I, sess, suggestions) {
+export function doneHTML(I, sess, suggestions, share = { inClass: false, status: "" }) {
   const all = sess.attempts;
   const ids = [...new Set(all.map((a) => a.conceptId))];
   const first = all.find((a) => a.phase === "first" && a.text.trim());
@@ -238,7 +238,9 @@ export function doneHTML(I, sess, suggestions) {
     <div class="row-actions">
       <button type="button" class="btn" data-tb-copy>${icon("copy")} ${I.T("Copy my words", "Copiar mis palabras")}</button>
       <button type="button" class="btn ghost" data-tb-print>${icon("print")} ${I.T("Print my words", "Imprimir mis palabras")}</button>
+      ${share.inClass ? html`<button type="button" class="btn" data-tb-share>${icon("mail")} ${I.T("Share with my teacher", "Compartir con mi docente")}</button>` : ""}
       <button type="button" class="btn ghost" data-tb-newtopic>${I.T("Choose another idea", "Elegir otra idea")}</button>
     </div>
+    ${share.inClass ? html`<p class="fine" role="status">${share.status === "sent" ? I.T("Sent to your teacher. Nothing else was sent.", "Enviado a tu docente. No se envió nada más.") : share.status === "failed" ? I.T("Could not send it. Your words are still saved here.", "No se pudo enviar. Tus palabras siguen guardadas aquí.") : I.T("Sharing sends only the words you typed, and only when you press the button.", "Compartir envía solo las palabras que escribiste, y solo cuando presionas el botón.")}</p>` : ""}
   </section>`;
 }

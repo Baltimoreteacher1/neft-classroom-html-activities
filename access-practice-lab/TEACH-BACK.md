@@ -24,3 +24,10 @@ no network calls; tokens only in CSS, no gradients or emoji.
 `visual` key from `visuals.js`. `accept` entries: a word, `two words` (adjacent), `a+b` (same sentence), `stem*`; add Spanish
 words too. Keep 12 per band and at least two ideas per subject. The test checks the model answer finds all three points,
 off-topic text finds none, and the idea card does not repeat the model.
+
+## Assigning and sharing
+
+`/teach-back/<concept id>?grades=<band>` opens that concept once. A teacher assigns one from the class assignment builder
+("Explain it"; `src/class/assign-explain.js`, assignment id `tb-<concept id>`). The assignment counts as done on the
+learner's device once the concept is finished. On the Done step a learner who has joined a class sees "Share with my
+teacher"; it sends the label and the typed words to the class review queue only when pressed. Recordings are never sent.

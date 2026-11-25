@@ -288,7 +288,7 @@ ${s.sentence}</textarea>
   </div>`;
 }
 
-export function revealStep(I, c, s, next) {
+export function revealStep(I, c, s, next, share = { inClass: false, status: "" }) {
   const k = KINDS[c.flaw];
   const fix = c.fix.find((f) => f.correct);
   const obs = checkSentence(c, s.sentence);
@@ -324,7 +324,9 @@ export function revealStep(I, c, s, next) {
     <div class="row-actions">
       ${next ? html`<a class="btn btn-primary" href="${next.href}">${I.T("Next case", "Siguiente caso")}: ${I.T(next.title.en, next.title.es)}</a>` : ""}
       <a class="btn" href="${listHref(c.band)}">${I.T("All cases", "Todos los casos")}</a>
+      ${share.inClass ? html`<button type="button" class="btn" data-cc-share>${icon("mail")} ${I.T("Share with my teacher", "Compartir con mi docente")}</button>` : ""}
     </div>
+    ${share.inClass ? html`<p class="fine" role="status">${share.status === "sent" ? I.T("Sent to your teacher. Nothing else was sent.", "Enviado a tu docente. No se envió nada más.") : share.status === "failed" ? I.T("Could not send it. Your work is still saved here.", "No se pudo enviar. Tu trabajo sigue guardado aquí.") : I.T("Sharing sends only the sentence you wrote, and only when you press the button.", "Compartir envía solo la oración que escribiste, y solo cuando presionas el botón.")}</p>` : ""}
   </section>`;
 }
 

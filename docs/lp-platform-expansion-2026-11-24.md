@@ -58,3 +58,11 @@ All Spanish text was written without native review. Rule-based feedback is a heu
 explanation phrased unexpectedly, which is why each tool shows the learner's quoted words and offers a self-check.
 No review from external roles (students, teachers, families, accessibility specialist) has taken place; checks were
 automated axe plus real-browser runs. That has not replaced a person using it.
+
+## Follow-up 2026-11-25: teacher links
+
+- Demand Analyzer -> Activity Studio: "Make a student handout" builds a worksheet from the analyzed task (`src/demand/handoff.js`).
+- Teach It Back and Misconception Detective can be assigned to a class ("Explain it" in the assignment builder), open
+  by link (`/teach-back/<id>`, `/claim-check/<id>`), show as done in the class summary, and can be shared to the review queue.
+- Not verified in a browser: the teacher-side assignment builder itself (it needs a live class and passcode). Its row
+  data, ids, links and the done-tracking are covered by `tools/explain-assign.test.mjs`.

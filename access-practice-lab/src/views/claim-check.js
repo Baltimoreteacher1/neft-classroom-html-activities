@@ -8,10 +8,11 @@ import { chooserHTML, findStep, fixStep, hintsHTML, listHref, nextCase, readStep
 import { SUBJECTS, caseById, checkSentence, chooseFix, countWords, finish, hintFor, MIN_WORDS, newState, sortCard, sortDone, summarize, supportsBand, tapLine } from "../claimcheck/engine.js";
 import { load, save } from "../claimcheck/store.js";
 import { i18nFor } from "../i18n.js";
+import { inClass, shareWithClass } from "../intel/share.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { BASE, announce, html, icon } from "../util.js";
 
-const ui = { msg: null };
+const ui = { msg: null, share: "" };
 const currentId = (ctx) => ctx.route?.id || "";
 
 function unsupportedHTML(I) {
@@ -35,7 +36,7 @@ function caseBody(I, c, data) {
   const msg = ui.msg;
   ui.msg = null;
   const step = { read: readStep, find: findStep, sort: sortStep }[s.step];
-  const body = step ? step(I, c, s) : s.step === "fix" ? fixStep(I, c, s, msg) : revealStep(I, c, s, nextCase(c, data));
+  const body = step ? step(I, c, s) : s.step === "fix" ? fixStep(I, c, s, msg) : revealStep(I, c, s, nextCase(c, data), { inClass: inClass(), status: ui.shareId === c.id ? ui.share : "" });
   return html`<p class="eyebrow">${icon("detective")} ${I.T(SUBJECTS.find((x) => x[0] === c.subject)[1], SUBJECTS.find((x) => x[0] === c.subject)[2])} · ${I.T(`Grades ${bandText(c.band)}`, `Grados ${bandText(c.band)}`)}</p>
     <h2 class="cc-case-title">${I.T(c.title.en, c.title.es)}</h2>
     ${stepsNav(I, s)}
@@ -161,6 +162,18 @@ export async function onClick(e, ctx) {
     const h = hintFor(c, s.hints);
     announce(I.S(h.en, h.es), { toast: false });
     await redraw(ctx, "ccHints");
+    return true;
+  }
+  if (t.matches("[data-cc-share]")) {
+    const { c, s } = edit(ctx, (s) => s);
+    const res = await shareWithClass({
+      label: `Detective: ${c.title.en}`,
+      text: `Case: ${c.title.en}\nMy reasoning: ${s.sentence}\n${s.independent ? "Finished with no hints." : `Hints opened: ${s.hints}.`}`,
+    });
+    ui.share = res.ok ? "sent" : "failed";
+    ui.shareId = c.id;
+    announce(res.ok ? I.S("Sent to your teacher.", "Enviado a tu docente.") : I.S("Could not send. Your work is still saved here.", "No se pudo enviar. Tu trabajo sigue guardado aquí."), { toast: false });
+    await redraw(ctx, "", true);
     return true;
   }
   if (t.matches("[data-cc-frame]")) {

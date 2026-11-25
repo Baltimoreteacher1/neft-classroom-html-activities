@@ -4,6 +4,7 @@
 import * as audioStore from "../audio-store.js";
 import { crumbsHTML } from "../components.js";
 import { i18nFor } from "../i18n.js";
+import { inClass, shareWithClass } from "../intel/share.js";
 import { printSheet } from "../print-sheet.js";
 import * as recorder from "../recorder.js";
 import { analyze } from "../teachback/check.js";
@@ -14,7 +15,7 @@ import { learnHTML, pickHTML, planHTML, stepperHTML } from "../teachback/ui.js";
 import { doneHTML, feedbackHTML, ownHTML, teachHTML } from "../teachback/ui-teach.js";
 import { BASE, announce, copyText, html, icon } from "../util.js";
 
-const ui = { state: null, showPick: false, recording: false, micError: false, audioUrl: "", audioFor: "", error: "" };
+const ui = { state: null, linked: "", share: "", showPick: false, recording: false, micError: false, audioUrl: "", audioFor: "", error: "" };
 
 const sess = () => ui.state?.session;
 const save = () => store.save(ui.state);
@@ -40,7 +41,7 @@ function stepHTML(I, concept, s, ctx) {
     const analysis = attempt?.text.trim() ? analyze(concept, attempt.text, { plan: s.plan }) : null;
     return attempt ? feedbackHTML(I, concept, s, attempt, analysis) : learnHTML(I, concept, s);
   }
-  if (s.step === "done") return doneHTML(I, s, nextIdeas(band(ctx), s));
+  if (s.step === "done") return doneHTML(I, s, nextIdeas(band(ctx), s), { inClass: inClass(), status: ui.share });
   return learnHTML(I, concept, s);
 }
 
@@ -59,6 +60,17 @@ export async function render(ctx) {
   if (s && !conceptById(currentId(s))) {
     ui.state.session = null;
     s = null;
+  }
+  // An assigned link (/teach-back/<concept id>) opens that concept once; a different link opens its own.
+  const want = ctx.route?.id || "";
+  if (!want) ui.linked = "";
+  else if (want !== ui.linked && conceptById(want)) {
+    ui.linked = want;
+    if (!s || s.id !== want) {
+      if (s) markExplained(ui.state);
+      s = store.startSession(ui.state, want);
+      Object.assign(ui, { showPick: false, audioUrl: "", audioFor: "", micError: false, share: "" });
+    }
   }
   const title = I.S("Teach It Back", "Enséñalo de vuelta");
   const concept = s ? conceptById(currentId(s)) : null;
@@ -212,6 +224,7 @@ export async function onClick(e, ctx) {
   if ("tbPick" in d) {
     if (s) markExplained(ui.state);
     store.startSession(ui.state, d.tbPick);
+    ui.share = "";
     Object.assign(ui, { showPick: false, audioUrl: "", audioFor: "", micError: false });
     await show(ctx, { persist: false });
   } else if ("tbResume" in d) {
@@ -222,6 +235,7 @@ export async function onClick(e, ctx) {
     await show(ctx, { persist: false });
   } else if ("tbNewtopic" in d) {
     endSession(ui.state);
+    ui.share = "";
     ui.showPick = true;
     await show(ctx);
   } else if (!s) return false;
@@ -259,6 +273,13 @@ export async function onClick(e, ctx) {
     const ok = await copyText(wordsText(I, s));
     announce(ok === false ? I.S("Could not copy. Use Print instead.", "No se pudo copiar. Usa Imprimir.") : I.S("Copied. Your words are on the clipboard.", "Copiado. Tus palabras están en el portapapeles."));
   } else if ("tbPrint" in d) printSheet(printHTML(s));
+  else if ("tbShare" in d) {
+    const c = conceptById(s.id);
+    const res = await shareWithClass({ label: `Teach It Back: ${c.title.en}`, text: wordsText(I, s) });
+    ui.share = res.ok ? "sent" : "failed";
+    announce(res.ok ? I.S("Sent to your teacher.", "Enviado a tu docente.") : I.S("Could not send. Your words are still saved here.", "No se pudo enviar. Tus palabras siguen guardadas aquí."));
+    await ctx.rerender();
+  }
   else return false;
   return true;
 }

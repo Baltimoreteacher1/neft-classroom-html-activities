@@ -26,3 +26,9 @@ flaw kind (`fact assumption overgeneral cause calc missing`), title, speaker (a 
 noteEs]` with at least one of each kind, 3 `fix` pairs with `right`, `why`, `accept` idea words, `focus`, `terms`,
 `transfer`, and `calc` `[expr, value]` for any arithmetic. Keep `right` balanced and add the independent check for
 new arithmetic to the test. Run `node --test tools/claim-check.test.mjs`.
+
+## Assigning and sharing
+
+`/claim-check/<case id>?grades=<band>` opens that case. A teacher assigns one from the class assignment builder
+("Explain it"; assignment id `cc-<case id>`); it counts as done once the case is finished. On the reveal step a learner in
+a class sees "Share with my teacher", which sends the case title and the reasoning sentence only when pressed.

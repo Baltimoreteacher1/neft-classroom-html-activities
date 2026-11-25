@@ -4,6 +4,7 @@
 // Engine: src/demand/analyze.js. Rules and limits: DEMAND.md.
 import { crumbsHTML } from "../components.js";
 import { analyzeDemand, BANDS, MAX_CHARS } from "../demand/analyze.js";
+import { buildHandoff, saveHandoff } from "../demand/handoff.js";
 import { WORDS_PRACTICE } from "../demand/patterns.js";
 import { SAMPLES } from "../demand/sample.js";
 import { i18nFor } from "../i18n.js";
@@ -259,7 +260,10 @@ function resultHTML(I, r) {
       <button type="button" class="btn" data-dm-copy>
         ${icon("copy")} ${I.T("Copy the supports as text", "Copiar los apoyos como texto")}
       </button>
-      <button type="button" class="btn ghost" data-dm-print>
+      <button type="button" class="btn primary" data-dm-build>
+        ${icon("launch")} ${I.T("Make a student handout", "Crear una hoja para estudiantes")}
+      </button>
+            <button type="button" class="btn ghost" data-dm-print>
         ${icon("print")} ${I.T("Print the supports", "Imprimir los apoyos")}
       </button>
     </div>
@@ -377,6 +381,15 @@ export async function onClick(e, ctx) {
         ? I.S("Could not copy. Use Print instead.", "No se pudo copiar. Usa Imprimir.")
         : I.S("Copied. Paste it into your lesson plan.", "Copiado. Pégalo en tu plan de clase."),
     );
+    return true;
+  }
+  if (t.matches("[data-dm-build]") && ui.result && !ui.result.empty) {
+    const handoff = buildHandoff(ui.result, ui.text.slice(0, MAX_CHARS));
+    if (!handoff || !saveHandoff(handoff)) {
+      announce(I.S("Could not hand the task to Activity Studio. Use Copy instead.", "No se pudo pasar la tarea al Estudio de actividades. Usa Copiar."));
+      return true;
+    }
+    ctx.navigate(`${BASE}/activity-studio/new?kind=worksheet&from=demand`);
     return true;
   }
   if (t.matches("[data-dm-print]") && ui.result && !ui.result.empty) {

@@ -38,3 +38,11 @@ per purpose, and visual-support ideas.
 
 Analysis output is English; the page chrome is English and Spanish. The idiom and multiple-meaning lists are finite.
 Pronoun and passive detection are heuristics (passive is always "worth a check", never "high").
+
+## Analyze, then build (`src/demand/handoff.js`)
+
+"Make a student handout" carries the result into Activity Studio (`/activity-studio/new?kind=worksheet&from=demand`):
+the teacher's own task becomes the reading block, its directions in numbered steps go on top, the pre-teach words that
+have a Word Lab meaning become the vocabulary block (a word with no meaning is left out, never invented), and the
+sentence starters follow the vocabulary. The task is never reworded. The handoff lives in session storage for one read.
+Tests: `tools/demand-handoff.test.mjs` (the real analyze -> createActivity -> validate chain), `tools/teacher-links-e2e.mjs`.

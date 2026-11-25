@@ -151,14 +151,17 @@ test("the tool states its limits and never names a student level, score or profi
   assert.doesNotMatch(wording, /\b(proficiency level|WIDA level|your students are|score of)\b/i);
 });
 
-test("the module is local: no network, no storage, no AI call", () => {
+test("the module is local: no network, no AI call, and storage only in the one-use handoff (session storage)", () => {
   for (const f of readdirSync(SRC).filter((n) => n.endsWith(".js"))) {
     const code = readFileSync(`${SRC}${f}`, "utf8");
-    assert.doesNotMatch(
-      code,
-      /\bfetch\(|XMLHttpRequest|localStorage|sessionStorage|sendBeacon|WebSocket|api\//,
-      f,
-    );
+    assert.doesNotMatch(code, /\bfetch\(|XMLHttpRequest|sendBeacon|WebSocket|api\//, f);
+    if (f === "handoff.js")
+      assert.doesNotMatch(
+        code,
+        /localStorage|IndexedDB|indexedDB/,
+        "the handoff never persists past the tab",
+      );
+    else assert.doesNotMatch(code, /localStorage|sessionStorage/, f);
   }
 });
 
