@@ -1,5 +1,15 @@
 // Writing Lab steps 7-10: Plan (Single-Paragraph Outline), Draft, Revise & Publish, Multi-Paragraph Plan.
 import { copyText } from "../language-studio/studio-core.js";
+import {
+  analyze,
+  calm,
+  coachPanel,
+  outlineNotes,
+  publishedPiece,
+  revisionCompare,
+  vocabTerms,
+  xrayToggle,
+} from "./wl-coach-ui.js";
 import { workDownloads } from "./wl-export.js";
 import {
   byLevel,
@@ -11,7 +21,6 @@ import {
   lessonTag,
   markDone,
   save,
-  sentenceCount,
   seed,
   shuffleSeeded,
   speakBtn,
@@ -156,78 +165,78 @@ export function stepPlan(root) {
 }
 
 // ---------- 8. Draft ----------
-const TWR_MOVES = [
-  { k: "bbs", label: "Because / but / so", test: (t) => /\b(because|but|so)\b/i.test(t) },
-  {
-    k: "sub",
-    label: "Clue-word start",
-    test: (t) =>
-      /(^|[.!?]\s+)(when|although|before|after|since|if|while|unless|even though|once|until|whenever|as)\b[^.!?]*,/i.test(
-        t,
-      ),
-  },
-  {
-    k: "appos",
-    label: "Appositive",
-    test: (t) => /\b[A-Za-z][^,.!?]{1,40},\s(a|an|the|my|our|one)\b[^,.!?]{2,60},/.test(t),
-  },
-];
+/** Focus mode: hides the app chrome so only the outline and the paragraph remain. Esc leaves it. */
+function focusToggle() {
+  const btn = h(
+    "button",
+    { type: "button", class: "st-btn st-btn--ghost st-btn--sm", "aria-pressed": "false" },
+    "Focus mode",
+  );
+  const set = (on) => {
+    document.body.classList.toggle("wl-focus", on);
+    btn.setAttribute("aria-pressed", String(on));
+    btn.textContent = on ? "Leave focus mode" : "Focus mode";
+    if (on) {
+      const box = document.querySelector(".wl-input--draft");
+      box?.scrollIntoView({ block: "center" });
+      box?.focus({ preventScroll: true });
+    }
+  };
+  btn.addEventListener("click", () => set(!document.body.classList.contains("wl-focus")));
+  focusExit = () => set(false);
+  set(false);
+  return btn;
+}
+let focusExit = () => document.body.classList.remove("wl-focus");
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.body.classList.contains("wl-focus")) focusExit();
+});
+
+/** "Saved on this device" status that follows the debounced save in wl-core. */
+function savedNote() {
+  const el = h("span", { class: "wl-saved", "aria-hidden": "true" }, "Saved on this device");
+  let t = 0;
+  el.ping = () => {
+    el.textContent = "Saving…";
+    window.clearTimeout(t);
+    t = window.setTimeout(() => {
+      el.textContent = "Saved on this device";
+    }, 600);
+  };
+  return el;
+}
+
 export function stepDraft(root) {
   const s = get("spo");
+  const notes = outlineNotes();
   const outline = h(
     "aside",
     { class: "wl-outline", "aria-label": "My outline" },
     h("h4", null, "My outline"),
     h("p", null, h("b", null, "T.S. "), s.ts || byLevel(wl.w.spo.topic)),
-    h(
-      "ul",
-      null,
-      ...[
-        ...(s.picked || []),
-        ...String(s.own || "")
-          .split("\n")
-          .filter((x) => x.trim()),
-      ].map((d) => h("li", null, d)),
-    ),
+    h("ul", null, ...notes.map((d) => h("li", null, d))),
     h("p", null, h("b", null, "C.S. "), s.cs || byLevel(wl.w.spo.conclusion)),
   );
-  const meter = h("div", { class: "wl-meter", "aria-live": "polite" });
-  const moves = h("ul", { class: "wl-moves", "aria-label": "Writing moves I used" });
-  const vocab = (wl.studio?.vocab || []).map((v) => v.term);
-  const update = (t) => {
-    const words = wordCount(t);
-    const usedVocab = vocab.filter((v) =>
-      new RegExp(
-        `\\b${v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").slice(0, Math.max(3, v.length - 1))}`,
-        "i",
-      ).test(t),
-    );
-    meter.replaceChildren(
-      h("span", null, h("b", null, words), " words"),
-      h("span", null, h("b", null, sentenceCount(t)), " sentences"),
-      h("span", null, h("b", null, usedVocab.length), " unit words"),
-    );
-    moves.replaceChildren(
-      ...TWR_MOVES.map((m) =>
-        h(
-          "li",
-          { class: m.test(t) ? "is-on" : "" },
-          h("span", { class: "wl-tick", "aria-hidden": "true" }, m.test(t) ? "✓" : ""),
-          m.label,
-          h("span", { class: "st-sr" }, m.test(t) ? " used" : " not yet"),
-        ),
-      ),
-    );
-  };
-  const box = textBox({
+  const vocab = vocabTerms();
+  const saved = savedNote();
+  let coach = null;
+  const refresh = calm((t) => coach?.update(t));
+  const field = textBox({
     section: "draft",
     field: "text",
     label: "My paragraph",
     hint: "Turn each note into a full sentence. Use transition words to connect your ideas.",
     rows: isStarter() ? 6 : 12,
-    onInput: update,
+    onInput: (t) => {
+      saved.ping();
+      refresh(t);
+    },
   });
-  const minWords = { l1_2: 10, l3_4: 35, l5_6: 60 }[wl.level];
+  const box = field.querySelector("textarea");
+  box.classList.add("wl-input--draft");
+  coach = coachPanel(box);
+  const xr = xrayToggle(box);
+  const minWords = analyze("").stats.minWords;
   const modelBody = h(
     "div",
     { class: "wl-model__body", hidden: true },
@@ -259,9 +268,8 @@ export function stepDraft(root) {
         { class: "wl-draft__main" },
         wordBank(wl.w.transitions, "Transitions"),
         vocab.length ? wordBank(vocab, "Unit words") : null,
-        box,
-        meter,
-        moves,
+        field,
+        coach.el,
         h(
           "div",
           { class: "wl-draft__tools" },
@@ -274,18 +282,22 @@ export function stepDraft(root) {
             },
             "Read my paragraph aloud",
           ),
+          xr.btn,
+          focusToggle(),
+          saved,
         ),
-        workDownloads(reviseDone),
+        xr.panel,
         h(
           "div",
           { class: "wl-model" },
           h("div", { class: "wl-model__bar" }, modelBtn, modelMsg),
           modelBody,
         ),
+        workDownloads(reviseDone),
       ),
     ),
   );
-  update(get("draft").text || "");
+  coach.update(get("draft").text || "");
   markDone("draft");
 }
 
@@ -372,29 +384,56 @@ export function stepRevise(root) {
       ),
     ),
   );
+  const draftNow = String(get("draft").text || "");
+  if (!get("snap").first && draftNow.trim()) save("snap", { first: draftNow });
+  const fb = feedback();
+  const piece = h("div", { class: "wl-pub__wrap" }, publishedPiece());
+  let coach = null;
+  let rev = null;
+  const refresh = calm((t) => {
+    coach?.update(t);
+    rev?.update();
+    piece.replaceChildren(publishedPiece());
+  });
   const final = textBox({
     section: "draft",
     field: "text",
     label: "Make your changes here",
     rows: isStarter() ? 6 : 10,
+    onInput: (t) => refresh(t),
   });
-  const fb = feedback();
-  const name = textBox({ section: "pub", field: "name", label: "My name", rows: 1 });
+  const box = final.querySelector("textarea");
+  coach = coachPanel(box, { compact: true });
+  rev = revisionCompare(() => box.value);
+  const xr = xrayToggle(box);
+  const name = textBox({
+    section: "pub",
+    field: "name",
+    label: "My name",
+    rows: 1,
+    onInput: () => refresh(box.value),
+  });
   root.append(
     h("h3", { class: "wl-sub" }, "Revise: check each box when it is true"),
     list,
     final,
+    h("div", { class: "wl-draft__tools" }, xr.btn),
+    xr.panel,
+    coach.el,
+    rev.el,
     h("h3", { class: "wl-sub" }, "Rate my writing"),
     rubric,
     h("h3", { class: "wl-sub" }, "Publish"),
     name,
+    h("p", { class: "wl-field__hint" }, "This is how your finished piece looks. It updates as you revise."),
+    piece,
     h(
       "div",
       { class: "wl-publish" },
       h(
         "button",
         { type: "button", class: "st-btn st-btn--primary", onclick: () => printFinal() },
-        "Print my paragraph",
+        "Print my published piece",
       ),
       h(
         "button",
@@ -417,24 +456,15 @@ export function stepRevise(root) {
     workDownloads(reviseDone),
     fb,
   );
+  coach.update(box.value);
+  rev.update();
   markDone("revise");
 }
 
 function printFinal() {
   const sheet = document.getElementById("wlPrint");
   if (!sheet) return;
-  sheet.replaceChildren(
-    h("h1", null, wl.w.title),
-    h(
-      "p",
-      { class: "wl-print__meta" },
-      `${get("pub").name || "Name: ________________"} · ${wl.unit.unit_title}`,
-    ),
-    h("p", { class: "wl-print__prompt" }, byLevel(wl.w.prompt)),
-    ...String(get("draft").text || "")
-      .split(/\n+/)
-      .map((p) => h("p", { class: "wl-print__body" }, p)),
-  );
+  sheet.replaceChildren(publishedPiece({ print: true }));
   window.print();
 }
 

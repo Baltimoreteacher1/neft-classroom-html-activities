@@ -26,10 +26,12 @@ function printHtml(html) {
   window.setTimeout(() => frame.remove(), 120_000);
 }
 
-/** Saved answers plus the revise checks the student ticked (by text, so the file does not depend on list order). */
+/** Saved answers (minus the device-only first-draft copy) plus the revise checks the student ticked (by text, so the file does not depend on list order). */
 function currentWork(doneChecks) {
-  const revise = { ...(wl.state.revise || {}), done: doneChecks() };
-  return { ...wl.state, revise };
+  // snap (the first-draft copy kept for "Show my changes") stays on the device.
+  const { snap: _snap, ...work } = wl.state;
+  const revise = { ...(work.revise || {}), done: doneChecks() };
+  return { ...work, revise };
 }
 
 async function download(format, doneChecks) {

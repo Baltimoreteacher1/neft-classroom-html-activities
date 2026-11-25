@@ -1,7 +1,9 @@
 // BCPSS Writing Lab — shell: load the unit, overview, level switch, the TWR path stepper and printables.
 // URL: /bcpss-teachers/writing-lab/?unit=<unitId>&level=<l1_2|l3_4|l5_6>&step=<key>
 import { LEVELS, gradeBand, reducedMotion, stopSpeaking } from "../language-studio/studio-core.js";
-import { LEVEL_INFO, announce, byLevel, flush, h, isDone, loadState, wl } from "./wl-core.js";
+import { MOVES } from "./wl-coach.js";
+import { analyze } from "./wl-coach-ui.js";
+import { LEVEL_INFO, announce, byLevel, flush, get, h, isDone, loadState, wl } from "./wl-core.js";
 import { stepBBS, stepExpand, stepNotes } from "./wl-steps-a.js";
 import { stepAppositives, stepFragments, stepSubordinate } from "./wl-steps-b.js";
 import { workDownloads } from "./wl-export.js";
@@ -98,6 +100,7 @@ function url(step) {
 }
 function go(step) {
   flush();
+  document.body.classList.remove("wl-focus");
   stopSpeaking();
   history.pushState(null, "", url(step));
   render();
@@ -190,6 +193,78 @@ function printables() {
   );
 }
 
+/** Journey ring (steps visited) plus a snapshot of the paragraph so far, so a returning writer sees where they are. */
+function journey() {
+  const core = steps().filter((s) => !s.optional);
+  const visited = core.filter((s) => isDone(s.key)).length;
+  const pct = Math.round((visited / core.length) * 100);
+  const text = String(get("draft").text || "").trim();
+  const ring = h(
+    "div",
+    {
+      class: "wl-ring",
+      style: `--p:${pct}`,
+      role: "img",
+      "aria-label": `${visited} of ${core.length} steps visited`,
+    },
+    h("b", null, String(visited)),
+    h("span", null, `of ${core.length}`),
+  );
+  const head = h(
+    "div",
+    { class: "wl-journey__head" },
+    ring,
+    h(
+      "div",
+      null,
+      h("h2", { id: "wlJourney" }, text ? "My paragraph so far" : "Your writing journey"),
+      h(
+        "p",
+        { class: "wl-field__hint" },
+        visited === core.length
+          ? "You walked the whole path. Revise any time and print your published piece."
+          : visited
+            ? "Pick up where you left off. Your work is saved on this device."
+            : "Nine short steps take you from notes to a finished paragraph.",
+      ),
+    ),
+  );
+  if (!text)
+    return h("section", { class: "wl-card wl-journey", "aria-labelledby": "wlJourney" }, head);
+  const a = analyze(text);
+  const excerpt = text.length > 220 ? `${text.slice(0, 220).replace(/\s+\S*$/, "")}…` : text;
+  return h(
+    "section",
+    { class: "wl-card wl-journey", "aria-labelledby": "wlJourney" },
+    head,
+    h("blockquote", { class: "wl-journey__quote" }, excerpt),
+    h(
+      "p",
+      { class: "wl-journey__stats" },
+      `${a.stats.words} words · ${a.stats.sentences} sentences · ${a.stats.vocab.length} unit words`,
+    ),
+    h(
+      "ul",
+      { class: "wl-moves", "aria-label": "Writing moves I used" },
+      ...MOVES.map((m) =>
+        h(
+          "li",
+          { class: a.moves[m.k] ? "is-on" : "" },
+          h("span", { class: "wl-tick", "aria-hidden": "true" }, a.moves[m.k] ? "✓" : ""),
+          m.label,
+          h("span", { class: "st-sr" }, a.moves[m.k] ? " used" : " not yet"),
+        ),
+      ),
+    ),
+    h(
+      "div",
+      { class: "wl-publish" },
+      h("button", { type: "button", class: "st-btn st-btn--primary", onclick: () => go("draft") }, "Keep writing →"),
+      h("button", { type: "button", class: "st-btn", onclick: () => go("revise") }, "Revise & publish"),
+    ),
+  );
+}
+
 function overview() {
   const w = wl.w;
   const list = steps();
@@ -219,6 +294,7 @@ function overview() {
         isDone("notes") ? `Continue: ${next.title} →` : "Start writing →",
       ),
     ),
+    journey(),
     h(
       "section",
       { class: "wl-card", "aria-labelledby": "wlLessons" },
