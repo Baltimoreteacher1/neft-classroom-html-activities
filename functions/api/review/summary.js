@@ -4,6 +4,7 @@
 import { handler, json } from "../../_lib/http.js";
 import { reviewRoute } from "../../_lib/review/endpoint.js";
 import { summary } from "../../_lib/review/service-read.js";
+import { isMissingTable } from "../../_lib/review/store.js";
 
 export const onRequest = handler(
   reviewRoute({
@@ -11,8 +12,19 @@ export const onRequest = handler(
     open: true,
     rateLimit: { max: 120, ipMax: 600, windowMs: 60_000 },
     async handle({ request, env }) {
-      const out = await summary({ db: env.DB, params: new URL(request.url).searchParams });
-      return json(out, 200, { "Cache-Control": "public, max-age=60" });
+      try {
+        const out = await summary({ db: env.DB, params: new URL(request.url).searchParams });
+        return json(out, 200, { "Cache-Control": "public, max-age=60" });
+      } catch (err) {
+        if (isMissingTable(err)) {
+          return json(
+            { ok: true, available: false, state: null, blocks: [], units: null },
+            200,
+            { "Cache-Control": "public, max-age=60" },
+          );
+        }
+        throw err;
+      }
     },
   }),
 );

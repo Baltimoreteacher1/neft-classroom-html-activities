@@ -5,19 +5,26 @@
 import { effectiveBadge, provenanceChipHtml } from "../shared/bcpss-provenance.js";
 
 const cache = new Map(); // unitId -> { state, blocks: { id: badge } } | null
+let summaryUnavailable = false;
 
 /** Loads and caches the unit's summary. Resolves to the summary or null; never rejects. */
 export async function primeLive(unitId, fetchImpl = globalThis.fetch) {
   if (!unitId) return null;
+  if (summaryUnavailable) return null;
   if (cache.has(unitId)) return cache.get(unitId);
   let out = null;
   try {
     const res = await fetchImpl(`/api/review/summary?unit=${encodeURIComponent(unitId)}`, {
       headers: { Accept: "application/json" },
     });
-    const body = res.ok ? await res.json() : null;
-    if (body?.state && Array.isArray(body.blocks))
-      out = { state: body.state, blocks: Object.fromEntries(body.blocks.map((b) => [b.id, b.badge])) };
+    if (!res.ok) {
+      if (res.status === 503 || res.status === 404) summaryUnavailable = true;
+    } else {
+      const body = await res.json();
+      if (body?.available === false) summaryUnavailable = true;
+      else if (body?.state && Array.isArray(body.blocks))
+        out = { state: body.state, blocks: Object.fromEntries(body.blocks.map((b) => [b.id, b.badge])) };
+    }
   } catch {
     out = null;
   }
@@ -61,4 +68,7 @@ export function refreshChips(root, unitId = "") {
 }
 
 /** Test hook. */
-export const _resetLiveCache = () => cache.clear();
+export const _resetLiveCache = () => {
+  cache.clear();
+  summaryUnavailable = false;
+};

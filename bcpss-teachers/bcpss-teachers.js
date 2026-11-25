@@ -7,6 +7,14 @@ import { keepView } from "./keep-view.js";
 import { mountFamilyTips } from "./family-tips.js";
 import { renderOverview } from "./overview-tab.js";
 import { chipHtml, primeLive, refreshChips } from "./provenance-live.js";
+import {
+  formatBytes,
+  getPinnedUnitManifest,
+  initOfflineBanner,
+  pinUnitOffline,
+  registerOfflineWorker,
+  unpinUnitOffline,
+} from "./offline-mode.js";
 import { renderStudioTab } from "./studio-tab.js";
 import { renderVocabReader } from "./vocab-reader.js";
 import { renderQrSvg } from "./qr-svg.js";
@@ -64,6 +72,10 @@ const state = {
     largeText: false,
     highContrast: false,
     roomySpacing: false,
+    warmPaper: false,
+    readingRuler: false,
+    calmMotion: false,
+    lowBandwidth: false,
   },
 };
 
@@ -126,19 +138,72 @@ function announce(msg) {
   });
 }
 
+let bhRulerEl = null;
+const BH_RULER_HEIGHT = 64;
+
+function positionReadingRuler(y) {
+  if (!bhRulerEl) return;
+  const top = Math.max(0, Math.min(window.innerHeight - BH_RULER_HEIGHT, y - BH_RULER_HEIGHT / 2));
+  bhRulerEl.style.setProperty("--bh-ruler-top", `${top}px`);
+  bhRulerEl.style.setProperty("--bh-ruler-bottom", `${top + BH_RULER_HEIGHT}px`);
+}
+const onRulerPointer = (e) => positionReadingRuler(e.clientY);
+const onRulerTouch = (e) => {
+  if (e.touches?.[0]) positionReadingRuler(e.touches[0].clientY);
+};
+const onRulerFocus = (e) => {
+  const el = e.target;
+  if (!(el instanceof Element) || el.closest(".bh-comfort-popover")) return;
+  const box = el.getBoundingClientRect();
+  if (box.height) positionReadingRuler(box.top + Math.min(box.height / 2, 60));
+};
+
+function syncReadingRuler(enabled) {
+  if (enabled && !bhRulerEl) {
+    bhRulerEl = document.createElement("div");
+    bhRulerEl.id = "bhReadingRuler";
+    bhRulerEl.className = "bh-reading-ruler no-print";
+    bhRulerEl.setAttribute("aria-hidden", "true");
+    bhRulerEl.innerHTML = '<span class="bh-ruler-above"></span><span class="bh-ruler-below"></span>';
+    document.body.append(bhRulerEl);
+    positionReadingRuler(window.innerHeight * 0.4);
+    window.addEventListener("pointermove", onRulerPointer, { passive: true });
+    window.addEventListener("touchmove", onRulerTouch, { passive: true });
+    document.addEventListener("focusin", onRulerFocus);
+  } else if (!enabled && bhRulerEl) {
+    bhRulerEl.remove();
+    bhRulerEl = null;
+    window.removeEventListener("pointermove", onRulerPointer);
+    window.removeEventListener("touchmove", onRulerTouch);
+    document.removeEventListener("focusin", onRulerFocus);
+  }
+}
+
 function applyComfortPrefs() {
-  const { largeText, highContrast, roomySpacing } = state.comfort;
+  const { largeText, highContrast, roomySpacing, warmPaper, readingRuler, calmMotion, lowBandwidth } =
+    state.comfort;
   document.documentElement.classList.toggle("is-large-text", Boolean(largeText));
   document.body.classList.toggle("is-large-text", Boolean(largeText));
   document.body.classList.toggle("is-high-contrast", Boolean(highContrast));
   document.body.classList.toggle("is-roomy-spacing", Boolean(roomySpacing));
+  document.body.classList.toggle("is-warm-paper", Boolean(warmPaper));
+  document.body.classList.toggle("is-calm-motion", Boolean(calmMotion));
+  document.body.classList.toggle("is-low-bandwidth", Boolean(lowBandwidth));
+  syncReadingRuler(Boolean(readingRuler));
 
-  const largeBtn = $("#toggleLargeTextBtn");
-  const contrastBtn = $("#toggleHighContrastBtn");
-  const roomyBtn = $("#toggleRoomySpacingBtn");
-  if (largeBtn) largeBtn.setAttribute("aria-pressed", largeText ? "true" : "false");
-  if (contrastBtn) contrastBtn.setAttribute("aria-pressed", highContrast ? "true" : "false");
-  if (roomyBtn) roomyBtn.setAttribute("aria-pressed", roomySpacing ? "true" : "false");
+  const btnMap = {
+    largeText: "#toggleLargeTextBtn",
+    highContrast: "#toggleHighContrastBtn",
+    roomySpacing: "#toggleRoomySpacingBtn",
+    warmPaper: "#toggleWarmPaperBtn",
+    readingRuler: "#toggleReadingRulerBtn",
+    calmMotion: "#toggleCalmMotionBtn",
+    lowBandwidth: "#toggleLowBandwidthBtn",
+  };
+  for (const [k, sel] of Object.entries(btnMap)) {
+    const btn = $(sel);
+    if (btn) btn.setAttribute("aria-pressed", state.comfort[k] ? "true" : "false");
+  }
 }
 
 function loadComfortPrefs() {
@@ -151,6 +216,10 @@ function loadComfortPrefs() {
           largeText: Boolean(parsed.largeText),
           highContrast: Boolean(parsed.highContrast),
           roomySpacing: Boolean(parsed.roomySpacing),
+          warmPaper: Boolean(parsed.warmPaper),
+          readingRuler: Boolean(parsed.readingRuler),
+          calmMotion: Boolean(parsed.calmMotion),
+          lowBandwidth: Boolean(parsed.lowBandwidth),
         };
       }
     }
@@ -168,6 +237,21 @@ function saveComfortPrefs() {
   }
 }
 
+function resetComfortPrefs() {
+  state.comfort = {
+    largeText: false,
+    highContrast: false,
+    roomySpacing: false,
+    warmPaper: false,
+    readingRuler: false,
+    calmMotion: false,
+    lowBandwidth: false,
+  };
+  applyComfortPrefs();
+  saveComfortPrefs();
+  announce("Display preferences reset to defaults.");
+}
+
 function toggleComfortPref(key) {
   if (!(key in state.comfort)) return;
   state.comfort[key] = !state.comfort[key];
@@ -177,6 +261,10 @@ function toggleComfortPref(key) {
     largeText: "Larger text",
     highContrast: "High contrast",
     roomySpacing: "Roomy spacing",
+    warmPaper: "Warm paper",
+    readingRuler: "Reading ruler",
+    calmMotion: "Calm motion",
+    lowBandwidth: "Low-bandwidth mode",
   };
   announce(`${labels[key]} ${state.comfort[key] ? "enabled" : "disabled"}.`);
 }
@@ -900,6 +988,13 @@ function renderEmptyWorkspace() {
   }
   const projBtn = $("#projectionModeBtn");
   if (projBtn) projBtn.disabled = true;
+  const pinBtn = $("#pinUnitOfflineBtn");
+  if (pinBtn) {
+    pinBtn.disabled = true;
+    pinBtn.setAttribute("aria-pressed", "false");
+    const lbl = $("#pinUnitOfflineLabel");
+    if (lbl) lbl.textContent = "Save Offline";
+  }
   const extSlot = $("#workspaceExternalLabSlot");
   if (extSlot) extSlot.innerHTML = "";
   renderResourceExportBar();
@@ -1007,6 +1102,7 @@ function renderWorkspace() {
   if (projBtn) {
     projBtn.disabled = false;
   }
+  syncPinUnitButton(u.id);
   if (extSlot) {
     if (u.external_content_lab_url) {
       extSlot.innerHTML = `
@@ -1511,6 +1607,10 @@ function selectSubject(nextSubject) {
 function bindEvents() {
   // Reading Comfort & Display Popover
   $(".bh-comfort-popover")?.addEventListener("click", (e) => {
+    if (e.target.closest("#resetComfortBtn")) {
+      resetComfortPrefs();
+      return;
+    }
     const btn = e.target.closest("[data-comfort]");
     if (!btn) return;
     toggleComfortPref(btn.dataset.comfort);
@@ -1647,6 +1747,38 @@ function bindEvents() {
     }
     const unitBtn = e.target.closest("[data-ov-unit]");
     if (unitBtn) openUnitById(unitBtn.dataset.ovUnit);
+  });
+
+  // Offline Unit Pinning
+  $("#pinUnitOfflineBtn")?.addEventListener("click", async () => {
+    const unitId = state.detail?.unit?.id || state.unitId;
+    if (!unitId) return;
+    const btn = $("#pinUnitOfflineBtn");
+    const lbl = $("#pinUnitOfflineLabel");
+    const already = btn?.getAttribute("aria-pressed") === "true";
+    if (btn) btn.disabled = true;
+    try {
+      if (already) {
+        await unpinUnitOffline(unitId);
+        if (btn) btn.setAttribute("aria-pressed", "false");
+        if (lbl) lbl.textContent = "Save Offline";
+        announce("Removed offline copy for this unit.");
+      } else {
+        if (lbl) lbl.textContent = "Saving…";
+        const res = await pinUnitOffline(unitId, {
+          grade: state.grade,
+          subject: state.subject,
+        });
+        if (btn) btn.setAttribute("aria-pressed", "true");
+        if (lbl) lbl.textContent = `Pinned Offline (${formatBytes(res.bytes)})`;
+        announce("Unit saved for offline use on this device.");
+      }
+    } catch {
+      if (lbl) lbl.textContent = "Save Offline";
+      announce("Could not save unit offline in this browser.");
+    } finally {
+      if (btn) btn.disabled = false;
+    }
   });
 
   // Classroom Projection Mode toggle + Exit button + Escape key
@@ -1880,4 +2012,21 @@ async function init() {
   else showSelectionPrompt();
 }
 
+async function syncPinUnitButton(unitId) {
+  const btn = $("#pinUnitOfflineBtn");
+  const lbl = $("#pinUnitOfflineLabel");
+  if (!btn || !unitId) return;
+  btn.disabled = false;
+  const manifest = await getPinnedUnitManifest(unitId);
+  if (manifest) {
+    btn.setAttribute("aria-pressed", "true");
+    if (lbl) lbl.textContent = manifest.bytes ? `Pinned Offline (${formatBytes(manifest.bytes)})` : "Pinned Offline";
+  } else {
+    btn.setAttribute("aria-pressed", "false");
+    if (lbl) lbl.textContent = "Save Offline";
+  }
+}
+
+initOfflineBanner($("#bhOfflineBanner"));
+registerOfflineWorker();
 init();
