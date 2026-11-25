@@ -1,6 +1,6 @@
 import {
-  TELEMETRY_BODY_KEYS,
   TELEMETRY_EVENT_TYPES,
+  validateTelemetryV2Dimensions,
 } from "../../../shared/bcpss-telemetry-schema.js";
 import { recordTelemetry } from "../../_lib/bcpss/db.js";
 import { badRequest, handler, json } from "../../_lib/http.js";
@@ -8,15 +8,15 @@ import { LIMITS, UNIT_ID_RE, WIDA_TIERS } from "../../_lib/security/schema.js";
 import { registeredUnit } from "../../_lib/security/unit-registry.js";
 
 // Strictly FERPA-safe anonymous usage telemetry (ZERO PII, no user IDs, no IPs, no free text).
-// Every field is an enum or a registry lookup; the unit's grade is derived here, never accepted from the client.
+// Every field is an enum, strict slug, or registry lookup; the unit's grade is derived here when omitted.
 // A device flagged `internal` (a teacher testing) is acknowledged but not stored, so it never inflates usage counts.
 export const onRequest = handler({
   methods: ["POST"],
   requireObjectBody: true,
   ...LIMITS.telemetry,
   async handle({ body, env }) {
-    const unexpected = Object.keys(body).filter((k) => !TELEMETRY_BODY_KEYS.includes(k));
-    if (unexpected.length) return badRequest("unexpected field in telemetry body.");
+    const v2Error = validateTelemetryV2Dimensions(body);
+    if (v2Error) return badRequest(v2Error);
 
     const unit_id = typeof body.unit_id === "string" ? body.unit_id.trim() : "";
     const wida_tier = typeof body.wida_tier === "string" ? body.wida_tier.trim() : "";

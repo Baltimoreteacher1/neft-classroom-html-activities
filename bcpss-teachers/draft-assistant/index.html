@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Drafting Assistant (Preview) — BCPSS K–8 Curriculum &amp; Language Bridge</title>
+    <meta
+      name="description"
+      content="Local deterministic teacher drafting scaffold. Paste your own lesson prompt only — never paste student writing or student names."
+    />
+    <meta name="theme-color" content="#1e3a5f" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='2' y='2' width='17' height='17' rx='5.5' fill='%231e3a5f'/%3E%3Crect x='21' y='2' width='17' height='17' rx='5.5' fill='%230f766e'/%3E%3Crect x='2' y='21' width='17' height='17' rx='5.5' fill='%239a3412'/%3E%3Crect x='21' y='21' width='17' height='17' rx='5.5' fill='%23b45309'/%3E%3C/svg%3E"
+    />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/inter-1dc044f4.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/plus-jakarta-sans-069be307.woff2" />
+    <style>
+      @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/assets/fonts/inter-1dc044f4.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Plus Jakarta Sans";
+        font-style: normal;
+        font-weight: 600 700;
+        font-display: swap;
+        src: url(/assets/fonts/plus-jakarta-sans-069be307.woff2) format("woff2");
+      }
+      :root {
+        --bg-canvas: #faf9f6;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f2efe9;
+        --border: #dcd6cb;
+        --ink: #182230;
+        --ink-muted: #475467;
+        --navy: #1e3a5f;
+        --teal: #0f766e;
+        --teal-bg: #ecfdf5;
+        --amber: #9a3412;
+        --amber-bg: #fff7ed;
+        --amber-border: #fdba74;
+        --danger: #991b1b;
+        --danger-bg: #fef2f2;
+        --danger-border: #fca5a5;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg-canvas);
+        color: var(--ink);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+      .d8-banner {
+        background: var(--amber-bg);
+        border-bottom: 2px solid var(--amber-border);
+        color: var(--amber);
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-align: center;
+      }
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem;
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        margin-bottom: 0.75rem;
+      }
+      .breadcrumb a {
+        color: var(--navy);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      h1, h2, h3 {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        color: var(--navy);
+        line-height: 1.25;
+      }
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.75rem;
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-muted);
+      }
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 0.25rem;
+      }
+      select, textarea {
+        width: 100%;
+        font: inherit;
+        color: var(--ink);
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.55rem 0.7rem;
+      }
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+      button {
+        margin-top: 0.75rem;
+        background: var(--navy);
+        color: #ffffff;
+        border: 0;
+        border-radius: 6px;
+        padding: 0.65rem 1.15rem;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover {
+        background: var(--teal);
+      }
+      .badge-draft {
+        display: inline-block;
+        background: var(--amber-bg);
+        border: 1px solid var(--amber-border);
+        color: var(--amber);
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+      }
+      .alert-error {
+        display: none;
+        margin-top: 0.75rem;
+        background: var(--danger-bg);
+        border: 1px solid var(--danger-border);
+        color: var(--danger);
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+      }
+      .alert-error[data-visible="true"] {
+        display: block;
+      }
+      .pill-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        padding: 0;
+        list-style: none;
+      }
+      .pill-list li {
+        background: var(--teal-bg);
+        color: var(--teal);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.2rem 0.65rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .meta-note {
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="d8-banner" role="alert">
+      D8 Privacy Lock: Paste your own lesson prompt only — never paste student writing or student names.
+    </div>
+    <header>
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/bcpss-teachers/">BCPSS Teachers</a>
+          <span aria-hidden="true">/</span>
+          <span>Teacher Drafting Assistant</span>
+        </nav>
+        <h1>Teacher Drafting Assistant (Local Preview)</h1>
+        <p class="lead">
+          Drafts sentence frames, word-bank hints, and a check question locally in your browser from
+          teacher-written lesson text only. Flag <code>model_teacher_assistant</code> remains off by default.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="card" aria-labelledby="input-heading">
+        <h2 id="input-heading">Teacher Lesson Prompt</h2>
+        <div class="grid">
+          <div>
+            <label for="grade">Grade</label>
+            <select id="grade">
+              <option value="K">K</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6" selected>6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+          </div>
+          <div>
+            <label for="subject">Subject</label>
+            <select id="subject">
+              <option value="ELA">ELA</option>
+              <option value="Math" selected>Math</option>
+              <option value="Science">Science</option>
+              <option value="Social Studies">Social Studies</option>
+            </select>
+          </div>
+          <div>
+            <label for="klu">WIDA Key Language Use</label>
+            <select id="klu">
+              <option value="Narrate">Narrate</option>
+              <option value="Inform">Inform</option>
+              <option value="Explain" selected>Explain</option>
+              <option value="Argue">Argue</option>
+            </select>
+          </div>
+          <div>
+            <label for="band">Scaffold Band</label>
+            <select id="band">
+              <option value="1_2">Levels 1–2</option>
+              <option value="3_4" selected>Levels 3–4</option>
+              <option value="5_6">Levels 5–6</option>
+            </select>
+          </div>
+        </div>
+        <label for="teacher-text">Your own lesson prompt or objective</label>
+        <textarea
+          id="teacher-text"
+          placeholder="Example: Explain how equivalent ratios represent the same proportional relationship on a double number line."
+        ></textarea>
+        <button id="generate-btn" type="button">Generate Local Draft</button>
+        <div id="error-box" class="alert-error" role="alert" data-visible="false"></div>
+      </section>
+
+      <section id="output-card" class="card" aria-labelledby="output-heading" hidden>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <h2 id="output-heading" style="margin: 0;">Draft Output</h2>
+          <span class="badge-draft">Draft — teacher review required</span>
+        </div>
+        <p id="provenance-notice" class="meta-note">Draft — teacher review required before classroom use.</p>
+
+        <h3>Draft Sentence Frames</h3>
+        <ul id="frames-list"></ul>
+
+        <h3>Word Bank Hints</h3>
+        <ul id="words-list" class="pill-list"></ul>
+
+        <h3>Teacher Check Question</h3>
+        <p id="check-question"></p>
+      </section>
+    </main>
+
+    <script type="module">
+      import {
+        buildTeacherDraft,
+        validateTeacherInput,
+      } from "../../shared/bcpss/teacher-draft-assistant.js";
+
+      const textEl = document.getElementById("teacher-text");
+      const gradeEl = document.getElementById("grade");
+      const subjectEl = document.getElementById("subject");
+      const kluEl = document.getElementById("klu");
+      const bandEl = document.getElementById("band");
+      const btnEl = document.getElementById("generate-btn");
+      const errEl = document.getElementById("error-box");
+      const outCard = document.getElementById("output-card");
+      const noticeEl = document.getElementById("provenance-notice");
+      const framesEl = document.getElementById("frames-list");
+      const wordsEl = document.getElementById("words-list");
+      const checkEl = document.getElementById("check-question");
+
+      btnEl.addEventListener("click", () => {
+        const validation = validateTeacherInput(textEl.value);
+        if (!validation.ok) {
+          errEl.textContent = validation.reason;
+          errEl.dataset.visible = "true";
+          outCard.hidden = true;
+          return;
+        }
+        errEl.textContent = "";
+        errEl.dataset.visible = "false";
+
+        const draft = buildTeacherDraft({
+          teacherText: textEl.value,
+          grade: gradeEl.value,
+          subject: subjectEl.value,
+          klu: kluEl.value,
+          band: bandEl.value,
+        });
+
+        noticeEl.textContent = draft.provenance.notice;
+        framesEl.replaceChildren(
+          ...draft.draftFrames.map((f) => {
+            const li = document.createElement("li");
+            li.textContent = f;
+            return li;
+          }),
+        );
+        wordsEl.replaceChildren(
+          ...draft.wordBankHints.map((w) => {
+            const li = document.createElement("li");
+            li.textContent = w;
+            return li;
+          }),
+        );
+        checkEl.textContent = draft.checkQuestion;
+        outCard.hidden = false;
+      });
+    </script>
+  </body>
+</html>
