@@ -42,12 +42,12 @@ export const READING = [
     "Read the passage. How do bees help plants make seeds?",
     select(
       opts(
-        "They carry pollen from flower to flower.",
+        "They eat the old leaves.",
         "They water the flowers.",
         "They dig holes for seeds.",
-        "They eat the old leaves.",
+        "They carry pollen from flower to flower.",
       ),
-      "a",
+      "d",
     ),
   ),
   R(
@@ -60,12 +60,12 @@ export const READING = [
     "Read the passage. What can you tell about the class maps?",
     select(
       opts(
-        "They need to be updated.",
-        "They are brand new.",
         "They show only one country.",
+        "They are brand new.",
+        "They need to be updated.",
         "They were drawn by the students.",
       ),
-      "a",
+      "c",
     ),
   ),
   R(
@@ -101,12 +101,12 @@ export const READING = [
     "Read the passage. Why does the puddle disappear?",
     select(
       opts(
-        "The water turns into a gas in the air.",
+        "The ice grows back.",
         "The ground drinks all the water.",
         "Someone wipes it up.",
-        "The ice grows back.",
+        "The water turns into a gas in the air.",
       ),
-      "a",
+      "d",
     ),
   ),
   R(

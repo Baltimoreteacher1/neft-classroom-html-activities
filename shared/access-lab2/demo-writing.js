@@ -35,12 +35,12 @@ export const WRITING = [
     "Which choice fixes the sentence best?",
     select(
       opts(
-        "I like rain. It is wet.",
+        "I like rain? It is wet.",
         "I like rain, It is wet.",
         "I like rain it is wet.",
-        "I like rain? It is wet.",
+        "I like rain. It is wet.",
       ),
-      "a",
+      "d",
     ),
   ),
   W(

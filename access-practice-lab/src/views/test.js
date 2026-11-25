@@ -540,6 +540,7 @@ function resultsHTML() {
         <div class="report-copy">
           <p class="eyebrow">${I.T(`Practice report${r.studentName ? ` · ${r.studentName}` : ""}`, `Informe de práctica${r.studentName ? ` · ${r.studentName}` : ""}`)}</p>
           <h1 tabindex="-1">${T.test.title}</h1>
+          <p class="fine report-estimate">${I.T("Practice estimate, not an official score. Inspired by WIDA ACCESS, not official.", "Estimación de práctica, no es una puntuación oficial. Inspirado en WIDA ACCESS, no es oficial.")}</p>
           <p class="report-mode">${modeBadgeHTML(I, mode)}</p>
           <p class="fine">${rich(I, html`<strong>${MODE_TEXT[mode].label[0]}.</strong> ${T.rec.conditions ? `Each recording played ${maxPlays() === 1 ? "once" : "up to twice"} and could not be paused.` : "Hints and retries were available, so each checked question counts your first try."}`, html`<strong>${MODE_TEXT[mode].label[1]}.</strong> ${T.rec.conditions ? `Cada grabación se reprodujo ${maxPlays() === 1 ? "una sola vez" : "hasta dos veces"} y no se pudo pausar.` : "Había pistas y nuevos intentos, así que cada pregunta revisada cuenta tu primer intento."}`)}</p>
           ${r.total ? html`<p class="big-score"><strong>${r.correct}/${r.total}</strong><span>${I.T("scored questions right", "preguntas calificadas correctas")}</span></p><div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>` : ""}
@@ -572,8 +573,8 @@ function resultsHTML() {
       ${teacherRouteHTML(I, T.rec, T.base.id, T.base.band)}
       <p class="test-note disclaimer">
         ${icon("info")}<span>${I.T(
-          "This is practice feedback, not a WIDA ACCESS score or level. Speaking and writing are best judged by your teacher.",
-          "Esta es retroalimentación de práctica, no un puntaje ni un nivel de WIDA ACCESS. Tu docente es quien mejor puede evaluar Hablar y Escribir.",
+          "Practice estimate, not an official score. Inspired by WIDA ACCESS, not official — this is practice feedback, not a WIDA ACCESS score or level. Speaking and writing are best judged by your teacher.",
+          "Estimación de práctica, no es una puntuación oficial. Inspirado en WIDA ACCESS, no es oficial: esta es retroalimentación de práctica, no un puntaje ni un nivel de WIDA ACCESS. Tu docente es quien mejor puede evaluar Hablar y Escribir.",
         )}</span>
       </p>
       <div class="row-actions report-actions">

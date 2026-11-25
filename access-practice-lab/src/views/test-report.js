@@ -221,7 +221,7 @@ export function compositeHTML(I, c, { WEIGHTS, METHOD, LIMITS, MIN_ITEMS, BAND_P
     </article>`;
   return html`<section class="composite" aria-labelledby="compTitle">
     <h2 id="compTitle">${I.T("Practice composite", "Compuesto de práctica")}</h2>
-    <p class="fine comp-kicker">${I.T("Practice points, not a WIDA ACCESS score, level or placement.", "Puntos de práctica, no un puntaje, nivel ni ubicación de WIDA ACCESS.")}</p>
+    <p class="fine comp-kicker">${I.T("Practice estimate, not an official score. Inspired by WIDA ACCESS, not official — practice points are not a WIDA ACCESS score, level or placement.", "Estimación de práctica, no es una puntuación oficial. Inspirado en WIDA ACCESS, no es oficial: los puntos de práctica no son un puntaje, nivel ni ubicación de WIDA ACCESS.")}</p>
     <div class="comp-grid">
       ${card(I.T("Practice comprehension", "Comprensión de práctica"), I.T("Listening + Reading", "Escuchar + Leer"), c.comprehension)}
       ${card(I.T("Practice overall", "Total de práctica"), I.T("all four skills", "las cuatro destrezas"), c.overall)}

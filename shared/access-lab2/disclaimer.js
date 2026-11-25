@@ -1,8 +1,8 @@
 // The mandatory honesty statement. Every results, test, profile, summary, plan and family output carries it.
 export const DISCLAIMER =
-  "Inspired by WIDA ACCESS, not official, not a score, not a placement tool.";
+  "Practice estimate, not an official score. Inspired by WIDA ACCESS, not official, not a score, not a placement tool.";
 export const DISCLAIMER_ES =
-  "Inspirado en WIDA ACCESS, no es oficial, no es una puntuación, no es una herramienta de colocación. (Traducción en borrador)";
+  "Estimación de práctica, no es una puntuación oficial. Inspirado en WIDA ACCESS, no es oficial, no es una puntuación, no es una herramienta de colocación. (Traducción en borrador)";
 
 const PHRASES = ["inspired by wida access", "not official", "not a score", "not a placement tool"];
 
