@@ -86,10 +86,10 @@ roster import through the Classroom API is not built (the existing Google OAuth 
 
 Three read-only features behind flags in `shared/flags/registry.js` (default on, kill switch each; none writes to the class,
 sends student content anywhere or calls a model). `class_dashboard_v2`: the teacher panel's "This week" section
-(`access-practice-lab/src/class/dashboard-v2.js`) shows finished-by-unit and by-domain tables, assigned vs finished per
+(`access-practice-lab/src/class/week-brief-panel.js`) shows finished-by-unit and by-domain tables, assigned vs finished per
 assignment, the goal meter and a three-bullet brief (who is behind, what to reteach with the unit's authored
 `common_language_misconception` and a suggested next activity, what to celebrate), built by the pure engine
-`shared/class-platform/dashboard-brief.js` from the roster, `astatus/board` and unit data, aliases only. `family_weekly_plan`:
+`shared/class-platform/week-brief.js` from the roster, `astatus/board` and unit data, aliases only. `family_weekly_plan`:
 the Family Guide's "This week's plan" (`family/bcpss/family-plan-view.js`, `shared/bcpss-family-plan.js`): three sittings of
 10 minutes or less assembled verbatim from the unit's authored family block, English and Spanish side by side, with on-device
 read-aloud and a print layout; tasks that mention a flame, knife, heat or a purchase are screened out, and a task longer than

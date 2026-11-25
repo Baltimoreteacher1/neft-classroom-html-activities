@@ -1,5 +1,5 @@
 // Class dashboard 2.0 in the teacher class panel (docs/class-platform.md): the weekly brief, the goal meter and the
-// completion tables, built by the pure engine in shared/class-platform/dashboard-brief.js from what the class platform
+// completion tables, built by the pure engine in shared/class-platform/week-brief.js from what the class platform
 // already returns to a teacher (roster summaries, the assignment status board) plus the authored unit data.
 // Read-only: it writes nothing to the class, sends nothing to any model, and shows students by alias only.
 // Behind the `class_dashboard_v2` flag (shared/flags/registry.js).
@@ -8,7 +8,7 @@ import {
   briefText,
   buildDashboard,
   unitSnapshot,
-} from "../../../shared/class-platform/dashboard-brief.js";
+} from "../../../shared/class-platform/week-brief.js";
 import { pageFlag } from "../../../shared/flags/page-flag.js";
 import { el } from "./dom.js";
 

@@ -32,7 +32,13 @@ const reg = (...flags) => ({ version: 1, flags });
 test("registry defaults: every initial flag is off and documented", () => {
   const all = evaluateAll({ env: "production" });
   // Read-only classroom features that write nothing and send nothing anywhere ship on, each with a kill switch.
-  const READ_ONLY_ON = ["class_dashboard_v2", "family_weekly_plan", "family_text_tips"];
+  const READ_ONLY_ON = [
+    "class_dashboard_v2",
+    "family_weekly_plan",
+    "family_text_tips",
+    "planner_my_week",
+    "print_kit_bundle",
+  ];
   assert.equal(Object.keys(all).length, 9 + READ_ONLY_ON.length);
   for (const key of READ_ONLY_ON) {
     const flag = registry.flags.find((f) => f.key === key);

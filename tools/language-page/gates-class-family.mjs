@@ -16,7 +16,7 @@ import {
   briefText,
   buildDashboard,
   unitSnapshot,
-} from "../../shared/class-platform/dashboard-brief.js";
+} from "../../shared/class-platform/week-brief.js";
 import { clone } from "./dataset.mjs";
 
 const ROOT = new URL("../../", import.meta.url);
@@ -432,13 +432,13 @@ export const g84 = {
 /* ── G-85 no egress from the new surfaces ──────────────────────────────────── */
 
 const PURE = [
-  "shared/class-platform/dashboard-brief.js",
+  "shared/class-platform/week-brief.js",
   "shared/bcpss-family-plan.js",
   "shared/bcpss-family-tips.js",
 ];
 const SURFACES = [
   ...PURE,
-  "access-practice-lab/src/class/dashboard-v2.js",
+  "access-practice-lab/src/class/week-brief-panel.js",
   "family/bcpss/family-plan-view.js",
   "bcpss-teachers/family-tips.js",
 ];

@@ -13,7 +13,7 @@ import {
   briefText,
   buildDashboard,
   unitSnapshot,
-} from "../../../shared/class-platform/dashboard-brief.js";
+} from "../../../shared/class-platform/week-brief.js";
 import { loadDataset } from "../dataset.mjs";
 
 const here = new URL("./", import.meta.url);

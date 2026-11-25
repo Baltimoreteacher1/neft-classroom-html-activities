@@ -15,7 +15,7 @@ import { ASSIGN_DOMAINS, UNITS_ASSIGN, assignableActivities, assignableUnitStops
 import { el, errorText } from "./dom.js";
 import { familyReportControls } from "./family-reports.js";
 import { heatMapTable } from "./heat-map.js";
-import { mountDashboardV2 } from "./dashboard-v2.js";
+import { mountDashboardV2 } from "./week-brief-panel.js";
 import { createJoinCards } from "./join-cards.js";
 import { itemsFor, loadQuizKey } from "./quiz-key.js";
 import { drawReviewQueue } from "./review-queue.js";
