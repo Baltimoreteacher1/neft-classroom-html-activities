@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anonymous Aggregate Dashboard — BCPSS K–8 Curriculum &amp; Language Bridge</title>
+    <meta
+      name="description"
+      content="Draft: aggregate view of anonymous curriculum usage and unit coverage with D14 minimum cell size 10 suppression. No student rows, no aliases, no outcome claims."
+    />
+    <meta name="theme-color" content="#1e3a5f" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='2' y='2' width='17' height='17' rx='5.5' fill='%231e3a5f'/%3E%3Crect x='21' y='2' width='17' height='17' rx='5.5' fill='%230f766e'/%3E%3Crect x='2' y='21' width='17' height='17' rx='5.5' fill='%239a3412'/%3E%3Crect x='21' y='21' width='17' height='17' rx='5.5' fill='%23b45309'/%3E%3C/svg%3E"
+    />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/inter-1dc044f4.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/plus-jakarta-sans-069be307.woff2" />
+    <style>
+      @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/assets/fonts/inter-1dc044f4.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Plus Jakarta Sans";
+        font-style: normal;
+        font-weight: 600 700;
+        font-display: swap;
+        src: url(/assets/fonts/plus-jakarta-sans-069be307.woff2) format("woff2");
+      }
+      :root {
+        --bg-canvas: #faf9f6;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f2efe9;
+        --border: #dcd6cb;
+        --ink: #182230;
+        --ink-muted: #475467;
+        --navy: #1e3a5f;
+        --teal: #0f766e;
+        --teal-bg: #ecfdf5;
+        --teal-border: #99f6e4;
+        --amber: #9a3412;
+        --amber-bg: #fff7ed;
+        --amber-border: #fdba74;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        max-width: 100%;
+        background: var(--bg-canvas);
+        color: var(--ink);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.55;
+      }
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+      }
+      .skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+        background: var(--navy);
+        color: #ffffff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        z-index: 100;
+      }
+      .draft-banner {
+        background: var(--amber-bg);
+        border-bottom: 2px solid var(--amber-border);
+        color: var(--amber);
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        font-size: 0.92rem;
+        text-align: center;
+      }
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 1.25rem 1rem;
+      }
+      .breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        margin-bottom: 0.85rem;
+      }
+      .breadcrumb a {
+        color: var(--navy);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        color: var(--navy);
+        line-height: 1.25;
+      }
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.45rem, 4vw, 1.9rem);
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-muted);
+        font-size: 1rem;
+      }
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: var(--bg-subtle);
+        color: var(--ink);
+      }
+      .badge-draft {
+        background: var(--amber-bg);
+        border-color: var(--amber-border);
+        color: var(--amber);
+      }
+      .badge-privacy {
+        background: var(--teal-bg);
+        border-color: var(--teal-border);
+        color: var(--teal);
+      }
+      main.wrap {
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
+      }
+      .notice-box {
+        background: var(--amber-bg);
+        border: 1px solid var(--amber-border);
+        border-left: 4px solid var(--amber);
+        border-radius: 8px;
+        padding: 0.95rem 1.1rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.92rem;
+      }
+      .notice-box strong {
+        color: var(--amber);
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 0.85rem;
+        margin-bottom: 1.25rem;
+      }
+      .stat-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem 1.1rem;
+      }
+      .stat-value {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        line-height: 1.15;
+      }
+      .stat-label {
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+        margin-top: 0.3rem;
+      }
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1.15rem;
+      }
+      .card h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.15rem;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0.85rem 0 1rem;
+      }
+      .group-btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: var(--bg-subtle);
+        color: var(--ink);
+        padding: 0.5rem 0.9rem;
+        border-radius: 8px;
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .group-btn[aria-pressed="true"] {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #ffffff;
+      }
+      .group-btn:focus-visible {
+        outline: 3px solid var(--teal);
+        outline-offset: 2px;
+      }
+      .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.65rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        background: var(--bg-subtle);
+        color: var(--navy);
+        font-weight: 600;
+      }
+      .cell-suppressed {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+        background: var(--amber-bg);
+        border: 1px solid var(--amber-border);
+        color: var(--amber);
+        font-weight: 600;
+        font-size: 0.84rem;
+      }
+      .cell-visible {
+        font-weight: 600;
+        color: var(--teal);
+      }
+      .bar-track {
+        width: 120px;
+        max-width: 100%;
+        height: 10px;
+        background: var(--bg-subtle);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        background: var(--teal);
+        border-radius: 999px;
+      }
+      .muted {
+        color: var(--ink-muted);
+        font-size: 0.88rem;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        background: var(--bg-surface);
+        color: var(--ink-muted);
+        font-size: 0.875rem;
+      }
+      footer a {
+        color: var(--navy);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#aggregateMain">Skip to aggregate summary</a>
+
+    <div class="draft-banner" role="note">
+      Draft: aggregate view — Local synthetic preview while <code>district_aggregate_view</code> is OFF by default in production.
+    </div>
+
+    <header>
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/bcpss-teachers">← Back to BCPSS Teachers</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Anonymous Aggregate Dashboard</span>
+        </nav>
+        <h1>Anonymous Aggregate Usage &amp; Unit Coverage</h1>
+        <p class="lead">
+          District and school-level curriculum coverage summary with strict D14 minimum cell size 10 suppression.
+        </p>
+        <div class="badge-row">
+          <span class="badge badge-draft">Draft: aggregate view</span>
+          <span class="badge badge-draft">Flag: district_aggregate_view (default OFF)</span>
+          <span class="badge badge-privacy">D14 Min Cell Size: 10</span>
+          <span class="badge badge-privacy">Zero Student Rows · No Outcome Claims</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="aggregateMain" class="wrap" tabindex="-1">
+      <section class="notice-box" aria-label="Feature flag and non-claim notice">
+        <strong>Feature Flag Notice (<code>district_aggregate_view</code>):</strong>
+        In production, <code>district_aggregate_view</code> is <strong>OFF by default</strong> until explicitly enabled for an authorized district pilot. When OFF, this page renders a local synthetic preview with zero network requests.
+        <strong>No outcome claims:</strong> these counts measure curriculum surface activity only—never student achievement, mastery, or growth.
+      </section>
+
+      <section class="stats-grid" aria-label="Aggregate overview">
+        <div class="stat-card">
+          <div class="stat-value" id="totalObservations">—</div>
+          <div class="stat-label">Total anonymous observations in preview window</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="visibleGroups">—</div>
+          <div class="stat-label">Subgroups meeting minimum cell size (&ge; 10)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="suppressedGroups">—</div>
+          <div class="stat-label">Subgroups suppressed (&lt;10 (suppressed))</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">162</div>
+          <div class="stat-label">K–8 curriculum units indexed in catalog</div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="groupingHeading">
+        <h2 id="groupingHeading">Anonymous Subgroup Summary</h2>
+        <p class="muted">
+          Choose a grouping dimension. Any subgroup with fewer than <strong>10</strong> observations is suppressed automatically as <code>&lt;10 (suppressed)</code> by <code>shared/bcpss/aggregate-privacy.js</code>.
+        </p>
+
+        <div class="controls" role="group" aria-label="Grouping dimension">
+          <button type="button" class="group-btn" data-group="grade_band" aria-pressed="true">
+            By Grade Band
+          </button>
+          <button type="button" class="group-btn" data-group="subject" aria-pressed="false">
+            By Subject
+          </button>
+          <button type="button" class="group-btn" data-group="domain" aria-pressed="false">
+            By Domain
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table aria-describedby="tableCaption">
+            <thead>
+              <tr>
+                <th scope="col" id="groupColHeader">Grade Band</th>
+                <th scope="col">Anonymous Observations</th>
+                <th scope="col">Privacy Status</th>
+                <th scope="col">Relative Share</th>
+              </tr>
+            </thead>
+            <tbody id="aggregateTableBody">
+              <tr>
+                <td colspan="4">Loading local synthetic aggregate preview…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="tableCaption" class="muted" aria-live="polite" style="margin-top: 0.75rem"></p>
+      </section>
+
+      <section class="card" aria-labelledby="privacyRulesHeading">
+        <h2 id="privacyRulesHeading">D14 Aggregate Privacy Safeguards</h2>
+        <ul>
+          <li><strong>Minimum cell size 10:</strong> any subgroup count below 10 is masked as <code>&lt;10 (suppressed)</code> and its raw value is never rendered.</li>
+          <li><strong>No row-level identifiers:</strong> this view contains zero individual records, zero roster rows, and zero classroom labels.</li>
+          <li><strong>Curriculum activity only:</strong> tracks aggregate unit-coverage and language-domain usage with no outcome claims.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          <strong>Status:</strong> Draft: aggregate view · <code>district_aggregate_view</code> default OFF · No outcome claims.
+          Related pages:
+          <a href="/bcpss-teachers">Teacher Bridge</a> ·
+          <a href="/bcpss-teachers/trust/">Privacy &amp; Trust</a> ·
+          <a href="/bcpss-teachers/efficacy/">Efficacy Brief</a>
+        </p>
+      </div>
+    </footer>
+
+    <script type="module">
+      import { MIN_CELL_SIZE, summarizeAggregate } from "../../shared/bcpss/aggregate-privacy.js";
+
+      // Local synthetic anonymous preview observations (zero PII, zero network calls).
+      // Intentionally includes small subgroups (<10) to demonstrate D14 suppression.
+      const SYNTHETIC_GROUPS = [
+        { grade_band: "Grades K–2", subject: "ELA", domain: "Listening", count: 18 },
+        { grade_band: "Grades K–2", subject: "Math", domain: "Speaking", count: 14 },
+        { grade_band: "Grades 3–5", subject: "ELA", domain: "Reading", count: 24 },
+        { grade_band: "Grades 3–5", subject: "Science", domain: "Writing", count: 15 },
+        { grade_band: "Grades 6–8", subject: "Math", domain: "Reading", count: 21 },
+        { grade_band: "Grades 6–8", subject: "Social Studies", domain: "Writing", count: 6 },
+        { grade_band: "Pre-K Pilot", subject: "Science", domain: "Listening", count: 4 },
+      ];
+
+      const PREVIEW_ROWS = [];
+      for (const spec of SYNTHETIC_GROUPS) {
+        for (let i = 0; i < spec.count; i += 1) {
+          PREVIEW_ROWS.push({
+            grade_band: spec.grade_band,
+            subject: spec.subject,
+            domain: spec.domain,
+          });
+        }
+      }
+
+      const LABELS = {
+        grade_band: "Grade Band",
+        subject: "Subject",
+        domain: "Domain",
+      };
+
+      const tbody = document.getElementById("aggregateTableBody");
+      const headerCell = document.getElementById("groupColHeader");
+      const caption = document.getElementById("tableCaption");
+      const totalEl = document.getElementById("totalObservations");
+      const visibleEl = document.getElementById("visibleGroups");
+      const suppressedEl = document.getElementById("suppressedGroups");
+      const buttons = [...document.querySelectorAll(".group-btn")];
+
+      function renderGroup(groupKey) {
+        const summary = summarizeAggregate(PREVIEW_ROWS, groupKey);
+        const visibleCount = summary.cells.filter((c) => !c.suppressed).length;
+        const suppressedCount = summary.cells.filter((c) => c.suppressed).length;
+        const maxCount = Math.max(
+          MIN_CELL_SIZE,
+          ...summary.cells.map((c) => (c.suppressed ? 0 : c.count || 0)),
+        );
+
+        headerCell.textContent = LABELS[groupKey] || groupKey;
+        totalEl.textContent = summary.totalDisplay;
+        visibleEl.textContent = String(visibleCount);
+        suppressedEl.textContent = String(suppressedCount);
+
+        tbody.replaceChildren();
+        for (const cell of summary.cells) {
+          const tr = document.createElement("tr");
+
+          const tdKey = document.createElement("td");
+          tdKey.textContent = cell.key;
+
+          const tdCount = document.createElement("td");
+          const countSpan = document.createElement("span");
+          countSpan.className = cell.suppressed ? "cell-suppressed" : "cell-visible";
+          countSpan.textContent = cell.display;
+          tdCount.append(countSpan);
+
+          const tdStatus = document.createElement("td");
+          tdStatus.textContent = cell.suppressed
+            ? `Suppressed (below D14 threshold of ${MIN_CELL_SIZE})`
+            : `Reported (≥ ${MIN_CELL_SIZE})`;
+
+          const tdBar = document.createElement("td");
+          if (cell.suppressed) {
+            tdBar.textContent = "—";
+          } else {
+            const track = document.createElement("div");
+            track.className = "bar-track";
+            const fill = document.createElement("div");
+            fill.className = "bar-fill";
+            fill.style.width = `${Math.round(((cell.count || 0) / maxCount) * 100)}%`;
+            track.append(fill);
+            tdBar.append(track);
+          }
+
+          tr.append(tdKey, tdCount, tdStatus, tdBar);
+          tbody.append(tr);
+        }
+
+        caption.textContent = `Showing ${summary.cells.length} anonymous ${LABELS[groupKey].toLowerCase()} groups (${suppressedCount} suppressed under D14 min cell size ${MIN_CELL_SIZE}).`;
+      }
+
+      for (const btn of buttons) {
+        btn.addEventListener("click", () => {
+          const key = btn.dataset.group;
+          for (const other of buttons) {
+            other.setAttribute("aria-pressed", String(other === btn));
+          }
+          renderGroup(key);
+        });
+      }
+
+      renderGroup("grade_band");
+    </script>
+  </body>
+</html>
