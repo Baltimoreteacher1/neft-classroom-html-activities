@@ -218,7 +218,7 @@ export function homeLanguageBridge(items, title) {
       "Say each word in English and in your home language, then tell a partner how the two words are alike.",
     grouping: "Partners",
     minutes: 4,
-    tip: "Invite students to add words in any language; Spanish glosses are teacher-reviewed drafts.",
+    tip: "Invite students to add words in any language; Spanish glosses are drafts that no fluent reviewer has checked yet.",
     support: SUPPORT(
       "Say both words with your partner.",
       "Say both words and one way they are alike or different.",

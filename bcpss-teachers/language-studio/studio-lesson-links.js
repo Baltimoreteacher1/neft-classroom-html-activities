@@ -1,6 +1,7 @@
 // Language Studio Player — links between activities and lessons.
 // Data comes from the API (`activity.lessons`, `lesson.studio_activities`, `lesson.reveal`), generated per unit by
 // tools/build-bcpss-activity-lessons.mjs. Nothing here guesses a link: it only renders what the data names.
+import { revealText } from "../../shared/bcpss-reveal.js";
 import { h } from "./studio-core.js";
 import { goLesson, lessonHref } from "./studio-lesson-data.js";
 
@@ -78,7 +79,7 @@ export function revealSection(lesson) {
     "section",
     { class: "sl-reveal", "aria-label": "Reveal Math connection" },
     h("h2", null, "Reveal Math connection"),
-    h("p", { class: "sl-reveal__note" }, "Lessons in Reveal Math that teach the same words:"),
+    h("p", { class: "sl-reveal__note" }, `Lessons in Reveal Math that teach the same words (${(revealText(rows) || "").replace("Reveal Math, same words: ", "")}):`),
     h(
       "ul",
       { class: "sl-practice__list" },

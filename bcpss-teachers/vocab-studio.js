@@ -5,7 +5,9 @@
 // A card never shows invented text: a field that is missing is omitted, and a diagram is drawn
 // only for a term with a declared visual spec (see vocab-visuals.js).
 
+import { DRAFT_NOTICE } from "../shared/bcpss-provenance.js";
 import { keepView } from "./keep-view.js";
+import { chipHtml } from "./provenance-live.js";
 import { renderConceptVisual } from "./vocab-visuals.js";
 import { wordPartsFor } from "./vocab-word-parts.js";
 
@@ -143,6 +145,8 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
   const l1Raw = safeParseJson(connection?.l1_watchouts, []);
   const l1List = Array.isArray(l1Raw) ? l1Raw : l1Raw && typeof l1Raw === "object" ? Object.values(l1Raw) : [];
   const klu = blueprint?.wida_klu || unit.primary_klu || "Explain";
+  // Vocabulary has no review record of its own: it carries its unit's state. Unknown reads as draft, never reviewed.
+  const provChip = () => chipHtml(provenance?.state || "draft", { unitId: unit.id });
   const defaultBand = gradeBandFor(unit.grade);
 
   const prev = containerState.get(container);
@@ -179,7 +183,7 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
         <div class="vs-toolbar">
           <div>
             <span class="studio-kicker">Visual Vocabulary Studio · Unit ${esc(unit.unit_number)}</span>
-            <h3 style="margin:0.15rem 0 0">${esc(unit.unit_title)} (${vocab.length} Terms${provenance?.state === "reviewed" ? "" : " · draft, not yet reviewed"})</h3>
+            <h3 style="margin:0.15rem 0 0">${esc(unit.unit_title)} (${vocab.length} Terms) ${provChip()}</h3>
           </div>
           <div class="vs-mode-tabs" role="group" aria-label="Vocabulary classroom mode">
             <button type="button" class="vs-pill" data-vs-mode="cards" aria-pressed="${st.mode === "cards"}">Visual Word Cards</button>
@@ -227,6 +231,7 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
                     <h4 class="vs-word-title">${esc(v.word)}</h4>
                     <span class="bh-tier-badge">${esc(v.tier)}</span>
                     <span class="bh-standard-chip">WIDA: ${esc(klu)}</span>
+                    ${provChip()}
                   </div>
                   <button
                     type="button"
@@ -390,6 +395,7 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
                   <div class="vs-card-head">
                     <strong>${esc(v.word)}</strong>
                     <span class="bh-tier-badge">${esc(v.tier)}</span>
+                    ${provChip()}
                   </div>
                   ${visual ? `<div class="vs-svg-frame">${visual}</div>` : v.cue ? `<p class="vs-cue">Picture it: ${esc(v.cue)}</p>` : ""}
                   ${v.example ? `<p style="margin:0;font-size:0.86rem"><em>${esc(v.example)}</em></p>` : ""}
@@ -401,7 +407,7 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
             )
             .join("")}
         </div>
-        <p class="bh-muted">Draft: not yet reviewed by a teacher or language specialist.</p>
+        ${provenance?.state === "reviewed" ? "" : `<p class="bh-muted">${DRAFT_NOTICE}</p>`}
       </div>
     `;
   }

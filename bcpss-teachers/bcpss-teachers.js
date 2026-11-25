@@ -2,8 +2,10 @@
 import { anonTokenHeaders } from "../shared/anon-token/anon-token.js";
 import { INTERNAL_TRAFFIC_FLAG } from "../shared/bcpss-telemetry-schema.js";
 import { renderCreationStudio } from "./creation-studio.js";
+import { DRAFT_NOTICE } from "../shared/bcpss-provenance.js";
 import { keepView } from "./keep-view.js";
 import { renderOverview } from "./overview-tab.js";
+import { chipHtml, primeLive, refreshChips } from "./provenance-live.js";
 import { renderStudioTab } from "./studio-tab.js";
 import { renderVocabReader } from "./vocab-reader.js";
 import { renderQrSvg } from "./qr-svg.js";
@@ -1039,6 +1041,8 @@ function renderTabPanels() {
   renderCreateTab();
   renderFamilyTab();
   renderPrintKit();
+  const unitId = detail?.unit?.id;
+  primeLive(unitId).then(() => refreshChips(document, unitId));
 }
 
 function renderVocabTab() {
@@ -1227,6 +1231,7 @@ function renderPrintKit() {
     <section class="pk-page-1">
       <div class="pk-header">
         <p class="pk-kicker">BCPSS Classroom Anchor Chart · ${esc(gradeLabel(u.grade))} · ${esc(u.curriculum_name || curriculumFor(u.grade, u.subject))}</p>
+        <p class="pk-prov">${chipHtml(detail.provenance?.state || "draft", { unitId: u.id })}${detail.provenance?.state === "reviewed" ? "" : ` ${esc(DRAFT_NOTICE)}`}</p>
         <h1 class="pk-title">Unit ${esc(u.unit_number)}: ${esc(u.unit_title)}</h1>
         <p class="pk-meta">
           <strong>WIDA Key Language Use:</strong> ${esc(bp.wida_klu || u.primary_klu || "Explain")}

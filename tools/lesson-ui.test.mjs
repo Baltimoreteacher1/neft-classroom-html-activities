@@ -377,7 +377,12 @@ test("student view: no teacher text, resume, Spanish help, device-only storage",
   assert.ok(keys.length >= 2);
   for (const k of keys) assert.ok(k.startsWith("bcpss-lesson:"), `unexpected storage key ${k}`);
   assert.ok(
-    requested.every((u) => u.startsWith("/api/bcpss/") && !/stars|rating|progress/.test(u)),
+    // The one read outside /api/bcpss is the aggregate review badge for the unit (no student field, no key).
+    requested.every(
+      (u) =>
+        (u.startsWith("/api/bcpss/") || /^\/api\/review\/summary\?unit=[a-z0-9-]+$/.test(u)) &&
+        !/stars|rating|progress/.test(u),
+    ),
     "no student data sent to a server",
   );
 });

@@ -10,6 +10,8 @@ import * as apiTelemetry from "../../functions/api/bcpss/telemetry.js";
 import * as apiLessons from "../../functions/api/bcpss/units/[unitId]/lessons.js";
 import * as apiUnit from "../../functions/api/bcpss/units/[unitId].js";
 import * as apiUnits from "../../functions/api/bcpss/units.js";
+import * as apiReviewSummary from "../../functions/api/review/summary.js";
+import { newEnv } from "../review-test-kit.mjs";
 
 const ROOT = path.resolve(new URL("../../", import.meta.url).pathname);
 const MIME = {
@@ -24,7 +26,14 @@ const MIME = {
   ".ico": "image/x-icon",
 };
 
+// The real review summary handler over an in-memory database (nothing reviewed in it), so pages that ask for badge
+// states get a genuine 200 instead of a 404 console error. Never a deployed database.
+let reviewEnv = null;
+const memoryReviewEnv = () => (reviewEnv ||= newEnv().env);
+
 function route(pathname) {
+  if (pathname === "/api/review/summary")
+    return { mod: apiReviewSummary, params: {}, env: memoryReviewEnv() };
   const fg = pathname.match(/^\/api\/bcpss\/family-guide\/([^/]+)$/);
   if (fg) return { mod: apiFamilyGuide, params: { unitId: decodeURIComponent(fg[1]) } };
   const m = pathname.match(/^\/api\/bcpss\/units\/([^/]+)(\/lessons)?$/);
@@ -55,7 +64,7 @@ export function startServer() {
               headers: req.headers,
               body: body.length ? body : undefined,
             }),
-            env: {},
+            env: r.env ?? {},
             params: r.params,
             waitUntil() {},
           });

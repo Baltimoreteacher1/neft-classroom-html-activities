@@ -1,5 +1,8 @@
 // Language Studio Player — lessons: the timeline on a unit's page and the lesson page itself
 // (`?unit=<id>&lesson=<lessonId>`, add `&view=student` for the student view, `&track=newcomer` for the newcomer path).
+import { lessonProvenance } from "../../shared/bcpss-provenance.js";
+import { revealText } from "../../shared/bcpss-reveal.js";
+import { chipEl, primeLive, refreshChips } from "../provenance-live.js";
 import { LEVEL_INFO, h } from "./studio-core.js";
 import { icon } from "./studio-icons.js";
 import { renderTeacherCard } from "./studio-lesson-card.js";
@@ -94,7 +97,9 @@ function navClick(fn) {
   };
 }
 
-function timelineItem(app, l) {
+/** One lesson card on the unit timeline. Exported so the badge and Reveal gates render the real card. */
+export function timelineItem(app, l) {
+  const reveal = revealText(l.reveal);
   return h(
     "li",
     { class: "sl-tl__item" },
@@ -122,9 +127,11 @@ function timelineItem(app, l) {
         kluChip(l.klu),
         demandBadge(l.language_demand_score),
         weekChip(l.module_week),
+        chipEl(lessonProvenance(l), { unitId: app.unitId, blockId: l.id }),
         l.source === DRAFT_SOURCE ? draftChip() : null,
       ),
       h("p", { class: "sl-tl__goal" }, `Language goal: ${l.function}.`),
+      reveal ? h("p", { class: "prov-reveal", "data-reveal": "1" }, reveal) : null,
       l.vocab?.length
         ? h("p", { class: "sl-tl__vocab" }, h("b", null, "Words: "), l.vocab.join(", "))
         : null,
@@ -160,17 +167,21 @@ export function lessonsSection(app) {
     try {
       const data = await loadUnitLessons(app.unitId);
       if (!data?.lessons?.length) return section.remove();
+      // replaceChildren(null) writes the text "null", so absent parts are filtered out.
       body.replaceChildren(
-        modulePanel(data.module),
-        data.lessons.some((l) => l.source === DRAFT_SOURCE)
-          ? h("p", { class: "sl-chips" }, draftChip())
-          : null,
-        h(
-          "ol",
-          { class: "sl-tl" },
-          data.lessons.map((l) => timelineItem(app, l)),
-        ),
+        ...[
+          modulePanel(data.module),
+          data.lessons.some((l) => l.source === DRAFT_SOURCE)
+            ? h("p", { class: "sl-chips" }, draftChip())
+            : null,
+          h(
+            "ol",
+            { class: "sl-tl" },
+            data.lessons.map((l) => timelineItem(app, l)),
+          ),
+        ].filter(Boolean),
       );
+      primeLive(app.unitId).then(() => refreshChips(section, app.unitId));
     } catch (err) {
       console.warn("[studio] lessons failed", err);
       body.replaceChildren(failCard("Lessons did not load", offlineText(), load, null));
@@ -247,6 +258,7 @@ function pageHead(app, route, lesson) {
       student ? null : minutesChip(tc.minutes),
       student ? null : kluChip(lesson.language_objective.klu),
       student ? null : demandBadge(lesson.language_demand_score),
+      student ? null : chipEl(lessonProvenance(lesson), { unitId: app.unitId, blockId: lesson.id }),
       !student && lesson.source === DRAFT_SOURCE ? draftChip() : null,
     ),
     h("h1", null, lesson.title),
@@ -330,6 +342,8 @@ export function renderLessonPage(root, app) {
       ].filter(Boolean),
     );
     root.replaceChildren(page);
+    // Teacher view only: the student view shows no badge and makes no request beyond /api/bcpss.
+    if (!student) primeLive(app.unitId).then(() => refreshChips(page, app.unitId));
     document.title = `${lesson.title} — ${app.unit.unit_title} · Language Studio`;
   };
   run();

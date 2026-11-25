@@ -1,8 +1,9 @@
-// Reviewed word-parts table for the Visual Vocabulary Studio.
+// Word-parts table for the Visual Vocabulary Studio (not yet reviewed by a person).
 // Each entry is keyed by the exact term and names real prefixes/roots/suffixes only.
 // Anything not listed here shows no "Word parts" row: the old fallback printed a letter
 // count ("Root word: ratio (5 letters)") that teaches nothing.
-// Authored 2026-11-25 from standard Latin/Greek roots; pending teacher review.
+// Authored 2026-11-25 from standard Latin/Greek roots. No teacher or language specialist has reviewed it;
+// the cards that show it carry the unit's draft badge.
 
 const PARTS = {
   decompose: "de- (apart) + compose (put together)",
