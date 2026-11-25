@@ -8,6 +8,7 @@
 import { DRAFT_NOTICE } from "../shared/bcpss-provenance.js";
 import { keepView } from "./keep-view.js";
 import { chipHtml } from "./provenance-live.js";
+import { openPrintableVocabSheet, renderVocabPracticePanel } from "./vocab-practice.js";
 import { renderConceptVisual } from "./vocab-visuals.js";
 import { wordPartsFor } from "./vocab-word-parts.js";
 
@@ -55,19 +56,20 @@ function bandLabel(band) {
   return "6–8 Middle School";
 }
 
-function normalizeVocab(raw) {
+export function normalizeVocab(raw) {
   const parsed = safeParseJson(raw, []);
   if (!Array.isArray(parsed)) return [];
   return parsed
     .map((item) => {
       if (typeof item === "string") {
-        return { word: item.trim(), tier: "Tier 2", definition: "", cognate: "", example: "", nonexample: "", cue: "", family: [], falseFriend: "" };
+        return { word: item.trim(), tier: "Tier 2", definition: "", cognate: "", cognateEs: "", example: "", nonexample: "", cue: "", family: [], falseFriend: "" };
       }
       if (!item || typeof item !== "object") return null;
       const word = String(item.word || item.term || "").trim();
       const definition = String(
         item.student_friendly_def || item.kid_def || item.definition || item.note || "",
       ).trim();
+      const cognateEs = String(item.cognate_es || item.es_cognate || "").trim();
       const cognate = String(
         item.cognate_hint ||
           (item.cognate_es ? `Spanish cognate: ${item.cognate_es}` : "") ||
@@ -89,6 +91,7 @@ function normalizeVocab(raw) {
         tier,
         definition,
         cognate,
+        cognateEs,
         example: text(item.example),
         nonexample: text(item.nonexample),
         cue: text(item.cue),
@@ -187,7 +190,7 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
           </div>
           <div class="vs-mode-tabs" role="group" aria-label="Vocabulary classroom mode">
             <button type="button" class="vs-pill" data-vs-mode="cards" aria-pressed="${st.mode === "cards"}">Visual Word Cards</button>
-            <button type="button" class="vs-pill" data-vs-mode="practice" aria-pressed="${st.mode === "practice"}">Interactive Practice</button>
+            <button type="button" class="vs-pill" data-vs-mode="practice" aria-pressed="${st.mode === "practice"}">Practice &amp; Print</button>
             <button type="button" class="vs-pill" data-vs-mode="print" aria-pressed="${st.mode === "print"}">Printable Set</button>
           </div>
           <div class="vs-band-group" role="group" aria-label="Grade band layout mode">
@@ -206,6 +209,20 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
         ${st.mode === "print" ? renderPrintMode() : ""}
       </div>
     `;
+
+    if (st.mode === "practice") {
+      const mount = container.querySelector("[data-vs-practice-mount]");
+      if (mount) {
+        renderVocabPracticePanel(mount, {
+          unit,
+          terms: vocab,
+          l1Watchouts: l1List,
+          wida,
+          provenance,
+          onTelemetry,
+        });
+      }
+    }
   }
 
   function renderCardsMode(items) {
@@ -265,114 +282,10 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
   }
 
   function renderPracticeMode() {
-    const sample = vocab.slice(0, 4);
-    if (!sample.length) {
+    if (!vocab.length) {
       return `<div class="bh-empty">No vocabulary terms available for practice in this unit.</div>`;
     }
-
-    return `
-      <div class="vs-practice-box">
-        <div class="vs-mode-tabs" role="group" aria-label="Vocabulary practice activity type">
-          <button type="button" class="vs-pill" data-vs-practice="match" aria-pressed="${st.practiceMode === "match"}">1. Term Matching</button>
-          <button type="button" class="vs-pill" data-vs-practice="cloze" aria-pressed="${st.practiceMode === "cloze"}">2. Context Cloze</button>
-          <button type="button" class="vs-pill" data-vs-practice="sentence" aria-pressed="${st.practiceMode === "sentence"}">3. Sentence Builder</button>
-        </div>
-
-        ${
-          st.practiceMode === "match"
-            ? `
-              <p class="bh-muted" style="margin:0">Select a target word, then select its matching student-friendly meaning.</p>
-              <div class="vs-match-grid">
-                <div style="display:grid;gap:0.5rem">
-                  <strong>Target Terms</strong>
-                  ${sample
-                    .map((v) => {
-                      const matched = st.matchedWords.has(v.word);
-                      const selected = st.selectedWord === v.word;
-                      return `<button type="button" class="vs-match-btn ${matched ? "is-matched" : selected ? "is-selected" : ""}" data-vs-match-word="${esc(v.word)}" ${matched ? "disabled" : ""}>${esc(v.word)} ${matched ? "✓" : ""}</button>`;
-                    })
-                    .join("")}
-                </div>
-                <div style="display:grid;gap:0.5rem">
-                  <strong>Meanings</strong>
-                  ${[...sample]
-                    .reverse()
-                    .map((v) => {
-                      const matched = st.matchedWords.has(v.word);
-                      return `<button type="button" class="vs-match-btn ${matched ? "is-matched" : ""}" data-vs-match-def="${esc(v.word)}" ${matched ? "disabled" : ""}>${esc(v.definition || `Key term for ${unit.unit_title}`)}</button>`;
-                    })
-                    .join("")}
-                </div>
-              </div>
-              ${st.matchFeedback ? `<div class="vs-feedback ${st.matchFeedback.startsWith("Matched") ? "is-good" : "is-warn"}" role="status">${esc(st.matchFeedback)}</div>` : ""}
-            `
-            : ""
-        }
-
-        ${
-          st.practiceMode === "cloze"
-            ? `
-              <p class="bh-muted" style="margin:0">Choose the exact academic term that completes each unit definition.</p>
-              <div style="display:grid;gap:0.85rem">
-                ${sample
-                  .map((v, idx) => {
-                    const picked = st.clozeAnswers[idx] || "";
-                    const isRight = picked === v.word;
-                    return `
-                      <div class="cs-item-card">
-                        <p style="margin:0"><strong>${idx + 1}.</strong> In ${esc(unit.unit_title)}, the term <strong>_____</strong> means: ${esc(v.definition || v.word)}</p>
-                        <div class="vs-mode-tabs">
-                          ${sample
-                            .map(
-                              (opt) => `
-                                <button type="button" class="vs-pill" data-vs-cloze-idx="${idx}" data-vs-cloze-val="${esc(opt.word)}" aria-pressed="${picked === opt.word}">
-                                  ${esc(opt.word)}
-                                </button>
-                              `,
-                            )
-                            .join("")}
-                        </div>
-                        ${
-                          picked
-                            ? `<div class="vs-feedback ${isRight ? "is-good" : "is-warn"}" role="status">${
-                                isRight
-                                  ? `Correct! "${v.word}" fits this academic meaning.`
-                                  : `Not yet — re-read the meaning and try another term from the unit bank.`
-                              }</div>`
-                            : ""
-                        }
-                      </div>
-                    `;
-                  })
-                  .join("")}
-              </div>
-            `
-            : ""
-        }
-
-        ${
-          st.practiceMode === "sentence"
-            ? `
-              <p class="bh-muted" style="margin:0">Write one complete ${esc(unit.subject)} sentence using at least one target term and a WIDA ${esc(klu)} connector (e.g., because, therefore, shows that).</p>
-              <div class="vs-mode-tabs">
-                ${sample
-                  .map(
-                    (v) =>
-                      `<button type="button" class="vs-pill" data-vs-insert-term="${esc(v.word)}">+ ${esc(v.word)}</button>`,
-                  )
-                  .join("")}
-              </div>
-              <label for="vsSentenceInput" class="visually-hidden">Academic vocabulary sentence</label>
-              <textarea id="vsSentenceInput" class="bh-seq-input" rows="3" placeholder="Write your academic sentence here…">${esc(st.sentenceDraft)}</textarea>
-              <div>
-                <button type="button" class="bh-btn bh-btn-primary bh-btn-sm" data-vs-check-sentence>Check Sentence</button>
-              </div>
-              ${st.sentenceFeedback ? `<div class="vs-feedback ${st.sentenceFeedback.startsWith("Strong") ? "is-good" : "is-warn"}" role="status">${esc(st.sentenceFeedback)}</div>` : ""}
-            `
-            : ""
-        }
-      </div>
-    `;
+    return `<div class="vs-practice-box" data-vs-practice-mount></div>`;
   }
 
   function renderPrintMode() {
@@ -447,79 +360,13 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
         return;
       }
 
-      const pBtn = e.target.closest("[data-vs-practice]");
-      if (pBtn) {
-        s.practiceMode = pBtn.dataset.vsPractice;
-        render();
-        return;
-      }
-
-      const mWord = e.target.closest("[data-vs-match-word]");
-      if (mWord) {
-        s.selectedWord = mWord.dataset.vsMatchWord;
-        s.matchFeedback = `Selected "${s.selectedWord}". Now choose its matching meaning.`;
-        render();
-        return;
-      }
-
-      const mDef = e.target.closest("[data-vs-match-def]");
-      if (mDef) {
-        if (!s.selectedWord) {
-          s.matchFeedback = "Choose a target term on the left first.";
-        } else if (mDef.dataset.vsMatchDef === s.selectedWord) {
-          s.matchedWords.add(s.selectedWord);
-          s.matchFeedback = `Matched "${s.selectedWord}" accurately!`;
-          s.selectedWord = null;
-        } else {
-          s.matchFeedback = `Look closely at "${s.selectedWord}" and try another meaning.`;
-        }
-        render();
-        return;
-      }
-
-      const clozeBtn = e.target.closest("[data-vs-cloze-idx]");
-      if (clozeBtn) {
-        s.clozeAnswers[Number(clozeBtn.dataset.vsClozeIdx)] = clozeBtn.dataset.vsClozeVal;
-        render();
-        return;
-      }
-
-      const insBtn = e.target.closest("[data-vs-insert-term]");
-      if (insBtn) {
-        const input = container.querySelector("#vsSentenceInput");
-        const cur = input ? input.value : s.sentenceDraft;
-        const term = insBtn.dataset.vsInsertTerm;
-        s.sentenceDraft = cur ? `${cur.trim()} ${term} ` : `${term} `;
-        render();
-        return;
-      }
-
-      if (e.target.closest("[data-vs-check-sentence]")) {
-        const input = container.querySelector("#vsSentenceInput");
-        s.sentenceDraft = input ? input.value.trim() : s.sentenceDraft.trim();
-        const lower = s.sentenceDraft.toLowerCase();
-        const usedTerm = vocab.some((v) => lower.includes(v.word.toLowerCase()));
-        const wordCount = s.sentenceDraft ? s.sentenceDraft.split(/\s+/).length : 0;
-        if (usedTerm && wordCount >= 7) {
-          s.sentenceFeedback = "Strong academic sentence! You used unit vocabulary in a complete explanation.";
-        } else if (!usedTerm) {
-          s.sentenceFeedback = "Revision hint: include at least one target vocabulary term from this unit.";
-        } else {
-          s.sentenceFeedback = "Revision hint: expand your sentence with 'because', 'so', or an example from the lesson.";
-        }
-        render();
-        return;
-      }
-
       if (e.target.closest("[data-vs-print-set]")) {
-        window.print();
-      }
-    });
-
-    container.addEventListener("input", (e) => {
-      if (e.target.id === "vsSentenceInput") {
-        const s = containerState.get(container);
-        if (s) s.sentenceDraft = e.target.value;
+        openPrintableVocabSheet(unit, vocab, {
+          wida,
+          draftNotice: DRAFT_NOTICE,
+          provenanceState: provenance?.state || "draft",
+        });
+        onTelemetry?.("vocab_print");
       }
     });
   }
