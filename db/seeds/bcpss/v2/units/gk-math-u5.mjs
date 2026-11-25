@@ -62,8 +62,8 @@ export default {
     {
       kind: "match", domain: "Vocabulary", title: "Teen Number Words", minutes: 8, grouping: "Solo",
       mission: "Match 9 words, from “ten” to “twenty”, to their picture clues.",
-      tip: "Have children say each word and show it with counters before they tap.",
-      materials: ["Ten frames", "Counters"],
+      tip: "Have children say each word and draw it as dots before they tap.",
+      materials: ["Ten frames", "Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Ten frames + Counters",
       support: { l1_2: "Match ten, ones, and full first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add your own example to each." },
       payload: {
         left_label: "Word", right_label: "Picture clue",
@@ -83,9 +83,9 @@ export default {
     {
       kind: "clue_game", domain: "Game", title: "Mystery Teen", minutes: 10, grouping: "Small Group",
       mission: "Flip one clue at a time to guess all 8 words, starting with “A soccer team has this many players on the field”.",
-      tip: "Fewer clues used means more points; there is no clock, so let children build each number to check.",
-      materials: ["Ten frames", "Counters"],
-      support: { l1_2: "Build the number with counters to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
+      tip: "Fewer clues used means more points; there is no clock, so let children draw each number to check.",
+      materials: ["Ten frames", "Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Ten frames + Counters",
+      support: { l1_2: "Draw the number as dots to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
       payload: {
         cards: [
           { term: "eleven", clues: ["A soccer team has this many players on the field.", "1 ten and 1 one make me.", "I come after 10."] },
@@ -126,8 +126,8 @@ export default {
       kind: "word_sort", domain: "Vocabulary", title: "Ten or Ones?", minutes: 8, grouping: "Partners",
       mission: "Sort each digit. Does it show the ten or the ones?",
       tip: "Listen for 'The 1 shows one ten' and 'The 3 shows 3 ones' when partners explain a sort.",
-      materials: ["Ten frames", "Counters"],
-      support: { l1_2: "Build the number with counters first, then sort.", l3_4: "Sort all of them and say 'The ___ shows the ten.'", l5_6: "Sort all, then say each teen number as a ten and ones." },
+      materials: ["Ten frames", "Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Ten frames + Counters",
+      support: { l1_2: "Draw the number as dots first, then sort.", l3_4: "Sort all of them and say 'The ___ shows the ten.'", l5_6: "Sort all, then say each teen number as a ten and ones." },
       payload: {
         categories: [{ name: "🔟 The ten" }, { name: "☝️ The ones" }],
         items: [
@@ -175,7 +175,7 @@ export default {
       kind: "info_gap", domain: "Speaking", title: "Number Card Spies", minutes: 10, grouping: "Partners",
       mission: "Ask your partner about the other cards. Find each ten and ones!",
       tip: "Partners keep cards hidden and ask and answer aloud; then they say each teen number (14, 16, 19).",
-      materials: ["Number cards A and B", "Counters"],
+      materials: ["Number cards A and B", "Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Number cards A and B + Counters",
       support: { l1_2: "Use the ask frame word for word.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Say each teen number and tell how you know." },
       payload: {
         goal: "Find the tens and the ones in 14, 16, and 19. Then say each number.",

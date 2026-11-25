@@ -41,8 +41,8 @@ export default {
       kind: "dictogloss", domain: "Listening", title: "Boats at the Harbor", minutes: 10, grouping: "Partners",
       mission: "Listen to Jada's story twice. Tell it back!",
       tip: "Read slowly twice while children jot numbers, then partners retell using first, then, and the sum.",
-      materials: ["Counters"],
-      support: sup("Use counters to show the boats you hear.", "Retell with the numbers and the word sum.", "Retell all the steps and say why the ten helps."),
+      materials: ["Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Counters",
+      support: sup("Draw dots to show the boats you hear.", "Retell with the numbers and the word sum.", "Retell all the steps and say why the ten helps."),
       payload: {
         text: "Jada sees 9 boats at the Inner Harbor. Then 4 more boats come. Jada makes a ten. 9 plus 1 is 10. Then 10 plus 3 is 13. The sum is 13.",
         key_words: ["boats", "Harbor", "makes", "ten", "sum"],
@@ -107,8 +107,8 @@ export default {
       kind: "talk_cards", domain: "Speaking", title: "Strategy Talk", minutes: 10, grouping: "Partners",
       mission: "Pick a card. Solve it. Tell your partner why!",
       tip: "Model one turn first and listen for the strategy name plus a because reason.",
-      materials: ["Counters", "Ten frames"],
-      support: sup("Point to the counters and say the frame.", "Say your strategy and one reason.", "Say your strategy, your reason, and a different way."),
+      materials: ["Paper for drawing dots", "Ten frames"], materials_revision: "draft: paper-based substitute (audit F-16); was Counters + Ten frames",
+      support: sup("Point to the dots and say the frame.", "Say your strategy and one reason.", "Say your strategy, your reason, and a different way."),
       payload: {
         roles: { a: "Solver", b: "Checker" },
         cards: [
@@ -190,8 +190,8 @@ export default {
     {
       kind: "sequence", domain: "Reading", title: "Make a Ten Steps", minutes: 8, grouping: "Small Group",
       mission: "Put the steps in order to solve 8 + 5.",
-      tip: "Use counters on a ten frame; children act out each step as they order it.",
-      materials: ["Counters", "Ten frame"],
+      tip: "Draw dots on a printed ten frame; children act out each step as they order it.",
+      materials: ["Paper for drawing dots", "Ten frame"], materials_revision: "draft: paper-based substitute (audit F-16); was Counters + Ten frame",
       support: sup("Look at the ten frame and say first, next, then.", "Order the steps and say each signal word.", "Order the steps, then solve 7 + 6 the same way."),
       payload: {
         title: "How to solve 8 + 5 by making a ten",
@@ -233,7 +233,7 @@ export default {
       kind: "write_scaffold", domain: "Writing", title: "My Strategy Proof", minutes: 15, grouping: "Solo",
       mission: "Solve 8 + 6. Write your strategy and why it works.",
       tip: "Children may draw a ten frame first; accept labeled drawings and number sentences for emerging writers.",
-      materials: ["Ten frame", "Counters"],
+      materials: ["Ten frame", "Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Ten frame + Counters",
       support: sup("Draw the ten frame. Copy the first frame.", "Write your strategy and one reason.", "Write your strategy, two steps, and the sum."),
       payload: {
         prompt: "Solve 8 + 6. Tell your strategy. Tell why it works.",

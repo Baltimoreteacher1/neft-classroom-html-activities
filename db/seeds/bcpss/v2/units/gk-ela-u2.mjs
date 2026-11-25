@@ -219,7 +219,7 @@ export default {
       kind: "word_sort", domain: "Listening", title: "Barnyard Blend Sort", minutes: 8, grouping: "Partners",
       mission: "Tap out each word. Sort it by its middle sound.",
       tip: "Fundations link: children tap the three sounds, blend the word, then sort by the vowel keyword.",
-      materials: ["Letter tiles", "Sound mats"],
+      materials: ["Letter cards", "Sound mats"], materials_revision: "draft: paper-based substitute (audit F-16); was Letter tiles + Sound mats",
       support: { l1_2: "Tap the sounds on your fingers: /r/ /ă/ /m/.", l3_4: "Tap, blend, and say the word before you sort.", l5_6: "Sort all words, then write one new word for each group." },
       payload: {
         categories: [{ name: "ă like apple" }, { name: "ŏ like octopus" }, { name: "ŭ like umbrella" }],

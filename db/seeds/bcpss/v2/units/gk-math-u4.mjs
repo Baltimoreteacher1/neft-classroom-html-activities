@@ -50,9 +50,9 @@ export default {
     {
       kind: "dictogloss", domain: "Listening", title: "Ice Pop Day", minutes: 10, grouping: "Partners",
       mission: "Listen to Dee's ice pop story. Tell it back!",
-      tip: "Read slowly twice while children act it out with cubes, then have partners retell with the frame.",
-      materials: ["Cubes"],
-      support: { l1_2: "Move a cube away for each ice pop Dee gives.", l3_4: "Say how many Dee started with and how many are left.", l5_6: "Retell it and say the equation for the story." },
+      tip: "Read slowly twice while children draw it with squares, then have partners retell with the frame.",
+      materials: ["Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Cubes",
+      support: { l1_2: "Cross out a square for each ice pop Dee gives.", l3_4: "Say how many Dee started with and how many are left.", l5_6: "Retell it and say the equation for the story." },
       payload: {
         text: "It is a hot day in Baltimore. Dee has 8 ice pops. She gives 3 to her friends. Now Dee has 5 left. 8 minus 3 equals 5.",
         key_words: ["Baltimore", "pops", "gives", "left", "minus"],
@@ -63,8 +63,8 @@ export default {
     {
       kind: "match", domain: "Vocabulary", title: "Take Away Words", minutes: 8, grouping: "Solo",
       mission: "Match 10 words, from “subtract” to “part”, to their picture clues.",
-      tip: "Have children say each word and act it out with cubes before they tap.",
-      materials: ["Cubes"],
+      tip: "Have children say each word and draw it with squares before they tap.",
+      materials: ["Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Cubes",
       support: { l1_2: "Match take away, minus, and left first.", l3_4: "Match all ten, then say a sentence for two.", l5_6: "Match all ten and add your own example to each." },
       payload: {
         left_label: "Word", right_label: "Picture clue",
@@ -85,8 +85,8 @@ export default {
     {
       kind: "clue_game", domain: "Game", title: "Mystery Leftovers", minutes: 10, grouping: "Small Group",
       mission: "Open one clue at a time. Guess how many are left!",
-      tip: "Fewer clues used means more points; there is no clock, so let children use cubes to check.",
-      materials: ["Cubes"],
+      tip: "Fewer clues used means more points; there is no clock, so let children draw squares to check.",
+      materials: ["Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Cubes",
       support: { l1_2: "Use your fingers to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
       payload: {
         cards: [
@@ -127,9 +127,9 @@ export default {
     {
       kind: "word_sort", domain: "Vocabulary", title: "Same Left Sort", minutes: 8, grouping: "Partners",
       mission: "Sort each take-away problem by how many are left.",
-      tip: "Listen for 'There are ___ left because ___' when partners explain a sort; invite them to build one with cubes.",
-      materials: ["Cubes"],
-      support: { l1_2: "Build it with cubes first, then sort.", l3_4: "Sort all of them and say 'There are ___ left.'", l5_6: "Sort all, then write one more problem for each group." },
+      tip: "Listen for 'There are ___ left because ___' when partners explain a sort; invite them to draw one with squares.",
+      materials: ["Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Cubes",
+      support: { l1_2: "Draw it with squares first, then sort.", l3_4: "Sort all of them and say 'There are ___ left.'", l5_6: "Sort all, then write one more problem for each group." },
       payload: {
         categories: [{ name: "2️⃣ Two left" }, { name: "3️⃣ Three left" }, { name: "4️⃣ Four left" }],
         items: [
@@ -142,8 +142,8 @@ export default {
     {
       kind: "read_annotate", domain: "Reading", title: "Sticker Swap Story", minutes: 10, grouping: "Whole Class",
       mission: "Listen to Marcus's story. Find the proof words!",
-      tip: "Read aloud twice; children circle take-away words on a big chart and act out the stickers with cubes.",
-      materials: ["Big chart paper", "Cubes"],
+      tip: "Read aloud twice; children circle take-away words on a big chart and draw the stickers as squares.",
+      materials: ["Big chart paper", "Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Big chart paper + Cubes",
       support: { l1_2: "Find only the take-away words.", l3_4: "Find take-away words and the reason.", l5_6: "Find both, then write one new sentence about Marcus." },
       payload: {
         text: "Marcus has 9 stickers. He gives 4 stickers to Tia. We write 9 minus 4 equals 5. Marcus has 5 stickers left. He knows because he took away 4 from 9.",
@@ -194,7 +194,7 @@ export default {
       kind: "info_gap", domain: "Speaking", title: "Snack Table Spies", minutes: 10, grouping: "Partners",
       mission: "Ask your partner. Then find how many are left!",
       tip: "Partners keep cards hidden and ask aloud; then each subtracts to find what is left (grapes 5, crackers 4, cherries 4).",
-      materials: ["Snack cards A and B", "Cubes"],
+      materials: ["Snack cards A and B", "Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Snack cards A and B + Cubes",
       support: { l1_2: "Use the ask frame word for word.", l3_4: "Ask in your own words, then say the answer back.", l5_6: "Tell how many are left and prove it with because." },
       payload: {
         goal: "Find how many grapes, crackers, and cherries are left on the snack table.",

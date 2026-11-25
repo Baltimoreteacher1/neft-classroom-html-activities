@@ -50,8 +50,8 @@ export default {
       kind: "dictogloss", domain: "Listening", title: "Lena's Sticker Trade", minutes: 10, grouping: "Partners",
       mission: "Listen to Lena's story. Tell it back with your partner!",
       tip: "Read slowly twice; children jot numbers, then rebuild the story with a partner.",
-      materials: ["Ten-sticks and cubes"],
-      support: { l1_2: "Show the story with sticks and cubes as you listen.", l3_4: "Say one sentence about each step Lena does.", l5_6: "Retell every step and say the total." },
+      materials: ["Paper for drawing tens and ones"], materials_revision: "draft: paper-based substitute (audit F-16); was Ten-sticks and cubes",
+      support: { l1_2: "Draw the story with sticks and squares as you listen.", l3_4: "Say one sentence about each step Lena does.", l5_6: "Retell every step and say the total." },
       payload: {
         text: "Lena has 27 stickers. A friend gives her 5 more. She has 7 ones and 5 ones. That makes 12 ones. She trades 10 ones for 1 ten. Now Lena has 32 stickers.",
         key_words: ["stickers", "ones", "trades", "ten", "32"],
@@ -83,9 +83,9 @@ export default {
     {
       kind: "clue_game", domain: "Game", title: "Mystery Number Hunt", minutes: 10, grouping: "Small Group",
       mission: "Flip one clue at a time to guess all 8 words, starting with “I have 4 tens and 0 ones”.",
-      tip: "Fewer clues used earns more points; there is no clock, so let children build the number with sticks.",
-      materials: ["Ten-sticks and cubes"],
-      support: { l1_2: "Build each clue with sticks and cubes.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
+      tip: "Fewer clues used earns more points; there is no clock, so let children draw the number with sticks and squares.",
+      materials: ["Paper for drawing tens and ones"], materials_revision: "draft: paper-based substitute (audit F-16); was Ten-sticks and cubes",
+      support: { l1_2: "Draw each clue with sticks and squares.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
       payload: {
         cards: [
           { term: "forty", clues: ["I have 4 tens and 0 ones.", "I am 10 more than 30.", "I come right after 39."] },
@@ -205,9 +205,9 @@ export default {
     {
       kind: "sequence", domain: "Game", title: "Trade Ten Steps", minutes: 8, grouping: "Partners",
       mission: "Put the steps in order to solve 27 plus 5.",
-      tip: "Children act out each step with sticks and cubes before they lock in the order.",
-      materials: ["Ten-sticks and cubes"],
-      support: { l1_2: "Read each step and move the sticks to match.", l3_4: "Put the steps in order, then say them with the signal words.", l5_6: "Put them in order and write the total with a reason." },
+      tip: "Children draw each step with sticks and squares before they lock in the order.",
+      materials: ["Paper for drawing tens and ones"], materials_revision: "draft: paper-based substitute (audit F-16); was Ten-sticks and cubes",
+      support: { l1_2: "Read each step and draw the sticks to match.", l3_4: "Put the steps in order, then say them with the signal words.", l5_6: "Put them in order and write the total with a reason." },
       payload: {
         title: "Solve 27 plus 5",
         steps: [
@@ -238,7 +238,7 @@ export default {
       kind: "write_scaffold", domain: "Writing", title: "Show How I Solved It", minutes: 15, grouping: "Solo",
       mission: "Solve 38 plus 5. Write your steps in order.",
       tip: "Children build the problem with sticks first, then write; accept labeled drawings for emerging writers.",
-      materials: ["Ten-sticks and cubes", "Page template"],
+      materials: ["Paper for drawing tens and ones", "Page template"], materials_revision: "draft: paper-based substitute (audit F-16); was Ten-sticks and cubes + Page template",
       support: { l1_2: "Draw it. Copy the first two frames and fill the numbers.", l3_4: "Write all three steps with First, Next, and Then.", l5_6: "Write all steps and tell why you traded 10 ones." },
       payload: {
         prompt: "Solve 38 plus 5. Explain your steps with First, Next, and Then.",

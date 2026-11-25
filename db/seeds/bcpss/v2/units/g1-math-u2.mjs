@@ -40,9 +40,9 @@ export default {
     {
       kind: "dictogloss", domain: "Listening", title: "Shell Counting at the Beach", minutes: 10, grouping: "Partners",
       mission: "Listen to the shell story twice. Tell it back!",
-      tip: "Read slowly twice while children draw tens rods and ones cubes, then partners retell with the compare words.",
-      materials: ["Tens rods", "Ones cubes"],
-      support: sup("Build both numbers with rods and cubes.", "Retell with tens, ones and the word greater.", "Retell all the steps and say why the tens matter first."),
+      tip: "Read slowly twice while children draw tens sticks and ones squares, then partners retell with the compare words.",
+      materials: ["Paper for drawing tens", "Paper for drawing ones"], materials_revision: "draft: paper-based substitute (audit F-16); was Tens rods + Ones cubes",
+      support: sup("Draw both numbers with tens sticks and ones squares.", "Retell with tens, ones and the word greater.", "Retell all the steps and say why the tens matter first."),
       payload: {
         text: "Tia has 53 shells. Leo has 48 shells. Tia has 5 tens and 3 ones. Leo has 4 tens and 8 ones. 5 tens is more than 4 tens. So 53 is greater than 48.",
         key_words: ["shells", "tens", "ones", "more", "greater"],
@@ -74,8 +74,8 @@ export default {
       kind: "word_sort", domain: "Vocabulary", title: "Tower Sort", minutes: 8, grouping: "Partners",
       mission: "Sort each number by how many tens it has.",
       tip: "Listen for 'The ___ means ___ tens' as partners explain a sort.",
-      materials: ["Tens rods"],
-      support: sup("Build one number from each group with rods.", "Sort all and say how many ones for two cards.", "Sort all and add one new number to each group."),
+      materials: ["Paper for drawing tens"], materials_revision: "draft: paper-based substitute (audit F-16); was Tens rods",
+      support: sup("Draw one number from each group with tens sticks.", "Sort all and say how many ones for two cards.", "Sort all and add one new number to each group."),
       payload: {
         categories: [{ name: "🧱 3 tens" }, { name: "🧱 5 tens" }, { name: "🧱 7 tens" }],
         items: [
@@ -191,9 +191,9 @@ export default {
     {
       kind: "sequence", domain: "Reading", title: "Compare in Four Steps", minutes: 8, grouping: "Small Group",
       mission: "Put the steps in order to compare 56 and 61.",
-      tip: "Use rods and cubes; children build each number and act out each step as they order it.",
-      materials: ["Tens rods", "Ones cubes"],
-      support: sup("Look at the rods and say first, next, then.", "Order the steps and say each signal word.", "Order the steps, then compare 74 and 71 the same way."),
+      tip: "Draw tens sticks and ones squares; children draw each number and act out each step as they order it.",
+      materials: ["Paper for drawing tens", "Paper for drawing ones"], materials_revision: "draft: paper-based substitute (audit F-16); was Tens rods + Ones cubes",
+      support: sup("Look at the tens sticks and say first, next, then.", "Order the steps and say each signal word.", "Order the steps, then compare 74 and 71 the same way."),
       payload: {
         title: "How to compare 56 and 61",
         steps: ["First, find the tens in 56 and 61.", "Next, compare 5 tens and 6 tens.", "Then, see that 6 tens is more.", "Finally, say 61 is greater than 56."],
@@ -233,9 +233,9 @@ export default {
     {
       kind: "write_scaffold", domain: "Writing", title: "My Compare Paragraph", minutes: 15, grouping: "Solo",
       mission: "Compare 71 and 68. Write how they are alike and different.",
-      tip: "Children may build with rods first; accept labeled drawings and number sentences for emerging writers.",
-      materials: ["Tens rods", "Ones cubes"],
-      support: sup("Draw the rods and cubes. Copy the first frame.", "Write what is alike and what is different.", "Write alike, different, and which is greater."),
+      tip: "Children may draw tens sticks first; accept labeled drawings and number sentences for emerging writers.",
+      materials: ["Paper for drawing tens", "Paper for drawing ones"], materials_revision: "draft: paper-based substitute (audit F-16); was Tens rods + Ones cubes",
+      support: sup("Draw the tens sticks and ones squares. Copy the first frame.", "Write what is alike and what is different.", "Write alike, different, and which is greater."),
       payload: {
         prompt: "Compare 71 and 68. Tell what is alike. Tell what is different. Tell which is greater.",
         structure: [

@@ -103,7 +103,7 @@ export default {
       kind: "talk_cards", domain: "Speaking", title: "Pick and Prove", minutes: 12, grouping: "Partners",
       mission: "Pick a card. Make a claim and prove it with numbers.",
       tip: "Model one turn first; listen for 'because' and a number from the graph.",
-      materials: ["Sample bar graph", "Counters"],
+      materials: ["Sample bar graph", "Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Sample bar graph + Counters",
       support: { l1_2: "Point to the bar and say the starter.", l3_4: "Say your claim and one number as proof.", l5_6: "Say your claim, give proof, and tell how many more." },
       payload: {
         roles: { a: "Claimer", b: "Checker" },

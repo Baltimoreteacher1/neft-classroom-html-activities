@@ -83,8 +83,8 @@ export default {
     {
       kind: "clue_game", domain: "Game", title: "Between Two Numbers", minutes: 10, grouping: "Small Group",
       mission: "Flip one clue at a time to guess all 8 words, starting with “A week has this many days”.",
-      tip: "Fewer clues used means more points; there is no clock, so let children use fingers or counters.",
-      materials: ["Counters"],
+      tip: "Fewer clues used means more points; there is no clock, so let children use fingers or drawn dots.",
+      materials: ["Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Counters",
       support: { l1_2: "Use your fingers to help you guess.", l3_4: "Guess before you open the third clue.", l5_6: "Make up a new clue for one card." },
       payload: {
         cards: [
@@ -140,8 +140,8 @@ export default {
     {
       kind: "read_annotate", domain: "Reading", title: "Grape Plate Problem", minutes: 10, grouping: "Whole Class",
       mission: "Listen to the story. Find the compare words!",
-      tip: "Read aloud twice; children circle compare words on a big chart and then act out the grapes with counters.",
-      materials: ["Big chart paper", "Counters"],
+      tip: "Read aloud twice; children circle compare words on a big chart and then draw the grapes as dots.",
+      materials: ["Big chart paper", "Paper for drawing dots"], materials_revision: "draft: paper-based substitute (audit F-16); was Big chart paper + Counters",
       support: { l1_2: "Find only the compare words.", l3_4: "Find compare words and the numbers.", l5_6: "Find both, then write one new sentence about Dev." },
       payload: {
         text: "Mia and Dev have grapes. Mia has 8 grapes. Dev has 5 grapes. Mia has more grapes. Dev has fewer grapes. Dev gets 3 more. Now they have the same.",

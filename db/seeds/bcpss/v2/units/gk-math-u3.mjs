@@ -49,9 +49,9 @@ export default {
     {
       kind: "dictogloss", domain: "Listening", title: "Bus Stop Story", minutes: 10, grouping: "Partners",
       mission: "Listen to the bus stop story. Tell it back!",
-      tip: "Read slowly twice while children act it out with cubes, then have partners retell with first, next, in all.",
-      materials: ["Cubes"],
-      support: { l1_2: "Move a cube for each kid you hear.", l3_4: "Say the story with first and next.", l5_6: "Retell it and say the equation for the story." },
+      tip: "Read slowly twice while children draw it with squares, then have partners retell with first, next, in all.",
+      materials: ["Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Cubes",
+      support: { l1_2: "Draw a square for each kid you hear.", l3_4: "Say the story with first and next.", l5_6: "Retell it and say the equation for the story." },
       payload: {
         text: "Leo waits at the bus stop. 4 kids are there. Then 3 more kids come. Now 7 kids wait. 4 plus 3 equals 7.",
         key_words: ["bus stop", "kids", "more", "plus", "equals"],
@@ -62,8 +62,8 @@ export default {
     {
       kind: "match", domain: "Vocabulary", title: "Add It Up Words", minutes: 8, grouping: "Solo",
       mission: "Match 9 words, from “add” to “ten frame”, to their picture clues.",
-      tip: "Have children say each word and act it out with cubes before they tap.",
-      materials: ["Cubes"],
+      tip: "Have children say each word and draw it with squares before they tap.",
+      materials: ["Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Cubes",
       support: { l1_2: "Match add, plus, and total first.", l3_4: "Match all nine, then say a sentence for two.", l5_6: "Match all nine and add your own example to each." },
       payload: {
         left_label: "Word", right_label: "Picture clue",
@@ -125,9 +125,9 @@ export default {
     {
       kind: "word_sort", domain: "Vocabulary", title: "Same Total Sort", minutes: 8, grouping: "Partners",
       mission: "Sort each add problem by its total.",
-      tip: "Listen for 'The total is ___' when partners explain a sort; invite them to build one with cubes.",
-      materials: ["Cubes"],
-      support: { l1_2: "Build it with cubes first, then sort.", l3_4: "Sort all of them and say 'The total is ___.'", l5_6: "Sort all, then write one more problem for each total." },
+      tip: "Listen for 'The total is ___' when partners explain a sort; invite them to draw one with squares.",
+      materials: ["Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Cubes",
+      support: { l1_2: "Draw it with squares first, then sort.", l3_4: "Sort all of them and say 'The total is ___.'", l5_6: "Sort all, then write one more problem for each total." },
       payload: {
         categories: [{ name: "5️⃣ Total is 5" }, { name: "6️⃣ Total is 6" }, { name: "7️⃣ Total is 7" }],
         items: [
@@ -140,8 +140,8 @@ export default {
     {
       kind: "read_annotate", domain: "Reading", title: "Lemonade Stand Cups", minutes: 10, grouping: "Whole Class",
       mission: "Listen to Mara's story. Find the add words!",
-      tip: "Read aloud twice; children circle add words on a big chart and build the cups with cubes.",
-      materials: ["Big chart paper", "Cubes"],
+      tip: "Read aloud twice; children circle add words on a big chart and draw the cups as squares.",
+      materials: ["Big chart paper", "Paper for drawing squares"], materials_revision: "draft: paper-based substitute (audit F-16); was Big chart paper + Cubes",
       support: { l1_2: "Find only the add words.", l3_4: "Find add words and total words.", l5_6: "Find both, then write one new sentence about Mara." },
       payload: {
         text: "Mara sells lemonade on her street. She puts 4 cups on the table. Then she adds 3 more cups. 4 plus 3 equals 7. Mara has 7 cups in all.",
