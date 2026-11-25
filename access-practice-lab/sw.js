@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "acb392835811";
+const BUILD_HASH = "0d1d825ed6c6";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=b93c4c2e6d4b",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -181,7 +181,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/studio-editor.css?v=820b5e055adc",
   "/access-practice-lab/vocabulary.css?v=030bf848c105",
   "/access-practice-lab/lingua.css?v=3942c5fdc8c9",
-  "/access-practice-lab/class.css?v=b04297ebfc1f",
+  "/access-practice-lab/class.css?v=beaa31174d75",
   "/access-practice-lab/practice-games.css?v=c585b324af3a",
   "/access-practice-lab/publisher.css?v=0764c34a28c4",
   "/access-practice-lab/rehearsal.css?v=62b4b39fdf86",
@@ -406,7 +406,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/class/qr-scan.js?v=727b199a62ce",
   "/access-practice-lab/src/class/quiz-key.js?v=13bb7f30d02c",
   "/access-practice-lab/src/class/review-queue.js?v=2b87911285b2",
-  "/access-practice-lab/src/class/roster-panel.js?v=5c7b25a80a62",
+  "/access-practice-lab/src/class/roster-panel.js?v=413cec8331e8",
   "/access-practice-lab/src/class/scene-model.js?v=5186712c0173",
   "/access-practice-lab/src/class/scene-player.js?v=c8ec08fe0219",
   "/access-practice-lab/src/class/session.js?v=33c9947847e4",
@@ -415,6 +415,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/class/support-editor.js?v=ce5d62f8bd35",
   "/access-practice-lab/src/class/voice-note.js?v=3b6a57d36e2d",
   "/access-practice-lab/src/class/voice.js?v=cf59c94c6fa6",
+  "/access-practice-lab/src/class/week-brief-panel.js?v=35005dd7bc9b",
   "/access-practice-lab/src/coach/activity-steps.js?v=db9c18280637",
   "/access-practice-lab/src/coach/coach.js?v=5ab72f07d0c7",
   "/access-practice-lab/src/compiler/compile.js?v=289cef9467bc",
