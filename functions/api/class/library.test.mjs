@@ -2,12 +2,12 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { LIBRARY_SCHEMA } from "../../_lib/class-platform/library-schema.js";
 import { onRequest } from "./[[path]].js";
+import { freshDb } from "../../../tools/privacy-d1-fake.mjs";
 
 function d1(sqlite) {
   const make = (sql, params) => ({
@@ -44,7 +44,7 @@ const KEY = "teacher-secret-for-tests";
 let ip = 0;
 
 function makeEnv() {
-  const sqlite = new DatabaseSync(":memory:");
+  const sqlite = freshDb();
   return { DB: d1(sqlite), TEACHER_KEY: KEY };
 }
 

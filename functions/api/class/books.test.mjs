@@ -3,7 +3,6 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -11,6 +10,7 @@ import { makeElement } from "../../../access-practice-lab/src/book/model.js";
 import { COLLAB } from "../../../shared/class-platform/book-merge.js";
 import { COLLAB_SCHEMA as BOOK_SCHEMA } from "../../_lib/class-platform/book-collab-schema.js";
 import { onRequest } from "./[[path]].js";
+import { freshDb } from "../../../tools/privacy-d1-fake.mjs";
 
 function d1(sqlite) {
   const make = (sql, params) => ({
@@ -46,7 +46,7 @@ function d1(sqlite) {
 const KEY = "teacher-secret-for-tests";
 let ip = 0;
 function world() {
-  const sqlite = new DatabaseSync(":memory:");
+  const sqlite = freshDb();
   return { sqlite, env: { DB: d1(sqlite), TEACHER_KEY: KEY } };
 }
 

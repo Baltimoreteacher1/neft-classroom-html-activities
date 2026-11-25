@@ -18,6 +18,7 @@ export const VIEW_FOR = {
   classes: "classes",
   class: "classes",
   library: "library",
+  review: "review/queue",
 };
 
 export const VIEW_TITLES = {
@@ -34,6 +35,7 @@ export const VIEW_TITLES = {
   projects: "Projects",
   classes: "Classes",
   library: "Library",
+  "review/queue": "Reviewer queue",
 };
 
 export const TITLE_SUFFIX = "BCPSS Teacher Studio";

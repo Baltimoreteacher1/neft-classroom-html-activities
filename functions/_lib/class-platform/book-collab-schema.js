@@ -70,8 +70,6 @@ export const COLLAB_SCHEMA = [
   )`,
 ];
 
-const booksOf = `SELECT book_id FROM class_platform_book WHERE code = ?`;
-
 /** Statements that delete the given books (a SELECT of book ids with its own bindings) and everything in them. */
 const dropBooks = (db, idsSql, binds) => [
   db.prepare(`DELETE FROM class_platform_book_item WHERE book_id IN (${idsSql})`).bind(...binds),
@@ -81,25 +79,6 @@ const dropBooks = (db, idsSql, binds) => [
 ];
 
 export const deleteBookStatements = (db, bookId) => dropBooks(db, `SELECT ? AS book_id`, [bookId]);
-
-/** Everything Book Studio collaboration keeps for one class (the whole-class delete). */
-export const collabPurgeStatements = (db, code) => [
-  ...dropBooks(db, booksOf, [code]),
-  db.prepare(`DELETE FROM class_platform_book_space WHERE code = ?`).bind(code),
-];
-
-/** One learner removed from a class: the books they own go; their place in classmates' books goes. */
-export const collabStudentStatements = (db, code, studentId) => [
-  ...dropBooks(db, `SELECT book_id FROM class_platform_book WHERE code = ? AND owner_id = ?`, [
-    code,
-    studentId,
-  ]),
-  db
-    .prepare(
-      `DELETE FROM class_platform_book_member WHERE student_id = ? AND book_id IN (${booksOf})`,
-    )
-    .bind(studentId, code),
-];
 
 /** Retention sweep: expired books and books of expired classes. */
 export const collabPruneStatements = (db, now, goneClassesSql) => [

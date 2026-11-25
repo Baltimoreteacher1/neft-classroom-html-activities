@@ -3,6 +3,7 @@ import { favoriteButton } from "../core/actions.js";
 import { KIND_LABELS } from "../core/catalog.js";
 import { h } from "../core/dom.js";
 import { facetCounts, searchItems } from "../core/search.js";
+import { badge, loadUnitStates, reviewedOnly, reviewedOnlyToggle, visibleUnits } from "./review/badges.js";
 import { emptyState, gradeLabel, plural, resultCard } from "../core/ui.js";
 import { DOMAINS, ENGINES, GRADE_LABEL, KLUS, SUBJECT_PROFILE } from "../data/taxonomy.js";
 
@@ -51,7 +52,7 @@ export function refineGroups(items, st, onPick) {
 
 export const filtersOf = (st) => ({ grade: st.grade, subject: st.subject, kind: st.kind, klu: st.klu, domain: st.domain, engine: st.engine });
 
-function unitCard(u, shell) {
+function unitCard(u, shell, reviewState) {
   const ref = { kind: "unit", id: u.id, title: `Unit ${u.unit_number}: ${u.unit_title}`, grade: u.grade };
   const link = h("a", { class: "st-card-link", href: `#/unit/${encodeURIComponent(u.id)}` }, ref.title);
   link.addEventListener("click", () => shell.library.addRecent(ref));
@@ -65,6 +66,7 @@ function unitCard(u, shell) {
       h(
         "p",
         { class: "st-meta" },
+        reviewState ? badge(reviewState) : null,
         u.curriculum_name ? h("span", { class: "st-chip" }, u.curriculum_name) : null,
         u.primary_klu ? h("span", { class: "st-chip st-chip-plain" }, `Key language use: ${u.primary_klu}`) : null,
         u.activity_count ? h("span", { class: "st-chip st-chip-plain" }, plural(u.activity_count, "activity", "activities")) : null,
@@ -86,12 +88,20 @@ export function unitsBlock(st, shell, isCurrent) {
       if (!isCurrent()) return;
       const words = st.q.toLowerCase().split(/\s+/).filter(Boolean);
       const units = all.filter((u) => words.every((w) => `${u.unit_title} ${u.unit_summary} ${(u.core_standards || []).join(" ")}`.toLowerCase().includes(w)));
-      box.querySelector(".st-loading, .st-notice, .st-results, .st-empty")?.remove();
-      box.append(
-        units.length
-          ? h("ul", { class: "st-results" }, units.map((u) => unitCard(u, shell)))
-          : emptyState({ title: "No district units match that search", body: "Clear the search to see all units, or look at the studio materials below." }),
-      );
+      const states = await loadUnitStates();
+      if (!isCurrent()) return;
+      const paint = () => {
+        box.querySelector(".st-loading, .st-notice, .st-results, .st-empty")?.remove();
+        const shown = visibleUnits(units, states, reviewedOnly());
+        box.append(
+          shown.length
+            ? h("ul", { class: "st-results" }, shown.map((u) => unitCard(u, shell, states?.[u.id])))
+            : emptyState({ title: units.length ? "No reviewed units match yet" : "No district units match that search", body: units.length ? "Turn off \"Reviewed units only\" to see units that are still drafts or in review." : "Clear the search to see all units, or look at the studio materials below." }),
+        );
+      };
+      box.querySelector(".st-loading, .st-notice")?.remove();
+      box.querySelector("h2").after(reviewedOnlyToggle(paint));
+      paint();
     } catch {
       if (!isCurrent()) return;
       const retry = h("button", { class: "st-btn", type: "button" }, "Try again");

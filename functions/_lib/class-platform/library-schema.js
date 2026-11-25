@@ -18,10 +18,6 @@ export const LIBRARY_SCHEMA = [
   `CREATE INDEX IF NOT EXISTS class_platform_tlib_code ON class_platform_teacher_library (code, kind, updated_at)`,
 ];
 
-export const libraryPurgeStatements = (db, code) => [
-  db.prepare(`DELETE FROM class_platform_teacher_library WHERE code = ?`).bind(code),
-];
-
 export const libraryPruneStatements = (db, now, goneClassesSql) => [
   db
     .prepare(`DELETE FROM class_platform_teacher_library WHERE code IN (${goneClassesSql})`)

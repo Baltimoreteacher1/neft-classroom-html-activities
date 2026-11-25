@@ -1,6 +1,7 @@
 // BCPSS Writing Lab — download what the student wrote as Word (.docx) or PDF.
 // The saved answers go to POST /api/bcpss/export/<unit> (part "writing-work"), which lays them out beside the unit's own
 // prompts and returns the file. Nothing is stored on the server; the file name never carries the student's name.
+import { anonTokenHeaders } from "../../shared/anon-token/anon-token.js";
 import { feedback, h, wl } from "./wl-core.js";
 
 const FILE_NAME = /filename="([^"]+)"/;
@@ -38,7 +39,7 @@ async function download(format, doneChecks) {
   const url = `/api/bcpss/export/${encodeURIComponent(wl.unitId)}?format=${format}&wida=${wl.level.slice(1)}`;
   const res = await fetch(url, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...anonTokenHeaders() },
     body: JSON.stringify({ work: currentWork(doneChecks) }),
   });
   if (!res.ok) throw new Error(MESSAGES[res.status] || "The file could not be made. Check your connection and try again.");

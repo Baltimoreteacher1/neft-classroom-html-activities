@@ -18,28 +18,12 @@
  * ========================================================================== */
 
 import { codeFromBytes, LIMITS, SECRET_LENGTH } from "../../../shared/class-platform/contract.js";
-import {
-  ACTIVITY_SCHEMA,
-  activityPruneStatements,
-  activityPurgeStatements,
-} from "./activity-schema.js";
-import {
-  ASSIGN_STATUS_SCHEMA,
-  astatusPruneStatements,
-  astatusPurgeStatements,
-} from "./assign-status-schema.js";
-import {
-  COLLAB_SCHEMA,
-  collabPruneStatements,
-  collabPurgeStatements,
-} from "./book-collab-schema.js";
-import { BOOK_SCHEMA, bookPruneStatements, bookPurgeStatements } from "./book-schema.js";
-import {
-  LIBRARY_SCHEMA,
-  libraryPruneStatements,
-  libraryPurgeStatements,
-} from "./library-schema.js";
-import { SOCIAL_SCHEMA, socialPruneStatements, socialPurgeStatements } from "./social-schema.js";
+import { ACTIVITY_SCHEMA, activityPruneStatements } from "./activity-schema.js";
+import { ASSIGN_STATUS_SCHEMA, astatusPruneStatements } from "./assign-status-schema.js";
+import { COLLAB_SCHEMA, collabPruneStatements } from "./book-collab-schema.js";
+import { BOOK_SCHEMA, bookPruneStatements } from "./book-schema.js";
+import { LIBRARY_SCHEMA, libraryPruneStatements } from "./library-schema.js";
+import { SOCIAL_SCHEMA, socialPruneStatements } from "./social-schema.js";
 
 export const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS class_platform_class (
@@ -221,28 +205,6 @@ export const touchClass = (db, code, now) =>
   db
     .prepare(`UPDATE class_platform_class SET last_active_at = ?, expires_at = ? WHERE code = ?`)
     .bind(now, now + RETENTION_MS, code);
-
-/** Delete one class and everything that hangs off it. */
-export function purgeStatements(db, code) {
-  const rooms = `SELECT room_id FROM class_platform_room WHERE code = ?`;
-  return [
-    ...socialPurgeStatements(db, code),
-    ...bookPurgeStatements(db, code),
-    ...astatusPurgeStatements(db, code),
-    ...collabPurgeStatements(db, code),
-    ...libraryPurgeStatements(db, code),
-    ...activityPurgeStatements(db, code),
-    db.prepare(`DELETE FROM class_platform_experience WHERE code = ?`).bind(code),
-    db.prepare(`DELETE FROM class_platform_response WHERE room_id IN (${rooms})`).bind(code),
-    db.prepare(`DELETE FROM class_platform_room WHERE code = ?`).bind(code),
-    db.prepare(`DELETE FROM class_platform_audio WHERE code = ?`).bind(code),
-    db.prepare(`DELETE FROM class_platform_work WHERE code = ?`).bind(code),
-    db.prepare(`DELETE FROM class_platform_review WHERE code = ?`).bind(code),
-    db.prepare(`DELETE FROM class_platform_doc WHERE code = ?`).bind(code),
-    db.prepare(`DELETE FROM class_platform_student WHERE code = ?`).bind(code),
-    db.prepare(`DELETE FROM class_platform_class WHERE code = ?`).bind(code),
-  ];
-}
 
 /** Retention sweep: expired classes, rooms, audio and rate-limit buckets. */
 export async function pruneExpired(db, now) {

@@ -41,6 +41,7 @@ export const SKIP_COPY_RE =
 // fragments from consuming Pages' 20,000-file deployment budget.
 const OMITTED_DATA_JSON = new Set([
   "r2-offload-manifest.json", // build input: which downloads are in R2 (tools/offload-dist-downloads.mjs)
+  "content/word-frequency.json", // build input for tools/content/verifiers/vocab-tier.mjs; no page loads it
   "asset-standard-overrides.json",
   "auth-baseline.json",
   "browser-gate-review.json",

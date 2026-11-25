@@ -1,4 +1,5 @@
 // BCPSS K–8 Curriculum & Language Bridge — Progressive 3-Step Workspace
+import { anonTokenHeaders } from "../shared/anon-token/anon-token.js";
 import { renderCreationStudio } from "./creation-studio.js";
 import { keepView } from "./keep-view.js";
 import { renderOverview } from "./overview-tab.js";
@@ -68,7 +69,7 @@ function trackTelemetry(unitId, widaTier, eventType) {
   try {
     fetch("/api/bcpss/telemetry", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...anonTokenHeaders() },
       body: JSON.stringify({
         unit_id: unitId,
         wida_tier: widaTier || state.wida || "3_4",
@@ -1707,7 +1708,7 @@ function bindEvents() {
     try {
       const data = await fetchJson("/api/bcpss/deconstruct", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...anonTokenHeaders() },
         body: JSON.stringify({ passage, l1 }),
       });
       state.deconstructResult = data;
@@ -1763,7 +1764,7 @@ function bindEvents() {
     try {
       const created = await fetchJson("/api/bcpss/plans", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...anonTokenHeaders() },
         body: JSON.stringify({
           unit_id: state.detail.unit.id,
           wida_tier: state.wida,

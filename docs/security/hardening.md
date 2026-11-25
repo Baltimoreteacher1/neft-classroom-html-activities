@@ -11,7 +11,7 @@
 
 Limits live in `functions/_lib/security/schema.js` (`LIMITS`), the shared enums in the same file. `functions/_lib/http.js` `handler()` enforces them.
 
-- Key: IP plus the optional `X-Anon-Token` header (16-64 URL-safe chars; malformed is ignored). The IP cap stops token rotation. Without a token the key is the IP alone. A school shares one NAT address, so the front end should send a random per-browser token. The BCPSS front end does not send one yet (`bcpss-teachers.js` is outside this change); until it does, a class behind one IP shares the per-key limit.
+- Key: IP plus the optional `X-Anon-Token` header (16-64 URL-safe chars; malformed is ignored). The IP cap stops token rotation. Without a token the key is the IP alone. A school shares one NAT address, so the front end sends a random per-browser token (`shared/anon-token/anon-token.js`, stored as `ewl_anon_token`, never derived from student data). The BCPSS front end sends it on its write calls (telemetry, plans, deconstruct, export); other front ends do not yet, and a class behind one IP shares the per-key limit there.
 - Limits are per isolate and best effort. They stop runaway clients, not a determined attacker. A real quota needs a durable store.
 - Body: rejected early on `Content-Length` (413, 400 if unparseable), and again while streaming so chunked or lying clients cannot buffer past the cap. Bad JSON is 400, a non-object body is 400 (`requireObjectBody`).
 - Server-derived values: the client sends a unit id only. Grade comes from the seed registry (`functions/_lib/security/unit-registry.js`). `wida_tier` is a teacher-chosen scaffold band, validated against `WIDA_TIERS`; it is not derivable and is never a student attribute.

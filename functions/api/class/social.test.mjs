@@ -3,13 +3,13 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { LIMITS } from "../../../shared/class-platform/contract.js";
 import { SOCIAL_SCHEMA } from "../../_lib/class-platform/social-schema.js";
 import { onRequest } from "./[[path]].js";
+import { freshDb } from "../../../tools/privacy-d1-fake.mjs";
 
 function d1(sqlite) {
   const make = (sql, params) => ({
@@ -45,7 +45,7 @@ function d1(sqlite) {
 const KEY = "teacher-secret-for-tests";
 let ip = 0;
 function world() {
-  const sqlite = new DatabaseSync(":memory:");
+  const sqlite = freshDb();
   return { sqlite, env: { DB: d1(sqlite), TEACHER_KEY: KEY } };
 }
 

@@ -1,0 +1,162 @@
+/* Reviewer queue and provenance badges. Palette: navy, teal, amber, coral and neutrals only; tokens come from
+   /access-practice-lab/ds.css. State is always written out, never colour alone. */
+.st-rv-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.st-rv-badge[data-state="in_review"] {
+  background: var(--hint-soft);
+  color: var(--hint);
+  border-color: var(--status-warning-border);
+}
+.st-rv-badge[data-state="reviewed"] {
+  background: var(--teal-soft);
+  color: var(--listening-ink);
+  border-color: var(--listening-ink);
+}
+.st-rv-badge[data-state="retired"] {
+  background: transparent;
+  color: var(--ink-2);
+}
+.st-rv-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin: var(--s-2) 0;
+}
+.st-rv-check {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.st-rv-hint {
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+.st-rv {
+  display: grid;
+  gap: var(--s-4);
+}
+.st-rv-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: var(--s-3);
+}
+.st-rv-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  align-items: end;
+}
+.st-rv-filters .st-field {
+  margin: 0;
+}
+.st-rv-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.st-rv-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s-2) var(--s-3);
+  align-items: start;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  padding: var(--s-2) var(--s-3);
+}
+.st-rv-item input[type="checkbox"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.2rem;
+}
+.st-rv-item h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.st-rv-dims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-3);
+  margin: var(--s-1) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+.st-rv-fail {
+  color: var(--coral);
+  font-weight: 700;
+}
+.st-rv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+}
+.st-rv-actions .st-btn,
+.st-rv-form .st-btn {
+  min-height: 44px;
+  min-width: 44px;
+}
+.st-rv-error {
+  border: 1px solid var(--coral);
+  border-radius: var(--radius-sm);
+  padding: var(--s-2) var(--s-3);
+  color: var(--coral);
+  background: var(--surface);
+}
+.st-rv-diff {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: auto;
+  max-height: 32rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+}
+.st-rv-diff pre {
+  margin: 0;
+  padding: 0 var(--s-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-height: 1.2em;
+}
+.st-rv-diff [data-kind="removed"] {
+  background: var(--writing-soft);
+}
+.st-rv-diff [data-kind="added"] {
+  background: var(--teal-soft);
+}
+.st-rv-diff-head {
+  font-weight: 700;
+  padding: var(--s-1) var(--s-2);
+  background: var(--surface-2);
+  position: sticky;
+  top: 0;
+}
+@media (max-width: 40rem) {
+  .st-rv-diff {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .st-rv * {
+    transition: none !important;
+  }
+}

@@ -35,20 +35,6 @@ export const ASSIGN_STATUS_SCHEMA = [
   `CREATE INDEX IF NOT EXISTS class_platform_aevent_student ON class_platform_aevent (code, assignment_id, student_id)`,
 ];
 
-export const astatusPurgeStatements = (db, code) => [
-  db.prepare(`DELETE FROM class_platform_aevent WHERE code = ?`).bind(code),
-  db.prepare(`DELETE FROM class_platform_astatus WHERE code = ?`).bind(code),
-];
-
-export const astatusStudentStatements = (db, code, studentId) => [
-  db
-    .prepare(`DELETE FROM class_platform_aevent WHERE code = ? AND student_id = ?`)
-    .bind(code, studentId),
-  db
-    .prepare(`DELETE FROM class_platform_astatus WHERE code = ? AND student_id = ?`)
-    .bind(code, studentId),
-];
-
 export const astatusPruneStatements = (db, now, goneClassesSql) => [
   db.prepare(`DELETE FROM class_platform_aevent WHERE code IN (${goneClassesSql})`).bind(now),
   db.prepare(`DELETE FROM class_platform_astatus WHERE code IN (${goneClassesSql})`).bind(now),

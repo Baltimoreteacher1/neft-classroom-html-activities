@@ -54,36 +54,6 @@ export const SOCIAL_SCHEMA = [
   `CREATE INDEX IF NOT EXISTS class_platform_scene_code ON class_platform_scene (code, status)`,
 ];
 
-const takesOf = `SELECT take_id FROM class_platform_take WHERE code = ?`;
-
-/** Everything social that hangs off one class (used by the whole-class delete). */
-export const socialPurgeStatements = (db, code) => [
-  db.prepare(`DELETE FROM class_platform_take_reply WHERE take_id IN (${takesOf})`).bind(code),
-  db.prepare(`DELETE FROM class_platform_take WHERE code = ?`).bind(code),
-  db.prepare(`DELETE FROM class_platform_scene WHERE code = ?`).bind(code),
-  db.prepare(`DELETE FROM class_platform_pairing WHERE code = ?`).bind(code),
-];
-
-/** One learner removed from a class: their takes, replies and scenes go with them. */
-export const socialStudentStatements = (db, code, studentId) => [
-  db
-    .prepare(
-      `DELETE FROM class_platform_take_reply WHERE student_id = ? AND take_id IN (${takesOf})`,
-    )
-    .bind(studentId, code),
-  db
-    .prepare(
-      `DELETE FROM class_platform_take_reply WHERE take_id IN (SELECT take_id FROM class_platform_take WHERE code = ? AND student_id = ?)`,
-    )
-    .bind(code, studentId),
-  db
-    .prepare(`DELETE FROM class_platform_take WHERE code = ? AND student_id = ?`)
-    .bind(code, studentId),
-  db
-    .prepare(`DELETE FROM class_platform_scene WHERE code = ? AND student_id = ?`)
-    .bind(code, studentId),
-];
-
 /** Retention sweep: expired takes (and their replies), expired scene voice lines, and expired classes' rows. */
 export const socialPruneStatements = (db, now, goneClassesSql) => [
   db

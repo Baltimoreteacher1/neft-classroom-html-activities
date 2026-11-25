@@ -264,6 +264,20 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // CONTENT REVIEW (Prompt 3): the review workflow, queue, provenance badges and release trains. Migration 0022,
+  // the review library and API, the review modules of the content schema, the Studio's review views and their
+  // tests. `bundle-syntax` proves the Functions still compile; the privacy pair covers the new tables.
+  [
+    /^(migrations\/0022_|functions\/(_lib|api)\/review\/|shared\/content-schema\/review-[a-z-]+\.js$|bcpss-teachers\/studio\/views\/review\/|tools\/(review-[a-z-]+|release-[a-z-]+)(\.test)?\.mjs$|docs\/content\/review-workflow\.md$)/,
+    [
+      "test:review",
+      "test:bundle-syntax",
+      "validate:privacy-inventory",
+      "validate:privacy-forbidden",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
   // The two link audits and the audit note they were written against. Each audit script is run by its own npm
   // script, so a change to one is covered by that check; without a rule here an edit escalated to the full gate.
   [
@@ -514,6 +528,27 @@ const COVERAGE = [
   [
     /^(shared\/content-schema\/|functions\/_lib\/bcpss\/conditional\.js$|functions\/api\/bcpss\/units\/\[unitId\]\.js$|tools\/(content-schema|bcpss-conditional)\.test\.mjs$)/,
     ["test:content-schema", "validate:gate-coverage", "validate:js-syntax", "check"],
+  ],
+  // CONTENT VERIFIERS A (Prompt 3 Wave 2) — arithmetic, readability and vocab-tier verifiers, their shared lib, the
+  // driver/registry, ceilings, baselines and the word-frequency table. They read the unit and lesson content, so a change
+  // to the studio schema or the verifiers re-runs the ratchet. Cognate/standards/spanish/frames (verifiers B) have their
+  // own rule.
+  [
+    /^(tools\/content\/(verifiers\/(arithmetic|readability|vocab-tier)\.mjs|verifiers\/lib\/|verify\.mjs|registry\.mjs|ceilings\.json|baselines\/(arithmetic|readability|vocab-tier)\.json|build-word-frequency\.mjs|verifiers-a\.test\.mjs)|data\/content\/)/,
+    [
+      "test:verifiers-a",
+      "validate:content-verifiers-a",
+      "validate:gate-coverage",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
+  // CONTENT VERIFIERS B (Prompt 3 Wave 2) — cognate, standards, spanish and frames verifiers, their runner, the two exporters,
+  // false-friend list and committed baselines. Path pattern deliberately disjoint from the A verifiers (arithmetic, readability,
+  // vocab-tier, lib, ceilings, verify, registry, word-frequency). The runner sweeps all 162 units and the term bank (~3s).
+  [
+    /^tools\/content\/(verifiers\/(b-common|cognate|standards|spanish|frames)\.mjs|verifiers-b(\.test)?\.mjs|standards-coverage\.mjs|spanish-review-export\.mjs|data\/false-friends\.json|baselines\/(cognate|standards|spanish|frames)\.json)$|^docs\/content\/verifiers-b\.md$/,
+    ["test:verifiers-b", "validate:content-verifiers-b", "validate:js-syntax", "check"],
   ],
   // FLAGS, FIXTURES, EGRESS PROBE — the flag registry/evaluator/endpoint, the synthetic fixture library and the egress
   // probe harness. Listed before the broad `shared/` rule below so these paths get their own gates. The probe selftest

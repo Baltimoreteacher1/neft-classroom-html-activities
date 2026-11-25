@@ -49,14 +49,6 @@ export const ACTIVITY_SCHEMA = [
   )`,
 ];
 
-const OWNED = `SELECT activity_id FROM class_platform_activity WHERE code = ?`;
-
-export const activityPurgeStatements = (db, code) => [
-  db.prepare(`DELETE FROM class_platform_activity_stat WHERE activity_id IN (${OWNED})`).bind(code),
-  db.prepare(`DELETE FROM class_platform_activity_rev WHERE code = ?`).bind(code),
-  db.prepare(`DELETE FROM class_platform_activity WHERE code = ?`).bind(code),
-];
-
 export const activityPruneStatements = (db, now, goneClassesSql) => [
   db
     .prepare(

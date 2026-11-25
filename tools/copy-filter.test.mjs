@@ -168,6 +168,11 @@ for (const rel of [
     `${rel} is runtime code and must still be published`,
   );
 }
+assert.equal(
+  repoFilter("/repo/data/content/word-frequency.json"),
+  false,
+  "the vocab-tier word list is a build input and must not be published",
+);
 // The Functions source is deployed from functions/, never served from dist/.
 assert.match(vite, /"functions",/, "vite.config.js SKIP_DIRS must exclude functions/");
 

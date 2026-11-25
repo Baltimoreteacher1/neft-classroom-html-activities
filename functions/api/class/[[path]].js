@@ -50,10 +50,7 @@ import {
 import { handleActivities } from "../../_lib/class-platform/activities.js";
 import { handleAi } from "../../_lib/class-platform/ai.js";
 import { handleAssignStatus } from "../../_lib/class-platform/assign-status.js";
-import { astatusStudentStatements } from "../../_lib/class-platform/assign-status-schema.js";
 import { handleAudio } from "../../_lib/class-platform/audio.js";
-import { collabStudentStatements } from "../../_lib/class-platform/book-collab-schema.js";
-import { bookStudentStatements } from "../../_lib/class-platform/book-schema.js";
 import { handleBookSupports } from "../../_lib/class-platform/book-supports.js";
 import { handleBooks } from "../../_lib/class-platform/books.js";
 import { handleExperiences } from "../../_lib/class-platform/experiences.js";
@@ -62,7 +59,6 @@ import { handlePairs } from "../../_lib/class-platform/pairs.js";
 import { handleReview } from "../../_lib/class-platform/review.js";
 import { handleRoom } from "../../_lib/class-platform/rooms.js";
 import { handleScenes } from "../../_lib/class-platform/scenes.js";
-import { socialStudentStatements } from "../../_lib/class-platform/social-schema.js";
 import {
   ensureSchema,
   familyToken,
@@ -72,7 +68,6 @@ import {
   liveClass,
   parseJson,
   pruneExpired,
-  purgeStatements,
   RETENTION_MS,
   randomHex,
   randomSecret,
@@ -83,6 +78,8 @@ import {
   touchClass,
 } from "../../_lib/class-platform/store.js";
 import { clientIp, createRateLimiter, handler, json, tooManyRequests } from "../../_lib/http.js";
+import { deleteClass, deleteStudent } from "../../_lib/privacy/delete.js";
+import { deleteFailure } from "../../_lib/privacy/teacher.js";
 
 export { SCHEMA };
 
@@ -495,41 +492,33 @@ const routes = {
     if (auth.error) return auth.error;
     const id = ctx.body?.studentId;
     if (!isStudentId(id)) return fail("invalid-student");
-    const { db } = ctx;
-    const code = auth.cls.code;
-    await db.batch([
-      ...socialStudentStatements(db, code, id),
-      ...bookStudentStatements(db, code, id),
-      ...astatusStudentStatements(db, code, id),
-      ...collabStudentStatements(db, code, id),
-      db.prepare(`DELETE FROM class_platform_doc WHERE code = ? AND student_id = ?`).bind(code, id),
-      db
-        .prepare(`DELETE FROM class_platform_audio WHERE code = ? AND student_id = ?`)
-        .bind(code, id),
-      db
-        .prepare(`DELETE FROM class_platform_work WHERE code = ? AND student_id = ?`)
-        .bind(code, id),
-      db
-        .prepare(`DELETE FROM class_platform_review WHERE code = ? AND student_id = ?`)
-        .bind(code, id),
-      db
-        .prepare(
-          `DELETE FROM class_platform_response WHERE student_id = ? AND room_id IN (SELECT room_id FROM class_platform_room WHERE code = ?)`,
-        )
-        .bind(id, code),
-      db
-        .prepare(`DELETE FROM class_platform_student WHERE code = ? AND student_id = ?`)
-        .bind(code, id),
-    ]);
-    return { ok: true };
+    try {
+      const { receipt } = await deleteStudent(ctx.db, {
+        code: auth.cls.code,
+        studentId: id,
+        actor: auth.role === "site" ? "site" : "teacher",
+        now: ctx.now,
+      });
+      return { ok: true, receipt };
+    } catch (error) {
+      return deleteFailure(error);
+    }
   },
 
   async "POST delete"(ctx) {
     const auth = await requireTeacher(ctx, ctx.body?.code);
     if (auth.error) return auth.error;
     if (normalizeCode(ctx.body?.confirm) !== auth.cls.code) return fail("confirm-mismatch");
-    await ctx.db.batch(purgeStatements(ctx.db, auth.cls.code));
-    return { ok: true, deleted: auth.cls.code };
+    try {
+      const { receipt } = await deleteClass(ctx.db, {
+        code: auth.cls.code,
+        actor: auth.role === "site" ? "site" : "teacher",
+        now: ctx.now,
+      });
+      return { ok: true, deleted: auth.cls.code, receipt };
+    } catch (error) {
+      return deleteFailure(error);
+    }
   },
 };
 

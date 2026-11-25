@@ -3,7 +3,6 @@
  * the one the REAL compiler makes from the ecosystem sample. */
 
 import assert from "node:assert/strict";
-import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 
 import { compileExperience, studentCopy } from "../../../access-practice-lab/src/compiler/compile.js";
@@ -16,6 +15,7 @@ import {
   experiencePath,
 } from "../../_lib/class-platform/experiences.js";
 import { onRequest } from "./[[path]].js";
+import { freshDb } from "../../../tools/privacy-d1-fake.mjs";
 
 function d1(sqlite) {
   const make = (sql, params) => ({
@@ -51,7 +51,7 @@ function d1(sqlite) {
 const KEY = "teacher-secret-for-tests";
 let ip = 0;
 const world = () => {
-  const sqlite = new DatabaseSync(":memory:");
+  const sqlite = freshDb();
   return { sqlite, env: { DB: d1(sqlite), TEACHER_KEY: KEY } };
 };
 

@@ -5,6 +5,7 @@ import { announce, h } from "../core/dom.js";
 import { gradeLabel } from "../core/ui.js";
 import { SUBJECT_PROFILE } from "../data/taxonomy.js";
 import { chip, ensureCss, getCatalog, idFrom } from "./lens-ui.js";
+import { badge, loadUnitSummary } from "./review/badges.js";
 import { describeStandards, familyModel, isUnknownUnit, studioFor, subjectIdOf } from "./unit/data.js";
 import { familyCard } from "./unit/family.js";
 import { activitiesSection, lensSection, lessonsSection, standardsSection, vocabSection } from "./unit/sections.js";
@@ -25,7 +26,19 @@ function stateView({ title, message, role = "status", actions = [] }) {
 
 const linkBtn = (href, text, primary = false) => h("a", { class: `st-ll-btn${primary ? " st-ll-btn-primary" : ""}`, href }, text);
 
+/** Review badge for the unit and its lessons, filled in when the summary arrives. Absent if it cannot be loaded. */
+function reviewBadgeSlot(unitId) {
+  const slot = h("span", { class: "st-rv-slot" });
+  loadUnitSummary(unitId).then((s) => {
+    if (!s) return;
+    const { reviewed, draft, in_review: inReview } = s.counts;
+    slot.append(badge(s.state, { detail: `${reviewed} of ${s.blocks.length} parts reviewed (${inReview} in review, ${draft} draft).` }));
+  });
+  return slot;
+}
+
 function header(unit, ctx, shell) {
+  const reviewSlot = reviewBadgeSlot(unit.id);
   const ref = { kind: "unit", id: unit.id, title: `Unit ${unit.unit_number}: ${unit.unit_title}`, grade: unit.grade };
   return h(
     "header",
@@ -39,6 +52,7 @@ function header(unit, ctx, shell) {
       chip(ctx.subjectText),
       chip(`District-referenced${unit.curriculum_name ? `: ${unit.curriculum_name}` : ""}`, { title: "Listed in the BCPSS seed the Studio references. This is not a statement of district adoption." }),
       chip("Teacher review recommended", { tone: "review", title: "Checked by automated tests only. A teacher has not yet reviewed this page." }),
+      reviewSlot,
     ),
     unit.unit_summary ? h("p", {}, unit.unit_summary) : null,
     unit.essential_question ? h("p", {}, h("strong", {}, "Essential question: "), unit.essential_question) : null,

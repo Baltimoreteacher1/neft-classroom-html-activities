@@ -8,7 +8,7 @@ when this file is stale, when a migration column has no annotation, or when a br
 found in source has none. The rows say what each store holds today, including the places that hold a
 typed name; the never-collect list is checked separately by `tools/privacy-forbidden-scan.mjs`.
 
-D1 tables: 51. Annotated D1 columns: 391. Device storage keys: 31. Log fields: 1.
+D1 tables: 55. Annotated D1 columns: 435. Device storage keys: 35. Log fields: 1.
 
 ## D1 (server)
 
@@ -310,6 +310,15 @@ Source: `migrations/0004_usage_signal.sql`
 | --- | --- | --- | --- |
 | `id, path, message, source, line, day, hits, first_seen, last_seen` | Script errors per page and day (message capped at 300 characters, script URL, line). | no automatic expiry in code | none: aggregate, no person |
 
+### `content_release`
+
+Source: `migrations/0022_content_review.sql`
+
+| Columns | Purpose | Retention | Delete |
+| --- | --- | --- | --- |
+| `created_by` | Name of the staff member who cut the content release. | kept: releases are never deleted | none in code: release record |
+| `seq, id, manifest_json, manifest_digest, changelog_json, verifiers_ran_json, created_at, status, previous_id` | A content release: the content hash of every block at release time, the changelog against the previous release, which verifiers ran, status. | kept: releases are never deleted | none: no personal data |
+
 ### `insight_signal`
 
 Source: `migrations/0002_insight_signal.sql`
@@ -367,6 +376,15 @@ Source: `migrations/0020_privacy_deletion_receipts.sql`
 | --- | --- | --- | --- |
 | `seq, id, scope_type, class_code, student_id, counts_json, deleted_at, actor, prior_digest, digest` | Append-only receipt of a class or student deletion: scope (class code, opaque student id), row counts per table, time, actor, hash chain. No student content. | kept; the table refuses UPDATE and DELETE | none: receipts are the record of deletion |
 
+### `release_pointer`
+
+Source: `migrations/0022_content_review.sql`
+
+| Columns | Purpose | Retention | Delete |
+| --- | --- | --- | --- |
+| `moved_by` | Name of the staff member who last moved the current-release pointer (release or rollback). | one row, overwritten on each move | none in code: single pointer row |
+| `id, release_id, reason, updated_at` | The single row naming the current content release. | one row, overwritten on each move | none: no personal data |
+
 ### `results`
 
 Source: `results-worker/migrations/0001_init.sql`
@@ -375,6 +393,26 @@ Source: `results-worker/migrations/0001_init.sql`
 | --- | --- | --- | --- |
 | `id, teacher_id, class_code, activity_slug, standard, score, total, percent, misconception_tags, attempt_timestamp, synced_at` | Activity result: class code, activity, score, misconception tags, timestamps. | until the teacher purges | DELETE /purge on the results worker (teacher read key), by teacher or class |
 | `student_ref` | Roster number or handle; the worker's contract says never a real name. | until the teacher purges | DELETE /purge on the results worker (teacher read key), by teacher or class |
+
+### `review_event`
+
+Source: `migrations/0022_content_review.sql`
+
+| Columns | Purpose | Retention | Delete |
+| --- | --- | --- | --- |
+| `reviewer_name` | Name a staff reviewer typed for the human review log of a lesson or unit (an adult, never a student). Required so an approval has an accountable person. | kept: append-only, the table refuses UPDATE and DELETE | none in code: it is the audit record of who approved what; removal needs a reviewed migration |
+| `comment` | Optional reviewer note on a content decision, at most 500 characters. Free text, screened by rejectIfPII before it is stored, so names, contact details and personal circumstances are refused. About content, never about a student. | kept: append-only | none in code, as for reviewer_name |
+| `snapshot_json` | The lesson or unit content as it stood at the decision, for the side-by-side diff. Authored curriculum content only. | kept: append-only | none: no personal data |
+| `seq, id, block_id, kind, dimension, lang, from_state, to_state, reviewer_role, reviewer_date, actor, content_hash, bulk_id, created_at, prior_digest, digest` | One human review decision on a content block: which block, which review dimension, the state change, the reviewer role and date, the content hash it applies to, and the hash chain that makes edits detectable. actor is always 'human'. | kept: append-only | none: no personal data |
+
+### `review_state`
+
+Source: `migrations/0022_content_review.sql`
+
+| Columns | Purpose | Retention | Delete |
+| --- | --- | --- | --- |
+| `block_id, dimension, lang, state, reviewed_hash, reviewer_role, reviewer_date, event_seq, updated_at` | Latest review state per content block and dimension (a projection of review_event). | kept; rebuilt from review_event | none: no personal data |
+| `reviewer_name` | Name of the staff reviewer who made the latest decision (copy of review_event.reviewer_name). | kept; rebuilt from review_event | none in code, as for review_event.reviewer_name |
 
 ### `sg_room`
 
@@ -431,6 +469,7 @@ Source: `migrations/0005_web_vitals.sql`
 | Field | Purpose | Retention | Delete |
 | --- | --- | --- | --- |
 | `edupulse_student_name` | Student name copy kept by the EduPulse bridge. | until site data is cleared | clear site data |
+| `ewl_anon_token` | Random per-browser token (16 random bytes as hex, made with crypto.getRandomValues). Sent as the X-Anon-Token header on BCPSS write requests (telemetry, plans, deconstruct, export) so the server can rate limit per browser instead of per school IP. Never derived from a name, alias, class code or any student data; identifies no person. | until site data is cleared | clear site data; a new token is made on the next visit |
 | `ewl_arcade_*` | Best score and star count for one arcade game (also posted to the parent frame as a message on the same device). | until site data is cleared | clear site data |
 | `ewl_axiom_*_prefs` | Easy-read preference for one graphic novel volume. | until site data is cleared | clear site data |
 | `ewl_boost_v1` | Studio daily boost state (today's date and which boosts were used). | until site data is cleared | clear site data |
@@ -442,6 +481,7 @@ Source: `migrations/0005_web_vitals.sql`
 | `ewl_nets_interactive_v4` | Nets interactive progress for lesson 5-6. | until site data is cleared | clear site data |
 | `ewl_practice_*` | Autosaved answers (typed, drawn or recorded notes) on a small-group practice set, one key per lesson. | until site data is cleared | clear site data |
 | `ewl_projector_milestone` | Teacher's classroom arcade projector milestone marker. | until site data is cleared | clear site data |
+| `ewl_review_reviewed_only` | The viewer's choice to hide units that no human has finished reviewing (1 or 0). A display preference; no personal data. | until site data is cleared | clear site data |
 | `ewl_state_v1` | Curriculum 2.0 state on this device: current lesson, stage progress, Check-Yourself flags, vocabulary tokens, evidence notebook entries, display prefs. Evidence entries can hold text the student typed. | until the student or browser clears site data | clear site data; the student can also reset in the notebook |
 | `ewl_student_name` | Student name read by the EduPulse bridge and the games dashboard when present. Nothing in this repo writes this exact key; it is read as a fallback source of the student's typed name. | until site data is cleared | clear site data |
 | `ewl_studio_a11y_v1` | Studio language, WIDA-inspired support level, contrast and reduced-motion choices. A support level is a display setting chosen on this device; it is not sent anywhere. | until site data is cleared | clear site data |
@@ -457,6 +497,8 @@ Source: `migrations/0005_web_vitals.sql`
 | `ewl.classInvestigation.v1` | Class Investigation device memory: joined class code, random browser id (never a name), queued contributions, solo dataset, last class data copy. | until site data is cleared | clear site data; see docs/privacy/class-investigation.md |
 | `ewl.flagship.expedition.v1.*` | Progress in one flagship expedition world. | until site data is cleared | clear site data |
 | `ewl.raid-campaign.v1.*` | Class Boss raid campaign progress for one week. | until site data is cleared | clear site data |
+| `ewl.review.reviewer` | The reviewer's own name and role, typed into the reviewer queue, kept in sessionStorage so each decision does not ask again. A staff member, never a student. | until the tab closes | close the tab, or clear site data |
+| `ewl.review.teacherKey` | The site teacher key a reviewer typed into the reviewer queue, kept in sessionStorage so a reload does not ask again. Sent only as the x-teacher-key header. | until the tab closes | close the tab, or clear site data |
 | `ewl.studio.best.*` | Best score for one flagship studio game. | until site data is cleared | clear site data |
 | `nsr:identity` | Save/Resume identity (name and section the student typed). | until site data is cleared | clear site data |
 | `nt_student_ref` | Student name or alias written by the EduPulse bridge and read by lesson sync. Save/Resume invites a first and last name (docs/privacy/data-map.md F2). | until site data is cleared | clear site data |

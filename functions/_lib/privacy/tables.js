@@ -103,6 +103,13 @@ export const EXEMPT = Object.freeze({
   web_vital: "Aggregate performance samples; no person.",
   bcpss_shared_plans: "Teacher-shared plan notes per unit and tier; no class or student reference.",
   bcpss_unit_telemetry: "Aggregate event counts per unit; no person.",
+  review_event:
+    "Append-only log of staff decisions on lesson and unit content (migration 0022); no class, student or alias. The table refuses UPDATE and DELETE.",
+  review_state:
+    "Projection of review_event: latest review state per content block; no class or student reference.",
+  content_release:
+    "Immutable content release manifests (block id to content hash); no person, never deleted.",
+  release_pointer: "Single row naming the current content release; no class or student reference.",
 });
 
 /** One scope's statements as data: [{ table, where, binds }], used by delete, dry-run and tests. */

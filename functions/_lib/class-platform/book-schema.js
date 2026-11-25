@@ -40,21 +40,6 @@ export const BOOK_SCHEMA = [
   )`,
 ];
 
-export const bookPurgeStatements = (db, code) => [
-  db.prepare(`DELETE FROM class_platform_bevent WHERE code = ?`).bind(code),
-  db.prepare(`DELETE FROM class_platform_bwork WHERE code = ?`).bind(code),
-  db.prepare(`DELETE FROM class_platform_bassign WHERE code = ?`).bind(code),
-];
-
-export const bookStudentStatements = (db, code, studentId) => [
-  db
-    .prepare(`DELETE FROM class_platform_bevent WHERE code = ? AND student_id = ?`)
-    .bind(code, studentId),
-  db
-    .prepare(`DELETE FROM class_platform_bwork WHERE code = ? AND student_id = ?`)
-    .bind(code, studentId),
-];
-
 export const bookPruneStatements = (db, now, goneClassesSql) => [
   db.prepare(`DELETE FROM class_platform_bevent WHERE code IN (${goneClassesSql})`).bind(now),
   db.prepare(`DELETE FROM class_platform_bwork WHERE code IN (${goneClassesSql})`).bind(now),

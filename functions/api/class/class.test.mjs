@@ -5,7 +5,6 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -14,6 +13,7 @@ import quizKey from "../../../shared/class-platform/quiz-key.js";
 import { goalProgress, validateAlias, validateSummary } from "../../../shared/class-platform/contract.js";
 import { REVIEW_SCHEMA } from "../../_lib/class-platform/store.js";
 import { onRequest, SCHEMA } from "./[[path]].js";
+import { freshDb } from "../../../tools/privacy-d1-fake.mjs";
 
 function d1(sqlite) {
   const make = (sql, params) => ({
@@ -49,7 +49,7 @@ function d1(sqlite) {
 const KEY = "teacher-secret-for-tests";
 let ip = 0;
 function world() {
-  const sqlite = new DatabaseSync(":memory:");
+  const sqlite = freshDb();
   return { sqlite, env: { DB: d1(sqlite), TEACHER_KEY: KEY } };
 }
 
@@ -238,6 +238,70 @@ test("delete purges everything; retention sweep removes expired classes", async 
   await newClass(w); // create runs the sweep
   assert.equal(w.sqlite.prepare("SELECT COUNT(*) AS n FROM class_platform_class WHERE code = ?").get(old.code).n, 0);
   assert.equal(w.sqlite.prepare("SELECT COUNT(*) AS n FROM class_platform_student").get().n, 0);
+});
+
+test("remove-student and delete append hash-chained receipts and clear synced student_progress", async () => {
+  const w = world();
+  const c = await newClass(w);
+  const a = await join(w, c.code, "Forest");
+  const b = await join(w, c.code, "River");
+  const addProgress = (studentId, saveCode) =>
+    w.sqlite
+      .prepare(
+        `INSERT INTO student_progress (save_code, activity_id, state_json, created_at, updated_at, student_id, class_code)
+         VALUES (?, 'act', '{}', 'now', 'now', ?, ?)`,
+      )
+      .run(saveCode, studentId, c.code);
+  addProgress(a.studentId, "SAVE-A1");
+  addProgress(a.studentId, "SAVE-A2");
+  addProgress(b.studentId, "SAVE-B1");
+  const receipts = () => w.sqlite.prepare("SELECT * FROM privacy_deletion_receipt ORDER BY seq").all();
+  const progressOf = (id) => w.sqlite.prepare("SELECT COUNT(*) AS n FROM student_progress WHERE student_id = ?").get(id).n;
+  assert.equal(receipts().length, 0);
+
+  const removed = await call(w, "remove-student", { method: "POST", headers: teacher, body: { code: c.code, studentId: a.studentId } });
+  assert.equal(removed.status, 200);
+  assert.equal(removed.json.ok, true);
+  assert.equal(progressOf(a.studentId), 0, "synced progress rows are removed with the student");
+  assert.equal(progressOf(b.studentId), 1, "a classmate's progress stays");
+  const [first, ...rest] = receipts();
+  assert.equal(rest.length, 0);
+  assert.equal(first.scope_type, "student");
+  assert.equal(first.class_code, c.code);
+  assert.equal(first.student_id, a.studentId);
+  assert.equal(first.actor, "site");
+  assert.equal(first.prior_digest, "");
+  assert.equal(JSON.parse(first.counts_json).student_progress, 2);
+  assert.equal(removed.json.receipt.id, first.id);
+  assert.equal(JSON.stringify(first).includes("Forest"), false, "a receipt never carries the alias");
+
+  // Removing the same student again deletes nothing, so it writes no new receipt.
+  assert.equal((await call(w, "remove-student", { method: "POST", headers: teacher, body: { code: c.code, studentId: a.studentId } })).status, 200);
+  assert.equal(receipts().length, 1);
+
+  const gone = await call(w, "delete", { method: "POST", headers: teacher, body: { code: c.code, confirm: c.code } });
+  assert.equal(gone.status, 200);
+  assert.equal(gone.json.deleted, c.code);
+  assert.equal(w.sqlite.prepare("SELECT COUNT(*) AS n FROM student_progress WHERE class_code = ?").get(c.code).n, 0);
+  assert.equal(w.sqlite.prepare("SELECT COUNT(*) AS n FROM class_platform_class WHERE code = ?").get(c.code).n, 0);
+  const all = receipts();
+  assert.equal(all.length, 2);
+  assert.equal(all[1].scope_type, "class");
+  assert.equal(all[1].student_id, null);
+  assert.equal(all[1].prior_digest, all[0].digest, "receipts are hash-chained");
+  assert.equal(JSON.parse(all[1].counts_json).student_progress, 1);
+  assert.equal(gone.json.receipt.id, all[1].id);
+});
+
+test("a delete is refused, and nothing is removed, when the receipt table is missing", async () => {
+  const w = world();
+  const c = await newClass(w);
+  await join(w, c.code, "Forest");
+  w.sqlite.exec("DROP TRIGGER privacy_deletion_receipt_no_update; DROP TRIGGER privacy_deletion_receipt_no_delete; DROP TABLE privacy_deletion_receipt");
+  const res = await call(w, "delete", { method: "POST", headers: teacher, body: { code: c.code, confirm: c.code } });
+  assert.equal(res.status, 503);
+  assert.equal(res.json.error, "privacy-migration-missing");
+  assert.equal(w.sqlite.prepare("SELECT COUNT(*) AS n FROM class_platform_student").get().n, 1);
 });
 
 // The right answer to problem N of a room, computed the way every device (and the server) does.
