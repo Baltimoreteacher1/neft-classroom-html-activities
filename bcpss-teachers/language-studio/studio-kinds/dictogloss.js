@@ -1,8 +1,10 @@
-// dictogloss: listen (slow, then natural) -> jot key words -> rebuild -> self-check -> reveal the text.
+// dictogloss: listen (slow, then natural; Slow / Natural speed choice, replay counter, transcript toggle that is on by
+// default for WIDA levels 1-2 and off for 3-6) -> jot key words -> rebuild -> self-check -> reveal the text.
 import { h, tts, ttsAvailable, wordCount, announce } from "../studio-core.js";
 import { icon } from "../studio-icons.js";
 import { checklist, stepCard } from "../studio-ui.js";
 import { hintLadder } from "./_kit.js";
+import { playCounter, speedControl, transcriptToggle } from "./_listen.js";
 
 const pause = (ms) => new Promise((r) => window.setTimeout(r, ms));
 
@@ -19,6 +21,11 @@ export default function mount(root, ctx) {
   const persist = () => ctx.saveState(st);
   let alive = true;
   const canSpeak = ttsAvailable();
+  const speed = speedControl(0.8, 1);
+  const plays = playCounter(st.heard);
+  // Always a real toggle: with no speech on the device a partner or the teacher reads the story, so the words stay hidden
+  // at levels 3-6 (the activity is listening) and the student can still open them.
+  const transcript = transcriptToggle({ text: p.text, level: ctx.level, available: true });
 
   // 1. Listen
   const status = h("p", { class: "ow-status", "aria-live": "polite" });
@@ -63,8 +70,9 @@ export default function mount(root, ctx) {
   const play = async () => {
     listenBtn.disabled = true;
     wave.classList.add("is-live");
-    status.textContent = st.heard === 0 ? "Listening… (slow)" : "Listening… (natural speed)";
-    const ok = await tts(p.text, { rate: st.heard === 0 ? 0.8 : 1 });
+    const rate = speed.rate(st.heard);
+    status.textContent = rate < 1 ? "Listening… (slow)" : "Listening… (natural speed)";
+    const ok = await tts(p.text, { rate });
     wave.classList.remove("is-live");
     if (!alive) return;
     if (!ok)
@@ -72,6 +80,7 @@ export default function mount(root, ctx) {
         "Audio did not play. Ask a partner or your teacher to read the story aloud.";
     else {
       st.heard += 1;
+      plays.set(st.heard);
       persist();
       status.textContent =
         st.heard === 1
@@ -115,7 +124,10 @@ export default function mount(root, ctx) {
       "Listen to the story two times. Do not write whole sentences — just catch the important words.",
     ),
     h("div", { class: "ow-listen" }, listenBtn, wave),
+    speed.el,
+    plays.el,
     status,
+    transcript.el,
     fallback,
     h("div", { class: "ow-bar" }, nextListen),
   ]);

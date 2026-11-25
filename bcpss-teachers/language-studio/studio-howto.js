@@ -2,6 +2,7 @@
 // played one activity of a kind knows them all. Authored here once; nothing is generated per unit.
 export const HOWTO = {
   dictogloss: ["Press Listen. Hear the story twice.", "Tap the key words you hear.", "Write the story again in your own words."],
+  listen_and_show: ["Press Listen. Play it again or slow it down if you like.", "Tap the answer you heard.", "Read why it is right, then go on."],
   match: ["Tap a word.", "Tap the meaning that fits it.", "A wrong pair bounces back. Keep going until every pair matches."],
   word_sort: ["Tap a word, or drag it.", "Tap the group where it belongs.", "Finish when every word has a home."],
   clue_game: ["Read the first clue.", "Tap your guess in the word bank.", "Stuck? Open another clue. More clues means fewer points."],

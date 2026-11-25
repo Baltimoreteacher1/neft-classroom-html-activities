@@ -112,8 +112,9 @@ export function startKind(root, ctx, kind) {
 /**
  * Listen (normal) + Listen slowly buttons for `text`. `caption` (optional) gets word-by-word highlight.
  * onHeard fires once, when the first listen starts (or at once if audio is unavailable, so text is never hidden).
+ * onPlay(count) fires on every listen (the Listening Lab replay counter).
  */
-export function listenControls(text, caption, { label = "sentence", lang, onHeard } = {}) {
+export function listenControls(text, caption, { label = "sentence", lang, onHeard, onPlay } = {}) {
   const wrap = h("div", {
     class: "sl-listen",
     role: "group",
@@ -130,11 +131,13 @@ export function listenControls(text, caption, { label = "sentence", lang, onHear
     return { el: wrap, available: false };
   }
   let heard = false;
+  let plays = 0;
   const play = (rate) => {
     if (!heard) {
       heard = true;
       onHeard?.();
     }
+    onPlay?.(++plays);
     wrap.classList.add("is-speaking");
     speakWithHighlight(text, caption, { rate, lang }).finally(() =>
       wrap.classList.remove("is-speaking"),
