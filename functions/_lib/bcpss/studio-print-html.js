@@ -2,12 +2,14 @@
 // and exposes the one entry point used by the export endpoint and tests: renderStudioPart().
 
 import { DRAFT_FOOTER } from "../../../shared/bcpss-provenance.js";
+import { isRoutinePart, ROUTINE_PART_IDS } from "../../../shared/bcpss-routines/index.js";
 import { levelFromWida, palette, TOKENS } from "./studio-doc.js";
 import { buildBook } from "./studio-doc-book.js";
 import { buildFamily } from "./studio-doc-family.js";
 import { buildKey } from "./studio-doc-key.js";
 import { buildKit } from "./studio-doc-kits.js";
 import { buildPacket } from "./studio-doc-packet.js";
+import { buildRoutinePart } from "./studio-doc-routines.js";
 import { buildWriting, buildWritingKey } from "./studio-doc-writing.js";
 import { buildWritingWork } from "./studio-doc-writing-work.js";
 import { iconSvg } from "./studio-icons.js";
@@ -265,6 +267,7 @@ export const PRINT_PARTS = [
   "writing",
   "writing-key",
   "writing-work",
+  ...ROUTINE_PART_IDS,
 ];
 const KITS = new Set(["cards", "bingo", "wall", "poster", "strips", "talk"]);
 
@@ -293,6 +296,7 @@ function buildStudioDocumentBody(
   if (part === "writing-key") return buildWritingKey(detail, opts);
   if (part === "writing-work") return buildWritingWork(detail, opts);
   if (!detail?.studio) throw new Error("studio content not authored for this unit");
+  if (isRoutinePart(part)) return buildRoutinePart(detail, opts);
   if (part === "packet") return buildPacket(detail, opts);
   if (part === "book") return buildBook(detail, opts);
   if (part === "key") return buildKey(detail, opts);

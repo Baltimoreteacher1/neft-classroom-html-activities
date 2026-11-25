@@ -27,11 +27,12 @@ const VALID_FORMATS = new Set(["html", "pdf", "docx"]);
 const VALID_WIDA = new Set(["1_2", "3_4", "5_6"]);
 
 // Parts: packet (teacher overview, default), book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family,
-// writing (Writing Lab student packet), writing-key (Writing Lab teacher guide).
+// writing (Writing Lab student packet), writing-key (Writing Lab teacher guide),
+// rt-* (routine blocks: shared/bcpss-routines; e.g. rt-infogap, rt-doctor, rt-doctorkey).
 // POST (body { work }) renders the part "writing-work": a student's own Writing Lab answers as Word/PDF/HTML.
 // It is never cached and nothing is stored.
 const PARTS_HELP =
-  "packet, book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family, writing, writing-key";
+  "packet, book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family, writing, writing-key, rt-<routine block>";
 const WRITING_PARTS = new Set(["writing", "writing-key", "writing-work"]);
 // Student files are rendered on demand (PDF uses Browser Rendering), so POST is rate-limited per client.
 const workRateLimited = createRateLimiter({ max: 12, windowMs: 60_000 });

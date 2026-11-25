@@ -10,6 +10,7 @@ import {
   writingItem,
 } from "../shared/class-platform/bcpss-assignments.js";
 import { openAssignDialog } from "./assign-dialog.js";
+import { bindRoutines, routinesSection } from "./routines/section.js";
 
 const esc = (value) =>
   String(value ?? "").replace(
@@ -231,7 +232,7 @@ export function renderStudioTab(panel, { detail, wida }) {
         ${toolbar("sttListH", "All activities", "activities")}
         <ol class="stt-list">${rows}</ol>
       </section>
-      <section data-section="lessons" aria-live="polite"></section>
+      <section data-section="lessons" aria-live="polite"></section>${routinesSection(detail, wida)}
       <section aria-labelledby="sttResH" data-section="resources">
         <h3 id="sttResH" class="stt-h">Printables and resources</h3>
         <ul class="stt-res-grid">${(detail.writing ? [...RESOURCES, ...WRITING_RESOURCES] : RESOURCES).map((r) => resourceCard(r, unit.id, wida)).join("")}</ul>
@@ -239,5 +240,6 @@ export function renderStudioTab(panel, { detail, wida }) {
     </div>`;
   for (const section of panel.querySelectorAll(".stt > section"))
     bindSection(section, unit.id, wida);
+  bindRoutines(panel.querySelector('[data-section="routines"]'), unit.id);
   void fillLessons(panel.querySelector('[data-section="lessons"]'), unit.id, wida);
 }
