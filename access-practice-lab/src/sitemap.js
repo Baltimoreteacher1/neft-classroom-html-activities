@@ -1872,6 +1872,20 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "method",
+    section: "help",
+    skill: "Mixed",
+    kind: "guide",
+    for: STF,
+    href: "method",
+    icon: "help",
+    title: P("How it works", "Cómo funciona"),
+    text: P(
+      "How an activity is built, how help fades, what the AI does and does not do, and what the lab cannot show yet.",
+      "Cómo se hace una actividad, cómo se retira la ayuda, qué hace y qué no hace la IA, y lo que el laboratorio todavía no puede mostrar.",
+    ),
+  },
+  {
     id: "accessibility",
     section: "help",
     skill: "Mixed",

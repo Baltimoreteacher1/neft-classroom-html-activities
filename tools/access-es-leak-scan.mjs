@@ -63,6 +63,7 @@ const SPANISH =
   /[áéíóúñ¿¡]|(?<!\p{L})(el|la|los|las|de|del|para|tu|tus|con|una|un|por|que|en|al|su|sus|es|más)(?!\p{L})/iu;
 const ROUTES = [
   "/",
+  "/method",
   "/warmup?grades=6-8",
   "/warmup?grades=3-5",
   "/search?q=word&grades=6-8",

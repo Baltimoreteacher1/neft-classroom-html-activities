@@ -151,3 +151,12 @@ directions still open) · **T6** fixed in source (production re-measure pending)
 audit and is corrected above (Spanish text is tagged; 98.2% measured). **X3** now has the plan documents (`logic-model.md`,
 `efficacy-plan.md`, `usability-protocol.md`, `pilot-kit.md`, `acr.md`, `privacy.md`); no study or session has been run, so no
 evidence exists yet. Everything else in this audit is still open.
+
+### Tranche 3 (2026-11-25)
+**X5** also now has the AI model cards (`ai-model-cards.md`, drift-tested: every route that calls a model must have a row) · **C3** has a
+measured baseline and a ratchet (`coverage-matrix.md`; 42.2% of 933 activities carry a Key Language Use, 16.5% a content area, almost
+all in grades 3–5; no tag was invented) · **E1** has its pipeline (`data/language-page-audio-manifest.json`, one row per listening
+script with a hash; recordings register in `data/language-page-audio-recordings.json`; 0 of 234 are recorded and the gate refuses a
+recording whose script changed) · **T1** is measured and ratcheted (`data/language-page-perf-budget.json`; the budgets are not met, only held) ·
+**C1** has a `/method` page (how it works, in EN and ES, no efficacy claim) · **T5** closed for the `/studios/language/*` pages (each now
+has its own title). Still open: everything that needs a person (reviews, recordings, sessions) and the larger content work.

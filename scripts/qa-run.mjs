@@ -287,6 +287,13 @@ const COVERAGE = [
     /^(tools\/(access-role-default(?:-e2e|\.test)|generate-og-card)\.mjs|access-practice-lab\/pictures\/og-the-language-page\.png)$/,
     ["validate:access-lab", "test", "check"],
   ],
+  // THE LANGUAGE PAGE PROGRAM, TRANCHE 3: the tag-coverage ratchet and its vocabulary, the listening-audio manifest and recording
+  // registry, the AI model cards, the performance budget, and the /method page. Tests run in npm test; the browser pieces
+  // run inside validate:access-lab.
+  [
+    /^(tools\/(generate-language-page-(tag-coverage|audio-manifest)|language-page-(tag-coverage|audio|ai-cards)\.test|validate-language-page-performance|access-method-e2e)\.mjs|data\/language-page-(perf-budget|tag-coverage-baseline|audio-manifest|audio-recordings)\.json|access-practice-lab\/(content\/metadata\/vocab\.json|src\/views\/method\.js)|docs\/language-page\/(ai-model-cards|coverage-matrix)\.md)$/,
+    ["validate:access-lab", "test", "check"],
+  ],
   // THE LANGUAGE PAGE TRUST GATES: what the host sends over the network, what its copy claims, and what its docs say
   // about the code. The network gate opens a browser; a missing one is a SKIP locally and a FAIL in CI.
   [

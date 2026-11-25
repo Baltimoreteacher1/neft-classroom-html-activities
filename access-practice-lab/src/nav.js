@@ -239,6 +239,7 @@ export function footerHTML(ctx, I) {
       <a href="${BASE}/move${q}">${T("Move my progress", "Mover mi progreso")}</a>
       <a href="${BASE}/privacy${q}">${T("Privacy", "Privacidad")}</a>
       <a href="${BASE}/accessibility${q}">${T("Accessibility", "Accesibilidad")}</a>
+      <a href="${BASE}/method${q}">${T("How it works", "Cómo funciona")}</a>
       <button type="button" class="footer-link-button" data-start-fresh>
         ${T("Start everything fresh", "Empezar todo de nuevo")}
       </button>

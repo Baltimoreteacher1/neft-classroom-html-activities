@@ -143,6 +143,7 @@ const VIEW_LOADERS = {
   "site-guide": () => import("./intro/site-guide.js"),
   privacy: () => import("./views/privacy.js"),
   accessibility: () => import("./views/accessibility.js"),
+  method: () => import("./views/method.js"),
   "book-studio": () => import("./views/book-studio.js"),
   "language-labs": () => import("./views/language-labs.js"),
   communication: () => import("./views/communication.js"),
@@ -273,6 +274,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "students") return { ...r, view: "students", pick: q.get("pick") || "", skill: q.get("skill") || "", support: q.get("support") || "" };
   if (a === "practice-together") return { ...r, view: "practice-together", id: b || "", step: q.get("step") || "" };
   if (a === "privacy" || a === "accessibility") return { ...r, view: a };
+  if (a === "method") return { ...r, view: "method" };
   if (a === "site-guide") return { ...r, view: "site-guide", id: b || "", audience: q.get("for") || "", q: q.get("q") || "" };
   if (a === "arena") return { ...r, view: "arena", id: b || "" };
   if (a === "mentor") return { ...r, view: "mentor", id: b || "", sub: c || "" };

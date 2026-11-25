@@ -133,6 +133,10 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/practice-together`,
   `${LAB_BASE}/family-start`,
   `${LAB_BASE}/site-guide`,
+  // The trust pages: how it works, privacy and accessibility (access-practice-lab/src/views/{method,privacy,accessibility}.js).
+  `${LAB_BASE}/method`,
+  `${LAB_BASE}/privacy`,
+  `${LAB_BASE}/accessibility`,
   // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js) and studios.
   `${LAB_BASE}/early`,
   `${LAB_BASE}/early/story`,

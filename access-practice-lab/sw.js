@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "508ce3152e1c";
+const BUILD_HASH = "8a64a2e3e084";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=b93c4c2e6d4b",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=806a13eca36c",
   "/access-practice-lab/acc.css?v=5f19a73c976b",
   "/access-practice-lab/studios.css?v=3f3a7021a4a0",
-  "/access-practice-lab/src/main.js?v=4ea54e8366ec",
+  "/access-practice-lab/src/main.js?v=d98219c7bf25",
   "/access-practice-lab/src/brand.js?v=af5de68e62e6",
   "/access-practice-lab/src/keep-in-view.js?v=88f120416985",
   "/access-practice-lab/src/components.js?v=d7e0108d194e",
@@ -51,7 +51,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/early/gate.js?v=1d5f6e05874a",
   "/access-practice-lab/src/wayfinding.js?v=3c802bab28a5",
   "/access-practice-lab/src/grade-bands.js?v=f68093c034d6",
-  "/access-practice-lab/src/sitemap.js?v=4a1ded66f24e",
+  "/access-practice-lab/src/sitemap.js?v=ba767054a677",
   "/access-practice-lab/src/studio-app.js?v=bc50c589cc8b",
   "/access-practice-lab/src/grade-focus-ui.js?v=b66ae8d8ce9a",
   "/access-practice-lab/src/content.js?v=8d120786e17b",
@@ -90,7 +90,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb21fa",
   "/access-practice-lab/src/shell.js?v=5dbccd6d47f1",
   "/access-practice-lab/src/comfort.js?v=78469d68e29a",
-  "/access-practice-lab/src/nav.js?v=aae00494acfb",
+  "/access-practice-lab/src/nav.js?v=80e9d90e9e8f",
   "/access-practice-lab/src/acc/copy.js?v=d583283367c3",
   "/access-practice-lab/src/register.js?v=451078201644",
   "/access-practice-lab/src/family-tour-host.js?v=5c22b1e07260",
@@ -1165,6 +1165,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/library.js?v=7954b694314b",
   "/access-practice-lab/src/views/lingua.js?v=bc7c20238511",
   "/access-practice-lab/src/views/mentor.js?v=118cb5b57708",
+  "/access-practice-lab/src/views/method.js?v=7b636ed44538",
   "/access-practice-lab/src/views/missions-feedback.js?v=4c38d44da1df",
   "/access-practice-lab/src/views/missions.js?v=721283300ac9",
   "/access-practice-lab/src/views/move.js?v=f3dd06df59d3",
@@ -1522,6 +1523,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/content/ladder/leveled.json",
   "/access-practice-lab/content/ladder/passages.json",
   "/access-practice-lab/content/lesson-learn.json",
+  "/access-practice-lab/content/metadata/vocab.json",
   "/access-practice-lab/content/missions/bike-lane-budget.json",
   "/access-practice-lab/content/missions/harbor-petition.json",
   "/access-practice-lab/content/missions/lighthouse-letters.json",

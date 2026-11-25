@@ -1,6 +1,6 @@
 # Language Page award program — state
 
-Last updated: 2026-11-25 (after tranche 2). Source of truth for what is done, blocked and next. Audit:
+Last updated: 2026-11-25 (after tranche 3). Source of truth for what is done, blocked and next. Audit:
 `docs/language-page/award-panel-audit-2026-11-24.md`. Build prompt: `docs/language-page/award-program-prompt.md`.
 (Program records live under `docs/language-page/`; the repository's `reports/` folder is git-ignored.)
 
@@ -37,15 +37,25 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 | Claims gate scans studios' visible prose; "publication-grade" removed | X4 | `tools/access-lab-claims.test.mjs` |
 | logic model, efficacy plan, usability protocol, pilot kit, ACR draft, privacy doc | X3 | `docs/language-page/*.md`; privacy.md is generated and tested |
 
+**Tranche 3 (this change)**
+| Item | Finding | Proof |
+| --- | --- | --- |
+| AI model cards for the 7 AI routes the host serves, 17 routes listed; PLATFORM.md AI list completed | X5, WS9 | `tools/language-page-ai-cards.test.mjs` finds every model-calling file and checks each row's hosting against the host code |
+| Performance budget: 124 blocking stylesheets, 134 module preloads, 387 KB gzip blocking CSS on the shell, held by a ratchet | T1, WS6 | `tools/validate-language-page-performance.mjs` in `validate:access-lab` (the targets of 2, 40 and 100 KB are not met) |
+| Tag vocabulary and coverage matrix: KLU on 42.2% and a content area on 16.5% of 933 activities, by band | C3, WS3 | `tools/language-page-tag-coverage.test.mjs`: current matrix, per-band ratchet; nothing inferred |
+| Listening audio manifest: 234 scripts hashed, 0 recorded; a recording needs a file, captions and a matching script | E1, WS4 | `tools/language-page-audio.test.mjs` |
+| `/method` page (EN and ES), in the footer, sitemap and Spanish leak scan; `/privacy` and `/accessibility` added to the sitemap | C1 | `tools/access-method-e2e.mjs`: axe clean, no overflow at 375px |
+| Each `/studios/language/*` page has its own title | T5 | `functions/studios-proxy.test.mjs` |
+
 **E4 corrected:** Spanish text is already tagged `lang="es"` (98.2% measured); `<html lang>` stays `en` by design.
 
 ## Not started
-WS2 chrome budget and unique per-route titles · WS3 curriculum spine, crosswalks, phonics single scope, tagging schema, K–2 parity,
-sustained reading · WS4 audio pipeline, Spanish for grades 3–8 directions, language packs, SLIFE path · WS5 writing volume and
-audience loop · WS6 CSS and request budget (1.36 MB, 158 requests per page today) · WS7–WS14 as in the prompt.
+WS2 chrome budget · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
+sustained reading · WS4 recorded audio (H-19), Spanish for grades 3–8 directions, language packs, SLIFE path · WS5 writing volume and
+audience loop · WS6 meeting the CSS and request budget (held, not met: 124 blocking stylesheets on the shell) · WS7–WS14 as in the prompt.
 
 ## Human-required
-Unchanged: H-01…H-14 (`docs/language-page/human-required.md`). H-15 is a fallback only. Unblocked by this tranche: run the usability
+Unchanged: H-01…H-14 (`docs/language-page/human-required.md`); H-19 (record the listening scripts) is new. H-15 is a fallback only. Unblocked by this tranche: run the usability
 sessions (`usability-protocol.md`), agree the pilot (`efficacy-plan.md`, `pilot-kit.md`), and do the assistive-technology pass for the ACR.
 
 ## Known red tests on the base branch (not caused by this program; fail identically without it)

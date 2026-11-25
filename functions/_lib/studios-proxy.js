@@ -10,6 +10,9 @@
 //   - the visitor's host and Origin go along so the app's server-action origin check sees the real site;
 //   - an unreachable upstream answers 502 for /studios only; every other path on the site is untouched.
 
+import { STUDIO_APP_PAGES } from "../../access-practice-lab/src/studio-app.js";
+import { isLanguagePageHost, LAB_BRAND } from "./language-page.js";
+
 export const STUDIOS_BASE = "/studios";
 export const STUDIOS_UPSTREAM = "https://learning-studios.neftjd.workers.dev";
 
@@ -43,6 +46,30 @@ const text = (status, body, extra = {}) =>
     status,
     headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store", ...extra },
   });
+
+const esc = (v) => String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+
+/**
+ * The studios app sets one title for every page ("Learning Studios · The Language Page"), so a browser tab, a bookmark and
+ * a search result cannot tell Speaking from Writing. The listing the lab already keeps (access-practice-lab/src/studio-app.js)
+ * names each page; this puts that name in the <title> (and og:title when the app sets one). Pages the listing does not
+ * name, such as a math lesson, keep the app's own title.
+ */
+export function studioPageTitle(html, pathname, hostname) {
+  const key = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  const page = STUDIO_APP_PAGES.find((p) => p.path === key);
+  if (!page) return html;
+  const name = isLanguagePageHost(hostname)
+    ? `${page.title[0]} · ${LAB_BRAND.name}`
+    : page.title[0];
+  const title = esc(name);
+  return html
+    .replace(/<title>[^<]*<\/title>/, () => `<title>${title}</title>`)
+    .replace(
+      /(<meta\s+property=["']og:title["']\s+content=)["'][^"']*["']/,
+      (_, a) => `${a}"${title}"`,
+    );
+}
 
 export async function proxyStudios(request, url, upstreamFetch = fetch) {
   if (!METHODS.has(request.method))
@@ -92,8 +119,16 @@ export async function proxyStudios(request, url, upstreamFetch = fetch) {
   }
   // Pages are re-checked on every visit so a new deploy is seen at once; the hashed /_next/static files
   // keep the long cache the app gives them.
-  if ((out.get("content-type") || "").includes("text/html")) {
+  const isHtml = (out.get("content-type") || "").includes("text/html");
+  if (isHtml) {
     out.set("cache-control", "public, max-age=0, must-revalidate");
+  }
+  if (isHtml && request.method === "GET" && upstream.status === 200) {
+    return new Response(studioPageTitle(await upstream.text(), url.pathname, url.hostname), {
+      status: upstream.status,
+      statusText: upstream.statusText,
+      headers: out,
+    });
   }
   return new Response(upstream.body, {
     status: upstream.status,

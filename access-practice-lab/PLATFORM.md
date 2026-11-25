@@ -126,7 +126,7 @@ stored. Opening any help marks the work supported. Help items are written so the
    walkthrough use a scripted coach that sends nothing;
    `src/intro/guide.js`). A question an adult TYPES into the guide is sent, with the page name, tour step, grade choice
    and language, to this site's own `/api/language-guide` (`functions/api/language-guide.js`), which asks a model
-   (Gemini when `GEMINI_API_KEY` is bound, else Claude Haiku, else Workers AI, through `functions/_lib/model-call.js`; Gemini is opt-in per call and only this endpoint opts in, so the class platform's student-writing helpers never reach it) to answer only from
+   (Gemini when `GEMINI_API_KEY` is bound, else Claude Haiku, else Workers AI, through `functions/_lib/model-call.js`; Gemini is opt-in per call and only this endpoint and its teacher-only `/api/language-guide/insights` opt in, so the class platform's student-writing helpers never reach it) to answer only from
    `src/intro/guide-knowledge.js`. Nothing else is sent: no student work, no recordings, no progress, no identifiers.
    **Question log, decided by Joel on 2026-11-11 ("Build out all of these", the item "Optional anonymous question
    log ... to see what teachers ask")**: the endpoint keeps each typed question for 90 days in the existing `PLAN_DOCS`
@@ -192,6 +192,14 @@ stored. Opening any help marks the work supported. Help items are written so the
    counters of the shared cap guard (`experience-compile` scope). Nothing enters the experience unless the instructor
    presses Accept (one undoable editor operation, validated at once). With no credential, no model or an unusable
    reply, the editor says "Built-in suggestions only" and offers the source sentences no evidence or answer uses yet.
+   **AI routes recorded from the code, 2026-11-25 (authority unconfirmed).** Reading `functions/` found model-calling routes that the
+   list above does not name: `POST /api/class/ai/writing` (a learner's own draft, 12 to 1,800 characters, sent to pick authored
+   next-move and error-pattern ids; nothing stored; Claude Haiku else Workers AI, never Gemini), `POST /api/class/ai/hint` (the math
+   Fluency Lab's hint picker: the problem, the attempt and authored hints are sent, the accepted answers are not; nothing stored) and
+   `POST /api/studio/ai` (Activity Studio drafting for teachers; served on eduwonderlab.com, not on thelanguagepage.com; nothing
+   stored). `docs/class-platform.md` and `STUDIO.md` describe them, but no entry in `data/product-decisions.json` quotes Joel for them.
+   **Joel to confirm or remove.** Per-route detail for every AI route, and which host serves it: `docs/language-page/ai-model-cards.md`
+   (`tools/language-page-ai-cards.test.mjs` fails when a route that calls a model is missing from it).
    **Integration exceptions, decided by Joel on 2026-11-19 ("full permission"; see
    `docs/access-practice-lab/integration-decisions.md` and `data/product-decisions.json`):**
    **Speaking tasks and review.** What is sent: only explicitly shared attempts, alias, task settings,

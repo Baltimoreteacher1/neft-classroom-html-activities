@@ -10,7 +10,8 @@
  */
 import assert from "node:assert/strict";
 import { languagePageRoute } from "./_lib/language-page.js";
-import { STUDIOS_UPSTREAM, isStudiosRequest, proxyStudios } from "./_lib/studios-proxy.js";
+import { STUDIOS_UPSTREAM, isStudiosRequest, proxyStudios, studioPageTitle } from "./_lib/studios-proxy.js";
+import { STUDIO_APP_PAGES } from "../access-practice-lab/src/studio-app.js";
 import { onRequest } from "./_middleware.js";
 
 let passed = 0;
@@ -192,6 +193,33 @@ await t("the real middleware answers /studios ahead of the teacher gate and leav
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+await t("each studio page the listing names gets its own title; others keep the app's", async () => {
+  const shell = '<head><title>Learning Studios · The Language Page</title><meta property="og:title" content="Learning Studios"></head>';
+  const titles = new Set();
+  for (const page of STUDIO_APP_PAGES) {
+    const out = studioPageTitle(shell, `${page.path}/`, "thelanguagepage.com");
+    const title = /<title>([^<]*)<\/title>/.exec(out)[1];
+    assert.ok(title.endsWith("· The Language Page"), `${page.path}: ${title}`);
+    assert.ok(out.includes(`og:title" content="${title}"`), `${page.path}: og:title not updated`);
+    titles.add(title);
+  }
+  assert.equal(titles.size, STUDIO_APP_PAGES.length, "two studio pages share a title");
+  assert.equal(studioPageTitle(shell, "/studios/math/lesson/3-2/practice", "thelanguagepage.com"), shell);
+  const eduwonderlab = studioPageTitle(shell, "/studios/language/speaking", "eduwonderlab.com");
+  assert.ok(!eduwonderlab.includes("The Language Page"), "the other host is not branded as The Language Page");
+});
+
+await t("the proxy titles a studio page it serves and leaves other bodies alone", async () => {
+  const html = "<head><title>Learning Studios</title></head>";
+  const up = upstream(new Response(html, { headers: { "content-type": "text/html; charset=utf-8" } }));
+  const url = u("https://thelanguagepage.com/studios/language/speaking");
+  const res = await proxyStudios(new Request(url), url, up.fn);
+  assert.match(await res.text(), /<title>Speaking tasks · Learning Studios · The Language Page<\/title>/);
+  const asset = upstream(new Response("body{}", { headers: { "content-type": "text/css" } }));
+  const css = u("https://thelanguagepage.com/studios/_next/static/a.css");
+  assert.equal(await (await proxyStudios(new Request(css), css, asset.fn)).text(), "body{}");
 });
 
 console.log(`studios-proxy: ${passed} checks passed.`);
