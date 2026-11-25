@@ -1,7 +1,11 @@
 // Search and filtering over the manifest. Pure functions: ranking and facet counts are unit-tested.
 import { BANDS, SUBJECT_PROFILE } from "../data/taxonomy.js";
 
-const norm = (s) => String(s ?? "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+const norm = (s) =>
+  String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 const words = (s) => norm(s).split(/[^a-z0-9.]+/).filter(Boolean);
 const codeLike = (t) => /\d/.test(t) && /[a-z]/.test(t);
 
@@ -33,10 +37,17 @@ function scoreToken(item, tok) {
     else if (codeLike(tok) && c.startsWith(tok)) bump(60);
     else if (tok.length > 3 && c.includes(tok)) bump(30);
   }
-  for (const v of item.vocab || []) {
+  for (const v of [
+    ...(item.vocab || []),
+    ...(item.vocab_es || []),
+    ...(item.vocabEs || []),
+    ...(item.cognates_es || []),
+  ]) {
     const w = norm(v);
+    const vw = words(v);
     if (w === tok) bump(65);
-    else if (tok.length > 2 && w.startsWith(tok)) bump(35);
+    else if (vw.includes(tok)) bump(48);
+    else if (tok.length > 2 && (w.startsWith(tok) || vw.some((x) => x.startsWith(tok)))) bump(35);
   }
   for (const k of item.klus || []) if (norm(k) === tok) bump(30);
   for (const d of item.domains || []) if (norm(d) === tok) bump(20);
