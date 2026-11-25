@@ -40,6 +40,7 @@ function route(pathname) {
   const m = pathname.match(/^\/api\/bcpss\/units\/([^/]+)(\/lessons)?$/);
   if (m) return { mod: m[2] ? apiLessons : apiUnit, params: { unitId: decodeURIComponent(m[1]) } };
   const exact = {
+    "/api/flags": apiFlags,
     "/api/bcpss/units": apiUnits,
     "/api/bcpss/insights": apiInsights,
     "/api/bcpss/pathways": apiPathways,

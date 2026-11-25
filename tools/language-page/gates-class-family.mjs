@@ -12,11 +12,7 @@ import {
 } from "../../shared/bcpss-family-plan.js";
 import { buildTips, MAX_TIP_CHARS, tipLength } from "../../shared/bcpss-family-tips.js";
 import { validateAlias } from "../../shared/class-platform/contract.js";
-import {
-  briefText,
-  buildDashboard,
-  unitSnapshot,
-} from "../../shared/class-platform/week-brief.js";
+import { briefText, buildDashboard, unitSnapshot } from "../../shared/class-platform/week-brief.js";
 import { clone } from "./dataset.mjs";
 
 const ROOT = new URL("../../", import.meta.url);
