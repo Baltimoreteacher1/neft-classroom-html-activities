@@ -15,6 +15,7 @@ import { ASSIGN_DOMAINS, UNITS_ASSIGN, assignableActivities, assignableUnitStops
 import { el, errorText } from "./dom.js";
 import { familyReportControls } from "./family-reports.js";
 import { heatMapTable } from "./heat-map.js";
+import { mountDashboardV2 } from "./dashboard-v2.js";
 import { createJoinCards } from "./join-cards.js";
 import { itemsFor, loadQuizKey } from "./quiz-key.js";
 import { drawReviewQueue } from "./review-queue.js";
@@ -141,6 +142,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
     const quizBox = el("div");
     const notesBox = el("div");
     const heatBox = el("div");
+    const briefBox = el("div");
     const supportBox = el("div");
     const queueBox = el("div");
     const socialBox = el("div");
@@ -174,6 +176,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
         el("table", { class: "cls-table" },
           el("thead", {}, el("tr", {}, ["Nickname|Apodo", "Last seen|Visto por última vez", "Evidence this week|Evidencia esta semana", "Days|Días", "Assigned done|Tareas hechas", ""].map((h) => el("th", { scope: "col" }, h ? S(...h.split("|")) : "")))),
           rosterBody)),
+      el("section", { class: "cls-card", hidden: "" }, el("h4", {}, S("This week", "Esta semana")), briefBox),
       cards.node,
       el("section", { class: "cls-card" }, el("h4", {}, S("Class heat map", "Mapa de calor de la clase")), heatBox),
       el("section", { class: "cls-card" }, el("h4", {}, S("Student details and starting support", "Detalles del estudiante y apoyo inicial")), supportBox),
@@ -194,6 +197,8 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
         if (typed && (await api.remove(typed)).ok) { store.write(store.read().filter((c) => c.code !== current.code)); entry(); }
       } }, S("Delete this class", "Eliminar esta clase"))),
     );
+    const dashboardV2 = mountDashboardV2(briefBox, { S, api, fetchImpl });
+    timers.push({ unmount: dashboardV2.unmount });
     let roster = null;
     let heatSig = "";
     const support = mountSupportEditor(supportBox, { S, api, live, reload: () => loadRoster() });
@@ -204,6 +209,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
         return;
       }
       roster = res;
+      dashboardV2.update(res);
       coachToggle.checked = res.settings?.aiCoach !== false;
       cards.update(res.students);
       const nextHeat = JSON.stringify(res.students.map((s) => [s.studentId, s.alias, s.docs?.language?.summary?.byUse ?? null]));
