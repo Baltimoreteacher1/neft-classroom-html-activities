@@ -175,16 +175,35 @@ export const wordCount = (text) =>
     .split(/\s+/)
     .filter(Boolean).length;
 
-/** Normalise free text for forgiving comparisons: lowercase, strip punctuation/units spacing. */
-export const norm = (text) =>
-  String(text ?? "")
+// Answer comparison for the information gap. Unit words are spelled one way each ("centimeters", "cm" -> "qcm"; the q
+// keeps them apart from English words), so "0.35 meter" equals "0.35 meters" but "36 inches" never equals "36 feet" and "14 square feet" never equals "14 cubic feet".
+const UNIT_SPELLINGS = [
+  [/(?<![a-z])centi?met(?:er|re)s?(?![a-z])|(?<![a-z])cm(?![a-z])/g, "qcm"],
+  [/(?<![a-z])inch(?:es)?(?![a-z])/g, "qin"],
+  [/(?<![a-z])(?:feet|foot|ft)(?![a-z])/g, "qft"],
+  [/(?<![a-z])met(?:er|re)s?(?![a-z])/g, "qm"],
+  [/(?<![a-z])units?(?![a-z])/g, "qunit"],
+];
+const UNIT_WORD = "(?<![a-z])(?:qcm|qin|qft|qm|qunit|square|cubic)(?![a-z])";
+const canon = (text) => {
+  let t = String(text ?? "")
     .toLowerCase()
-    .replace(/×/g, "x")
-    .replace(
-      /square|cubic|centimeters?|centimetres?|cm|inches|inch|feet|foot|ft|meters?|units?/g,
-      "",
-    )
-    .replace(/[^a-z0-9.]+/g, "");
+    .replace(/×/g, "x");
+  for (const [re, to] of UNIT_SPELLINGS) t = t.replace(re, to);
+  return t;
+};
+const squash = (t) => t.replace(/[^a-z0-9.]+/g, "").replace(/\.+$/, "");
+
+/** Typed answer vs the partner's fact. Units must match; a bare number (no unit word typed) is accepted for the number. */
+export const sameAnswer = (typed, truth) => {
+  const a = canon(String(typed).replace(/\bby\b/gi, "x"));
+  const b = canon(String(truth).replace(/\bby\b/gi, "x"));
+  if (squash(a) === squash(b)) return true;
+  return (
+    !new RegExp(UNIT_WORD).test(a) &&
+    squash(a) === squash(b.replace(new RegExp(UNIT_WORD, "g"), ""))
+  );
+};
 
 /** Stars from how many tries were needed (retries / total). */
 export const starsFor = (mistakes, total) =>
@@ -225,4 +244,3 @@ export const starSvg = (on) => {
   svg.append(path);
   return svg;
 };
-

@@ -1,11 +1,8 @@
 // info_gap: two partner cards (hide/show), ask/tell frames, fill in the needs, check against the other card.
-import { announce, h, norm, starsFor } from "../studio-core.js";
+import { announce, h, sameAnswer, starsFor } from "../studio-core.js";
 import { icon } from "../studio-icons.js";
 import { speakButton } from "../studio-ui.js";
 import { hintLadder } from "./_kit.js";
-
-const same = (a, b) =>
-  norm(String(a).replace(/\bby\b/gi, "x")) === norm(String(b).replace(/\bby\b/gi, "x"));
 
 export default function mount(root, ctx) {
   const p = ctx.payload;
@@ -136,7 +133,7 @@ export default function mount(root, ctx) {
         total += 1;
         const truth = other[idx].has.find((f) => f.k === need)?.v ?? "";
         const input = cards[idx].inputs[need];
-        const ok = input.value.trim() !== "" && same(input.value, truth);
+        const ok = input.value.trim() !== "" && sameAnswer(input.value, truth);
         const row = input.closest(".ig-need");
         row.classList.toggle("is-ok", ok);
         row.classList.toggle("is-no", !ok);
