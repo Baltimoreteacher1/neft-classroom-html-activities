@@ -29,6 +29,29 @@ function card(id, title, ...body) {
   );
 }
 
+/** Draft word help for lesson words the unit's own word cards do not cover (definition, example, Spanish). */
+function helperWords(words) {
+  return h(
+    "details",
+    { class: "sl-helpers" },
+    h("summary", null, `Word help for ${words.length} lesson words (draft)`),
+    h(
+      "dl",
+      null,
+      words.flatMap((v) => [
+        h("dt", null, v.term),
+        h(
+          "dd",
+          null,
+          `${v.card.def}. “${v.card.example}” `,
+          h("span", { lang: "es" }, v.card.es),
+          v.card.es_note ? ` (${v.card.es_note})` : "",
+        ),
+      ]),
+    ),
+  );
+}
+
 function levelList(rows, level, current) {
   return h(
     "dl",
@@ -80,6 +103,7 @@ export function renderTeacherCard(lesson, level) {
   const tc = lesson.teacher_card;
   const lo = lesson.language_objective;
   const newTerms = (lesson.vocab || []).filter((v) => v.new_or_review === "new").map((v) => v.term);
+  const helpers = (lesson.vocab || []).filter((v) => v.card);
   const diff = { ...tc.differentiation };
   return h(
     "section",
@@ -109,6 +133,7 @@ export function renderTeacherCard(lesson, level) {
         newTerms.length
           ? h("p", { class: "sl-obj" }, h("b", null, "New words: "), newTerms.join(", "))
           : null,
+        helpers.length ? helperWords(helpers) : null,
       ),
       card("slMovesH", "The 3 moves", moves(lesson)),
       card("slMatH", "Materials", list(tc.materials)),

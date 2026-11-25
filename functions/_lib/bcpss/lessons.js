@@ -2,6 +2,7 @@
 // Data lives in db/seeds/bcpss/v2/lessons/<unitId>.mjs (generated drafts or hand-authored files).
 
 import { BCPSS_UNITS, UNIT_CONNECTIONS } from "../../../data/bcpss-curriculum-seed.mjs";
+import { helperCard } from "../../../db/seeds/bcpss/v2/lesson-helper-words.mjs";
 import { AUTHORED_LOADERS } from "../../../db/seeds/bcpss/v2/lessons-authored.mjs";
 import { kluOfConnection } from "./klu.js";
 import { generateLessons } from "./lesson-generator.js";
@@ -31,7 +32,14 @@ export async function loadLessons(unitId) {
   const authored = AUTHORED_LOADERS[unitId];
   if (authored) {
     const set = (await authored()).default;
-    return { ...set, lessons: set.lessons.map(withScore) };
+    const withCards = (lesson) => ({
+      ...lesson,
+      vocab: lesson.vocab.map((v) => {
+        const card = helperCard(unitId, v.term);
+        return card ? { ...v, card } : v;
+      }),
+    });
+    return { ...set, lessons: set.lessons.map((l) => withScore(withCards(l))) };
   }
   const unit = UNIT_BY_ID.get(unitId);
   const studio = unit ? await loadStudio(unitId) : null;

@@ -3,7 +3,7 @@ import { renderQrSvg } from "../qr-svg.js";
 import { announce, copyText, esc, h } from "./studio-core.js";
 import { studentUrl } from "./studio-lesson-data.js";
 
-/** Spanish glosses for this step: items that carry `es`, plus the lesson's own vocabulary. */
+/** Spanish glosses for this step: items that carry `es`, plus the lesson's own vocabulary (unit cards, then helper cards). */
 export function glossPairs(studioVocab, lesson, activity) {
   const seen = new Map();
   const add = (term, es) => {
@@ -13,7 +13,8 @@ export function glossPairs(studioVocab, lesson, activity) {
   for (const item of activity.payload?.items || [])
     if (item && typeof item === "object") add(item.term, item.es);
   const byTerm = new Map((studioVocab || []).map((v) => [String(v.term).toLowerCase(), v]));
-  for (const v of lesson.vocab || []) add(v.term, byTerm.get(String(v.term).toLowerCase())?.es);
+  for (const v of lesson.vocab || [])
+    add(v.term, byTerm.get(String(v.term).toLowerCase())?.es ?? v.card?.es);
   return [...seen.values()];
 }
 
