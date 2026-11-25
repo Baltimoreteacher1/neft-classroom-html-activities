@@ -6,7 +6,7 @@
 //           Inline Edit, Regenerate Item, Format Switcher, Student/Teacher View, Print/PDF, Standalone HTML, Save)
 
 import { keepView } from "./keep-view.js";
-import { generateConceptSvg } from "./vocab-studio.js";
+import { unitConceptVisual } from "./vocab-visuals.js";
 
 const STORAGE_KEY = "bcpssTeachers:v1:savedCreations";
 const stateMap = new WeakMap();
@@ -205,6 +205,9 @@ function buildResourceDraft({ unit, connection, blueprint, type, focus, complexi
     wida,
     format,
     includeVisuals,
+    vocabTerms: (Array.isArray(connection?.tier2_tier3_vocab) ? connection.tier2_tier3_vocab : [])
+      .map((v) => String(v?.term || "").trim())
+      .filter(Boolean),
     items,
   };
 }
@@ -217,7 +220,7 @@ export function buildStandaloneHtml(res) {
   const safeDirections = escHtml(res.directions);
   const safeUnit = escHtml(`${res.grade === "K" ? "Kindergarten" : `Grade ${res.grade}`} · ${res.subject} · ${res.unitTitle}`);
   const safeStandards = (res.standards || []).map((s) => `<span class="chip">${escHtml(s)}</span>`).join(" ");
-  const visualSvg = res.includeVisuals ? generateConceptSvg(res.unitTitle, res.subject, 0) : "";
+  const visualSvg = res.includeVisuals ? unitConceptVisual(res.vocabTerms, res.subject) : "";
 
   const studentItemsHtml = (res.items || [])
     .map(
@@ -356,7 +359,7 @@ export function renderCreationStudio(
 
   function draw() {
     const d = st.draft;
-    const visualSvg = d.includeVisuals ? generateConceptSvg(unit.unit_title, unit.subject, 0) : "";
+    const visualSvg = d.includeVisuals ? unitConceptVisual(d.vocabTerms, d.subject) : "";
 
     container.innerHTML = `
       <div class="cs-shell">
@@ -441,7 +444,7 @@ export function renderCreationStudio(
           <div class="cs-action-bar">
             <label style="display:inline-flex;align-items:center;gap:0.45rem;font-size:0.9rem;font-weight:600;cursor:pointer">
               <input type="checkbox" id="csVisualToggle" ${st.includeVisuals ? "checked" : ""} />
-              Include Visual Concept Model (SVG)
+              Include a concept diagram (only when one fits this unit)
             </label>
             <button type="button" class="bh-btn bh-btn-secondary bh-btn-sm" data-cs-regenerate-all>Regenerate Resource</button>
           </div>
@@ -623,7 +626,7 @@ export function renderCreationStudio(
         const title = document.querySelector("#creationPreviewTitle");
         if (dlg && body && title) {
           title.textContent = `Student Preview · ${s.draft.title}`;
-          const svg = s.draft.includeVisuals ? generateConceptSvg(ctx.unit.unit_title, ctx.unit.subject, 0) : "";
+          const svg = s.draft.includeVisuals ? unitConceptVisual(s.draft.vocabTerms, s.draft.subject) : "";
           body.innerHTML = `
             <p class="bh-muted">${escHtml(s.draft.directions)}</p>
             ${svg ? `<div class="vs-svg-frame" style="margin-bottom:0.85rem">${svg}</div>` : ""}

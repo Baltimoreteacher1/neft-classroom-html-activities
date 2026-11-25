@@ -1,25 +1,15 @@
 // BCPSS Teacher Studio — Visual Vocabulary Studio
-// Uses every unit's verified tier2_tier3_vocab + l1_watchouts across all 162 K–8 units.
-// Generates original programmatic educational SVG visual models tailored to subject & concept.
+// Renders every unit's authored tier2_tier3_vocab (definition, example, non-example, cue, word
+// family, Spanish) + l1_watchouts across all 162 K–8 units. The text is authored but NOT yet
+// reviewed (159 of 162 units are draft_standards_based), so nothing here is labelled "verified".
+// A card never shows invented text: a field that is missing is omitted, and a diagram is drawn
+// only for a term with a declared visual spec (see vocab-visuals.js).
 
 import { keepView } from "./keep-view.js";
+import { renderConceptVisual } from "./vocab-visuals.js";
+import { wordPartsFor } from "./vocab-word-parts.js";
 
 const containerState = new WeakMap();
-
-const MORPHOLOGY_PARTS = [
-  { pattern: /^un(.{3,})/i, parts: (m) => `un- (not) + ${m[1]}` },
-  { pattern: /^re(.{3,})/i, parts: (m) => `re- (again) + ${m[1]}` },
-  { pattern: /^pre(.{3,})/i, parts: (m) => `pre- (before) + ${m[1]}` },
-  { pattern: /^sub(.{3,})/i, parts: (m) => `sub- (under) + ${m[1]}` },
-  { pattern: /^inter(.{3,})/i, parts: (m) => `inter- (between) + ${m[1]}` },
-  { pattern: /^equi(.{2,})/i, parts: (m) => `equi- (equal) + ${m[1]}` },
-  { pattern: /^poly(.{2,})/i, parts: (m) => `poly- (many) + ${m[1]}` },
-  { pattern: /(.{3,})tion$/i, parts: (m) => `${m[1]} + -tion (process/state)` },
-  { pattern: /(.{3,})ment$/i, parts: (m) => `${m[1]} + -ment (result/action)` },
-  { pattern: /(.{3,})ity$/i, parts: (m) => `${m[1]} + -ity (quality/state)` },
-  { pattern: /(.{3,})able$/i, parts: (m) => `${m[1]} + -able (capable of)` },
-  { pattern: /(.{3,})al$/i, parts: (m) => `${m[1]} + -al (relating to)` },
-];
 
 const FALSE_COGNATE_WATCH = {
   actual: "False cognate alert: Spanish 'actual' means 'current', not 'real/actual'.",
@@ -69,7 +59,7 @@ function normalizeVocab(raw) {
   return parsed
     .map((item) => {
       if (typeof item === "string") {
-        return { word: item.trim(), tier: "Tier 2", definition: "", cognate: "" };
+        return { word: item.trim(), tier: "Tier 2", definition: "", cognate: "", example: "", nonexample: "", cue: "", family: [], falseFriend: "" };
       }
       if (!item || typeof item !== "object") return null;
       const word = String(item.word || item.term || "").trim();
@@ -88,23 +78,23 @@ function normalizeVocab(raw) {
           ? String(item.tier)
           : `Tier ${item.tier}`
         : "Tier 2";
-      return { word, tier, definition, cognate };
+      const text = (v) => String(v || "").trim();
+      const family = (Array.isArray(item.family) ? item.family : [])
+        .map(text)
+        .filter((f) => f && f.toLowerCase() !== word.toLowerCase());
+      return {
+        word,
+        tier,
+        definition,
+        cognate,
+        example: text(item.example),
+        nonexample: text(item.nonexample),
+        cue: text(item.cue),
+        family,
+        falseFriend: text(item.false_friend),
+      };
     })
     .filter((v) => v?.word);
-}
-
-function extractMorphology(word) {
-  const clean = String(word || "").trim();
-  const single = clean.split(/\s+/)[0] || clean;
-  for (const rule of MORPHOLOGY_PARTS) {
-    const m = single.match(rule.pattern);
-    if (m) return rule.parts(m);
-  }
-  if (clean.includes(" ")) {
-    const parts = clean.split(/\s+/);
-    return `Phrase: "${parts[0]}" + "${parts.slice(1).join(" ")}"`;
-  }
-  return `Root word: ${clean.toLowerCase()} (${clean.length} letters)`;
 }
 
 function falseCognateNote(word, l1Watchouts) {
@@ -121,227 +111,6 @@ function falseCognateNote(word, l1Watchouts) {
     return String(hit.friction_point || hit.watchout || hit.note || "").trim();
   }
   return "";
-}
-
-function subjectMeaning(word, subject, unitTitle) {
-  const s = String(subject || "").toLowerCase();
-  if (s.includes("math")) {
-    return `In Math (${unitTitle}), "${word}" names a precise relationship, quantity, or representation students model and justify.`;
-  }
-  if (s.includes("science")) {
-    return `In Science (${unitTitle}), "${word}" describes an observable mechanism, variable, or system interaction supported by evidence.`;
-  }
-  if (s.includes("social")) {
-    return `In Social Studies (${unitTitle}), "${word}" helps analyze historical events, perspectives, or civic systems using sources.`;
-  }
-  return `In ELA (${unitTitle}), "${word}" helps readers analyze text structure, author craft, and textual evidence.`;
-}
-
-function buildContextExample(word, subject, unitTitle, frame) {
-  if (frame && frame.length > 18) {
-    return `Using "${word}" in ${unitTitle}: ${frame.replace(/___+/g, word)}`;
-  }
-  const s = String(subject || "").toLowerCase();
-  if (s.includes("math")) {
-    return `Example: "I checked the ${word.toLowerCase()} in my diagram to verify that both quantities scale equally."`;
-  }
-  if (s.includes("science")) {
-    return `Example: "Our investigation data shows how ${word.toLowerCase()} changes the outcome of the system."`;
-  }
-  if (s.includes("social")) {
-    return `Example: "The primary source illustrates ${word.toLowerCase()} by showing how communities responded over time."`;
-  }
-  return `Example: "The author develops ${word.toLowerCase()} through key details in paragraph two."`;
-}
-
-function buildNonExample(word, subject) {
-  const s = String(subject || "").toLowerCase();
-  if (s.includes("math")) {
-    return `Non-example: Guessing a number without labeling units or showing how "${word}" connects the two quantities.`;
-  }
-  if (s.includes("science")) {
-    return `Non-example: Stating a personal opinion without connecting "${word}" to observed evidence or cause and effect.`;
-  }
-  if (s.includes("social")) {
-    return `Non-example: Describing an event from only one viewpoint without citing a source for "${word}".`;
-  }
-  return `Non-example: Using "${word}" as a vague label without pointing to specific words or details in the text.`;
-}
-
-/**
- * Generates an original programmatic educational SVG visual model tailored to subject & concept.
- */
-export function generateConceptSvg(word, subject, index = 0) {
-  const label = esc(String(word || "Concept").slice(0, 26));
-  const subj = String(subject || "ELA").toLowerCase();
-  const variant = index % 3;
-
-  if (subj.includes("math")) {
-    if (variant === 0) {
-      // Ratio Tape Diagram
-      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-        <title>Math ratio tape diagram for ${label}</title>
-        <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-        <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#1e3a5f">TAPE MODEL · ${label}</text>
-        <text x="14" y="53" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#475467">Part A</text>
-        <rect x="64" y="36" width="52" height="24" rx="4" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
-        <rect x="120" y="36" width="52" height="24" rx="4" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
-        <rect x="176" y="36" width="52" height="24" rx="4" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
-        <text x="90" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1e3a5f">1 unit</text>
-        <text x="146" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1e3a5f">1 unit</text>
-        <text x="202" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1e3a5f">1 unit</text>
-        <text x="14" y="91" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#475467">Part B</text>
-        <rect x="64" y="74" width="52" height="24" rx="4" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
-        <rect x="120" y="74" width="52" height="24" rx="4" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
-        <text x="90" y="90" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#0f766e">1 unit</text>
-        <text x="146" y="90" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#0f766e">1 unit</text>
-        <text x="242" y="72" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="#b45309">3 : 2</text>
-        <text x="14" y="118" font-family="Inter, sans-serif" font-size="10" fill="#586377">Equal-sized parts show how quantities relate proportionally.</text>
-      </svg>`;
-    }
-    if (variant === 1) {
-      // Double Number Line
-      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-        <title>Math double number line for ${label}</title>
-        <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-        <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#1e3a5f">DOUBLE NUMBER LINE · ${label}</text>
-        <line x1="28" y1="54" x2="296" y2="54" stroke="#1e3a5f" stroke-width="2"/>
-        <line x1="28" y1="90" x2="296" y2="90" stroke="#0f766e" stroke-width="2"/>
-        <line x1="48" y1="48" x2="48" y2="96" stroke="#cbd5e1" stroke-dasharray="3 2"/>
-        <line x1="128" y1="48" x2="128" y2="96" stroke="#cbd5e1" stroke-dasharray="3 2"/>
-        <line x1="208" y1="48" x2="208" y2="96" stroke="#cbd5e1" stroke-dasharray="3 2"/>
-        <line x1="278" y1="48" x2="278" y2="96" stroke="#cbd5e1" stroke-dasharray="3 2"/>
-        <circle cx="48" cy="54" r="4" fill="#1e3a5f"/><circle cx="128" cy="54" r="4" fill="#1e3a5f"/><circle cx="208" cy="54" r="4" fill="#b45309"/><circle cx="278" cy="54" r="4" fill="#1e3a5f"/>
-        <circle cx="48" cy="90" r="4" fill="#0f766e"/><circle cx="128" cy="90" r="4" fill="#0f766e"/><circle cx="208" cy="90" r="4" fill="#b45309"/><circle cx="278" cy="90" r="4" fill="#0f766e"/>
-        <text x="48" y="43" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#182230">0</text>
-        <text x="128" y="43" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#182230">1x</text>
-        <text x="208" y="43" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="#b45309">2x</text>
-        <text x="278" y="43" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#182230">3x</text>
-        <text x="48" y="108" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#0f766e">0</text>
-        <text x="128" y="108" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#0f766e">a</text>
-        <text x="208" y="108" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="#b45309">2a</text>
-        <text x="278" y="108" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#0f766e">3a</text>
-        <text x="14" y="124" font-family="Inter, sans-serif" font-size="10" fill="#586377">Aligned tick marks preserve equivalent relationships.</text>
-      </svg>`;
-    }
-    // Area / Array Model
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-      <title>Math area model for ${label}</title>
-      <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-      <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#1e3a5f">AREA MODEL · ${label}</text>
-      <rect x="44" y="38" width="140" height="62" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
-      <rect x="184" y="38" width="84" height="62" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
-      <text x="114" y="73" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#1e3a5f">Part 1</text>
-      <text x="226" y="73" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#0f766e">Part 2</text>
-      <text x="156" y="118" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#586377">Decompose into known parts to compose the total.</text>
-    </svg>`;
-  }
-
-  if (subj.includes("science")) {
-    if (variant === 0) {
-      // Cause -> Mechanism -> Effect system flow
-      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-        <title>Science cause and effect system model for ${label}</title>
-        <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-        <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#0f766e">SYSTEM FLOW · ${label}</text>
-        <rect x="14" y="42" width="82" height="48" rx="6" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
-        <text x="55" y="64" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#1e3a5f">INPUT</text>
-        <text x="55" y="78" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Cause / Energy</text>
-        <line x1="98" y1="66" x2="116" y2="66" stroke="#b45309" stroke-width="2"/>
-        <polygon points="116,61 124,66 116,71" fill="#b45309"/>
-        <rect x="124" y="42" width="82" height="48" rx="6" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
-        <text x="165" y="64" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#0f766e">PROCESS</text>
-        <text x="165" y="78" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Interaction</text>
-        <line x1="208" y1="66" x2="226" y2="66" stroke="#b45309" stroke-width="2"/>
-        <polygon points="226,61 234,66 226,71" fill="#b45309"/>
-        <rect x="234" y="42" width="74" height="48" rx="6" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
-        <text x="271" y="64" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#92400e">EFFECT</text>
-        <text x="271" y="78" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Observed</text>
-        <text x="14" y="114" font-family="Inter, sans-serif" font-size="10" fill="#586377">Track how a change in input drives an observable effect.</text>
-      </svg>`;
-    }
-    // Evidence -> Claim cycle
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-      <title>Science claim and evidence diagram for ${label}</title>
-      <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-      <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#0f766e">SCIENTIFIC EXPLANATION · ${label}</text>
-      <circle cx="72" cy="70" r="32" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
-      <text x="72" y="74" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#0f766e">Evidence</text>
-      <line x1="106" y1="70" x2="128" y2="70" stroke="#1e3a5f" stroke-width="2"/>
-      <polygon points="128,65 136,70 128,75" fill="#1e3a5f"/>
-      <rect x="138" y="46" width="166" height="48" rx="8" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
-      <text x="221" y="66" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#1e3a5f">Scientific Reasoning</text>
-      <text x="221" y="82" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Connects data to ${label}</text>
-      <text x="14" y="120" font-family="Inter, sans-serif" font-size="10" fill="#586377">Every scientific claim is anchored in observable data.</text>
-    </svg>`;
-  }
-
-  if (subj.includes("social")) {
-    if (variant === 0) {
-      // Chronology Timeline
-      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-        <title>Social Studies timeline model for ${label}</title>
-        <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-        <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#884326">HISTORICAL TIMELINE · ${label}</text>
-        <line x1="28" y1="68" x2="292" y2="68" stroke="#1e3a5f" stroke-width="2.5"/>
-        <circle cx="58" cy="68" r="6" fill="#1e3a5f"/>
-        <circle cx="160" cy="68" r="7" fill="#b45309"/>
-        <circle cx="262" cy="68" r="6" fill="#0f766e"/>
-        <text x="58" y="50" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#1e3a5f">Context</text>
-        <text x="160" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#b45309">Turning Point</text>
-        <text x="262" y="50" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#0f766e">Impact</text>
-        <text x="58" y="92" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Before</text>
-        <text x="160" y="92" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Key Event</text>
-        <text x="262" y="92" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Change</text>
-        <text x="14" y="118" font-family="Inter, sans-serif" font-size="10" fill="#586377">Trace cause, continuity, and change across primary sources.</text>
-      </svg>`;
-    }
-    // Perspective Comparison
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-      <title>Social Studies perspective comparison for ${label}</title>
-      <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-      <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#884326">MULTIPLE PERSPECTIVES · ${label}</text>
-      <rect x="16" y="40" width="124" height="54" rx="6" fill="#e8eef6" stroke="#1e3a5f" stroke-width="1.5"/>
-      <text x="78" y="64" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#1e3a5f">Source A Viewpoint</text>
-      <text x="78" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Who spoke &amp; why?</text>
-      <rect x="180" y="40" width="124" height="54" rx="6" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
-      <text x="242" y="64" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#0f766e">Source B Viewpoint</text>
-      <text x="242" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">How does it differ?</text>
-      <text x="160" y="72" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#b45309">vs</text>
-      <text x="14" y="116" font-family="Inter, sans-serif" font-size="10" fill="#586377">Corroborate claims by comparing multiple historical accounts.</text>
-    </svg>`;
-  }
-
-  // ELA: Story Arc or Quote-to-Inference Bridge
-  if (variant === 0) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-      <title>ELA text evidence to inference bridge for ${label}</title>
-      <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-      <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#1e3a5f">EVIDENCE BRIDGE · ${label}</text>
-      <rect x="14" y="42" width="114" height="50" rx="6" fill="#f2efe9" stroke="#1e3a5f" stroke-width="1.5"/>
-      <text x="71" y="63" text-anchor="middle" font-family="Source Serif 4, Georgia, serif" font-size="11" font-weight="600" fill="#182230">“Text Quote”</text>
-      <text x="71" y="79" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">What the text says</text>
-      <line x1="132" y1="67" x2="176" y2="67" stroke="#0f766e" stroke-width="2"/>
-      <polygon points="176,62 184,67 176,72" fill="#0f766e"/>
-      <rect x="188" y="42" width="118" height="50" rx="6" fill="#e1f2ef" stroke="#0f766e" stroke-width="1.5"/>
-      <text x="247" y="63" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#0f766e">Inference / Claim</text>
-      <text x="247" y="79" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">What it shows</text>
-      <text x="14" y="116" font-family="Inter, sans-serif" font-size="10" fill="#586377">Connect exact words from the text to your academic claim.</text>
-    </svg>`;
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 132" width="320" height="132" role="img" style="background:#ffffff">
-    <title>ELA narrative arc diagram for ${label}</title>
-    <rect x="0" y="0" width="320" height="132" fill="#ffffff"/>
-    <text x="14" y="22" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="11" font-weight="700" fill="#1e3a5f">TEXT ARC · ${label}</text>
-    <path d="M 24 94 Q 112 86 164 42 Q 222 86 296 94" fill="none" stroke="#1e3a5f" stroke-width="2.5"/>
-    <circle cx="44" cy="91" r="5" fill="#1e3a5f"/>
-    <circle cx="164" cy="42" r="6" fill="#b45309"/>
-    <circle cx="280" cy="91" r="5" fill="#0f766e"/>
-    <text x="44" y="109" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Setup</text>
-    <text x="164" y="34" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#b45309">Key Shift</text>
-    <text x="280" y="109" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#475467">Resolution</text>
-    <text x="14" y="124" font-family="Inter, sans-serif" font-size="10" fill="#586377">Notice how ideas or characters develop across the text.</text>
-  </svg>`;
 }
 
 function speakWord(text, statusEl) {
@@ -363,7 +132,7 @@ function speakWord(text, statusEl) {
   if (statusEl) statusEl.textContent = `Pronunciation support: read "${clean}" aloud together in syllables.`;
 }
 
-export function renderVisualVocabStudio(container, { unit, connection, blueprint, wida, onTelemetry } = {}) {
+export function renderVisualVocabStudio(container, { unit, connection, blueprint, wida, provenance, onTelemetry } = {}) {
   if (!container) return;
   if (!unit) {
     container.innerHTML = `<div class="bh-empty">Choose a grade, subject, and unit above to open the Visual Vocabulary Studio.</div>`;
@@ -410,7 +179,7 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
         <div class="vs-toolbar">
           <div>
             <span class="studio-kicker">Visual Vocabulary Studio · Unit ${esc(unit.unit_number)}</span>
-            <h3 style="margin:0.15rem 0 0">${esc(unit.unit_title)} (${vocab.length} Verified Terms)</h3>
+            <h3 style="margin:0.15rem 0 0">${esc(unit.unit_title)} (${vocab.length} Terms${provenance?.state === "reviewed" ? "" : " · draft, not yet reviewed"})</h3>
           </div>
           <div class="vs-mode-tabs" role="group" aria-label="Vocabulary classroom mode">
             <button type="button" class="vs-pill" data-vs-mode="cards" aria-pressed="${st.mode === "cards"}">Visual Word Cards</button>
@@ -447,11 +216,10 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
       </div>
       <div class="vs-cards-grid">
         ${items
-          .map((v, idx) => {
-            const morph = extractMorphology(v.word);
+          .map((v) => {
+            const parts = wordPartsFor(v.word);
             const watch = falseCognateNote(v.word, l1List);
-            const example = buildContextExample(v.word, unit.subject, unit.unit_title, connection?.unit_example_frame);
-            const nonEx = buildNonExample(v.word, unit.subject);
+            const visual = renderConceptVisual(v.word, unit.subject);
             return `
               <article class="vs-card">
                 <div class="vs-card-head">
@@ -470,17 +238,17 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
                   </button>
                 </div>
 
-                <div class="vs-svg-frame">
-                  ${generateConceptSvg(v.word, unit.subject, idx)}
-                </div>
+                ${visual ? `<div class="vs-svg-frame">${visual}</div>` : v.cue ? `<p class="vs-cue">Picture it: ${esc(v.cue)}</p>` : ""}
 
                 <div class="vs-meta-grid">
-                  <p class="vs-meta-row vs-def"><strong>Student-Friendly Definition:</strong> ${esc(v.definition || `Key ${unit.subject} concept in ${unit.unit_title}.`)}</p>
-                  <p class="vs-meta-row"><strong>Subject Meaning:</strong> ${esc(subjectMeaning(v.word, unit.subject, unit.unit_title))}</p>
-                  <p class="vs-meta-row"><strong>Example in Context:</strong> ${esc(example)}</p>
-                  ${st.band !== "k2" ? `<p class="vs-meta-row"><strong>Non-Example:</strong> ${esc(nonEx)}</p>` : ""}
-                  <p class="vs-meta-row"><strong>Word Parts / Morphology:</strong> <span class="wida-code">${esc(morph)}</span></p>
+                  ${v.definition ? `<p class="vs-meta-row vs-def"><strong>Student-Friendly Definition:</strong> ${esc(v.definition)}</p>` : ""}
+                  ${v.example ? `<p class="vs-meta-row"><strong>Example:</strong> ${esc(v.example)}</p>` : ""}
+                  ${st.band !== "k2" && v.nonexample ? `<p class="vs-meta-row"><strong>Non-Example:</strong> ${esc(v.nonexample)}</p>` : ""}
+                  ${visual && v.cue ? `<p class="vs-meta-row"><strong>Picture it:</strong> ${esc(v.cue)}</p>` : ""}
+                  ${v.family.length ? `<p class="vs-meta-row"><strong>Word family:</strong> ${esc(v.family.join(", "))}</p>` : ""}
+                  ${parts ? `<p class="vs-meta-row"><strong>Word parts:</strong> <span class="wida-code">${esc(parts)}</span></p>` : ""}
                   ${v.cognate ? `<div><span class="vs-cognate-pill">${esc(v.cognate)}</span></div>` : ""}
+                  ${v.falseFriend ? `<div class="vs-feedback is-warn">${esc(v.falseFriend)}</div>` : ""}
                   ${watch ? `<div class="vs-feedback is-warn">${esc(watch)}</div>` : ""}
                 </div>
               </article>
@@ -615,20 +383,25 @@ export function renderVisualVocabStudio(container, { unit, connection, blueprint
         <div class="vs-cards-grid">
           ${vocab
             .map(
-              (v, idx) => `
+              (v) => {
+                const visual = renderConceptVisual(v.word, unit.subject);
+                return `
                 <article class="vs-card">
                   <div class="vs-card-head">
                     <strong>${esc(v.word)}</strong>
                     <span class="bh-tier-badge">${esc(v.tier)}</span>
                   </div>
-                  <div class="vs-svg-frame">${generateConceptSvg(v.word, unit.subject, idx)}</div>
+                  ${visual ? `<div class="vs-svg-frame">${visual}</div>` : v.cue ? `<p class="vs-cue">Picture it: ${esc(v.cue)}</p>` : ""}
+                  ${v.example ? `<p style="margin:0;font-size:0.86rem"><em>${esc(v.example)}</em></p>` : ""}
                   <p style="margin:0;font-size:0.9rem">${esc(v.definition || "")}</p>
                   ${v.cognate ? `<p style="margin:0;font-size:0.84rem;color:var(--cognate-ink)"><strong>${esc(v.cognate)}</strong></p>` : ""}
                 </article>
-              `,
+              `;
+              },
             )
             .join("")}
         </div>
+        <p class="bh-muted">Draft: not yet reviewed by a teacher or language specialist.</p>
       </div>
     `;
   }

@@ -2,6 +2,8 @@
 // One calm screen: what students will do, the mentor sentence, the frames, the words, the exit ticket.
 // Teacher text is kept to short watch-outs. Everything is read from detail.studio (authored content).
 
+import { DRAFT_NOTICE } from "../shared/bcpss-provenance.js";
+
 const LEVEL_NAMES = { "1_2": "Starter", "3_4": "Core", "5_6": "Stretch" };
 
 const esc = (value) =>
@@ -12,6 +14,11 @@ const esc = (value) =>
 
 const frameHtml = (frame) =>
   esc(frame).replace(/\[([^\]]+)\]/g, '<span class="ov-blank">$1</span>');
+
+function provenanceBadge(p) {
+  if (!p || p.state === "reviewed") return "";
+  return `<p class="ov-provenance" data-provenance="${esc(p.state)}" role="note"><strong>${esc(p.label)}.</strong> ${esc(DRAFT_NOTICE)}</p>`;
+}
 
 function canDoSection(studio) {
   return `
@@ -134,6 +141,7 @@ export function renderOverview(panel, { detail, wida }) {
     return;
   }
   panel.innerHTML = `<div class="ov">
+    ${provenanceBadge(detail.provenance)}
     ${canDoSection(studio)}
     ${mentorSection(studio)}
     ${framesSection(studio, wida)}

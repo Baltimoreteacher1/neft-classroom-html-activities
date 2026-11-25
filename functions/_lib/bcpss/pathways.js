@@ -8,6 +8,7 @@
 
 import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
 import { STUDIO_SUMMARIES } from "../../../db/seeds/bcpss/v2/summaries.mjs";
+import { classifyCognate, TRUE_COGNATE_KINDS } from "./esol-pack.js";
 
 export const PATHWAYS_VERSION = 1;
 export const KLU_ORDER = ["Narrate", "Inform", "Explain", "Argue"];
@@ -150,6 +151,18 @@ function groupSharedMoves(rows) {
     .sort((a, b) => b.subjects.length - a.subjects.length || b.units.length - a.units.length);
 }
 
+/** True cognates (look-alike relatives) vs translations only: "has an es string" is not "is a cognate". */
+export function cognateTally(terms) {
+  let trueCognates = 0;
+  let translationOnly = 0;
+  for (const t of terms) {
+    if (!t.es) continue;
+    if (TRUE_COGNATE_KINDS.includes(classifyCognate(t.term, t.es).kind)) trueCognates += 1;
+    else translationOnly += 1;
+  }
+  return { true_cognates: trueCognates, translation_only: translationOnly };
+}
+
 const wordWallOf = (rows) =>
   rows.flatMap((r) =>
     r.terms.map((t) => ({
@@ -219,7 +232,8 @@ export function buildGradePathway(gradeInput) {
       units: rows.length,
       terms: wall.length,
       tier3: wall.filter((t) => t.tier === 3).length,
-      cognates: wall.filter((t) => t.es).length,
+      ...cognateTally(wall),
+      with_spanish: wall.filter((t) => t.es).length,
       moves_in_play: moveIds.size,
       moves_total: BLUEPRINTS.length,
     },
@@ -271,7 +285,7 @@ export function buildMoveAtlas() {
         terms: wall.length,
         tier3: wall.filter((t) => t.tier === 3).length,
         cognate_pct: wall.length
-          ? Math.round((wall.filter((t) => t.es).length / wall.length) * 100)
+          ? Math.round((cognateTally(wall).true_cognates / wall.length) * 100)
           : 0,
         signature: rows[0] ? entryOf(rows[0]) : null,
       };

@@ -7,7 +7,6 @@ const gradeWord = (label) => esc(label);
 
 const unitLinks = (u) => `<div class="pw-links">
   <a href="${esc(u.route)}">Open unit</a>
-  <a href="${esc(u.route.replace("tab=connections", "tab=activities"))}">Activities</a>
   <a href="/family/bcpss/${encodeURIComponent(u.id)}">Family guide</a>
 </div>`;
 
@@ -16,7 +15,7 @@ function unitCard(u, taught) {
   return `<li class="pw-unit">
     <label class="pw-check no-print">
       <input type="checkbox" data-taught="${esc(u.id)}" ${taught ? "checked" : ""} />
-      <span>Taught<span class="pw-sr"> ${esc(u.subject)} Unit ${esc(u.unit_number)}</span></span>
+      <span>Mark taught<span class="pw-sr"> ${esc(u.subject)} Unit ${esc(u.unit_number)}</span></span>
     </label>
     <div class="pw-unit-body">
       <p class="pw-unit-num">Unit ${esc(u.unit_number)} ${kluPill(u.klu)}</p>
@@ -51,7 +50,7 @@ export function renderYearMap(g, taughtMap) {
     <ul class="pw-stats" aria-label="Year totals">
       <li><strong>${s.units}</strong> units</li>
       <li><strong>${s.tier3}</strong> Tier 3 words</li>
-      <li><strong>${s.cognates}</strong> of ${s.terms} words have a Spanish cognate</li>
+      <li title="${s.true_cognates} look-alike cognates; ${s.translation_only} have a Spanish word with no look-alike (translation only)."><strong>${s.true_cognates}</strong> of ${s.terms} words have a Spanish cognate <span class="pw-muted">(${s.translation_only} more have a Spanish translation only)</span></li>
       <li><strong>${s.moves_in_play}</strong> of ${s.moves_total} WIDA language moves in play</li>
     </ul>
     ${kluBar(g.klu, s.units)}
@@ -125,7 +124,7 @@ function subjectSpiral(row) {
   return `<article class="pw-card">
     <header><h3>${esc(row.subject)} from Kindergarten to Grade 8</h3></header>
     <div class="pw-table-wrap"><table class="pw-table">
-      <thead><tr><th scope="col">Grade</th><th scope="col">Units</th><th scope="col">Language moves</th><th scope="col">Tier 3 words</th><th scope="col">Spanish cognates</th><th scope="col">First unit's sentence starter</th></tr></thead>
+      <thead><tr><th scope="col">Grade</th><th scope="col">Units</th><th scope="col">Language moves</th><th scope="col">Tier 3 words</th><th scope="col">True Spanish cognates</th><th scope="col">First unit's sentence starter</th></tr></thead>
       <tbody>
         ${row.grades
           .map(

@@ -267,7 +267,19 @@ export const PRINT_PARTS = [
 const KITS = new Set(["cards", "bingo", "wall", "poster", "strips", "talk"]);
 
 // part: packet | book | key | cards | bingo | wall | poster | strips | talk | family | writing | writing-key | activity-<n>
-export function buildStudioDocument(
+/** Every export of unreviewed content carries the draft notice as the last line of the last section. */
+function withProvenanceNotice(doc, detail) {
+  const notice = detail?.provenance?.notice;
+  const last = doc?.sections?.[doc.sections.length - 1];
+  if (notice && last) last.blocks.push({ type: "footerNote", text: notice });
+  return doc;
+}
+
+export function buildStudioDocument(detail, options = {}) {
+  return withProvenanceNotice(buildStudioDocumentBody(detail, options), detail);
+}
+
+function buildStudioDocumentBody(
   detail,
   { part = "packet", level = "l3_4", answerKey = false, work = null } = {},
 ) {

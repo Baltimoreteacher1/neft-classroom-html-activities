@@ -81,7 +81,33 @@ function ruleMatch(en, es) {
   return null;
 }
 
-function classifyCognate(term, cognate) {
+// Kinds that mean the Spanish word really is a relative of the English word. "bridge" is a
+// translation only (different word, same meaning), so it must never be counted as a cognate.
+export const TRUE_COGNATE_KINDS = Object.freeze(["identical", "pattern", "lookalike", "partial"]);
+export const COGNATE_SIMILARITY_MIN = 0.7;
+
+/** Longest-common-subsequence similarity (Dice form) of two folded words, 0..1. */
+export function lcsSimilarity(a, b) {
+  const x = fold(a);
+  const y = fold(b);
+  if (!x || !y) return 0;
+  const row = new Array(y.length + 1).fill(0);
+  for (let i = 1; i <= x.length; i += 1) {
+    let prev = 0;
+    for (let j = 1; j <= y.length; j += 1) {
+      const tmp = row[j];
+      row[j] = x[i - 1] === y[j - 1] ? prev + 1 : Math.max(row[j], row[j - 1]);
+      prev = tmp;
+    }
+  }
+  return (2 * row[y.length]) / (x.length + y.length);
+}
+
+/** Same first letter, 5+ letters, high subsequence overlap: percent/porcentaje, decompose/descomponer. */
+const sharesStem = (en, es) =>
+  en.length >= 5 && en[0] === es[0] && lcsSimilarity(en, es) >= COGNATE_SIMILARITY_MIN;
+
+export function classifyCognate(term, cognate) {
   if (!cognate)
     return {
       kind: "no-cognate",
@@ -102,7 +128,7 @@ function classifyCognate(term, cognate) {
           tip: "Spelled the same in both languages. Check the pronunciation.",
         };
       else if (ruleMatch(en, es)) hit = { kind: "pattern", tip: ruleMatch(en, es).tip };
-      else if (en.slice(0, 4) === es.slice(0, 4) && en.length > 4)
+      else if ((en.slice(0, 4) === es.slice(0, 4) && en.length > 4) || sharesStem(en, es))
         hit ||= {
           kind: "lookalike",
           tip: "The first letters match. Say both aloud and listen for the same root.",

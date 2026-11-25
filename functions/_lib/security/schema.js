@@ -3,8 +3,8 @@
  * One source of truth: endpoints import these instead of re-declaring enums or limits.
  */
 
-/** WIDA band keys the teacher UI offers (bcpss-teachers.js WIDA_TIERS). A teacher-chosen scaffold band, never a student property. */
-export const WIDA_TIERS = Object.freeze(["1_2", "3_4", "5_6"]);
+/** WIDA band keys the teacher UI offers. A teacher-chosen scaffold band, never a student property. One definition, shared with the browser. */
+export { WIDA_TIERS } from "../../../shared/bcpss-telemetry-schema.js";
 
 /** Syntactic unit id shape. Existence is checked against the unit registry, never trusted from the shape alone. */
 export const UNIT_ID_RE = /^[a-zA-Z0-9_-]{2,80}$/;

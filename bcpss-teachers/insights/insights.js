@@ -1,4 +1,6 @@
-// BCPSS District Trends Insights Dashboard (read-only, 30-day anonymous aggregates)
+// BCPSS Beta Usage dashboard (read-only, 30-day anonymous counts).
+// Reads exactly the keys named in shared/bcpss-telemetry-schema.js; no alternative-key fallbacks.
+import { INSIGHTS_KEYS, INTERNAL_TRAFFIC_FLAG } from "../../shared/bcpss-telemetry-schema.js";
 
 function esc(value) {
   return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
@@ -15,6 +17,8 @@ const EVENT_LABELS = {
   vocab_lookup: "Vocabulary & Cognate Lookups",
   activity_copy: "Activity / Playlist Copies",
   lab_launch: "Student Lab Launches",
+  esol_routine: "ESOL Routine Opens",
+  projection_mode: "Projection Mode Opens",
 };
 
 const TIER_LABELS = {
@@ -50,54 +54,31 @@ function renderBars(items, { colorClass = "", emptyText = "No interactions recor
   `;
 }
 
-function normalizeRows(raw, labelFn) {
-  if (Array.isArray(raw)) {
-    return raw
-      .map((r) => ({
-        label: labelFn(r),
-        count: Number(r.count ?? r.total ?? r.events ?? 0),
-      }))
-      .filter((r) => r.label);
-  }
-  if (raw && typeof raw === "object") {
-    return Object.entries(raw).map(([k, v]) => ({
-      label: labelFn({ key: k }),
-      count: Number(v ?? 0),
-    }));
-  }
-  return [];
-}
+const K = INSIGHTS_KEYS;
+const asRows = (list, labelOf) =>
+  (Array.isArray(list) ? list : []).map((r) => ({ label: labelOf(r), count: Number(r.count) }));
 
 function renderDashboard(data) {
   const root = document.getElementById("insightsRoot");
-  const windowDays = Number(data.window_days ?? 30);
-  const total = Number(data.total_interactions ?? data.total_events ?? data.totals?.events ?? 0);
+  const windowDays = Number(data[K.window]);
+  const total = Number(data[K.total]);
 
-  const topGrades = normalizeRows(data.top_grades || data.grades || [], (r) => {
-    const g = r.grade ?? r.key;
-    return String(g) === "K" ? "Kindergarten (K)" : `Grade ${g}`;
-  });
-  const topUnits = normalizeRows(data.top_units || data.units || [], (r) =>
-    r.unit_title
+  const topGrades = asRows(data[K.grades], (r) => (String(r.grade) === "K" ? "Kindergarten (K)" : `Grade ${r.grade}`));
+  const topUnits = asRows(data[K.units], (r) =>
+    r.unit_title && r.unit_title !== r.unit_id
       ? `Gr. ${r.grade} ${r.subject} · U${r.unit_number}: ${r.unit_title}`
-      : r.unit_id || r.key,
+      : r.unit_id,
   );
-  const topKlus = normalizeRows(data.top_klus || data.wida_klus || data.klus || [], (r) => r.wida_klu || r.klu || r.key);
-  const topTiers = normalizeRows(data.wida_tiers || data.top_tiers || data.tiers || [], (r) => {
-    const k = r.wida_tier || r.tier || r.key;
-    return TIER_LABELS[k] || k;
-  });
-  const events = normalizeRows(data.events_by_type || data.event_breakdown || data.events || [], (r) => {
-    const k = r.event_type || r.type || r.key;
-    return EVENT_LABELS[k] || k;
-  });
+  const topKlus = asRows(data[K.klus], (r) => r.wida_klu);
+  const topTiers = asRows(data[K.tiers], (r) => TIER_LABELS[r.wida_tier] || r.wida_tier);
+  const events = asRows(data[K.events], (r) => EVENT_LABELS[r.event_type] || r.event_type);
 
   const topGradeName = topGrades[0]?.label || "—";
   const topKluName = topKlus[0]?.label || "—";
   const topTierName = topTiers[0]?.label?.split(" (")[0] || "—";
 
   root.innerHTML = `
-    <section class="in-kpi-row" aria-label="30-day summary metrics">
+    <section class="in-kpi-row" aria-label="30-day summary metrics (beta)">
       <div class="in-kpi">
         <div class="in-kpi-label">${windowDays}-Day Interactions</div>
         <p class="in-kpi-value">${total.toLocaleString()}</p>
@@ -161,4 +142,23 @@ async function init() {
   }
 }
 
+function bindInternalToggle() {
+  const box = document.getElementById("internalToggle");
+  if (!box) return;
+  try {
+    box.checked = localStorage.getItem(INTERNAL_TRAFFIC_FLAG) === "1";
+  } catch {
+    box.disabled = true;
+  }
+  box.addEventListener("change", () => {
+    try {
+      if (box.checked) localStorage.setItem(INTERNAL_TRAFFIC_FLAG, "1");
+      else localStorage.removeItem(INTERNAL_TRAFFIC_FLAG);
+    } catch {
+      box.checked = false;
+    }
+  });
+}
+
+bindInternalToggle();
 init();

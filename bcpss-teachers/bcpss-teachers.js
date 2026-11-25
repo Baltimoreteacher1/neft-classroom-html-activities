@@ -1,5 +1,6 @@
 // BCPSS K–8 Curriculum & Language Bridge — Progressive 3-Step Workspace
 import { anonTokenHeaders } from "../shared/anon-token/anon-token.js";
+import { INTERNAL_TRAFFIC_FLAG } from "../shared/bcpss-telemetry-schema.js";
 import { renderCreationStudio } from "./creation-studio.js";
 import { keepView } from "./keep-view.js";
 import { renderOverview } from "./overview-tab.js";
@@ -64,6 +65,14 @@ const state = {
 };
 
 // Anonymous, FERPA-safe telemetry (zero PII; fire-and-forget)
+function isInternalDevice() {
+  try {
+    return localStorage.getItem(INTERNAL_TRAFFIC_FLAG) === "1";
+  } catch {
+    return false;
+  }
+}
+
 function trackTelemetry(unitId, widaTier, eventType) {
   if (!unitId || !eventType) return;
   try {
@@ -74,6 +83,7 @@ function trackTelemetry(unitId, widaTier, eventType) {
         unit_id: unitId,
         wida_tier: widaTier || state.wida || "3_4",
         event_type: eventType,
+        ...(isInternalDevice() ? { internal: true } : {}),
       }),
       keepalive: true,
     }).catch(() => {});
@@ -1038,6 +1048,7 @@ function renderVocabTab() {
     connection: conn,
     blueprint: conn?.blueprint || {},
     wida: state.wida,
+    provenance: detail?.provenance || null,
     onTelemetry: (eventType) => trackTelemetry(state.unitId, state.wida, eventType),
   });
 }

@@ -6,9 +6,12 @@
 
 import { neon } from "@neondatabase/serverless";
 import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
+import { provenanceOf } from "../../../shared/bcpss-provenance.js";
+import { TELEMETRY_EVENT_TYPES } from "../../../shared/bcpss-telemetry-schema.js";
 import { cosineSimilarity, embedText, toPgVectorLiteral } from "./embeddings.js";
 import { buildEsolPack } from "./esol-pack.js";
 import { loadLessonLinks, withLessonLinks } from "./lesson-links.js";
+import { loadLessons } from "./lessons.js";
 import { loadModuleFacts, moduleOf } from "./module-facts.js";
 import {
   applyStudio,
@@ -33,13 +36,7 @@ const READING_BY_UNIT = new Map((seed.UNIT_READINGS || []).map((r) => [r.unit_id
 
 export const GRADES = seed.GRADES || [];
 export const SUBJECTS = seed.SUBJECTS || [];
-export const TELEMETRY_EVENT_TYPES = [
-  "scaffold_toggle",
-  "vocab_lookup",
-  "activity_copy",
-  "lab_launch",
-  "esol_routine",
-];
+export { TELEMETRY_EVENT_TYPES };
 
 const memoryPlans = new Map();
 const memoryTelemetry = [];
@@ -623,6 +620,7 @@ export async function getUnitDetail(env, unitId) {
     applyStudio(result.detail, await loadStudio(unitId));
     result.detail.studio = withLessonLinks(result.detail.studio, await loadLessonLinks(unitId));
     result.detail.module = moduleOf(await loadModuleFacts(unitId));
+    result.detail.provenance = provenanceOf(await loadLessons(unitId));
     result.detail.family = await loadFamily(unitId);
     result.detail.writing = await loadWriting(unitId);
     const esol_pack = buildEsolPack({
