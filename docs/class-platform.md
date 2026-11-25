@@ -66,8 +66,8 @@ shares a practice recording; the teacher records a note that answers it.
 `access-practice-lab/src/class/` + `views/class*.js`: `/class` (join by code or `?class=CODE` QR link + alias, assignments
 with Done marks, the teacher's voice notes), `/class/quiz` (live quiz), `/class/teacher` (teacher view). The same teacher
 panel (`class/roster-panel.js`) is mounted in the Teacher Hub (`access-teacher/class-panel.js`), which
-thelanguagepage.com now serves behind the same teacher gate (the score predictor still redirects to
-eduwonderlab.com; `/wida-access/` stays excluded). Lab progress syncs as the Save/Resume object (`{accessLab: 1, data}`)
+thelanguagepage.com also serves, with no password (`LAB_HOST_OPEN`), together with the WIDA Data Studio. The
+`/wida-access/` practice studios are served there too; the school score dashboard and the gradebook are not. Lab progress syncs as the Save/Resume object (`{accessLab: 1, data}`)
 and the class copy is MERGED through the lab's own importer (`importProgressData`), which keeps work already on the
 device, so no prompt can lose anything. The student key is stored under `accessPracticeLabClass:v1:link`, outside the
 `accessPracticeLab:v1:` namespace that Passport codes and the class copy carry.

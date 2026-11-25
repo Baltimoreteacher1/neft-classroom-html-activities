@@ -6,12 +6,14 @@
 
 import { BASE, html } from "../../util.js";
 import { isEarlyBand } from "../../bands.js";
+import { readAudience } from "../../audience.js";
 import { RESOURCE_LIBRARY } from "../data/platformData.js";
+import { resolveRole } from "../role.js";
 import { readStorage, STORAGE_KEYS } from "../services/storageService.js";
 
 export function resourceHubStripHTML(band = "6-8", activePillar = "All") {
   const prefs = readStorage(STORAGE_KEYS.PREFS);
-  const role = prefs.role || "teacher";
+  const role = resolveRole(prefs.role, readAudience());
   const q = band ? `?grades=${band}` : "";
   const early = isEarlyBand(band);
 

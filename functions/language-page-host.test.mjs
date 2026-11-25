@@ -14,7 +14,16 @@
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { brandLabHtml, languagePageRoute, SITEMAP_PATHS } from "./_lib/language-page.js";
+import {
+  brandLabHtml,
+  brandLabResponse,
+  hubTitle,
+  languagePageRoute,
+  OG_IMAGE_PATH,
+  shareMeta,
+  SITEMAP_PATHS,
+  setNoTransform,
+} from "./_lib/language-page.js";
 import { onRequest } from "./_middleware.js";
 import { STUDIOS, studioPath } from "../access-practice-lab/src/studios.js";
 
@@ -43,6 +52,72 @@ async function answer(url, env = {}) {
   return { fell, res };
 }
 const at = (u) => languagePageRoute(new URL(u));
+
+await t("Teacher Hub pages are titled as the teacher area of The Language Page", () => {
+  assert.equal(
+    hubTitle("<title>ACCESS Practice Lab — Teacher Hub</title>"),
+    "<title>Teacher Hub · The Language Page</title>",
+  );
+  assert.equal(
+    hubTitle("<title>WIDA Data Intelligence Studio — Teacher Hub</title>"),
+    "<title>WIDA Data Intelligence Studio · Teacher Hub · The Language Page</title>",
+  );
+  assert.equal(
+    hubTitle("<title>Sheet &amp; Card Maker — ACCESS Teacher Hub</title>"),
+    "<title>Sheet &amp; Card Maker · Teacher Hub · The Language Page</title>",
+  );
+  assert.equal(hubTitle("<title>Listening practice</title>"), "<title>Listening practice</title>");
+});
+
+await t("lab and studio pages carry share tags, and the share card they name is a real 1200x630 PNG", () => {
+  const og = (html, p) => new RegExp(`<meta property="${p}" content="([^"]*)"`).exec(html)?.[1];
+  const labShell = readFileSync(new URL("../access-practice-lab/index.html", import.meta.url), "utf8");
+  const lab = brandLabHtml(labShell, "/access-practice-lab/path");
+  assert.equal(og(lab, "og:title"), "The Language Page · English for school, in your language, K–8");
+  assert.equal(og(lab, "og:image"), `https://thelanguagepage.com${OG_IMAGE_PATH}`);
+  assert.equal(og(lab, "og:image:width"), "1200");
+  assert.equal(og(lab, "og:image:height"), "630");
+  assert.ok(og(lab, "og:description").length > 40, "the share description is empty");
+  assert.match(lab, /<meta name="twitter:card" content="summary_large_image" \/>/);
+  assert.equal((lab.match(/property="og:image"/g) || []).length, 1, "og:image must appear once");
+  // the studios keep their own page description in the share text
+  const studio = brandLabHtml(
+    '<html><head><meta name="description" content="Original WIDA ACCESS-style Listening practice. Practice only, not an official test."><title>x</title></head><body></body></html>',
+    "/wida-access/listening/",
+  );
+  assert.equal(og(studio, "og:image"), `https://thelanguagepage.com${OG_IMAGE_PATH}`);
+  assert.match(og(studio, "og:description"), /^Original WIDA ACCESS-style Listening practice/);
+  assert.match(og(studio, "og:title"), /· The Language Page$/);
+  // a page that already sets og:image is left alone; a quote in a title cannot break the attribute
+  assert.equal(shareMeta('<meta property="og:image" content="x"><title>t</title>'), "");
+  assert.ok(!/content="[^"]*"[^>]*"[^"]*" \/>/.test(shareMeta('<title>say "hi"</title>').split("\n")[1]));
+  // the file the tags point to exists and is the size the tags say
+  const png = readFileSync(new URL(`../${OG_IMAGE_PATH.slice(1)}`, import.meta.url));
+  assert.equal(png.readUInt32BE(0), 0x89504e47, "the share card is not a PNG");
+  assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1200, 630]);
+});
+
+await t("lab-host HTML is marked no-transform so Cloudflare cannot inject its analytics beacon", async () => {
+  const page = (cc) =>
+    new Response("<html><head><title>ACCESS Practice Lab</title></head></html>", {
+      headers: { "content-type": "text/html; charset=utf-8", ...(cc ? { "cache-control": cc } : {}) },
+    });
+  for (const cc of [undefined, "no-store", "public, max-age=60"]) {
+    const res = await brandLabResponse(page(cc), new URL("https://thelanguagepage.com/access-practice-lab/"));
+    assert.match(res.headers.get("cache-control"), /(^|,)\s*no-transform\s*(,|$)/i);
+    if (cc) assert.ok(res.headers.get("cache-control").startsWith(cc), "the existing directive survives");
+  }
+  // idempotent
+  const h = new Headers({ "cache-control": "no-store, no-transform" });
+  setNoTransform(h);
+  assert.equal(h.get("cache-control"), "no-store, no-transform");
+  // other hosts and non-HTML are untouched
+  const other = await brandLabResponse(page("no-store"), new URL("https://eduwonderlab.com/lessons/1-1/"));
+  assert.equal(other.headers.get("cache-control"), "no-store");
+  const json = new Response("{}", { headers: { "content-type": "application/json", "cache-control": "no-store" } });
+  const j = await brandLabResponse(json, new URL("https://thelanguagepage.com/api/class/x"));
+  assert.equal(j.headers.get("cache-control"), "no-store");
+});
 
 await t("only thelanguagepage.com and www.thelanguagepage.com are lab hosts", () => {
   assert.equal(at("https://eduwonderlab.com/"), null);
@@ -242,10 +317,11 @@ const shell = readFileSync(new URL("../access-practice-lab/index.html", import.m
 
 await t("the lab host's HTML names The Language Page, powered by EduWonderLab, with its own canonical", () => {
   const out = brandLabHtml(shell, "/access-practice-lab/path");
-  const title = /<title>(ELL Lab|ACCESS Practice Lab)<\/title>/.exec(shell)?.[1];
-  assert.ok(title);
-  assert.ok(out.includes(`<title>The Language Page · ${title}</title>`));
-  assert.match(out, /<strong>The Language Page<\/strong><small>K–8 Multilingual Curriculum & Assessment Studio<\/small>/);
+  assert.ok(/<title>(ELL Lab|ACCESS Practice Lab)<\/title>/.test(shell));
+  // One name and one plain promise (Joel, 2026-11-24); "ACCESS Practice Lab" is a section, not the site's title.
+  assert.ok(out.includes("<title>The Language Page · English for school, in your language, K–8</title>"));
+  assert.ok(!/<title>[^<]*ACCESS Practice Lab[^<]*<\/title>/.test(out), "the site title may not be ACCESS Practice Lab");
+  assert.match(out, /<strong>The Language Page<\/strong><small>English for school, in your language, K–8<\/small>/);
   assert.match(out, /<link rel="canonical" href="https:\/\/thelanguagepage\.com\/access-practice-lab\/path" \/>/);
   assert.equal((out.match(/rel="canonical"/g) || []).length, 1);
   assert.equal(out.length > shell.length, true);

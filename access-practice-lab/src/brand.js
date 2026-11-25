@@ -6,7 +6,7 @@ export const LANGUAGE_PAGE_HOST = "thelanguagepage.com";
 export const BRAND = {
   name: "The Language Page",
   poweredBy: "Powered by EduWonderLab",
-  descriptor: "K–8 Multilingual Curriculum & Assessment Studio",
+  descriptor: "English for school, in your language, K–8",
 };
 
 export const onLanguagePage = (hostname = location.hostname) => hostname === LANGUAGE_PAGE_HOST;

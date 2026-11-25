@@ -3,7 +3,7 @@
 // the lab's top bar and breadcrumb replace the "Neft Hub / WIDA Center" chrome, the studio takes its skill's lab
 // colour and the lab's typefaces, links that pointed at the school dashboard point back into the lab, and the math
 // tools and classroom score bridge (which post to eduwonderlab.com's backend) are left out.
-import { LAB_BASE, LAB_BRAND, LANGUAGE_PAGE_HOST } from "./language-page.js";
+import { LAB_BASE, LAB_BRAND, LANGUAGE_PAGE_HOST, shareMeta } from "./language-page.js";
 
 // The lab's own domain colours (access-practice-lab/acc.css --acc-d-*), with a darker hover shade and a soft tint.
 const SKILL_COLOURS = {
@@ -71,12 +71,14 @@ export function studioLabHtml(html, studio, pathname) {
     .replace(/<body([^>]*)>/, (_, attrs) => `<body${attrs}>\n${chromeHtml(studio)}`)
     .replace(
       "</head>",
-      `${themeHtml(studio)}\n<link rel="canonical" href="${canonical}" />\n<meta property="og:site_name" content="${LAB_BRAND.name}" />\n<meta property="og:url" content="${canonical}" />\n</head>`,
+      (head) =>
+        `${themeHtml(studio)}\n<link rel="canonical" href="${canonical}" />\n<meta property="og:site_name" content="${LAB_BRAND.name}" />\n<meta property="og:url" content="${canonical}" />\n__SHARE__\n${head}`,
     )
     .replaceAll('href="/wida-access/"', `href="${studiosHub()}"`)
     .replaceAll('href="/"', `href="${LAB_BASE}/"`)
     // The studios' own copy names the hub they were written for ("... across Neft Hub").
     .replaceAll("Neft Hub", LAB_BRAND.name);
+  out = out.replace("__SHARE__", () => shareMeta(out));
   for (const src of DROPPED_SCRIPTS) {
     out = out.replace(
       new RegExp(

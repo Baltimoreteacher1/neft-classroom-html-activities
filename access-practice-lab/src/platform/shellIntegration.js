@@ -4,9 +4,11 @@
  * and Hidden Diagnostics Overlay (?debug=1 or Ctrl+Shift+D).
  */
 
+import { readAudience } from "../audience.js";
 import { BASE, html, toHtml } from "../util.js";
 import { HOME_LANGUAGES } from "./data/platformData.js";
 import { getLogEvents, isDebugEnabled, subscribeLogs } from "./services/logger.js";
+import { resolveRole } from "./role.js";
 import { STORAGE_KEYS, readStorage, updateStorage } from "./services/storageService.js";
 
 function resolveEffectiveTheme(prefTheme) {
@@ -17,7 +19,7 @@ export function applyPlatformAttributes() {
   if (typeof document === "undefined") return;
   const prefs = readStorage(STORAGE_KEYS.PREFS);
   const root = document.documentElement;
-  root.dataset.tlpRole = prefs.role || "teacher";
+  root.dataset.tlpRole = resolveRole(prefs.role, readAudience());
   root.dataset.tlpTheme = resolveEffectiveTheme(prefs.theme);
   root.dataset.tlpL1 = prefs.l1 || "es";
 }
@@ -75,7 +77,7 @@ export function mountPlatformControls(ctx) {
   if (typeof document === "undefined") return;
   applyPlatformAttributes();
   const prefs = readStorage(STORAGE_KEYS.PREFS);
-  const role = prefs.role || "teacher";
+  const role = resolveRole(prefs.role, readAudience());
   const theme = prefs.theme === "dark" ? "dark" : "light";
   const l1 = prefs.l1 || "es";
 

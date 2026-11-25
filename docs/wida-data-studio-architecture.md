@@ -2,7 +2,7 @@
 
 **Route:** `/access-teacher/predictive/` (the existing analytics route, kept so bookmarks and links still answer; renamed in the UI). Teacher Hub card **WIDA Data Intelligence** → *Open Data Studio* and *Try with Sample Data* (`?demo=1`). `?tab=<section>` opens a section; `?demo=1&tour=1` starts **Teacher tour, Part 2** (linked from the end of Part 1 at `/start/tour`, `src/intro/tour/views-kit.js`).
 
-**Hosting and access:** static ES modules served by Cloudflare Pages. `/access-teacher/*` sits behind the site's teacher gate (HTTP Basic on eduwonderlab.com); thelanguagepage.com redirects these paths to eduwonderlab.com (`functions/_lib/language-page.js`). Pages are `noindex`.
+**Hosting and access:** static ES modules served by Cloudflare Pages. `/access-teacher/*` sits behind the site's teacher gate (HTTP Basic) on eduwonderlab.com; thelanguagepage.com serves these paths with no password (`LAB_HOST_OPEN` in `functions/_lib/language-page.js`; Joel, 2026-11-17). Pages are `noindex`.
 
 ## Sections (`app.js`)
 

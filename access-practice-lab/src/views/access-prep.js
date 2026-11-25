@@ -75,8 +75,8 @@ const BAND_META = {
     subEs: "Estudiantes multilingües de secundaria · 6.º, 7.º y 8.º grado",
     contentBands: ["6-8"],
     defaultPicker: "6-8",
-    tagline: "Complex informational and literary texts, cross-disciplinary debate, multi-paragraph synthesis, and authentic WIDA test formats.",
-    taglineEs: "Textos informativos y literarios complejos, debate interdisciplinario, síntesis de múltiples párrafos y formatos auténticos de WIDA.",
+    tagline: "Complex informational and literary texts, cross-disciplinary debate, multi-paragraph synthesis, and ACCESS-style practice formats.",
+    taglineEs: "Textos informativos y literarios complejos, debate interdisciplinario, síntesis de múltiples párrafos y formatos de práctica al estilo de ACCESS.",
   },
 };
 
@@ -562,8 +562,8 @@ export async function render(ctx) {
               </h1>
               <p style="font-size:1.1rem; line-height:1.6; color:#d4e2ed; margin:0 0 1.25rem;">
                 ${I.T(
-                  `Complete high-yield test preparation for ${activeMeta.label}. Practice every domain with authentic WIDA prompt formats, tiered scaffolds, and classroom studios.`,
-                  `Preparación completa de alto rendimiento para ${activeMeta.labelEs}. Practica todos los dominios con formatos auténticos de WIDA, apoyos graduados y estudios de aula.`,
+                  `Practice for ${activeMeta.label}. Work in every domain with ACCESS-style prompt formats, tiered scaffolds, and classroom studios. This is original practice, not an official test.`,
+                  `Práctica para ${activeMeta.labelEs}. Trabaja en todos los dominios con formatos de tareas al estilo de ACCESS, apoyos graduados y estudios de aula. Es práctica original, no una prueba oficial.`,
                 )}
               </p>
               <div style="display:flex; flex-wrap:wrap; gap:0.75rem; font-size:0.85rem; color:#f8d58c;">
