@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Efficacy Brief — BCPSS K–8 Curriculum &amp; Language Bridge</title>
+    <meta
+      name="description"
+      content="One-page overview of BCPSS K–8 unit coverage, bilingual EN/ES design, and automated verification gates. Draft: pending review. No outcome claims."
+    />
+    <meta name="theme-color" content="#1e3a5f" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='2' y='2' width='17' height='17' rx='5.5' fill='%231e3a5f'/%3E%3Crect x='21' y='2' width='17' height='17' rx='5.5' fill='%230f766e'/%3E%3Crect x='2' y='21' width='17' height='17' rx='5.5' fill='%239a3412'/%3E%3Crect x='21' y='21' width='17' height='17' rx='5.5' fill='%23b45309'/%3E%3C/svg%3E"
+    />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/inter-1dc044f4.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/plus-jakarta-sans-069be307.woff2" />
+    <style>
+      @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/assets/fonts/inter-1dc044f4.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Plus Jakarta Sans";
+        font-style: normal;
+        font-weight: 600 700;
+        font-display: swap;
+        src: url(/assets/fonts/plus-jakarta-sans-069be307.woff2) format("woff2");
+      }
+      :root {
+        --bg-canvas: #faf9f6;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f2efe9;
+        --border: #dcd6cb;
+        --ink: #182230;
+        --ink-muted: #475467;
+        --navy: #1e3a5f;
+        --teal: #0f766e;
+        --teal-bg: #ecfdf5;
+        --amber: #9a3412;
+        --amber-bg: #fff7ed;
+        --amber-border: #fdba74;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg-canvas);
+        color: var(--ink);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+      }
+      .skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+        background: var(--navy);
+        color: #ffffff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        z-index: 100;
+      }
+      .draft-banner {
+        background: var(--amber-bg);
+        border-bottom: 2px solid var(--amber-border);
+        color: var(--amber);
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-align: center;
+      }
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem;
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        margin-bottom: 1rem;
+      }
+      .breadcrumb a {
+        color: var(--navy);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      h1, h2, h3 {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        color: var(--navy);
+        line-height: 1.25;
+      }
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.9rem;
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-muted);
+        font-size: 1.05rem;
+      }
+      .notice-box {
+        background: var(--amber-bg);
+        border: 1px solid var(--amber-border);
+        border-left: 4px solid var(--amber);
+        border-radius: 8px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+      .notice-box strong {
+        color: var(--amber);
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .stat-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.1rem 1.2rem;
+      }
+      .stat-value {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--navy);
+        line-height: 1.1;
+      }
+      .stat-label {
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        margin-top: 0.35rem;
+      }
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.3rem 1.5rem;
+        margin-bottom: 1.15rem;
+      }
+      .card h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.2rem;
+      }
+      ul {
+        margin: 0.5rem 0 0;
+        padding-left: 1.25rem;
+      }
+      li {
+        margin-bottom: 0.4rem;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        background: var(--bg-surface);
+        color: var(--ink-muted);
+        font-size: 0.875rem;
+      }
+      footer a {
+        color: var(--navy);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#efficacyMain">Skip to brief</a>
+
+    <div class="draft-banner" role="note">
+      Draft: pending review — No outcome claims. This brief describes instructional coverage and engineering verification only.
+    </div>
+
+    <header>
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/bcpss-teachers">← Back to BCPSS Teachers</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Efficacy Brief</span>
+        </nav>
+        <h1>Program Design &amp; Verification Brief</h1>
+        <p class="lead">
+          One-page summary of BCPSS K–8 curriculum coverage, bilingual English/Spanish language scaffolds, and automated quality gates.
+        </p>
+      </div>
+    </header>
+
+    <main id="efficacyMain" class="wrap" tabindex="-1">
+      <section class="notice-box" aria-label="Scope and non-claim notice">
+        <strong>No outcome claims:</strong> This document is <strong>not a clinical efficacy or achievement claim</strong>. No student assessment growth, causal impact, or district-wide outcome evaluation has been conducted or claimed here. All figures below describe curriculum coverage and automated software verification.
+      </section>
+
+      <section class="stats-grid" aria-label="Coverage summary">
+        <div class="stat-card">
+          <div class="stat-value">162</div>
+          <div class="stat-label">BCPSS K–8 curriculum units across ELA, Math, Science, and Social Studies</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">EN / ES</div>
+          <div class="stat-label">Bilingual English &amp; Spanish family guides, vocabulary bridges, and talk prompts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3 Bands</div>
+          <div class="stat-label">Tiered language scaffolds (1–2, 3–4, 5–6) inspired by WIDA, not official</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">Min 10</div>
+          <div class="stat-label">D14 minimum cell size for any anonymous aggregate count reporting</div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="coverage-heading">
+        <h2 id="coverage-heading">1. BCPSS K–8 Unit Coverage (162 Units)</h2>
+        <p>
+          The bridge organizes 162 K–8 instructional units spanning Grades K through 8 across four core content areas: English Language Arts, Mathematics, Science, and Social Studies. Each unit includes standards alignment, Tier 2/Tier 3 academic vocabulary, classroom language routines, reading passages at three language-support tiers, and printable studio packets.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="bilingual-heading">
+        <h2 id="bilingual-heading">2. Bilingual EN/ES Framework</h2>
+        <p>
+          Every unit carries parallel English and Spanish family communication cards, bilingual conversation starters, and key vocabulary supports so multilingual families can engage with unit concepts in the home language. Scaffolds are inspired by the WIDA ELD Standards Framework (2020) and are explicitly labeled as teacher-built supports, not official WIDA materials.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="gates-heading">
+        <h2 id="gates-heading">3. Automated Verification Gates</h2>
+        <p>
+          Every release is checked by automated verification gates with paired negative controls to confirm the checks can fail when invariants break:
+        </p>
+        <ul>
+          <li><strong>Content &amp; API integrity:</strong> verifies list/detail parity, bilingual EN/ES completeness, reading/routine answer bounds, and provenance draft labels across all 162 units.</li>
+          <li><strong>Performance budgets (G-97):</strong> enforces payload size limits (&le; 250 KB full unit response), ETag / 304 conditional caching, <code>?fields=</code> payload reduction (&ge; 70%), and static asset size ceilings.</li>
+          <li><strong>Privacy &amp; trust checks (G-99):</strong> verifies draft review notices, D8 on-device lock disclosures, zero external CDN dependencies, zero student PII in demo pages, and D14 minimum cell size 10 suppression in aggregate summaries.</li>
+          <li><strong>Visual palette &amp; accessibility checks (G-09):</strong> enforces high-contrast editorial typography and zero prohibited purple hues across teacher surfaces.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          <strong>Status:</strong> Draft: pending review · No outcome claims. Related pages:
+          <a href="/bcpss-teachers">Teacher Bridge</a> ·
+          <a href="/bcpss-teachers/trust/">Privacy &amp; Trust</a> ·
+          <a href="/bcpss-teachers/insights/">Beta Usage</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

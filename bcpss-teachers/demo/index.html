@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo Mode (Synthetic Data Only) — BCPSS K–8 Curriculum &amp; Language Bridge</title>
+    <meta
+      name="description"
+      content="Unlinked demonstration view with synthetic alias-only sample data and zero live API writes."
+    />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#1e3a5f" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='2' y='2' width='17' height='17' rx='5.5' fill='%231e3a5f'/%3E%3Crect x='21' y='2' width='17' height='17' rx='5.5' fill='%230f766e'/%3E%3Crect x='2' y='21' width='17' height='17' rx='5.5' fill='%239a3412'/%3E%3Crect x='21' y='21' width='17' height='17' rx='5.5' fill='%23b45309'/%3E%3C/svg%3E"
+    />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/inter-1dc044f4.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/plus-jakarta-sans-069be307.woff2" />
+    <style>
+      @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/assets/fonts/inter-1dc044f4.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Plus Jakarta Sans";
+        font-style: normal;
+        font-weight: 600 700;
+        font-display: swap;
+        src: url(/assets/fonts/plus-jakarta-sans-069be307.woff2) format("woff2");
+      }
+      :root {
+        --bg-canvas: #faf9f6;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f2efe9;
+        --border: #dcd6cb;
+        --ink: #182230;
+        --ink-muted: #475467;
+        --navy: #1e3a5f;
+        --teal: #0f766e;
+        --teal-bg: #ecfdf5;
+        --amber: #9a3412;
+        --amber-bg: #fff7ed;
+        --amber-border: #fdba74;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg-canvas);
+        color: var(--ink);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+      }
+      .skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+        background: var(--navy);
+        color: #ffffff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        z-index: 100;
+      }
+      .demo-banner {
+        background: var(--amber);
+        color: #ffffff;
+        padding: 0.75rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        text-align: center;
+      }
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem;
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        margin-bottom: 1rem;
+      }
+      .breadcrumb a {
+        color: var(--navy);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      h1, h2 {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        color: var(--navy);
+        line-height: 1.25;
+      }
+      h1 {
+        margin: 0 0 0.45rem;
+        font-size: 1.85rem;
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-muted);
+      }
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.9rem;
+      }
+      .pill {
+        display: inline-block;
+        padding: 0.25rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: var(--bg-subtle);
+      }
+      .pill-demo {
+        background: var(--amber-bg);
+        border-color: var(--amber-border);
+        color: var(--amber);
+      }
+      .pill-safe {
+        background: var(--teal-bg);
+        border-color: #99f6e4;
+        color: var(--teal);
+      }
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.35rem 1.5rem;
+        margin-bottom: 1.25rem;
+      }
+      .card h2 {
+        margin: 0 0 0.65rem;
+        font-size: 1.2rem;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .controls button {
+        border: 1px solid var(--border);
+        background: var(--bg-subtle);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 0.45rem 0.85rem;
+        font: inherit;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .controls button[aria-pressed="true"] {
+        background: var(--navy);
+        color: #ffffff;
+        border-color: var(--navy);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.93rem;
+      }
+      th, td {
+        text-align: left;
+        padding: 0.7rem 0.65rem;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        background: var(--bg-subtle);
+        color: var(--navy);
+        font-weight: 600;
+      }
+      .status-tag {
+        display: inline-block;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: var(--teal-bg);
+        color: var(--teal);
+      }
+      .suppression-note {
+        background: var(--bg-subtle);
+        border-left: 4px solid var(--navy);
+        padding: 0.85rem 1rem;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.9rem;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        background: var(--bg-surface);
+        color: var(--ink-muted);
+        font-size: 0.875rem;
+      }
+      footer a {
+        color: var(--navy);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#demoMain">Skip to synthetic classroom demo</a>
+
+    <div class="demo-banner" role="note">
+      DEMO MODE — Synthetic Data Only · Zero Live API Writes · Alias-Only Sample Class
+    </div>
+
+    <header>
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/bcpss-teachers">← Back to BCPSS Teachers</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Demo Mode</span>
+        </nav>
+        <h1>Synthetic Classroom Preview</h1>
+        <p class="lead">
+          Unlinked walkthrough view using invented nature aliases and hardcoded sample unit work. Nothing on this page writes to any server or stores real learner information.
+        </p>
+        <div class="pill-row">
+          <span class="pill pill-demo">DEMO MODE — Synthetic Data Only</span>
+          <span class="pill pill-safe">Read-Only · Zero Network Writes</span>
+          <span class="pill pill-safe">Alias-Only Labels</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="demoMain" class="wrap" tabindex="-1">
+      <section class="card" aria-labelledby="roster-heading">
+        <h2 id="roster-heading">Synthetic Sample Class (5 Aliases)</h2>
+        <div class="controls" role="group" aria-label="Filter synthetic sample by support band">
+          <button type="button" data-band="all" aria-pressed="true">All Bands (5)</button>
+          <button type="button" data-band="1_2" aria-pressed="false">Extra Support (1–2)</button>
+          <button type="button" data-band="3_4" aria-pressed="false">Core Bridge (3–4)</button>
+          <button type="button" data-band="5_6" aria-pressed="false">Challenge (5–6)</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Alias</th>
+              <th scope="col">Sample Unit</th>
+              <th scope="col">Support Band</th>
+              <th scope="col">Routine Focus</th>
+              <th scope="col">Local Draft Status</th>
+            </tr>
+          </thead>
+          <tbody id="demoRows">
+            <tr data-band="1_2">
+              <td><strong>Blue Jay</strong></td>
+              <td>Grade 6 Math · Unit 1</td>
+              <td>Extra Support (1–2)</td>
+              <td>Word Bank &amp; Sentence Frames</td>
+              <td><span class="status-tag">On-device sample</span></td>
+            </tr>
+            <tr data-band="3_4">
+              <td><strong>River Stone</strong></td>
+              <td>Grade 6 Math · Unit 1</td>
+              <td>Core Bridge (3–4)</td>
+              <td>Explain Strategy with Connectors</td>
+              <td><span class="status-tag">On-device sample</span></td>
+            </tr>
+            <tr data-band="3_4">
+              <td><strong>Oak Leaf</strong></td>
+              <td>Grade 4 Science · Unit 1</td>
+              <td>Core Bridge (3–4)</td>
+              <td>Cause &amp; Effect Observation</td>
+              <td><span class="status-tag">On-device sample</span></td>
+            </tr>
+            <tr data-band="5_6">
+              <td><strong>Cedar Brook</strong></td>
+              <td>Grade 8 ELA · Unit 1</td>
+              <td>Challenge (5–6)</td>
+              <td>Argue with Text Evidence</td>
+              <td><span class="status-tag">On-device sample</span></td>
+            </tr>
+            <tr data-band="1_2">
+              <td><strong>Harbor Wind</strong></td>
+              <td>Grade K ELA · Unit 1</td>
+              <td>Extra Support (1–2)</td>
+              <td>Bilingual EN/ES Picture Talk</td>
+              <td><span class="status-tag">On-device sample</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card" aria-labelledby="aggregate-heading">
+        <h2 id="aggregate-heading">D14 Aggregate Privacy Preview</h2>
+        <div class="suppression-note">
+          Because this synthetic demo class contains only <strong>5</strong> rows (fewer than the D14 minimum cell size of <strong>10</strong>), any anonymous aggregate summary automatically displays <code>&lt;10 (suppressed)</code> and never returns alias-level rows.
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          <strong>DEMO MODE — Synthetic Data Only.</strong> Zero live API writes, zero real student data.
+          <a href="/bcpss-teachers/trust/">Privacy &amp; Trust</a> ·
+          <a href="/bcpss-teachers/efficacy/">Efficacy Brief</a>
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      (() => {
+        const buttons = document.querySelectorAll(".controls button[data-band]");
+        const rows = document.querySelectorAll("#demoRows tr[data-band]");
+        for (const btn of buttons) {
+          btn.addEventListener("click", () => {
+            const band = btn.dataset.band;
+            for (const other of buttons) {
+              other.setAttribute("aria-pressed", String(other === btn));
+            }
+            for (const row of rows) {
+              row.hidden = band !== "all" && row.dataset.band !== band;
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

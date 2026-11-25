@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy &amp; Trust — BCPSS K–8 Curriculum &amp; Language Bridge</title>
+    <meta
+      name="description"
+      content="Plain-language privacy, data-minimization, and governance commitments for the BCPSS K–8 Curriculum &amp; Language Bridge. Draft: pending legal review."
+    />
+    <meta name="theme-color" content="#1e3a5f" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='2' y='2' width='17' height='17' rx='5.5' fill='%231e3a5f'/%3E%3Crect x='21' y='2' width='17' height='17' rx='5.5' fill='%230f766e'/%3E%3Crect x='2' y='21' width='17' height='17' rx='5.5' fill='%239a3412'/%3E%3Crect x='21' y='21' width='17' height='17' rx='5.5' fill='%23b45309'/%3E%3C/svg%3E"
+    />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/inter-1dc044f4.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="/assets/fonts/plus-jakarta-sans-069be307.woff2" />
+    <style>
+      @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 400 600;
+        font-display: swap;
+        src: url(/assets/fonts/inter-1dc044f4.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Plus Jakarta Sans";
+        font-style: normal;
+        font-weight: 600 700;
+        font-display: swap;
+        src: url(/assets/fonts/plus-jakarta-sans-069be307.woff2) format("woff2");
+      }
+      :root {
+        --bg-canvas: #faf9f6;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f2efe9;
+        --border: #dcd6cb;
+        --ink: #182230;
+        --ink-muted: #475467;
+        --navy: #1e3a5f;
+        --teal: #0f766e;
+        --teal-bg: #ecfdf5;
+        --amber: #9a3412;
+        --amber-bg: #fff7ed;
+        --amber-border: #fdba74;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg-canvas);
+        color: var(--ink);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+      .skip-link {
+        position: absolute;
+        left: -9999px;
+      }
+      .skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+        background: var(--navy);
+        color: #ffffff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        z-index: 100;
+      }
+      .draft-banner {
+        background: var(--amber-bg);
+        border-bottom: 2px solid var(--amber-border);
+        color: var(--amber);
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-align: center;
+      }
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem;
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+        margin-bottom: 1rem;
+      }
+      .breadcrumb a {
+        color: var(--navy);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      h1, h2, h3 {
+        font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+        color: var(--navy);
+        line-height: 1.25;
+      }
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.9rem;
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-muted);
+        font-size: 1.05rem;
+      }
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: var(--bg-subtle);
+        color: var(--ink);
+      }
+      .badge-draft {
+        background: var(--amber-bg);
+        border-color: var(--amber-border);
+        color: var(--amber);
+      }
+      .badge-lock {
+        background: var(--teal-bg);
+        border-color: #99f6e4;
+        color: var(--teal);
+      }
+      main.wrap {
+        padding-top: 1.75rem;
+        padding-bottom: 3rem;
+      }
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.35rem 1.5rem;
+        margin-bottom: 1.15rem;
+      }
+      .card h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.2rem;
+      }
+      .card p {
+        margin: 0 0 0.65rem;
+      }
+      .card p:last-child {
+        margin-bottom: 0;
+      }
+      ul {
+        margin: 0.5rem 0 0;
+        padding-left: 1.25rem;
+      }
+      li {
+        margin-bottom: 0.4rem;
+      }
+      .callout {
+        background: var(--teal-bg);
+        border-left: 4px solid var(--teal);
+        padding: 0.9rem 1.1rem;
+        border-radius: 0 8px 8px 0;
+        margin-top: 0.75rem;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        background: var(--bg-surface);
+        color: var(--ink-muted);
+        font-size: 0.875rem;
+      }
+      footer a {
+        color: var(--navy);
+      }
+      @media print {
+        .draft-banner {
+          border: 1px solid var(--amber);
+        }
+        .card {
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#trustMain">Skip to privacy commitments</a>
+
+    <div class="draft-banner" role="note">
+      Draft: pending legal review — plain-language privacy &amp; trust documentation for internal and district review.
+    </div>
+
+    <header>
+      <div class="wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/bcpss-teachers">← Back to BCPSS Teachers</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Privacy &amp; Trust</span>
+        </nav>
+        <h1>Privacy &amp; Trust Commitments</h1>
+        <p class="lead">
+          How the BCPSS K–8 Curriculum &amp; Language Bridge protects student privacy by design, keeps student work on-device, and limits aggregate reporting.
+        </p>
+        <div class="badge-row">
+          <span class="badge badge-draft">Draft: pending legal review</span>
+          <span class="badge badge-lock">D8 Lock · No Student Work Sent to Models</span>
+          <span class="badge badge-lock">D14 Min Cell Size: 10</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="trustMain" class="wrap" tabindex="-1">
+      <section class="card" aria-labelledby="alias-heading">
+        <h2 id="alias-heading">1. Alias-Only Student Privacy</h2>
+        <p>
+          Classroom tools use neutral, non-identifying aliases (such as nature-themed labels) instead of real student identities.
+        </p>
+        <ul>
+          <li><strong>No personal identifiers:</strong> never enter student full names, initials, student ID numbers, email addresses, or dates of birth.</li>
+          <li><strong>No protected classifications:</strong> never enter IEP, 504, SPED, or individual language-proficiency level codes into the tool.</li>
+          <li><strong>No student accounts:</strong> students do not create logins, passwords, or cloud profiles.</li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="d8-heading">
+        <h2 id="d8-heading">2. D8 Lock: No Student Writing or Audio Leaves the Device</h2>
+        <p>
+          Under our <strong>D8 privacy lock</strong>, student writing and student audio are never transmitted to any AI model and are never stored server-side.
+        </p>
+        <div class="callout">
+          <strong>Hard boundary (D8):</strong> Zero student writing, zero student audio recordings, and zero voice transcripts are sent to language models, third-party APIs, or remote databases.
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="device-heading">
+        <h2 id="device-heading">3. On-Device Storage Only</h2>
+        <p>
+          Draft responses, selected scaffolds, and classroom preferences are saved locally in the browser on the device being used.
+        </p>
+        <ul>
+          <li>Teachers and students can clear local browser storage at any time to remove saved drafts immediately.</li>
+          <li>No third-party advertising trackers, behavioral analytics, or external CDN fonts are loaded.</li>
+          <li>All stylesheets, scripts, and web fonts are served strictly same-origin.</li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="d14-heading">
+        <h2 id="d14-heading">4. Anonymous Aggregate Reporting (D14 Minimum Cell Size 10)</h2>
+        <p>
+          Optional usage counts track only aggregate curriculum activity (unit ID, proficiency band selected, and tool action) with no teacher names, student names, emails, or IP addresses.
+        </p>
+        <ul>
+          <li><strong>D14 suppression rule:</strong> any aggregate group with fewer than <strong>10</strong> observations is automatically suppressed and displayed as <code>&lt;10 (suppressed)</code>.</li>
+          <li><strong>No row-level export:</strong> aggregate summaries never return individual student or alias rows.</li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="wida-heading">
+        <h2 id="wida-heading">5. Framework Attribution &amp; Disclaimer</h2>
+        <p>
+          Language scaffolds and Key Language Uses in this resource are <strong>inspired by WIDA, not official</strong>. This site is an independent teacher support tool inspired by the WIDA English Language Development (ELD) Standards Framework (2020) and is not affiliated with, endorsed by, or an official assessment or product of WIDA or the Board of Regents of the University of Wisconsin System.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          <strong>Status:</strong> Draft: pending legal review. Related pages:
+          <a href="/bcpss-teachers">Teacher Bridge</a> ·
+          <a href="/bcpss-teachers/efficacy/">Efficacy Brief</a> ·
+          <a href="/bcpss-teachers/insights/">Beta Usage</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
