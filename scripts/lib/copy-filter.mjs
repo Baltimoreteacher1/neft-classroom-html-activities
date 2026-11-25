@@ -144,6 +144,11 @@ const OMITTED_DATA_JSON = new Set([
  * @param {string} root absolute path the copy is relative to (the repo root)
  * @returns {(src: string) => boolean} true to copy
  */
+// shared/privacy inventory tooling + its fixtures/baselines, the synthetic fixture library, and the flag
+// registry's negative-control fixtures. shared/privacy/pii.mjs and shared/flags/evaluate.js stay publishable.
+const DEV_ONLY_SHARED_RE =
+  /^shared\/(privacy\/(inventory[^/]*|inventory-annotations\/.*|fixtures\/.*)|fixtures\/.*|flags\/negative\/.*)$/;
+
 export function makeCopyFilter(root) {
   return (src) => {
     const rel = relative(root, src);
@@ -153,6 +158,11 @@ export function makeCopyFilter(root) {
     if (SKIP_COPY_RE.test(rel)) return false;
     const normalized = rel.split(sep).join("/");
     if (normalized.startsWith("data/audit/studio-audit/")) return false;
+    // Developer tooling and test fixtures that live under shared/ for the Functions and the QA gates. They
+    // cite source paths in prose (the privacy inventory names `math/fluency-lab/...` files), and
+    // tools/bundle-dist-modules.mjs reads every text file in dist/ for such paths and keeps whatever they name,
+    // which broke the Fluency Lab bundle. No page loads them.
+    if (DEV_ONLY_SHARED_RE.test(normalized)) return false;
     if (normalized.startsWith("data/") && OMITTED_DATA_JSON.has(normalized.slice("data/".length))) {
       return false;
     }

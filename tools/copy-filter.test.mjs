@@ -142,6 +142,32 @@ for (const rel of [
 ]) {
   assert.equal(repoFilter(`/repo/${rel}`), true, `${rel} is content and must still be published`);
 }
+// Developer-only shared/ trees stay out of dist/ (their prose pins modules in the dist bundler); runtime files ship.
+for (const rel of [
+  "shared/privacy/inventory.mjs",
+  "shared/privacy/inventory-annotations/device.js",
+  "shared/privacy/inventory-forbidden-baseline.json",
+  "shared/privacy/fixtures/pii-bad.json",
+  "shared/fixtures/classes.js",
+  "shared/flags/negative/bad-registry.json",
+]) {
+  assert.equal(
+    repoFilter(`/repo/${rel}`),
+    false,
+    `${rel} is developer tooling and must not be published`,
+  );
+}
+for (const rel of [
+  "shared/privacy/pii.mjs",
+  "shared/flags/evaluate.js",
+  "shared/content-schema/v2.mjs",
+]) {
+  assert.equal(
+    repoFilter(`/repo/${rel}`),
+    true,
+    `${rel} is runtime code and must still be published`,
+  );
+}
 // The Functions source is deployed from functions/, never served from dist/.
 assert.match(vite, /"functions",/, "vite.config.js SKIP_DIRS must exclude functions/");
 
