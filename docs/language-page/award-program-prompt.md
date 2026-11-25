@@ -35,6 +35,43 @@ No shortcuts:
 - Do not stub a feature and call it done.
 - Do not lower a gate to make it pass.
 
+## STEP 0 — MAKE SURE THE BASELINE FILES ARE HERE (every session, before anything else)
+
+The audit and this prompt were added on branch `claude/dreamy-lamport-ryoydb` (PR #230). Until that PR is merged into `main`, a fresh checkout of `main` does not contain them. Run these steps:
+
+1. Check for the audit:
+
+   `test -f docs/language-page/award-panel-audit-2026-11-24.md && echo present || echo missing`
+
+2. If it is **missing**, fetch the branch that holds it:
+
+   `git fetch origin claude/dreamy-lamport-ryoydb`
+
+   Then choose one of these:
+
+   - **If you are starting the program**, base your work branch on it:
+
+     `git checkout -b language-page-award-program FETCH_HEAD`
+
+     Commit everything for this program on `language-page-award-program`.
+   - **If you are already on a work branch for this program**, merge it in:
+
+     `git merge --no-edit FETCH_HEAD`
+
+     If the merge is refused or conflicts, stop and tell Joel.
+   - **Never** push to `main` to get the file. Never cherry-pick it onto `main`.
+3. If the fetch fails (branch deleted, no network), check whether PR #230 has been merged:
+
+   `git fetch origin main && git log origin/main --oneline -- docs/language-page/award-panel-audit-2026-11-24.md`
+
+   - If it has been merged, branch from `origin/main`.
+   - If it has not, stop and ask Joel for the audit. Do not reconstruct it from memory, and do not continue without it.
+4. Confirm both files exist before going on:
+   - `docs/language-page/award-panel-audit-2026-11-24.md`
+   - `docs/language-page/award-program-prompt.md`
+
+   Record which branch they came from in `program-state.md`.
+
 ## READ FIRST (in this order, every session)
 
 1. `CLAUDE.md` and `AGENTS.md`: the Closed-Loop QA Protocol, hard constraints, the v6.0 release rules, and *Regression pins vs product decisions*.
@@ -477,4 +514,4 @@ Also, for every phase, do a real-browser review following the `student-experienc
 7. **Remaining risks and skipped checks**, each with the reason.
 8. **The updated `program-state.md`.**
 
-Start now. First read the files above. Then create `program-state.md`. Then ask Joel the Stage 0 questions. While waiting for his answers, begin Workstream 1 items 2–3, which depend on no decision.
+Start now. First complete Step 0 so the baseline files are present. Then read the files above. Then create `program-state.md`. Then ask Joel the Stage 0 questions. While waiting for his answers, begin Workstream 1 items 2–3, which depend on no decision.
