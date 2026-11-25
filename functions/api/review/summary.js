@@ -17,11 +17,9 @@ export const onRequest = handler(
         return json(out, 200, { "Cache-Control": "public, max-age=60" });
       } catch (err) {
         if (isMissingTable(err)) {
-          return json(
-            { ok: true, available: false, state: null, blocks: [], units: null },
-            200,
-            { "Cache-Control": "public, max-age=60" },
-          );
+          return json({ ok: true, available: false, state: null, blocks: [], units: null }, 200, {
+            "Cache-Control": "public, max-age=60",
+          });
         }
         throw err;
       }

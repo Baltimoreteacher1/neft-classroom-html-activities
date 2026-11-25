@@ -115,8 +115,7 @@ const EXTERNAL_CALL_RE =
   /\b(?:fetch|sendBeacon)\(\s*["'`]https?:\/\/|new\s+(?:EventSource|WebSocket)\(\s*["'`](?:https?|wss?):\/\//g;
 const CDN_ASSET_RE =
   /https?:\/\/(?:fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com|unpkg\.com|cdn\.jsdelivr\.net|ajax\.googleapis\.com)/gi;
-const EXTERNAL_TAG_RE =
-  /<(?:script|link)\b[^>]*\b(?:src|href)\s*=\s*["']https?:\/\/[^"']+["']/gi;
+const EXTERNAL_TAG_RE = /<(?:script|link)\b[^>]*\b(?:src|href)\s*=\s*["']https?:\/\/[^"']+["']/gi;
 
 function stripJsComments(src) {
   return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
