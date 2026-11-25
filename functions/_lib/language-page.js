@@ -277,28 +277,81 @@ export function familyTourElsewhere(url) {
 export const LAB_BRAND = {
   name: "The Language Page",
   poweredBy: "Powered by EduWonderLab",
-  descriptor: "K–8 Multilingual Curriculum & Assessment Studio",
+  // Joel, 2026-11-24 (data/product-decisions.json "lp-site-name-the-language-page"): one name and one plain promise.
+  // "ACCESS Practice Lab" names one section, the test-practice area, not the site.
+  descriptor: "English for school, in your language, K–8",
 };
+
+/** The share card (tools/generate-og-card.mjs), served from the lab's own prefix so no other host is involved. */
+export const OG_IMAGE_PATH = `${LAB_BASE}/pictures/og-the-language-page.png`;
+const OG_ALT = `${LAB_BRAND.name}: ${LAB_BRAND.descriptor}`;
+const attr = (v) => String(v).replace(/"/g, "&quot;");
+
+/**
+ * Open Graph and Twitter tags for a page, from the page's own (already branded) <title> and meta description, so a link
+ * pasted into a chat or a post shows a title, a sentence and a picture. Nothing is added when the page already sets
+ * og:image, and a page with no description gets the product's plain promise and its honesty line.
+ */
+export function shareMeta(html) {
+  if (/property=["']og:image["']/.test(html)) return "";
+  const title = /<title>([^<]*)<\/title>/.exec(html)?.[1] || LAB_BRAND.name;
+  const description =
+    /<meta\s+name=["']description["']\s+content=["']([^"']*)["']/.exec(
+      html.replace(/\s+/g, " "),
+    )?.[1] || `${LAB_BRAND.descriptor}. Original practice, not an official WIDA or ACCESS test.`;
+  const image = `https://${LANGUAGE_PAGE_HOST}${OG_IMAGE_PATH}`;
+  return [
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:title" content="${attr(title)}" />`,
+    `<meta property="og:description" content="${attr(description)}" />`,
+    `<meta property="og:image" content="${image}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:image:alt" content="${attr(OG_ALT)}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+  ].join("\n");
+}
+
+/** Hub pages are the teacher area of The Language Page, not "ACCESS Practice Lab". */
+export function hubTitle(html) {
+  return html.replace(/<title>([^<]*?) — (?:ACCESS )?Teacher Hub<\/title>/, (_, page) =>
+    /^ACCESS Practice Lab$/.test(page)
+      ? `<title>Teacher Hub · ${LAB_BRAND.name}</title>`
+      : `<title>${page} · Teacher Hub · ${LAB_BRAND.name}</title>`,
+  );
+}
 
 export function brandLabHtml(html, pathname) {
   const studio = studioFor(pathname);
   if (studio) return studioLabHtml(html, studio, pathname);
   const canonical = `https://${LANGUAGE_PAGE_HOST}${pathname}`;
-  const labTitle =
-    /<title>(ELL Lab|ACCESS Practice Lab)<\/title>/.exec(html)?.[1] || "ACCESS Practice Lab";
-  return html
+  const titled = hubTitle(html)
     .replace(
       /<title>(?:ELL Lab|ACCESS Practice Lab)<\/title>/,
-      `<title>${LAB_BRAND.name} · ${labTitle}</title>`,
+      `<title>${LAB_BRAND.name} · ${LAB_BRAND.descriptor}</title>`,
     )
     .replace(
       /<strong>(?:ELL Lab|ACCESS Practice Lab)<\/strong><small>EduWonderLab<\/small>/,
       `<strong>${LAB_BRAND.name}</strong><small>${LAB_BRAND.descriptor}</small>`,
-    )
-    .replace(
-      "</head>",
-      `<link rel="canonical" href="${canonical}" />\n<meta property="og:site_name" content="${LAB_BRAND.name}" />\n<meta property="og:url" content="${canonical}" />\n</head>`,
     );
+  return titled.replace(
+    "</head>",
+    `<link rel="canonical" href="${canonical}" />\n<meta property="og:site_name" content="${LAB_BRAND.name}" />\n<meta property="og:url" content="${canonical}" />\n${shareMeta(titled)}\n</head>`,
+  );
+}
+
+/**
+ * Joel, 2026-11-24 (data/product-decisions.json "lp-no-third-party-analytics"): thelanguagepage.com loads no third-party
+ * analytics. Cloudflare Web Analytics is switched on for the zone and injects its beacon into HTML AT THE EDGE
+ * (static.cloudflareinsights.com plus a POST to /cdn-cgi/rum), so it is not in the repository and cannot be removed
+ * from source. Cloudflare does not rewrite a response marked `no-transform`, so the lab host's HTML carries it.
+ * tools/validate-language-page-network.mjs measures the result in a browser; if the beacon ever returns, turn Web Analytics
+ * off for this hostname in the Cloudflare dashboard.
+ */
+export function setNoTransform(headers) {
+  const current = headers.get("cache-control") || "";
+  if (/(^|,)\s*no-transform\s*(,|$)/i.test(current)) return;
+  headers.set("Cache-Control", current ? `${current}, no-transform` : "no-transform");
 }
 
 export async function brandLabResponse(response, url) {
@@ -307,6 +360,7 @@ export async function brandLabResponse(response, url) {
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   headers.delete("etag");
+  setNoTransform(headers);
   return new Response(brandLabHtml(await response.text(), url.pathname), {
     status: response.status,
     statusText: response.statusText,

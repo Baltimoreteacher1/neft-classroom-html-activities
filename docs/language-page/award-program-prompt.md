@@ -240,9 +240,10 @@ Use `AskUserQuestion` in batches of up to four. Put your recommendation first, m
      - A claim without a `verified` row in `claims-ledger.md` fails.
      - Any evidence, efficacy, award or "research shows" phrase without a claim id fails.
    - Write negative fixtures first. Add the test to `npm test`.
-3. **Document language (E4).**
-   - Set `<html lang>` on every language switch, and per-block `lang` in EN+ES mode.
-   - Add a browser gate across the sitemap in `?lang=es` and EN+ES: assert `lang`, and assert that no visible English sentence is left on Spanish screens.
+3. **Spanish tagging (E4, corrected).**
+   - Measured live: in Spanish mode ~99% of Spanish text is already inside `lang="es"`, and `<html lang>` stays `en` by design. Do not "fix" `<html lang>` without asking Joel.
+   - Build a browser gate across the sitemap in `?lang=es` and EN+ES: Spanish text nodes inside `lang="es"` must be ≥ 98%. Report the untagged strings by route.
+   - Do not auto-wrap breadcrumbs or other plain `I.S` strings: they can also carry English activity titles, and wrapping them would mislabel English as Spanish.
    - Extend `scan:access-es` to rendered output.
 4. **Governance alignment (X5).**
    - Record D3, D4, D5 and the AI-writing endpoint.

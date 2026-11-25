@@ -278,7 +278,18 @@ const COVERAGE = [
   ],
   [
     /^((language-adventures|language-studio)\/.*|data\/static-app-mounts\.json|curriculum\/index\.html|functions\/_lib\/language-page\.js|functions\/language-page-host\.test\.mjs)$/,
-    ["validate:static", "validate:catalog", "check"],
+    ["validate:static", "validate:catalog", "test", "check"],
+  ],
+  // The workspace-role default and the share card: both live in the lab, and the role test drives the lab in a browser.
+  [
+    /^(tools\/(access-role-default(?:-e2e|\.test)|generate-og-card)\.mjs|access-practice-lab\/pictures\/og-the-language-page\.png)$/,
+    ["validate:access-lab", "test", "check"],
+  ],
+  // THE LANGUAGE PAGE TRUST GATES: what the host sends over the network, what its copy claims, and what its docs say
+  // about the code. The network gate opens a browser; a missing one is a SKIP locally and a FAIL in CI.
+  [
+    /^(tools\/(validate-language-page-network|access-lab-claims\.test|language-page-docs-truth\.test)\.mjs|data\/(language-page-third-parties|language-page-claims-review)\.json|docs\/language-page\/(claims-ledger|decisions-2026-11-24)\.md|docs\/(language-page-migration|wida-data-studio-architecture|wida-data-privacy|class-platform)\.md)$/,
+    ["validate:language-page-network", "test", "check"],
   ],
   [
     /^(scripts\/qa-run\.mjs|qa-exempt\.json|math-fluency-lab\/|shared\/|tools\/validate-discourse-cra-studios\.mjs|data\/catalog\.json|functions\/_lib\/plan-vocab\.js|access-practice-lab\/(app-shell|index\.html|sw\.js|src\/studios\/|language-studios\.html|discourse-architect\.css|speaking-sparring\.css|translanguaging-bridge\.css)|math\/fluency-lab\/(cra-kinetic-engine|forensic-debugging|ghost-racing|fluency-innovations))/,

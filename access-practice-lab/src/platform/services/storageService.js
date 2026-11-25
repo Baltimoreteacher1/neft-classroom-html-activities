@@ -22,7 +22,7 @@ export const STORAGE_KEYS = Object.freeze({
 const DEFAULT_STATES = {
   [STORAGE_KEYS.PREFS]: () => ({
     schemaVersion: SCHEMA_VERSION,
-    role: "teacher", // "teacher" | "student" | "family"
+    role: "", // "" until the switch is pressed, then "teacher" | "student" | "family" (see ../role.js)
     theme: "light",  // "light" | "dark"
     l1: "es",        // "es" | "ar" | "zh" | "fr" | "uk" | "ru" | "pt" | "en"
     cognateSpotlight: true,

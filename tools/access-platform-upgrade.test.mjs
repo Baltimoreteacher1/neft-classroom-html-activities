@@ -30,7 +30,9 @@ test("storageService: schemaVersion 1, safe fallback, and zero-PII sanitizeAlias
   clearPlatformStorage();
   const prefs = readStorage(STORAGE_KEYS.PREFS);
   assert.equal(prefs.schemaVersion, SCHEMA_VERSION);
-  assert.equal(prefs.role, "teacher");
+  // Unset until the switch is pressed: src/platform/role.js resolves it (a choice, then the door, then Student).
+  // It used to default to "teacher" for everyone, so a student's first page showed the Teacher view pressed.
+  assert.equal(prefs.role, "");
 
   writeStorage(STORAGE_KEYS.PREFS, { ...prefs, role: "student", l1: "ar" });
   const updated = readStorage(STORAGE_KEYS.PREFS);

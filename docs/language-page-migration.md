@@ -20,8 +20,11 @@ Lab HTML on this host is renamed on the way out: `<title>`, the wordmark ("The L
 and a self-referencing `<link rel="canonical">` plus `og:` tags. `access-practice-lab/src/brand.js` keeps the running app saying
 the same thing; `tools/access-move.test.mjs` fails if the two spellings drift.
 
-**The Teacher Hub is not served here.** Its rosters and typed official scores live in the teacher's browser on
-eduwonderlab.com; a second origin would show an empty hub and ask for a second sign-in.
+**The Teacher Hub (`/access-teacher/`) and the WIDA Data Studio (`/access-teacher/predictive/`) are served here, with no
+password** (`LAB_HOST_OPEN` in `functions/_lib/language-page.js`; Joel, 2026-11-17: "just this site"). The hub's rosters and
+typed official scores live in the browser of whoever uses it, per origin, so a teacher who used the hub on eduwonderlab.com
+sees an empty one here until they enter their data again. The Class panel works here because `/api/class` is on this origin.
+API routes keep their own keys. `tools/language-page-docs-truth.test.mjs` fails if a doc says otherwise.
 
 **eduwonderlab.com answers exactly as before.** Nothing on the old host is redirected; `functions/language-page-host.test.mjs`
 and `validate:route-contract` pin that.
