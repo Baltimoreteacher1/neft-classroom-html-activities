@@ -278,6 +278,19 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // FORMATIVE ENGINE (Prompt 3, 7.3-7.4): exit-ticket scoring, error tracker, migration 0023, its API and Studio view.
+  // `bundle-syntax` proves the Functions still compile; the privacy pair covers the two new tables.
+  [
+    /^(migrations\/0023_|shared\/formative\/|functions\/(_lib|api)\/formative\/|bcpss-teachers\/studio\/views\/formative\/|shared\/privacy\/inventory-annotations\/d1-formative\.js$|tools\/formative-[a-z-]+\.test\.mjs$|docs\/formative\/)/,
+    [
+      "test:formative",
+      "test:bundle-syntax",
+      "validate:privacy-inventory",
+      "validate:privacy-forbidden",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
   // The two link audits and the audit note they were written against. Each audit script is run by its own npm
   // script, so a change to one is covered by that check; without a rule here an edit escalated to the full gate.
   [
@@ -327,6 +340,21 @@ const COVERAGE = [
   [
     /^(tools\/(validate-language-page-network|access-lab-claims\.test|language-page-docs-truth\.test|generate-language-page-privacy-doc|language-page-privacy-doc\.test)\.mjs|data\/(language-page-third-parties|language-page-claims-review)\.json|docs\/language-page\/(claims-ledger|decisions-2026-11-24|privacy|acr|logic-model|efficacy-plan|usability-protocol|pilot-kit|program-state|human-required)\.md|docs\/(language-page-migration|wida-data-studio-architecture|wida-data-privacy|class-platform)\.md)$/,
     ["validate:language-page-network", "test", "check"],
+  ],
+  // ACCESS PRACTICE LAB 2.0 ENGINE (Prompt 3 Wave 3) — pure logic under shared/access-lab2 (items, practice test builder,
+  // diagnostic, Road plan, readiness, bank health) and its tests/docs. Listed BEFORE the broad `shared/` rule below
+  // (first match wins) and keeps that rule's checks.
+  [
+    /^(shared\/access-lab2\/|tools\/access-lab2-[\w-]+\.(test\.)?mjs$|docs\/access-lab2\/)/,
+    [
+      "test:access-lab2",
+      "validate:js-syntax",
+      "check",
+      "validate:data-contracts",
+      "validate:static",
+      "validate:plan-notes",
+      "validate:gate-coverage",
+    ],
   ],
   [
     /^(scripts\/qa-run\.mjs|qa-exempt\.json|math-fluency-lab\/|shared\/|tools\/validate-discourse-cra-studios\.mjs|data\/catalog\.json|functions\/_lib\/plan-vocab\.js|access-practice-lab\/(app-shell|index\.html|sw\.js|src\/studios\/|language-studios\.html|discourse-architect\.css|speaking-sparring\.css|translanguaging-bridge\.css)|math\/fluency-lab\/(cra-kinetic-engine|forensic-debugging|ghost-racing|fluency-innovations))/,
@@ -521,6 +549,12 @@ const COVERAGE = [
     /^(tools\/(access-integration-e2e|generate-access-finder-metadata|generate-access-packs|generate-newcomer-packs|generate-program-content)\.mjs|tools\/(access-finder-facets|access-packs|family-today-plan|lesson-pack|live-rooms|newcomer-packs|program-content|speaking-enterprise|speaking-task-packs)\.test\.mjs)$/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
+  // KLU RESOLUTION — seed connections carry blueprint_id, not wida_klu; lesson drafts and family cards read it through
+  // functions/_lib/bcpss/klu.js. A change there (or to the seed blueprints) re-runs the 162-unit regression.
+  [
+    /^(functions\/_lib\/bcpss\/(klu|lessons)\.js|tools\/bcpss-klu\.test\.mjs)$/,
+    ["test:klu", "validate:gate-coverage", "validate:js-syntax", "check"],
+  ],
   // FUNCTIONS BUNDLE SYNTAX — Cloudflare's Pages Functions bundler rejects JSON import attributes anywhere under
   // functions/ or shared/ (it failed the build of 39ab247b90 and 07c72b6ab9). Static scan, no browser.
   [
@@ -553,6 +587,47 @@ const COVERAGE = [
   [
     /^tools\/content\/(verifiers\/(b-common|cognate|standards|spanish|frames)\.mjs|verifiers-b(\.test)?\.mjs|standards-coverage\.mjs|spanish-review-export\.mjs|data\/false-friends\.json|baselines\/(cognate|standards|spanish|frames)\.json)$|^docs\/content\/verifiers-b\.md$/,
     ["test:verifiers-b", "validate:content-verifiers-b", "validate:js-syntax", "check"],
+  ],
+  // LEARNER ENGINE (Prompt 3 Wave 3) — pure on-device learner model: skill graph + tagging (G-29), transparent estimation,
+  // Leitner + activity scheduler, daily plan and anonymous item analytics (G-28). The tagging sweep reads all 162 units,
+  // so a change to the studio schema or the seed re-runs it through the broad rules; its own tests live next to it.
+  [
+    /^(shared\/learner\/|tools\/learner-[\w-]+\.test\.mjs$|docs\/learner\/)/,
+    ["test:learner", "validate:gate-coverage", "validate:js-syntax", "check"],
+  ],
+  // MY WEEK PLANNER (Prompt 3 Wave 3, G-30) — the pure planner (shared/planner), its server glue and exports, the
+  // stateless /api/bcpss/week-plan route and the #/week Studio view. The core test sweeps all 162 units x 3 band mixes x
+  // 3 block lengths with negative controls; the export test checks Word/HTML text and page breaks; the view test runs jsdom.
+  [
+    /^(shared\/planner\/|functions\/_lib\/bcpss\/week-plan[\w-]*\.js$|functions\/api\/bcpss\/week-plan\.js$|bcpss-teachers\/studio\/views\/week\/|docs\/planner\/|tools\/planner-[\w-]+\.test\.mjs$)/,
+    ["test:planner", "validate:gate-coverage", "validate:js-syntax", "check"],
+  ],
+  // DESIGN SYSTEM + LOCAL PREVIEW (Prompt 3 Wave 3) — shared/ui, the Studio #/design specimen, the dev-local preview tool
+  // and their docs. Listed before the broad `shared/` rule below. The tests are static plus jsdom (no browser, no server).
+  [
+    /^(shared\/ui\/|bcpss-teachers\/studio\/design\/|tools\/(ui-[\w-]+\.test|dev-local)\.mjs$|docs\/design\/shared-ui\.md$|docs\/runbooks\/preview\.md$|docs\/testing\/local-env\.md$)/,
+    ["test:ui", "validate:design-tokens", "validate:js-syntax", "check"],
+  ],
+  // CONTENT VERIFIERS C (Prompt 3 Wave 3) — no-manipulatives, duplicates, sensitivity and alt-text verifiers, their committed
+  // baselines, the verifier-counts publisher and the generated counts module the review queue reads. The counts module is
+  // regenerated from EVERY verifier (A, B and C) over all units, so a change to the studio or lesson content or to any verifier
+  // makes it stale: its freshness check runs with the C gate. Disjoint from the A and B patterns above.
+  [
+    /^(tools\/content\/(verifiers\/(no-manipulatives|duplicates|sensitivity|alt-text)\.mjs|baselines\/(no-manipulatives|duplicates|sensitivity|alt-text)\.json|publish-verifier-counts\.mjs|verifiers-c\.test\.mjs)|functions\/_lib\/review-generated\/|shared\/content-schema\/review-verifier-counts\.js$|docs\/content\/verifiers-c\.md$)/,
+    [
+      "test:verifiers-c",
+      "validate:content-verifiers-c",
+      "validate:content-verifier-counts",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
+  // CLASS PACKETS AND PRINT KITS (Prompt 3 Wave 3, worker PK) — the shared pure logic, the document builders and export route, the
+  // Studio #/packets view and their tests. Listed before the broad `shared/` and BCPSS rules. `tools/packet-print-check.mjs`
+  // needs a browser and runs by hand (`npm run check:packet-print`), so it carries no rule of its own here.
+  [
+    /^(shared\/packets\/|functions\/_lib\/bcpss\/packet-[\w-]+\.js$|functions\/api\/bcpss\/packet[\w-]*\.js$|bcpss-teachers\/studio\/views\/packets\/|docs\/packets\/|tools\/packet-[\w-]+(\.test)?\.mjs$)/,
+    ["test:packets", "test:bundle-syntax", "validate:gate-coverage", "validate:js-syntax", "check"],
   ],
   // FLAGS, FIXTURES, EGRESS PROBE — the flag registry/evaluator/endpoint, the synthetic fixture library and the egress
   // probe harness. Listed before the broad `shared/` rule below so these paths get their own gates. The probe selftest

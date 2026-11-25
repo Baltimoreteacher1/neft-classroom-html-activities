@@ -11,8 +11,12 @@
 //                            the negative control: every bad fixture MUST raise its codes, every good fixture MUST raise no
 //                            error/warn finding; tools/content/verify.mjs runs them before the sweep and exits 3 if they fail
 export const REGISTRY = {
+  "alt-text": () => import("./verifiers/alt-text.mjs"),
   arithmetic: () => import("./verifiers/arithmetic.mjs"),
+  duplicates: () => import("./verifiers/duplicates.mjs"),
+  "no-manipulatives": () => import("./verifiers/no-manipulatives.mjs"),
   readability: () => import("./verifiers/readability.mjs"),
+  sensitivity: () => import("./verifiers/sensitivity.mjs"),
   "vocab-tier": () => import("./verifiers/vocab-tier.mjs"),
 };
 

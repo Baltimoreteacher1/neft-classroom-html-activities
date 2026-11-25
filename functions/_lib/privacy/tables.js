@@ -73,6 +73,12 @@ export const DELETE_PLAN = Object.freeze([
     class: "class_code = ?1",
     student: "class_code = ?1 AND student_id = ?2",
   },
+  {
+    table: "formative_score",
+    class: "class_code = ?1",
+    student: "class_code = ?1 AND student_id = ?2",
+  },
+  { table: "formative_error", class: "class_code = ?1", student: null },
   { table: "class_platform_student", class: BY_CODE, student: BY_CODE_STUDENT },
   { table: "class_platform_class", class: BY_CODE, student: null },
 ]);

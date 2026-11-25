@@ -1,0 +1,424 @@
+/* shared/ui components. Colours come only from the --ui-* roles in theme.css; sizes, type and motion from
+   the --ds-* tokens. Rules this file keeps (tools/ui-tokens.test.mjs enforces them): logical properties only
+   (RTL ready), no !important, no raw colour literals, a 3px focus ring, 44px targets, every transition and
+   animation runs on --ui-motion (0ms under prefers-reduced-motion), and no page-break rules in print. */
+
+.ui-page {
+  background: var(--ui-page);
+  color: var(--ui-text);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body);
+  line-height: var(--ds-leading-body);
+}
+
+.ui-sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ui-scroll-lock {
+  overflow: hidden;
+}
+
+/* Focus: one 3px ring for every focusable ui part. The ring colour is --ui-focus (navy on light, amber on dark). */
+.ui-btn:focus-visible,
+.ui-tab:focus-visible,
+.ui-tabpanel:focus-visible,
+.ui-dialog:focus-visible,
+.ui-card__link:focus-visible,
+.ui-band__input:focus-visible + .ui-band__text {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+
+/* Buttons */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-block-size: var(--ds-target);
+  min-inline-size: var(--ds-target);
+  padding-block: var(--ds-space-2);
+  padding-inline: var(--ds-space-4);
+  border: 2px solid transparent;
+  border-radius: var(--ds-radius-md);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body);
+  font-weight: var(--ds-weight-bold);
+  line-height: var(--ds-leading-tight);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    box-shadow var(--ui-motion) var(--ds-easing),
+    background-color var(--ui-motion) var(--ds-easing);
+}
+.ui-btn:hover {
+  box-shadow: var(--ds-elevation-floating);
+}
+.ui-btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.ui-btn--block {
+  display: flex;
+  inline-size: 100%;
+}
+.ui-btn--primary {
+  background: var(--ui-primary-bg);
+  border-color: var(--ui-primary-bg);
+  color: var(--ui-primary-fg);
+}
+.ui-btn--secondary {
+  background: var(--ui-surface);
+  border-color: var(--ui-control-border);
+  color: var(--ui-heading);
+}
+.ui-btn--quiet {
+  background: transparent;
+  color: var(--ui-link);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.ui-btn--danger {
+  background: var(--ui-danger-bg);
+  border-color: var(--ui-danger-bg);
+  color: var(--ui-danger-fg);
+}
+.ui-btn--secondary[aria-pressed="true"],
+.ui-btn--quiet[aria-pressed="true"] {
+  background: var(--ui-primary-bg);
+  border-color: var(--ui-primary-bg);
+  color: var(--ui-primary-fg);
+  text-decoration: none;
+}
+.ui-btn[aria-pressed="true"]::before {
+  content: "\2713\00a0";
+}
+
+/* Card */
+.ui-card {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-3);
+  padding: var(--ds-space-4);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  border: 1px solid var(--ui-card-border);
+  border-radius: var(--ds-radius-md);
+  box-shadow: var(--ds-elevation-raised);
+  font-family: var(--ds-font-body);
+}
+.ui-card__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+}
+.ui-card__title {
+  margin: 0;
+  color: var(--ui-heading);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-title-3);
+  line-height: var(--ds-leading-heading);
+}
+.ui-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+}
+.ui-card__body {
+  margin: 0;
+}
+.ui-card__foot {
+  margin-block-start: auto;
+}
+.ui-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+.ui-card__link:hover {
+  text-decoration: underline;
+}
+.ui-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ds-radius-md);
+}
+.ui-card__link:focus-visible {
+  outline-color: transparent;
+}
+.ui-card__link:focus-visible::after {
+  outline: 3px solid var(--ui-focus);
+  outline-offset: 2px;
+}
+
+/* Tabs */
+.ui-tabs {
+  color: var(--ui-text);
+  font-family: var(--ds-font-body);
+}
+.ui-tablist {
+  display: flex;
+  gap: var(--ds-space-1);
+  overflow-x: auto;
+  border-block-end: 1px solid var(--ui-card-border);
+}
+.ui-tab {
+  min-block-size: var(--ds-target);
+  min-inline-size: var(--ds-target);
+  padding-block: var(--ds-space-2);
+  padding-inline: var(--ds-space-4);
+  background: transparent;
+  border: 0;
+  border-block-end: 4px solid transparent;
+  color: var(--ui-muted);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-body);
+  font-weight: var(--ds-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--ui-motion) var(--ds-easing);
+}
+.ui-tab[aria-selected="true"] {
+  border-block-end-color: var(--ui-accent-bg);
+  color: var(--ui-heading);
+  font-weight: var(--ds-weight-bold);
+}
+.ui-tabpanel {
+  padding-block: var(--ds-space-4);
+}
+
+/* Dialog */
+@keyframes ui-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.ui-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: var(--ds-space-4);
+  background: var(--ui-overlay);
+  animation: ui-fade-in var(--ui-motion) var(--ds-easing) both;
+}
+.ui-dialog {
+  box-sizing: border-box;
+  inline-size: min(36rem, 100%);
+  max-block-size: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+  padding: var(--ds-space-5);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-elevation-floating);
+  font-family: var(--ds-font-body);
+}
+.ui-dialog__head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--ds-space-3);
+}
+.ui-dialog__title {
+  margin: 0;
+  color: var(--ui-heading);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-title-3);
+  line-height: var(--ds-leading-heading);
+}
+.ui-dialog__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--ds-space-3);
+}
+
+/* Badge: tone = fill + mark shape + optional hidden text, never colour alone */
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  padding-block: var(--ds-space-1);
+  padding-inline: var(--ds-space-3);
+  border-radius: var(--ds-radius-pill);
+  color: var(--ui-tone-fg);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-caption);
+  font-weight: var(--ds-weight-semibold);
+  line-height: var(--ds-leading-tight);
+}
+.ui-badge__mark {
+  flex: none;
+  box-sizing: border-box;
+  inline-size: 0.7em;
+  block-size: 0.7em;
+}
+.ui-badge--neutral {
+  background: var(--ui-tone-neutral-bg);
+}
+.ui-badge--neutral .ui-badge__mark {
+  background: var(--ui-tone-neutral-mark);
+}
+.ui-badge--info {
+  background: var(--ui-tone-info-bg);
+}
+.ui-badge--info .ui-badge__mark {
+  border: 0.15em solid var(--ui-tone-info-mark);
+  border-radius: 50%;
+}
+.ui-badge--success {
+  background: var(--ui-tone-success-bg);
+}
+.ui-badge--success .ui-badge__mark {
+  background: var(--ui-tone-success-mark);
+  border-radius: 50%;
+}
+.ui-badge--warn {
+  background: var(--ui-tone-warn-bg);
+}
+.ui-badge--warn .ui-badge__mark {
+  background: var(--ui-tone-warn-mark);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.ui-badge--error {
+  background: var(--ui-tone-error-bg);
+}
+.ui-badge--error .ui-badge__mark {
+  background: var(--ui-tone-error-mark);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+/* Band selector: native radios inside >=44px labels */
+.ui-bands {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--ui-text);
+  font-family: var(--ds-font-body);
+}
+.ui-bands__legend {
+  padding: 0;
+  margin-block-end: var(--ds-space-2);
+  color: var(--ui-heading);
+  font-weight: var(--ds-weight-bold);
+}
+.ui-bands__note {
+  margin-block: 0 var(--ds-space-3);
+  color: var(--ui-muted);
+  font-size: var(--ds-text-caption);
+}
+.ui-bands__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-3);
+}
+.ui-band {
+  position: relative;
+  display: flex;
+  flex: 1 1 9rem;
+}
+.ui-band__input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ui-band__text {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  inline-size: 100%;
+  min-block-size: var(--ds-target);
+  padding-block: var(--ds-space-2);
+  padding-inline: var(--ds-space-4);
+  background: var(--ui-surface);
+  border: 2px solid var(--ui-control-border);
+  border-radius: var(--ds-radius-md);
+  color: var(--ui-heading);
+  transition: background-color var(--ui-motion) var(--ds-easing);
+}
+.ui-band__label {
+  font-weight: var(--ds-weight-bold);
+}
+.ui-band__hint {
+  font-size: var(--ds-text-caption);
+}
+.ui-band__input:checked + .ui-band__text {
+  background: var(--ui-primary-bg);
+  border-color: var(--ui-primary-bg);
+  color: var(--ui-primary-fg);
+}
+.ui-band__input:checked + .ui-band__text .ui-band__label::before {
+  content: "\2713\00a0";
+}
+
+/* Vocabulary card */
+.ui-vocab__head {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.ui-vocab__term {
+  margin: 0;
+  color: var(--ui-heading);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-title-2);
+  line-height: var(--ds-leading-heading);
+}
+.ui-vocab__def,
+.ui-vocab__example {
+  margin: 0;
+}
+.ui-vocab__example {
+  color: var(--ui-muted);
+  font-style: italic;
+}
+.ui-vocab__translations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ui-vocab__translation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ds-space-3);
+}
+.ui-vocab__language {
+  color: var(--ui-muted);
+  font-size: var(--ds-text-caption);
+}
+.ui-vocab__text {
+  font-weight: var(--ds-weight-semibold);
+  text-align: start;
+  unicode-bidi: plaintext;
+}

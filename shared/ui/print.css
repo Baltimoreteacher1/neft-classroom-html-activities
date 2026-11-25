@@ -1,0 +1,95 @@
+/* shared/ui print sheet and the print reset for every component. Same rules as ui.css: logical properties only,
+   no raw colour, no page-break rules (tools/ui-tokens.test.mjs). Load after ui.css. */
+/* Print sheet: always paper (white, dark ink) whatever the surrounding theme */
+.ui-sheet {
+  box-sizing: border-box;
+  inline-size: min(100%, 8.5in);
+  padding: 0.5in;
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+  border: 1px solid var(--ds-border);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-caption);
+  line-height: var(--ds-leading-tight);
+}
+.ui-sheet__head {
+  padding-block-end: var(--ds-space-2);
+  border-block-end: 3px solid var(--ds-accent-ink);
+}
+.ui-sheet__title {
+  margin: 0;
+  color: var(--ds-primary);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-title-3);
+  line-height: var(--ds-leading-heading);
+}
+.ui-sheet__subtitle {
+  margin: 0;
+}
+.ui-sheet__who {
+  display: flex;
+  gap: var(--ds-space-5);
+  margin-block: var(--ds-space-3);
+}
+.ui-sheet__field {
+  flex: 1 1 0;
+  min-block-size: 1.5rem;
+  border-block-end: 1px solid var(--ds-text);
+}
+.ui-sheet__section {
+  margin-block-start: var(--ds-space-3);
+}
+.ui-sheet__heading {
+  margin-block: 0 var(--ds-space-1);
+  color: var(--ds-primary);
+  font-size: var(--ds-text-body);
+}
+.ui-sheet__body {
+  margin: 0;
+}
+.ui-sheet__line {
+  block-size: 1.75rem;
+  border-block-end: 1px solid var(--ds-text);
+}
+.ui-sheet__foot {
+  margin-block-start: var(--ds-space-4);
+  font-size: var(--ds-text-label);
+}
+
+@media print {
+  @page {
+    margin: 0.5in;
+  }
+  .ui-no-print,
+  .ui-dialog-backdrop {
+    display: none;
+  }
+  .ui-page,
+  .ui-card,
+  .ui-tabs,
+  .ui-bands {
+    background: none;
+    color: var(--ds-text);
+  }
+  .ui-card,
+  .ui-badge,
+  .ui-band__text {
+    border: 1px solid var(--ds-text);
+    box-shadow: none;
+  }
+  .ui-btn {
+    background: none;
+    border: 2px solid var(--ds-text);
+    box-shadow: none;
+    color: var(--ds-text);
+  }
+  .ui-badge {
+    background: none;
+    color: var(--ds-text);
+  }
+  .ui-sheet {
+    inline-size: auto;
+    padding: 0;
+    border: 0;
+  }
+}

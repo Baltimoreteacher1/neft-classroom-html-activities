@@ -19,6 +19,11 @@ export const VIEW_FOR = {
   class: "classes",
   library: "library",
   review: "review/queue",
+  week: "week/week",
+  formative: "formative/index",
+  // The design-system specimen lives in studio/design/, outside views/ (the router resolves ../views/<name>.js).
+  design: "../design/specimen",
+  packets: "packets/packets",
 };
 
 export const VIEW_TITLES = {
@@ -36,6 +41,10 @@ export const VIEW_TITLES = {
   classes: "Classes",
   library: "Library",
   "review/queue": "Reviewer queue",
+  "week/week": "My Week",
+  "formative/index": "Exit tickets",
+  "../design/specimen": "Design system",
+  "packets/packets": "Class packets",
 };
 
 export const TITLE_SUFFIX = "BCPSS Teacher Studio";

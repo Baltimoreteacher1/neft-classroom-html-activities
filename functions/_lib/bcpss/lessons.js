@@ -3,6 +3,7 @@
 
 import { BCPSS_UNITS, UNIT_CONNECTIONS } from "../../../data/bcpss-curriculum-seed.mjs";
 import { AUTHORED_LOADERS } from "../../../db/seeds/bcpss/v2/lessons-authored.mjs";
+import { kluOfConnection } from "./klu.js";
 import { generateLessons } from "./lesson-generator.js";
 import { loadStudio } from "./studio.js";
 
@@ -23,7 +24,7 @@ export function languageDemandScore(lesson) {
 const withScore = (lesson) => ({ ...lesson, language_demand_score: languageDemandScore(lesson) });
 
 const UNIT_BY_ID = new Map(BCPSS_UNITS.map((u) => [u.id, u]));
-const KLU_BY_UNIT = new Map(UNIT_CONNECTIONS.map((c) => [c.unit_id, c.wida_klu]));
+const KLU_BY_UNIT = new Map(UNIT_CONNECTIONS.map((c) => [c.unit_id, kluOfConnection(c)]));
 
 /** Authored lessons win; otherwise drafts are generated from the unit's authored studio content. */
 export async function loadLessons(unitId) {

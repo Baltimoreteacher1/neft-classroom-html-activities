@@ -119,7 +119,7 @@ test("negative control: a POST without the token is flagged, one with it passes"
   assert.deepEqual(postsWithoutToken(good), []);
 });
 
-test("every BCPSS front-end POST (telemetry, plans, deconstruct, export) sends the token", () => {
+test("every BCPSS front-end POST (telemetry, plans, deconstruct, export, formative) sends the token", () => {
   const files = sources(join(ROOT, "bcpss-teachers"));
   assert.ok(files.length > 10);
   let posts = 0;
@@ -128,7 +128,11 @@ test("every BCPSS front-end POST (telemetry, plans, deconstruct, export) sends t
     posts += text.split("\n").filter(isDirectPost).length;
     assert.deepEqual(postsWithoutToken(text), [], `${file} has a POST without X-Anon-Token`);
   }
-  assert.equal(posts, 4, "telemetry, plans, deconstruct and export are the BCPSS write calls");
+  assert.equal(
+    posts,
+    5,
+    "telemetry, plans, deconstruct, export and the formative view are the direct BCPSS write calls",
+  );
 });
 
 test("the review views' api() wrapper sends the token on every request, so their POSTs carry it", () => {

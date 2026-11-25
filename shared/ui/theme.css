@@ -1,0 +1,61 @@
+/* shared/ui roles. Every value is a --ds-* token from engine/styles/ds-tokens.generated.css (compiled from
+   engine/design/tokens.json): this file adds NO colour. Light is the default; a container with
+   data-ui-theme="dark" swaps the roles. tools/ui-tokens.test.mjs resolves every role below in both themes and
+   checks the pairs in shared/ui/contrast-pairs.js. Load order: ds-tokens.generated.css, fonts.css, theme.css, ui.css, print.css. */
+:root,
+[data-ui-theme="light"] {
+  --ui-page: var(--ds-surface);
+  --ui-surface: var(--ds-surface-raised);
+  --ui-text: var(--ds-text);
+  --ui-muted: var(--ds-text-muted);
+  --ui-heading: var(--ds-primary);
+  --ui-link: var(--ds-accent-ink);
+  --ui-primary-bg: var(--ds-primary);
+  --ui-primary-fg: var(--ds-on-primary);
+  --ui-accent-bg: var(--ds-accent-ink);
+  --ui-accent-fg: var(--ds-color-white);
+  --ui-danger-bg: var(--ds-error);
+  --ui-danger-fg: var(--ds-color-white);
+  --ui-control-border: var(--ds-primary);
+  --ui-focus: var(--ds-focus);
+  --ui-card-border: var(--ds-border);
+  --ui-overlay: color-mix(in srgb, var(--ds-color-navy) 60%, transparent);
+  --ui-tone-fg: var(--ds-color-navy);
+  --ui-tone-neutral-bg: var(--ds-tint-navy-16);
+  --ui-tone-neutral-mark: var(--ds-color-navy);
+  --ui-tone-info-bg: var(--ds-tint-teal-16);
+  --ui-tone-info-mark: var(--ds-accent-ink);
+  --ui-tone-success-bg: var(--ds-tint-success-16);
+  --ui-tone-success-mark: var(--ds-success);
+  --ui-tone-warn-bg: var(--ds-tint-amber-32);
+  --ui-tone-warn-mark: var(--ds-highlight-ink);
+  --ui-tone-error-bg: var(--ds-tint-error-16);
+  --ui-tone-error-mark: var(--ds-error);
+  --ui-motion: var(--ds-duration-base);
+}
+
+[data-ui-theme="dark"] {
+  --ui-page: var(--ds-diagram-ink);
+  --ui-surface: var(--ds-surface-inverse);
+  --ui-text: var(--ds-text-inverse);
+  --ui-muted: var(--ds-tint-navy-16);
+  --ui-heading: var(--ds-text-inverse);
+  --ui-link: var(--ds-tint-teal-64);
+  --ui-primary-bg: var(--ds-highlight);
+  --ui-primary-fg: var(--ds-primary);
+  --ui-accent-bg: var(--ds-tint-teal-64);
+  --ui-accent-fg: var(--ds-primary);
+  --ui-danger-bg: var(--ds-tint-error-32);
+  --ui-danger-fg: var(--ds-primary);
+  --ui-control-border: var(--ds-tint-navy-32);
+  --ui-focus: var(--ds-focus-on-dark);
+  --ui-card-border: var(--ds-tint-navy-64);
+}
+
+/* Reduced motion: one switch. Every transition in ui.css runs on --ui-motion. */
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  [data-ui-theme] {
+    --ui-motion: 0ms;
+  }
+}

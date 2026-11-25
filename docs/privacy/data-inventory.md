@@ -8,7 +8,7 @@ when this file is stale, when a migration column has no annotation, or when a br
 found in source has none. The rows say what each store holds today, including the places that hold a
 typed name; the never-collect list is checked separately by `tools/privacy-forbidden-scan.mjs`.
 
-D1 tables: 55. Annotated D1 columns: 435. Device storage keys: 35. Log fields: 1.
+D1 tables: 57. Annotated D1 columns: 449. Device storage keys: 35. Log fields: 1.
 
 ## D1 (server)
 
@@ -318,6 +318,25 @@ Source: `migrations/0022_content_review.sql`
 | --- | --- | --- | --- |
 | `created_by` | Name of the staff member who cut the content release. | kept: releases are never deleted | none in code: release record |
 | `seq, id, manifest_json, manifest_digest, changelog_json, verifiers_ran_json, created_at, status, previous_id` | A content release: the content hash of every block at release time, the changelog against the previous release, which verifiers ran, status. | kept: releases are never deleted | none: no personal data |
+
+### `formative_error`
+
+Source: `migrations/0023_formative.sql`
+
+| Columns | Purpose | Retention | Delete |
+| --- | --- | --- | --- |
+| `class_code, unit_id, error_type, week_start, count, updated_at` | Class-wide count of one error type (an id from the unit's own error catalog, never free text) for one unit in one week. An aggregate: it names no student. | deleted with the class: unused 120 days (RETENTION_MS in class-platform/store.js), or school-year end plus 30 days by the retention job (job written, not scheduled) | class: POST /api/privacy/delete-class or POST /api/class/delete (teacher credential); student delete leaves it because it holds nothing about one student |
+
+### `formative_score`
+
+Source: `migrations/0023_formative.sql`
+
+| Columns | Purpose | Retention | Delete |
+| --- | --- | --- | --- |
+| `class_code, ticket_id, unit_id, created_at, updated_at` | Which class and exit ticket (unit) a rubric score belongs to, and when it was first and last set. | deleted with the class: unused 120 days (RETENTION_MS in class-platform/store.js), or school-year end plus 30 days by the retention job (job written, not scheduled) | class: POST /api/privacy/delete-class or POST /api/class/delete (teacher credential) |
+| `student_id` | Opaque class-platform student id the rubric score is about. Never a name or alias; the teacher's grid shows the alias from the class roster. | deleted with the class: unused 120 days (RETENTION_MS in class-platform/store.js), or school-year end plus 30 days by the retention job (job written, not scheduled) | class: POST /api/privacy/delete-class or POST /api/class/delete (teacher credential); student: POST /api/privacy/delete-student or POST /api/class/remove-student (teacher credential) |
+| `rubric_level` | One of emerging, developing, proficient: the exit-ticket rubric level. A classroom formative check, not a test score and not a placement. Students never see it as a label; it is a teacher-side value. | deleted with the class: unused 120 days (RETENTION_MS in class-platform/store.js), or school-year end plus 30 days by the retention job (job written, not scheduled) | class: POST /api/privacy/delete-class or POST /api/class/delete (teacher credential); student: POST /api/privacy/delete-student or POST /api/class/remove-student (teacher credential) |
+| `scored_by` | teacher or self: the teacher's score and a student's own score (older bands) are kept as separate rows. | deleted with the class: unused 120 days (RETENTION_MS in class-platform/store.js), or school-year end plus 30 days by the retention job (job written, not scheduled) | class: POST /api/privacy/delete-class or POST /api/class/delete (teacher credential); student: POST /api/privacy/delete-student or POST /api/class/remove-student (teacher credential) |
 
 ### `insight_signal`
 

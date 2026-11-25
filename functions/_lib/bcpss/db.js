@@ -10,6 +10,7 @@ import { provenanceOf } from "../../../shared/bcpss-provenance.js";
 import { TELEMETRY_EVENT_TYPES } from "../../../shared/bcpss-telemetry-schema.js";
 import { cosineSimilarity, embedText, toPgVectorLiteral } from "./embeddings.js";
 import { buildEsolPack } from "./esol-pack.js";
+import { kluOfConnection } from "./klu.js";
 import { loadLessonLinks, withLessonLinks } from "./lesson-links.js";
 import { loadLessons } from "./lessons.js";
 import { loadModuleFacts, moduleOf } from "./module-facts.js";
@@ -199,7 +200,7 @@ function buildDerivedFamilyCard(unit, firstConn) {
   const vocab = Array.isArray(firstConn?.tier2_tier3_vocab)
     ? firstConn.tier2_tier3_vocab.slice(0, 4)
     : [];
-  const klu = firstConn?.wida_klu || "Explain";
+  const klu = kluOfConnection(firstConn) || "Explain";
   const frame =
     firstConn?.unit_example_frame ||
     `Ask your child to explain a key idea from ${unit.unit_title} using their home language and English.`;
