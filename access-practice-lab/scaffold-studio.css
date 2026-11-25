@@ -1,0 +1,213 @@
+/* Scaffold Studio: tokens and components for the support layer.
+   Three themes (light, dark, high contrast) live on .ss-root[data-ss-theme]. No violet, purple or magenta anywhere:
+   tools/validate-scaffold-contrast.mjs computes every pair below and checks the hue.
+   Light is the default and is what the Reading Comfort themes (Classic, Warm paper, Cool calm) get; "Black and white"
+   maps to high contrast. Dark is available to scaffold surfaces only until a lab-wide route sweep has measured it. */
+
+.ss-root {
+  /* type scale (rem; the lab's own --lab-scale multiplies the root size) */
+  --ss-text-xs: 0.8125rem;
+  --ss-text-sm: 0.9375rem;
+  --ss-text-md: 1.0625rem;
+  --ss-text-lg: 1.25rem;
+  --ss-text-xl: 1.5625rem;
+  --ss-leading: 1.65;
+  --ss-measure: 62ch;
+  --ss-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ss-font-read: "Source Serif 4", Georgia, serif;
+  /* spacing, radius, elevation, motion */
+  --ss-s1: 4px;
+  --ss-s2: 8px;
+  --ss-s3: 12px;
+  --ss-s4: 16px;
+  --ss-s5: 24px;
+  --ss-s6: 32px;
+  --ss-r-sm: 6px;
+  --ss-r-md: 10px;
+  --ss-r-lg: 14px;
+  --ss-shadow-1: 0 1px 2px rgb(15 23 42 / 0.08);
+  --ss-shadow-2: 0 6px 20px rgb(15 23 42 / 0.16);
+  --ss-dur-1: 120ms;
+  --ss-dur-2: 220ms;
+  --ss-ease: cubic-bezier(0.2, 0, 0, 1);
+  --ss-target: 44px;
+  /* colour: light */
+  --ss-bg: #ffffff;
+  --ss-surface: #f7f5f0;
+  --ss-surface-2: #ece8df;
+  --ss-ink: #182230;
+  --ss-ink-2: #3b4a5e;
+  --ss-ink-3: #586377;
+  --ss-line: #cbd5e1;
+  --ss-line-strong: #6b7788;
+  --ss-brand: #1e3a5f;
+  --ss-on-brand: #ffffff;
+  --ss-accent: #0f766e;
+  --ss-gold: #8a4a06;
+  --ss-ok: #166534;
+  --ss-err: #a8200f;
+  --ss-focus: #1d4ed8;
+  --ss-who-bg: #dbeafe; --ss-who-ink: #102a56;
+  --ss-did-bg: #ccfbf1; --ss-did-ink: #0b3b38;
+  --ss-where-bg: #fef3c7; --ss-where-ink: #5b3200;
+  --ss-when-bg: #dcfce7; --ss-when-ink: #14452b;
+  --ss-how-bg: #ffe4d6; --ss-how-ink: #6a2a0f;
+  --ss-why-bg: #e5e7eb; --ss-why-ink: #1f2937;
+  --ss-what-bg: #f1f5f9; --ss-what-ink: #1e293b;
+  color: var(--ss-ink);
+  font-family: var(--ss-font);
+  font-size: var(--ss-text-md);
+  line-height: var(--ss-leading);
+}
+.ss-root[data-ss-theme="dark"] {
+  --ss-bg: #0e1722;
+  --ss-surface: #152231;
+  --ss-surface-2: #1d2d40;
+  --ss-ink: #edf2f7;
+  --ss-ink-2: #cbd5e1;
+  --ss-ink-3: #a9b8c9;
+  --ss-line: #2d4157;
+  --ss-line-strong: #8da2b8;
+  --ss-brand: #9cc4ee;
+  --ss-on-brand: #0e1722;
+  --ss-accent: #5eead4;
+  --ss-gold: #f5b45c;
+  --ss-ok: #6ee7a1;
+  --ss-err: #ffa598;
+  --ss-focus: #8ab4ff;
+  --ss-shadow-1: 0 1px 2px rgb(0 0 0 / 0.5);
+  --ss-shadow-2: 0 6px 20px rgb(0 0 0 / 0.6);
+  --ss-who-bg: #1e3a5f; --ss-who-ink: #e6f0ff;
+  --ss-did-bg: #134e4a; --ss-did-ink: #d9fbf6;
+  --ss-where-bg: #4a3510; --ss-where-ink: #fdeccb;
+  --ss-when-bg: #14432b; --ss-when-ink: #d9f9e4;
+  --ss-how-bg: #5a2c16; --ss-how-ink: #ffe6d9;
+  --ss-why-bg: #334155; --ss-why-ink: #f1f5f9;
+  --ss-what-bg: #1d2d40; --ss-what-ink: #edf2f7;
+  background: var(--ss-bg);
+}
+.ss-root[data-ss-theme="hc"] {
+  --ss-bg: #ffffff;
+  --ss-surface: #ffffff;
+  --ss-surface-2: #f2f2f2;
+  --ss-ink: #000000;
+  --ss-ink-2: #111111;
+  --ss-ink-3: #222222;
+  --ss-line: #000000;
+  --ss-line-strong: #000000;
+  --ss-brand: #0a2540;
+  --ss-accent: #004d47;
+  --ss-gold: #6b2f00;
+  --ss-ok: #0b4d1e;
+  --ss-err: #8f0000;
+  --ss-focus: #000000;
+  --ss-shadow-1: none;
+  --ss-shadow-2: none;
+  --ss-who-bg: #ffffff; --ss-who-ink: #000000;
+  --ss-did-bg: #ffffff; --ss-did-ink: #000000;
+  --ss-where-bg: #ffffff; --ss-where-ink: #000000;
+  --ss-when-bg: #ffffff; --ss-when-ink: #000000;
+  --ss-how-bg: #ffffff; --ss-how-ink: #000000;
+  --ss-why-bg: #ffffff; --ss-why-ink: #000000;
+  --ss-what-bg: #ffffff; --ss-what-ink: #000000;
+}
+/* Reading faces: the dyslexia-friendly option reuses the lab's self-hosted Atkinson Hyperlegible (acc.css). */
+.ss-root[data-ss-font="easy"] { --ss-font: "Atkinson Hyperlegible", "Inter", system-ui, sans-serif; --ss-font-read: "Atkinson Hyperlegible", "Inter", system-ui, sans-serif; --ss-leading: 1.85; letter-spacing: 0.02em; word-spacing: 0.08em; }
+
+/* focus and motion */
+.ss-root :focus-visible { outline: 3px solid var(--ss-focus); outline-offset: 3px; border-radius: var(--ss-r-sm); }
+@media (prefers-reduced-motion: reduce) { .ss-root *, .ss-root *::before, .ss-root *::after { animation: none !important; transition: none !important; } }
+html[data-comfort-motion="calm"] .ss-root *, html[data-comfort-motion="calm"] .ss-root *::before { animation: none !important; transition: none !important; }
+
+/* shared pieces */
+.ss-card { background: var(--ss-surface); border: 1px solid var(--ss-line); border-radius: var(--ss-r-md); padding: var(--ss-s4) var(--ss-s5); box-shadow: var(--ss-shadow-1); }
+.ss-card h3 { margin: 0 0 var(--ss-s2); font-size: var(--ss-text-lg); }
+.ss-btn { min-height: var(--ss-target); min-width: var(--ss-target); padding: var(--ss-s2) var(--ss-s4); border: 2px solid var(--ss-brand); border-radius: var(--ss-r-sm); background: transparent; color: var(--ss-brand); font: inherit; font-weight: 600; cursor: pointer; transition: background var(--ss-dur-1) var(--ss-ease); }
+.ss-btn:hover { background: var(--ss-surface-2); }
+.ss-btn[aria-pressed="true"], .ss-btn.is-primary { background: var(--ss-brand); color: var(--ss-on-brand); }
+.ss-btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+.ss-text { max-inline-size: var(--ss-measure); font-family: var(--ss-font-read); }
+.ss-meta { color: var(--ss-ink-3); font-size: var(--ss-text-sm); }
+.ss-review { display: inline-block; padding: 2px var(--ss-s2); border: 1px solid var(--ss-line-strong); border-radius: var(--ss-r-sm); font-size: var(--ss-text-xs); color: var(--ss-ink-2); }
+
+/* word popover */
+.ss-word { text-decoration: underline dotted var(--ss-accent); text-underline-offset: 0.25em; text-decoration-thickness: 2px; background: none; border: 0; padding: 0 1px; font: inherit; color: inherit; cursor: pointer; min-height: 0; }
+.ss-pop { max-inline-size: 22rem; background: var(--ss-bg); border: 2px solid var(--ss-line-strong); border-radius: var(--ss-r-md); padding: var(--ss-s4); box-shadow: var(--ss-shadow-2); }
+.ss-pop h4 { margin: 0; font-size: var(--ss-text-lg); }
+.ss-pop dl { margin: var(--ss-s3) 0 0; display: grid; gap: var(--ss-s2); }
+.ss-pop dt { font-size: var(--ss-text-xs); font-weight: 700; color: var(--ss-ink-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.ss-pop dd { margin: 0; }
+.ss-pop figure { margin: var(--ss-s3) 0 0; }
+.ss-pop img { max-inline-size: 100%; border-radius: var(--ss-r-sm); }
+
+/* sentence chunk overlay: colour is never the only signal, each chunk carries its role word */
+.ss-chunks { display: flex; flex-wrap: wrap; gap: var(--ss-s2); margin: 0; padding: 0; list-style: none; }
+.ss-chunk { display: inline-flex; flex-direction: column; padding: var(--ss-s1) var(--ss-s3); border-radius: var(--ss-r-sm); border: 2px solid transparent; background: var(--ss-what-bg); color: var(--ss-what-ink); }
+.ss-chunk small { font-size: var(--ss-text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.ss-chunk[data-role="who"] { background: var(--ss-who-bg); color: var(--ss-who-ink); border-color: var(--ss-who-ink); }
+.ss-chunk[data-role="did"] { background: var(--ss-did-bg); color: var(--ss-did-ink); border-color: var(--ss-did-ink); border-style: dashed; }
+.ss-chunk[data-role="where"] { background: var(--ss-where-bg); color: var(--ss-where-ink); border-color: var(--ss-where-ink); border-style: dotted; }
+.ss-chunk[data-role="when"] { background: var(--ss-when-bg); color: var(--ss-when-ink); border-color: var(--ss-when-ink); border-style: double; border-width: 4px; }
+.ss-chunk[data-role="how"] { background: var(--ss-how-bg); color: var(--ss-how-ink); border-color: var(--ss-how-ink); border-style: groove; }
+.ss-chunk[data-role="why"] { background: var(--ss-why-bg); color: var(--ss-why-ink); border-color: var(--ss-why-ink); border-style: ridge; }
+
+/* frame tray and grow-a-sentence */
+.ss-frame { font-family: var(--ss-font-read); font-size: var(--ss-text-lg); }
+.ss-blank { display: inline-block; min-inline-size: 6ch; border-block-end: 3px solid var(--ss-accent); margin-inline: 2px; }
+.ss-grow-live { min-block-size: 3.5em; padding: var(--ss-s3) var(--ss-s4); background: var(--ss-bg); border: 2px solid var(--ss-line-strong); border-radius: var(--ss-r-md); font-family: var(--ss-font-read); font-size: var(--ss-text-lg); }
+.ss-grow-add { display: flex; flex-wrap: wrap; gap: var(--ss-s2); margin-block-start: var(--ss-s3); }
+.ss-grow-new { background: var(--ss-where-bg); color: var(--ss-where-ink); border-radius: 4px; padding: 0 3px; transition: background var(--ss-dur-2) var(--ss-ease); }
+
+/* support dial */
+.ss-dial { display: grid; gap: var(--ss-s3); border: 0; padding: 0; margin: 0; }
+.ss-dial legend { font-weight: 700; padding: 0; margin-block-end: var(--ss-s2); }
+.ss-dial-steps { display: flex; flex-wrap: wrap; gap: var(--ss-s2); }
+.ss-dial-steps label { display: inline-flex; align-items: center; min-height: var(--ss-target); padding: 0 var(--ss-s4); border: 2px solid var(--ss-brand); border-radius: var(--ss-r-sm); cursor: pointer; font-weight: 600; color: var(--ss-brand); }
+.ss-dial-steps input { position: absolute; opacity: 0; inline-size: 1px; block-size: 1px; }
+.ss-dial-steps input:checked + span { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 0.25em; }
+.ss-dial-steps label:has(input:checked) { background: var(--ss-brand); color: var(--ss-on-brand); }
+.ss-dial-steps label:has(input:focus-visible) { outline: 3px solid var(--ss-focus); outline-offset: 3px; }
+
+/* progress ring: counts in words; the ring is decoration */
+.ss-ring { display: inline-flex; align-items: center; gap: var(--ss-s3); }
+.ss-ring svg { inline-size: 56px; block-size: 56px; transform: rotate(-90deg); }
+.ss-ring circle { fill: none; stroke-width: 6; }
+.ss-ring .ss-ring-track { stroke: var(--ss-line); }
+.ss-ring .ss-ring-fill { stroke: var(--ss-accent); stroke-linecap: round; transition: stroke-dashoffset var(--ss-dur-2) var(--ss-ease); }
+
+/* rehearsal */
+.ss-steps { display: flex; flex-wrap: wrap; gap: var(--ss-s2); counter-reset: scs; padding: 0; margin: 0; list-style: none; }
+.ss-steps li { counter-increment: scs; display: inline-flex; gap: var(--ss-s2); align-items: center; padding: var(--ss-s2) var(--ss-s3); border: 2px solid var(--ss-line-strong); border-radius: var(--ss-r-sm); }
+.ss-steps li::before { content: counter(scs); font-weight: 700; }
+.ss-steps li[aria-current="step"] { border-color: var(--ss-brand); background: var(--ss-surface-2); font-weight: 700; }
+.ss-private { color: var(--ss-ink-2); font-size: var(--ss-text-sm); }
+
+/* teacher export */
+.ss-export { max-inline-size: 28rem; }
+.ss-export ul { padding-inline-start: 1.2em; }
+
+@media print { .ss-root { color: #000; background: #fff; } .ss-btn { border-color: #000; color: #000; } .ss-no-print { display: none !important; } }
+@media (forced-colors: active) { .ss-chunk, .ss-pop, .ss-card, .ss-btn { border: 2px solid CanvasText; } .ss-ring .ss-ring-fill { stroke: Highlight; } .ss-ring .ss-ring-track { stroke: GrayText; } }
+
+/* style guide page only */
+.ssg { display: grid; gap: var(--ss-s5); padding: var(--ss-s4); background: var(--ss-bg); max-inline-size: 1100px; margin-inline: auto; }
+.ssg h1, .ssg h2 { margin: 0 0 var(--ss-s2); }
+.ssg-switch { border: 0; padding: 0; margin: var(--ss-s3) 0 0; display: flex; flex-wrap: wrap; gap: var(--ss-s4); }
+.ssg-switch legend { font-weight: 700; margin-block-end: var(--ss-s1); }
+.ssg-switch label { min-height: var(--ss-target); display: inline-flex; align-items: center; gap: var(--ss-s2); }
+.ssg-grid, .ssg-type { list-style: none; margin: 0 0 var(--ss-s4); padding: 0; display: flex; flex-wrap: wrap; gap: var(--ss-s3); }
+.ssg-type { display: grid; gap: var(--ss-s1); }
+.ssg-sw { display: grid; gap: var(--ss-s1); justify-items: start; }
+.ssg-sw i { inline-size: 64px; block-size: 40px; border-radius: var(--ss-r-sm); border: 1px solid var(--ss-line-strong); display: block; }
+.ssg-sw code, .ssg-sp code { font-size: var(--ss-text-xs); color: var(--ss-ink-2); }
+.ssg-sp { display: flex; align-items: center; gap: var(--ss-s2); }
+.ssg-sp i { block-size: 16px; background: var(--ss-brand); display: block; border-radius: 2px; }
+.ssg-row { display: flex; flex-wrap: wrap; gap: var(--ss-s4); align-items: flex-start; }
+.ssg-spec { display: grid; gap: var(--ss-s3); }
+
+/* headings inside the scaffold root follow the scaffold theme, not the lab's page ink */
+.ss-root h1, .ss-root h2, .ss-root h3, .ss-root h4, .ss-root legend { color: var(--ss-ink); }
+.ss-root, .ss-root label, .ss-root p, .ss-root li, .ss-root fieldset { color: var(--ss-ink); }
+.ss-root .ss-meta, .ss-root .ssg-sw code, .ss-root .ssg-sp code { color: var(--ss-ink-2); }
+.ss-root .ss-text, .ss-root .ss-card { color: var(--ss-ink); }
+.ss-root .ss-card :where(span, small, em, strong, div, code) { color: inherit; }

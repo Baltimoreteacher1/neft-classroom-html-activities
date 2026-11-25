@@ -482,6 +482,21 @@ const COVERAGE = [
     /^(tools\/(access-integration-e2e|generate-access-finder-metadata|generate-access-packs|generate-newcomer-packs|generate-program-content)\.mjs|tools\/(access-finder-facets|access-packs|family-today-plan|lesson-pack|live-rooms|newcomer-packs|program-content|speaking-enterprise|speaking-task-packs)\.test\.mjs)$/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
+  // SCAFFOLD STUDIO — the support layer (src/scaffold, scaffold-studio.css, content/scaffold, the /styleguide view) and its
+  // gates. Contrast and content are static; the logic test is `test:scaffold`; the styleguide browser check is on demand
+  // (qa-exempt.json). The shell files the sync script rewrites are covered by the access-lab rules below when they change alone.
+  [
+    /^(access-practice-lab\/(src\/scaffold\/|src\/views\/styleguide\.js$|scaffold-studio\.css$|content\/scaffold\/)|docs\/scaffold-studio\/|tools\/(scaffold-studio\.test|scaffold-studio-runtime\.test|validate-scaffold-contrast|validate-scaffold-content|verify-scaffold-browser|build-scaffold-pilot|eval-scaffold-ai|normalize-scaffold-audio)\.mjs$)/,
+    [
+      "validate:scaffold-contrast",
+      "validate:scaffold-content",
+      "validate:scaffold-ai-eval",
+      "test:scaffold",
+      "validate:gate-coverage",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
   // VOCABULARY ACADEMY — K-8 content (access-practice-lab/content/vocab-academy), its docs and its validator tooling.
   // `validate:vocab-academy` self-tests every detector against mutations of docs/vocab-academy/reference-unit.json and
   // then sweeps all grade.json + unit files; the tools' own tests run in `test`. Content, docs and tools cannot affect
