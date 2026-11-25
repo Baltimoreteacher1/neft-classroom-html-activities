@@ -2,6 +2,7 @@
 // Shared by the regression test and by authors, so a passage that breaks a rule fails fast.
 
 import { termRegex } from "../../../bcpss-teachers/bcpss-term-match.js";
+import { monotonicProblems } from "./reading-readability.js";
 
 export { termRegex };
 export const READING_TIERS = ["1_2", "3_4", "5_6"];
@@ -68,6 +69,9 @@ export function validateReading(reading, unit, vocabTerms) {
     for (const term of vocabTerms)
       if (!termRegex(term).test(text)) bad(`texts.${t} never uses the vocabulary term “${term}”`);
   }
+  for (const p of monotonicProblems(reading.texts)) bad(p);
+  if (reading.revision && reading.revision.status !== "draft")
+    bad('a revised reading must carry revision.status "draft" until a human reviews it');
   const qs = reading.questions;
   if (!Array.isArray(qs) || qs.length !== 3)
     bad("needs exactly 3 questions (detail, vocab, inference)");

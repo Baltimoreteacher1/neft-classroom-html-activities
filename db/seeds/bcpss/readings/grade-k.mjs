@@ -48,10 +48,11 @@ export const READINGS_K = [
     unit_id: "gk-ela-u4",
     title: "Seven Continents to Explore",
     genre: "informational",
+    revision: { status: "draft", note: "Revised so reading difficulty and length do not fall from one band to the next (audit F-12); questions and evidence re-checked. Draft: not yet reviewed by a teacher or language specialist." },
     texts: {
       "1_2": "A continent is a very large area of land. There are seven continents. Asia is a continent. A landmark is a famous place. The Great Wall is a landmark in Asia. An opinion is what you think or feel. I think the wall is great.",
       "3_4": "A continent is a very large area of land on Earth. There are seven continents, and Asia is one of them. A landmark is a famous place or feature. The Great Wall is a famous landmark in Asia. An opinion is what someone thinks or feels. A student might think the Great Wall looks amazing, and that is an opinion.",
-      "5_6": "Earth has seven continents, which are very large areas of land. Asia is one of them. A landmark is a famous place or feature, such as the Great Wall in Asia or the Eiffel Tower in Europe. When travelers say which place they would like to visit, they share an opinion, which is what someone thinks or feels."
+      "5_6": "Earth has seven continents, which are very large areas of land. Asia is one of them. A landmark is a famous place or feature, such as the Great Wall in Asia or the Eiffel Tower in Europe. Visitors come from around the world to see them. When travelers say which place they would like to visit, they share an opinion, which is what someone thinks or feels."
     },
     questions: [
       { type: "detail", q: "How many continents are there?", options: ["Seven", "Five", "Nine"], answer: 0, evidence: { "1_2": "There are seven continents", "3_4": "There are seven continents", "5_6": "Earth has seven continents" } },
@@ -78,9 +79,10 @@ export const READINGS_K = [
     unit_id: "gk-math-u2",
     title: "Who Has More Blocks?",
     genre: "explanatory",
+    revision: { status: "draft", note: "Revised so reading difficulty and length do not fall from one band to the next (audit F-12); questions and evidence re-checked. Draft: not yet reviewed by a teacher or language specialist." },
     texts: {
       "1_2": "Sam has 6 blocks. Lia has 4 blocks. Sam has more. 6 is greater than 4. Greater than means more. Lia has fewer. 4 is less than 6. Less than means fewer. Omar has 6 blocks too. Sam and Omar have an equal amount.",
-      "3_4": "Sam has 6 blocks. Lia has 4 blocks. 6 is greater than 4, so Sam has more blocks. 4 is less than 6, so Lia has fewer blocks. Omar also has 6 blocks. Sam and Omar have an equal amount.",
+      "3_4": "Sam has 6 blocks. Lia has 4 blocks. 6 is greater than 4, so Sam has more blocks. 4 is less than 6, so Lia has fewer blocks. Less than means fewer. Omar also has 6 blocks. Sam and Omar have an equal amount.",
       "5_6": "Sam has 6 blocks, Lia has 4 blocks, and Omar has 6 blocks. When we compare the groups, we see who has more or fewer. Because 6 is greater than 4, Sam has more blocks than Lia. Because 4 is less than 6, Lia has fewer blocks than Sam. Sam and Omar each have 6 blocks, so their groups are equal."
     },
     questions: [
@@ -258,9 +260,10 @@ export const READINGS_K = [
     unit_id: "gk-ss-u4",
     title: "Needs, Wants, and Helpful Jobs",
     genre: "informational",
+    revision: { status: "draft", note: "Revised so reading difficulty and length do not fall from one band to the next (audit F-12); questions and evidence re-checked. Draft: not yet reviewed by a teacher or language specialist." },
     texts: {
       "1_2": "Needs are things people must have to live. People need food and water. Wants are things people would like to have. A toy is a want. A service is work done to help others. A bus driver does a service. A bus driver gives rides in Baltimore.",
-      "3_4": "Needs are things people must have to live, such as food and water. Wants are things people would like to have, such as a toy. A service is work done to help others. In Baltimore, a bus driver does a service by giving people rides.",
+      "3_4": "Needs are things people must have to live, such as food and water. Wants are things people would like to have, such as a toy. A service is work done to help others. In Baltimore, a bus driver does a service. The driver gives people rides to school and work.",
       "5_6": "Needs are things people must have to live, such as food and water, while wants are things people would like to have, such as a toy. A service is work done to help others. In Baltimore, workers in many jobs provide services for their neighbors. For example, a bus driver does a service by giving people rides."
     },
     questions: [

@@ -7,6 +7,12 @@ import {
   LESSON_HELPER_WORDS,
 } from "../../db/seeds/bcpss/v2/lesson-helper-words.mjs";
 import { loadLessons } from "../../functions/_lib/bcpss/lessons.js";
+import {
+  BAND_ORDER,
+  monotonicProblems,
+  readability,
+} from "../../functions/_lib/bcpss/reading-readability.js";
+import { clone } from "./dataset.mjs";
 
 const fold = (s) => String(s).toLowerCase();
 
@@ -111,6 +117,72 @@ export const g41 = {
         name: "orphan helper card",
         errors: checkLessonVocab("u", lesson([{ term: "ratio" }]), ["ratio"], ["compare"]),
       },
+    ];
+  },
+};
+
+// ── G-42 ──────────────────────────────────────────────────────────────────────
+const median = (xs) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)];
+
+/** Pure check of one unit's reading: texts non-decreasing in FKGL and length, revisions labelled draft. */
+export function checkReadingBands(unitId, reading) {
+  const errors = monotonicProblems(reading?.texts).map((p) => `${unitId}: ${p}`);
+  if (reading?.revision && reading.revision.status !== "draft")
+    errors.push(`${unitId}: revised reading is not labelled draft`);
+  return errors;
+}
+
+export const g42 = {
+  id: "G-42",
+  name: "reading-band-readability",
+  async run({ data }) {
+    const errors = [];
+    const perBand = { "1_2": [], "3_4": [], "5_6": [] };
+    let revised = 0;
+    let measured = 0;
+    for (const detail of data.units) {
+      const reading = detail.reading;
+      if (!reading) {
+        errors.push(`${detail.unit.id}: no reading to measure`);
+        continue;
+      }
+      measured += 1;
+      if (reading.revision) revised += 1;
+      errors.push(...checkReadingBands(detail.unit.id, reading));
+      for (const band of BAND_ORDER) perBand[band].push(readability(reading.texts[band]).fkgl);
+    }
+    if (measured < 162) errors.push(`only ${measured} readings measured (expected 162)`);
+    if (revised < 10)
+      errors.push(`only ${revised} readings carry the draft revision label (expected 10)`);
+    return {
+      errors,
+      info: {
+        measured,
+        revised,
+        medianFkgl: Object.fromEntries(Object.entries(perBand).map(([k, v]) => [k, median(v)])),
+      },
+    };
+  },
+  async controls({ data }) {
+    const fixture = (unitId) => clone(data.units.find((d) => d.unit.id === unitId).reading);
+    const lengthFall = fixture("gk-math-u2");
+    lengthFall.texts["3_4"] =
+      "Sam has 6 blocks. Lia has 4 blocks. Sam has more. Omar has 6 blocks.";
+    const swapped = fixture("g1-math-u6");
+    [swapped.texts["1_2"], swapped.texts["5_6"]] = [swapped.texts["5_6"], swapped.texts["1_2"]];
+    const harder = fixture("g7-ss-u1");
+    harder.texts["3_4"] =
+      "Maps show roads. Maps show homes. Maps help us plan. Cities grow. We need more roads. We need more water.";
+    const unlabelled = fixture("gk-math-u2");
+    unlabelled.revision = { status: "reviewed" };
+    return [
+      {
+        name: "3_4 shorter than 1_2 (the original gk-math-u2 defect)",
+        errors: checkReadingBands("fx", lengthFall),
+      },
+      { name: "bands in reverse order", errors: checkReadingBands("fx", swapped) },
+      { name: "3_4 easier than 1_2 by FKGL", errors: checkReadingBands("fx", harder) },
+      { name: "revision not labelled draft", errors: checkReadingBands("fx", unlabelled) },
     ];
   },
 };

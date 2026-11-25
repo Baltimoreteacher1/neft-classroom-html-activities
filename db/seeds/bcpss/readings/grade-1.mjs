@@ -69,10 +69,11 @@ export const READINGS_1 = [
     unit_id: "g1-ela-u3",
     title: "Wind and Feelings Are Powerful",
     genre: "explanatory",
+    revision: { status: "draft", note: "Revised so reading difficulty and length do not fall from one band to the next (audit F-12); questions and evidence re-checked. Draft: not yet reviewed by a teacher or language specialist." },
     texts: {
       "1_2": "Wind is a force. A force is a push or a pull. Wind can push a kite. A strong wind is powerful. It can bend trees. Powerful means very strong. An emotion is a strong feeling. Joy and fear are emotions.",
       "3_4": "Wind is a force, and a force is a push or a pull. Wind can push a kite across the sky. A strong wind is powerful, or very strong, and it can bend trees. An emotion is a strong feeling, like joy or fear. In stories, emotions can be powerful too.",
-      "5_6": "Wind is a force. A force is a push or a pull that makes things move. A strong wind is powerful, meaning very strong, and it can bend trees. Wind can also push a kite high into the sky. An emotion is a strong feeling, such as joy or fear. In stories, emotions can be powerful forces too.",
+      "5_6": "Wind is a force, and a force is a push or a pull that makes things move. A strong wind is powerful, meaning very strong, and it can bend trees. Wind can also push a kite high into the sky. An emotion is a strong feeling, such as joy or fear. In stories, emotions can be powerful forces too.",
     },
     questions: [
       {
@@ -300,9 +301,10 @@ export const READINGS_1 = [
     unit_id: "g1-math-u6",
     title: "Sharing a Sandwich Equally",
     genre: "narrative",
+    revision: { status: "draft", note: "Revised so reading difficulty and length do not fall from one band to the next (audit F-12); questions and evidence re-checked. Draft: not yet reviewed by a teacher or language specialist." },
     texts: {
       "1_2": "A triangle has 3 sides. This is a defining attribute. A defining attribute is a rule a shape must always follow. Jo cuts a sandwich into 2 equal shares. These are halves. Her friend cuts a sandwich into 4 equal shares. These are fourths.",
-      "3_4": "A triangle has 3 sides. This is a defining attribute, which is a rule a shape must always follow. Jo cuts a sandwich into 2 equal shares. These are called halves. Her friend cuts a sandwich into 4 equal shares. These are called fourths.",
+      "3_4": "A triangle has 3 sides. This is a defining attribute, which is a rule a shape must always follow. Jo cuts a sandwich into 2 equal shares, and these are called halves. Her friend cuts a sandwich into 4 equal shares, and these are called fourths.",
       "5_6": "A triangle has 3 sides, and this is a defining attribute, which is a rule a shape must always follow. A triangle can be big or small, but it always has 3 sides. Jo cuts a rectangle sandwich into 2 equal shares, which are called halves. Her friend cuts a second sandwich into 4 equal shares, which are called fourths.",
     },
     questions: [
@@ -399,9 +401,10 @@ export const READINGS_1 = [
     unit_id: "g1-sci-u3",
     title: "Patterns in the Sky",
     genre: "informational",
+    revision: { status: "draft", note: "Revised so reading difficulty and length do not fall from one band to the next (audit F-12); questions and evidence re-checked. Draft: not yet reviewed by a teacher or language specialist." },
     texts: {
       "1_2": "The sun comes up each day. It goes down each night. This is predictable. Predictable means we know it ahead of time. Daylight is the hours when the sun is up. Summer has more daylight than winter. The moon has a phase. A phase is a shape the moon seems to have.",
-      "3_4": "The sun comes up each day and goes down each night, so it is predictable, or known ahead of time. Daylight is the hours when the sun is up. Summer has more daylight than winter. The moon also follows a pattern. A phase is a shape the moon seems to have.",
+      "3_4": "The sun comes up each day and goes down each night, so it is predictable, or known ahead of time. Daylight is the hours when the sun is up. Summer has more daylight than winter. The moon also follows a pattern each month. A phase is a shape the moon seems to have.",
       "5_6": "The sun comes up each day and goes down each night, so its path is predictable, meaning we can know it ahead of time. Daylight is the hours when the sun is up, and summer has more daylight than winter. The moon also follows a pattern. Each shape that the moon appears to have is called a phase, and the phases repeat in order.",
     },
     questions: [
