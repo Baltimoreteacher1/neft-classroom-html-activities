@@ -2,7 +2,7 @@
 
 > Paste everything below the line into Claude Code, opened at the root of `neft-classroom-html-activities`.
 > It is written to be run across many sessions. Each session picks up at the first unfinished phase in
-> `reports/language-page/program-state.md`.
+> `docs/language-page/program-state.md`.
 
 ---
 
@@ -42,7 +42,7 @@ The composite score today is 6.1/10. Two exit bars apply:
 1. The project's roadmap gate: **every panel lens ≥ 8/10**.
 2. This program's stretch bar: **every lens ≥ 9/10 from an independent mock jury** (see Operating Model).
 
-Both are scored against evidence in `reports/language-page/panel-<phase>.md`.
+Both are scored against evidence in `docs/language-page/reports/panel-<phase>.md`.
 
 No shortcuts:
 
@@ -93,7 +93,7 @@ The audit and this prompt were added on branch `claude/dreamy-lamport-ryoydb` (P
    - `docs/languageos/*.md`, `docs/family-app/language-page-*.md`;
    - `reports/language-page-quality/REPORT.md` and `RUBRIC.md`;
    - `data/product-decisions.json`.
-6. `reports/language-page/program-state.md`. Create it on first run, using the schema in **Operating Model**.
+6. `docs/language-page/program-state.md`. Create it on first run, using the schema in **Operating Model**.
 
 ## NON-NEGOTIABLES (override anything later in this prompt)
 
@@ -186,7 +186,7 @@ Use `AskUserQuestion` in batches of up to four. Put your recommendation first, m
 - **Phases follow `docs/language-page/roadmap.md` (P0–P9).** Workstreams map onto them. A phase closes only when:
   - its gates are green;
   - its browser checks are done;
-  - `reports/language-page/panel-<phase>.md` meets both exit bars, or names the exact human-only blockers.
+  - `docs/language-page/reports/panel-<phase>.md` meets both exit bars, or names the exact human-only blockers.
 - **Self-panel.** For each lens plus Trust & Evidence, report:
   - a score;
   - three strengths, with proof;
@@ -203,8 +203,8 @@ Use `AskUserQuestion` in batches of up to four. Put your recommendation first, m
     - that lens's criteria, written from public award rubrics and professional standards (TESOL 6 Principles, WIDA 2020 framework, UDL 3.0, WCAG 2.2, ISTE Standards, Digital Promise certification criteria, ESSA evidence tiers).
   - It never sees your notes.
   - It must cite routes, files or measurements for every score.
-  - Record its report verbatim in `reports/language-page/jury/<phase>-<lens>.md`. Act on what it finds, and log disagreements with evidence.
-- **Program state.** Keep `reports/language-page/program-state.md` current with:
+  - Record its report verbatim in `docs/language-page/reports/jury/<phase>-<lens>.md`. Act on what it finds, and log disagreements with evidence.
+- **Program state.** Keep `docs/language-page/program-state.md` current with:
   - the phase;
   - workstream status (`not started` / `in progress` / `blocked: <who>` / `done: <commit>`);
   - the finding ledger;
@@ -356,7 +356,7 @@ Use `AskUserQuestion` in batches of up to four. Put your recommendation first, m
    - Write a controlled vocabulary in `content/metadata/vocab.json`.
    - Backfill tags for all 933 core activities, 320 bank items, 183 Reading Room lessons and all studio tasks.
    - Inferred tags carry `inferred: true`.
-   - Gate: 100% tagged, vocabulary-only values, and a coverage matrix in `reports/language-page/coverage-matrix.md`.
+   - Gate: 100% tagged, vocabulary-only values, and a coverage matrix in `docs/language-page/reports/coverage-matrix.md`.
 5. **K–2 parity (C4).** Per band:
    - ≥ 24 Speaking Studio tasks;
    - ≥ 24 Writing tasks (draw-label-tell → shared → guided → independent);
@@ -699,7 +699,7 @@ For each:
 5. **Transparency.** A quarterly transparency report (D16) on data collected, AI calls, review coverage and incidents, generated from source data.
 6. **Award entry kit**, per D10 target:
    - Verify current criteria, eligibility and deadlines on the official site; record the URL and date.
-   - Build a criteria → evidence matrix in `reports/language-page/awards/<program>.md`.
+   - Build a criteria → evidence matrix in `docs/language-page/reports/awards/<program>.md`.
    - Run a **program-specific mock jury**: a fresh subagent with only the program's published criteria and the product, scoring it as that program would.
    - Close gaps, then re-jury.
    - Write the draft entry, marked **DRAFT FOR JOEL — not submitted**.
@@ -764,7 +764,7 @@ Every phase also needs a real-browser review per `student-experience-review`:
 
 - Every finding ID, original or new, is closed with proof, handed to a named human, or declined by Joel.
 - The Quality Bars table holds, measured. Live numbers come after an approved ship.
-- `reports/language-page/panel-P9.md` and the jury reports show every lens ≥ 9, or name the human-only blockers.
+- `docs/language-page/reports/panel-P9.md` and the jury reports show every lens ≥ 9, or name the human-only blockers.
 - All listed gates, `npm run validate` and the full `qa:loop` are green, and no gate was weakened (diff the gate files).
 - The award entry kit exists and is jury-tested for each D10 target, marked DRAFT.
 - `human-required.md` is complete with owners.
@@ -774,7 +774,7 @@ Every phase also needs a real-browser review per `student-experience-review`:
 1. Phase and workstreams touched, with the finding IDs closed.
 2. Files changed, grouped by workstream.
 3. Commands and checks run, each with PASS or FAIL and key output lines.
-4. Browser checks: routes, viewports, languages and observations, with screenshots in `reports/language-page/shots/`.
+4. Browser checks: routes, viewports, languages and observations, with screenshots in `docs/language-page/reports/shots/`.
 5. Mock-jury results this session, with the paths to their reports.
 6. Decisions needed from Joel (the next `AskUserQuestion` batch).
 7. Human-required additions.

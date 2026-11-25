@@ -8,7 +8,7 @@ Accounts, class codes, rosters, teacher reports, backend or cloud storage, LTI /
 
 P0 baseline and inventory · P1 information architecture · P2 home, trust surfaces, brand · P3 design system, motion, sound · P4A WIDA/ELD depth · P4B phonics / science of reading · P4C language, vocabulary, writing · P4D curriculum and teacher materials · P5 student flows · P6 engineering · P7 performance and SEO · P8 accessibility, QA, compliance · P9 evidence and award readiness.
 
-Each phase ends with `reports/language-page/panel-<phase>.md`. A phase closes only when every applicable reviewer scores at least 8.
+Each phase ends with `docs/language-page/reports/panel-<phase>.md`. A phase closes only when every applicable reviewer scores at least 8.
 
 ## Open items
 

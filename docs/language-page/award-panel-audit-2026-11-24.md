@@ -19,7 +19,7 @@
 | Innovation in Education | **7.5** | Yes, with focus | Book Studio 2.0 (per-element supports by proficiency profile), Experience Builder (text-to-simulation compiler), a Data Studio that *refuses* to forecast without validation, AI that selects authored moves instead of generating. Hidden under 122 destinations. |
 | Futures of Learning | **6.0** | No | Local-first privacy and constrained AI are forward-looking; there is no unified learner model, no learner-owned portable record, and no teacher co-pilot loop that turns evidence into tomorrow's lesson. |
 | Trust & Evidence (cross-cutting) | **4.0** | **Blocker** | Zero human content review recorded (508/508 `reviewStatus: "automated-checks-only"`); no efficacy plan on disk; privacy page contradicted by live network traffic; claims-ledger enforcement test never written. |
-| **Composite** | **6.1** | **Not yet** | The project's own roadmap gate is "every reviewer ≥ 8". No lens meets it; no panel report exists in `reports/language-page/`. |
+| **Composite** | **6.1** | **Not yet** | The project's own roadmap gate is "every reviewer ≥ 8". No lens meets it; no panel report exists in `docs/language-page/reports/`. |
 
 ---
 
@@ -139,3 +139,15 @@ Programs are listed by the domain they reward. **Current-year criteria, categori
 8. **Evidence (start week 1, runs continuously):** logic model, usability protocol, efficacy plan, ACR — and the human reviews only people can do.
 
 The companion build prompt is `docs/language-page/award-program-prompt.md`.
+
+---
+
+## Status update, 2026-11-25
+Tranche 1 and 2 are on `main`; the live record is `docs/language-page/program-state.md`. Findings changed by this work:
+**X1** closed with proof (beacon gone on production, 79 routes; claim C-004 verified) · **X4** closed (claims gate in `npm test`) ·
+**X5** closed (docs-truth test; four docs corrected) · **E7** closed (Student default; browser test) · **C6** and **T5** partly closed
+(one name, titles, share card; per-route unique titles and the `/studios` app still open) · **E3** partly (4 strings; grades 3–8
+directions still open) · **T6** fixed in source (production re-measure pending) · **E4** was overstated in the first draft of this
+audit and is corrected above (Spanish text is tagged; 98.2% measured). **X3** now has the plan documents (`logic-model.md`,
+`efficacy-plan.md`, `usability-protocol.md`, `pilot-kit.md`, `acr.md`, `privacy.md`); no study or session has been run, so no
+evidence exists yet. Everything else in this audit is still open.
