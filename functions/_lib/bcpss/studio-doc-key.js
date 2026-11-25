@@ -111,6 +111,21 @@ export const KEY = {
       },
     ),
   ],
+  listen_and_show: (p) => [
+    B.table(
+      p.items.map((it, k) => [
+        num(k),
+        { runs: [i(it.say)] },
+        { runs: [b(`${letter(it.answer)}. `), t(it.options[it.answer].label)] },
+      ]),
+      {
+        headers: ["#", "Read aloud", "Answer"],
+        widths: [5, 60, 35],
+        compact: true,
+        tone: "Listening",
+      },
+    ),
+  ],
   info_gap: (p) => {
     const all = [...p.a.has, ...p.b.has];
     const val = (k) => all.find((h) => h.k === k)?.v || "";

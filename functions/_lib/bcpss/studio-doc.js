@@ -98,6 +98,7 @@ export const KIND_LABEL = {
   quiz: "Quiz",
   error_analysis: "Fix the mistake",
   dictogloss: "Listen & rebuild",
+  listen_and_show: "Listen & choose",
   info_gap: "Partner puzzle",
   talk_cards: "Talk cards",
   read_annotate: "Read & mark",

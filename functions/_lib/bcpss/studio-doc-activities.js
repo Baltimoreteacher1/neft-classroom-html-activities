@@ -268,6 +268,29 @@ const PRINTERS = {
     return { blocks };
   },
 
+  // Listening Lab (derived listen-and-choose / listen-and-sort): a partner or the teacher reads each item aloud,
+  // or the student uses the on-screen player. The read-aloud script is in the answer key.
+  listen_and_show(a, ctx) {
+    const p = a.payload;
+    const sort = p.mode === "sort";
+    const items = p.items.map((it) => ({
+      q: `Listen. ${sort ? "Fill in the circle for the group." : "Fill in the circle for the word."}`,
+      options: it.options.map((o) => o.label),
+      answer: it.answer,
+      why: it.why,
+    }));
+    const note = a.derived?.notice ? [B.footerNote(a.derived.notice)] : [];
+    return {
+      blocks: [
+        ...mcItems(items, ctx, { tone: "Listening" }),
+        B.footerNote(
+          "A partner or your teacher reads each one aloud twice. The script is in the answer key.",
+        ),
+        ...note,
+      ],
+    };
+  },
+
   info_gap(a, ctx) {
     const p = a.payload;
     const card = (side, tone) =>
