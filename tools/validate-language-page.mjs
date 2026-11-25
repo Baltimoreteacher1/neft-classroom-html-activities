@@ -5,10 +5,6 @@
 //   node tools/validate-language-page.mjs [--no-browser] [--only G-01,G-04] [--json out.json]
 import fs from "node:fs";
 import { loadDataset } from "./language-page/dataset.mjs";
-import { g05, g06, g08, g11 } from "./language-page/gates-api.mjs";
-import { g10, g12 } from "./language-page/gates-browser.mjs";
-import { g01, g02, g03, g04 } from "./language-page/gates-content.mjs";
-import { g07, g09 } from "./language-page/gates-misc.mjs";
 
 const args = process.argv.slice(2);
 const flag = (n) => args.includes(n);
@@ -16,10 +12,31 @@ const val = (n) => (args.includes(n) ? args[args.indexOf(n) + 1] : null);
 const only = val("--only")?.split(",");
 const CI = Boolean(process.env.CI);
 
-const GATES = [g01, g02, g03, g04, g05, g06, g07, g08, g09, g10, g11, g12].filter(
-  (g) => !only || only.includes(g.id),
-);
-const BROWSER = new Set(["G-10", "G-12"]);
+// Every tools/language-page/gates-*.mjs file may export gates ({ id, name, run, controls, browser? }).
+// Discovery, not a hand-kept import list, so independent work never edits the same line.
+const GATE_DIR = new URL("./language-page/", import.meta.url);
+const found = [];
+for (const file of fs.readdirSync(GATE_DIR).filter((f) => /^gates-.*\.mjs$/.test(f))) {
+  const mod = await import(new URL(file, GATE_DIR));
+  for (const value of Object.values(mod))
+    if (
+      value &&
+      typeof value === "object" &&
+      /^G-\d+$/.test(value.id ?? "") &&
+      value.run &&
+      value.controls
+    )
+      found.push(value);
+}
+const ids = found.map((g) => g.id);
+const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
+if (dupes.length) {
+  console.error(`FAIL duplicate gate id(s): ${[...new Set(dupes)].join(", ")}`);
+  process.exit(1);
+}
+found.sort((a, b) => Number(a.id.slice(2)) - Number(b.id.slice(2)));
+const GATES = found.filter((g) => !only || only.includes(g.id));
+const BROWSER = new Set(["G-10", "G-12", ...found.filter((g) => g.browser).map((g) => g.id)]);
 
 const t0 = Date.now();
 const data = await loadDataset();
