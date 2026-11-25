@@ -5612,8 +5612,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/bcpss-teachers/aggregate/",
+    title: "Anonymous Aggregate Dashboard — BCPSS K–8 Curriculum & Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/bcpss-teachers/demo/",
     title: "Demo Mode (Synthetic Data Only) — BCPSS K–8 Curriculum & Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/bcpss-teachers/draft-assistant/",
+    title: "Teacher Drafting Assistant (Preview) — BCPSS K–8 Curriculum & Language Bridge",
     category: "Tool",
     unit: null,
   },
@@ -5636,8 +5648,26 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/bcpss-teachers/my-work/",
+    title: "My Work — Classroom Activity Checklist",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/bcpss-teachers/pathways/",
     title: "Year Pathways — BCPSS K–8 Curriculum & Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/bcpss-teachers/small-groups/",
+    title: "Small Groups & Station Sheets — BCPSS Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/bcpss-teachers/speaking-studio/",
+    title: "Speaking Studio — On-Device Practice",
     category: "Tool",
     unit: null,
   },
