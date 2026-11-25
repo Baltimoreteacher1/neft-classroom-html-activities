@@ -82,6 +82,23 @@ the device after an in-page confirm (it warns, and waits, when work has not reac
 printable join cards (one class QR, a slip per student, reset key) and a Google Classroom public share link; posting or
 roster import through the Classroom API is not built (the existing Google OAuth app has read-only scopes for another app).
 
+## Dashboard 2.0, weekly family plan and text tips
+
+Three read-only features behind flags in `shared/flags/registry.js` (default on, kill switch each; none writes to the class,
+sends student content anywhere or calls a model). `class_dashboard_v2`: the teacher panel's "This week" section
+(`access-practice-lab/src/class/dashboard-v2.js`) shows finished-by-unit and by-domain tables, assigned vs finished per
+assignment, the goal meter and a three-bullet brief (who is behind, what to reteach with the unit's authored
+`common_language_misconception` and a suggested next activity, what to celebrate), built by the pure engine
+`shared/class-platform/dashboard-brief.js` from the roster, `astatus/board` and unit data, aliases only. `family_weekly_plan`:
+the Family Guide's "This week's plan" (`family/bcpss/family-plan-view.js`, `shared/bcpss-family-plan.js`): three sittings of
+10 minutes or less assembled verbatim from the unit's authored family block, English and Spanish side by side, with on-device
+read-aloud and a print layout; tasks that mention a flame, knife, heat or a purchase are screened out, and a task longer than
+10 minutes is split over two days. `family_text_tips`: copyable messages of 160 characters or fewer in both languages in the
+teacher Family tab (`bcpss-teachers/family-tips.js`); the site sends nothing. The family progress note
+(`progressNote`) is words only: no digits, scores, level labels or comparisons. Gates G-81..G-85 in
+`tools/language-page/gates-class-family.mjs`; the demo class (synthetic aliases "Star 1".."Star 8") and its golden brief live in
+`tools/language-page/fixtures/` (regenerate with `node tools/language-page/fixtures/build-demo-class.mjs` and read the diff).
+
 ## Book Studio: writing together (`/books/*`)
 
 `functions/_lib/class-platform/books.js` (routes), `book-schema.js` (tables), `shared/class-platform/book-merge.js`
