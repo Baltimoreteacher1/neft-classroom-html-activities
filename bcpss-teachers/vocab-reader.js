@@ -40,6 +40,7 @@ function shell(ctx) {
       <p class="ep-kicker">Vocabulary Reading · ${esc(reading.genre)}</p>
       <h2>${esc(reading.title)}</h2>
       <p class="vr-lead">Read about <strong>${esc(unit.unit_title)}</strong> and meet every unit word in context. Tap a highlighted word for its card.</p>
+      ${reading.revision?.status === "draft" ? `<p class="vr-hint" data-reading-revision="draft">Revised draft: the three levels were rewritten so difficulty does not drop from one level to the next. Not yet reviewed by a teacher or language specialist.</p>` : ""}
       <div class="vr-bar" role="group" aria-label="Reading level">
         ${TIERS.map((t) => `<button type="button" class="vr-pill" data-vr="level" data-tier="${t}" aria-pressed="${t === ctx.tier}">${TIER_LABEL[t]}</button>`).join("")}
       </div>
