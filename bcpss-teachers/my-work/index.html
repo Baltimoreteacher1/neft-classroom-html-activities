@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Work — Classroom Activity Checklist</title>
+    <meta name="theme-color" content="#1e3a5f" />
+    <style>
+      :root {
+        --bg-canvas: #faf9f6;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f2efe9;
+        --border: #dcd6cb;
+        --ink: #182230;
+        --ink-muted: #475467;
+        --navy: #1e3a5f;
+        --teal: #0f766e;
+        --teal-bg: #ecfdf5;
+        --teal-border: #99f6e4;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg-canvas);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.55;
+      }
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 1.25rem;
+      }
+      h1,
+      h2 {
+        color: var(--navy);
+        margin-top: 0;
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-muted);
+      }
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+      input[type="text"] {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.95rem;
+        min-width: 200px;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--navy);
+        background: var(--navy);
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 0.5rem 0.95rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .work-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .work-item {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.95rem 1.1rem;
+        margin-bottom: 0.7rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        background: var(--bg-canvas);
+      }
+      .work-item.is-done {
+        background: var(--teal-bg);
+        border-color: var(--teal-border);
+      }
+      .work-main {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+      .work-meta {
+        font-size: 0.88rem;
+        color: var(--ink-muted);
+      }
+      .pill {
+        display: inline-block;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        background: var(--teal-bg);
+        border: 1px solid var(--teal-border);
+        color: var(--teal);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>My Work</h1>
+        <p class="lead">
+          Your class activities in due-date order. Checkmarks are saved only on this device.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="card" aria-labelledby="profileHeading">
+        <h2 id="profileHeading">My Classroom Nickname</h2>
+        <div class="row">
+          <input
+            type="text"
+            id="nicknameInput"
+            placeholder="e.g., Cedar 1"
+            aria-label="My classroom nickname"
+          />
+          <button type="button" class="btn" id="saveNickBtn">Save on This Device</button>
+          <span class="pill" id="progressPill">0 of 0 done</span>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="listHeading">
+        <h2 id="listHeading">Assigned Activities</h2>
+        <ul class="work-list" id="workList"></ul>
+      </section>
+    </main>
+
+    <script type="module">
+      import { createAssignmentV2, filterMyWork } from "/shared/class-platform/assignment-polish.js";
+
+      const STORAGE_KEY = "ewl-my-work-v1";
+      const DEFAULT_ASSIGNMENTS = [
+        createAssignmentV2({
+          id: "g6-ela-u1-vocab",
+          unitId: "g6-ela-u1",
+          title: "Key Words Practice",
+          dueDate: "2026-12-02",
+          activityUrl: "/bcpss-teachers/language-studio/?unit=g6-ela-u1&mode=vocab",
+          notes: "Practice the unit key words before class discussion.",
+        }),
+        createAssignmentV2({
+          id: "g6-ela-u1-speak",
+          unitId: "g6-ela-u1",
+          title: "Speaking Studio Practice",
+          dueDate: "2026-12-04",
+          activityUrl: "/bcpss-teachers/speaking-studio/?unit=g6-ela-u1",
+          notes: "Record two complete sentences on this device.",
+        }),
+        createAssignmentV2({
+          id: "g6-ela-u1-write",
+          unitId: "g6-ela-u1",
+          title: "Writing Lab Draft",
+          dueDate: "2026-12-06",
+          activityUrl: "/bcpss-teachers/writing-lab/?unit=g6-ela-u1",
+          notes: "Write a short response using two key words.",
+        }),
+      ];
+
+      function loadState() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          return {
+            nickname: typeof parsed.nickname === "string" ? parsed.nickname : "",
+            completedIds: Array.isArray(parsed.completedIds) ? parsed.completedIds : [],
+            assignments: Array.isArray(parsed.assignments) && parsed.assignments.length
+              ? parsed.assignments
+              : DEFAULT_ASSIGNMENTS,
+          };
+        } catch {
+          return { nickname: "", completedIds: [], assignments: DEFAULT_ASSIGNMENTS };
+        }
+      }
+
+      function saveState(state) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch {
+          // On-device storage unavailable; continue in memory.
+        }
+      }
+
+      const state = loadState();
+      const nickInput = document.getElementById("nicknameInput");
+      const progressPill = document.getElementById("progressPill");
+      const listEl = document.getElementById("workList");
+      nickInput.value = state.nickname;
+
+      function render() {
+        const view = filterMyWork(state.assignments, {
+          alias: state.nickname,
+          completedIds: state.completedIds,
+        });
+        const doneCount = view.items.filter((i) => i.completed).length;
+        progressPill.textContent = `${doneCount} of ${view.items.length} done`;
+        listEl.innerHTML = "";
+
+        for (const item of view.items) {
+          const li = document.createElement("li");
+          li.className = `work-item${item.completed ? " is-done" : ""}`;
+
+          const main = document.createElement("label");
+          main.className = "work-main";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = item.completed;
+          cb.addEventListener("change", () => {
+            const set = new Set(state.completedIds);
+            if (cb.checked) set.add(item.id);
+            else set.delete(item.id);
+            state.completedIds = [...set];
+            saveState(state);
+            render();
+          });
+
+          const textWrap = document.createElement("div");
+          const title = document.createElement("strong");
+          title.textContent = item.title;
+          const meta = document.createElement("div");
+          meta.className = "work-meta";
+          meta.textContent = `Due: ${item.dueDate}${item.notes ? ` · ${item.notes}` : ""}`;
+          textWrap.append(title, meta);
+          main.append(cb, textWrap);
+
+          const link = document.createElement("a");
+          link.className = "btn";
+          link.href = item.activityUrl;
+          link.textContent = "Open";
+
+          li.append(main, link);
+          listEl.appendChild(li);
+        }
+      }
+
+      document.getElementById("saveNickBtn").addEventListener("click", () => {
+        state.nickname = nickInput.value.trim();
+        saveState(state);
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>

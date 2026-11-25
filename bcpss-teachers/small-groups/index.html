@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Small Groups &amp; Station Sheets — BCPSS Language Bridge</title>
+    <meta name="theme-color" content="#1e3a5f" />
+    <style>
+      :root {
+        --bg-canvas: #faf9f6;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f2efe9;
+        --border: #dcd6cb;
+        --ink: #182230;
+        --ink-muted: #475467;
+        --navy: #1e3a5f;
+        --teal: #0f766e;
+        --teal-bg: #ecfdf5;
+        --teal-border: #99f6e4;
+        --amber: #9a3412;
+        --amber-bg: #fff7ed;
+        --amber-border: #fdba74;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg-canvas);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.5;
+      }
+      .draft-banner {
+        background: var(--amber-bg);
+        border-bottom: 2px solid var(--amber-border);
+        color: var(--amber);
+        padding: 0.65rem 1rem;
+        font-weight: 600;
+        font-size: 0.92rem;
+        text-align: center;
+      }
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 1.25rem;
+      }
+      h1,
+      h2 {
+        color: var(--navy);
+        margin-top: 0;
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-muted);
+      }
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+      }
+      .controls-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-end;
+        margin-bottom: 1rem;
+      }
+      label.field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      select,
+      input[type="text"] {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.5rem 0.7rem;
+        font-size: 0.95rem;
+        background: #ffffff;
+        color: var(--ink);
+      }
+      .groups-editor {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .group-box {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.8rem;
+        background: var(--bg-canvas);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.55rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--bg-surface);
+        color: var(--ink);
+      }
+      .btn-primary {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #ffffff;
+      }
+      .btn-teal {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #ffffff;
+      }
+      .preview-frame {
+        width: 100%;
+        min-height: 620px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #ffffff;
+      }
+      .privacy-note {
+        background: var(--teal-bg);
+        border-left: 4px solid var(--teal);
+        padding: 0.7rem 0.9rem;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="draft-banner" role="note" id="draftBanner">
+      Draft: not yet reviewed by a teacher or language specialist.
+    </div>
+
+    <header>
+      <div class="wrap">
+        <h1>Small Groups &amp; Station Rotation Sheets</h1>
+        <p class="lead">
+          Plan 2–4 alias-only groups for a single 45, 60, or 90-minute block with 1 teacher-led table and independent paper/pencil or on-device stations.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="card">
+        <div class="privacy-note">
+          <strong>Alias-only rosters:</strong> Enter neutral group names and student aliases only. Never enter real names, initials, student IDs, or program/proficiency codes.
+        </div>
+
+        <div class="controls-row">
+          <label class="field">
+            Block Length
+            <select id="blockMinutes">
+              <option value="45">45 minutes</option>
+              <option value="60" selected>60 minutes (default)</option>
+              <option value="90">90 minutes</option>
+            </select>
+          </label>
+
+          <label class="field">
+            Number of Groups
+            <select id="groupCount">
+              <option value="2">2 groups</option>
+              <option value="3" selected>3 groups</option>
+              <option value="4">4 groups</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="groups-editor" id="groupsEditor"></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="updateBtn">Update Station Sheets</button>
+          <button type="button" class="btn btn-teal" id="printBtn">Print Station Sheets</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Printable Station Sheet Preview</h2>
+        <iframe class="preview-frame" id="previewFrame" title="Station sheet preview"></iframe>
+      </section>
+    </main>
+
+    <script type="module">
+      import { DRAFT_NOTICE } from "/shared/bcpss-provenance.js";
+      import {
+        NEUTRAL_GROUP_NAMES,
+        buildSmallGroupPlan,
+        renderStationSheetsHtml,
+      } from "/shared/bcpss/small-groups.js";
+
+      document.getElementById("draftBanner").textContent = DRAFT_NOTICE;
+
+      const params = new URLSearchParams(location.search);
+      const unitId = params.get("unit") || "";
+      let activeUnit = {
+        unit: {
+          id: unitId || "sample-unit",
+          unit_title: "Unit Station Rotation",
+          essential_question: "How do key details help us explain our thinking clearly?",
+        },
+        connections: [
+          {
+            tier2_tier3_vocab: [
+              { term: "detail" },
+              { term: "explain" },
+              { term: "evidence" },
+              { term: "connect" },
+            ],
+          },
+        ],
+      };
+
+      const blockEl = document.getElementById("blockMinutes");
+      const countEl = document.getElementById("groupCount");
+      const editorEl = document.getElementById("groupsEditor");
+      const frameEl = document.getElementById("previewFrame");
+
+      function renderGroupInputs() {
+        const count = Number(countEl.value);
+        editorEl.innerHTML = "";
+        for (let i = 0; i < count; i += 1) {
+          const name = NEUTRAL_GROUP_NAMES[i] || `Group ${i + 1}`;
+          const box = document.createElement("div");
+          box.className = "group-box";
+          box.innerHTML = `
+            <label class="field">Group ${i + 1} Name
+              <input type="text" data-gname="${i}" value="${name}" />
+            </label>
+            <label class="field">Member Aliases (comma-separated)
+              <input type="text" data-gmembers="${i}" value="${name} 1, ${name} 2, ${name} 3" />
+            </label>
+          `;
+          editorEl.appendChild(box);
+        }
+      }
+
+      function readGroups() {
+        const count = Number(countEl.value);
+        const groups = [];
+        for (let i = 0; i < count; i += 1) {
+          const name = editorEl.querySelector(`[data-gname="${i}"]`)?.value || NEUTRAL_GROUP_NAMES[i];
+          const membersRaw = editorEl.querySelector(`[data-gmembers="${i}"]`)?.value || "";
+          const members = membersRaw
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+          groups.push({ name, members });
+        }
+        return groups;
+      }
+
+      function renderPreview() {
+        const plan = buildSmallGroupPlan({
+          unit: activeUnit,
+          groups: readGroups(),
+          blockMinutes: Number(blockEl.value),
+        });
+        frameEl.srcdoc = renderStationSheetsHtml(plan);
+      }
+
+      countEl.addEventListener("change", () => {
+        renderGroupInputs();
+        renderPreview();
+      });
+      blockEl.addEventListener("change", renderPreview);
+      document.getElementById("updateBtn").addEventListener("click", renderPreview);
+      document.getElementById("printBtn").addEventListener("click", () => {
+        frameEl.contentWindow?.focus();
+        frameEl.contentWindow?.print();
+      });
+
+      if (unitId) {
+        fetch(`/api/bcpss/units/${encodeURIComponent(unitId)}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((detail) => {
+            if (detail?.unit) {
+              activeUnit = detail;
+              renderPreview();
+            }
+          })
+          .catch(() => {});
+      }
+
+      renderGroupInputs();
+      renderPreview();
+    </script>
+  </body>
+</html>

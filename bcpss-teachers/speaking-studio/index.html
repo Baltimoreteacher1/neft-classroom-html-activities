@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speaking Studio — On-Device Practice</title>
+    <meta name="theme-color" content="#1e3a5f" />
+    <style>
+      :root {
+        --bg-canvas: #faf9f6;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f2efe9;
+        --border: #dcd6cb;
+        --ink: #182230;
+        --ink-muted: #475467;
+        --navy: #1e3a5f;
+        --teal: #0f766e;
+        --teal-bg: #ecfdf5;
+        --teal-border: #99f6e4;
+        --amber: #9a3412;
+        --amber-bg: #fff7ed;
+        --amber-border: #fdba74;
+        --danger: #b91c1c;
+        --danger-bg: #fef2f2;
+        --danger-border: #fecaca;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg-canvas);
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.55;
+      }
+      .d8-banner {
+        background: var(--teal-bg);
+        border-bottom: 2px solid var(--teal-border);
+        color: var(--teal);
+        padding: 0.7rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-align: center;
+      }
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 1.25rem;
+      }
+      h1,
+      h2,
+      h3 {
+        color: var(--navy);
+        margin-top: 0;
+        line-height: 1.25;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin-bottom: 0.35rem;
+      }
+      .lead {
+        margin: 0;
+        color: var(--ink-muted);
+      }
+      .card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem 1.4rem;
+        margin-bottom: 1rem;
+      }
+      .mode-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.9rem;
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: var(--bg-surface);
+        color: var(--ink);
+        padding: 0.55rem 0.95rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: var(--bg-subtle);
+      }
+      .btn-primary {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #ffffff;
+      }
+      .btn-primary:hover {
+        background: #162c48;
+      }
+      .btn-teal {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #ffffff;
+      }
+      .btn-danger {
+        background: var(--danger-bg);
+        border-color: var(--danger-border);
+        color: var(--danger);
+      }
+      .btn[aria-pressed="true"] {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #ffffff;
+      }
+      .prompt-box {
+        background: var(--bg-subtle);
+        border-left: 4px solid var(--navy);
+        border-radius: 0 8px 8px 0;
+        padding: 0.9rem 1rem;
+      }
+      .kw-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.6rem;
+      }
+      .kw {
+        display: inline-block;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        background: var(--teal-bg);
+        border: 1px solid var(--teal-border);
+        color: var(--teal);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .check-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.5rem 0 0;
+      }
+      .check-list li {
+        padding: 0.55rem 0.7rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        background: var(--bg-canvas);
+      }
+      .check-list label {
+        display: flex;
+        gap: 0.65rem;
+        align-items: flex-start;
+        cursor: pointer;
+      }
+      .check-es {
+        display: block;
+        color: var(--ink-muted);
+        font-size: 0.9rem;
+      }
+      .rec-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        align-items: center;
+      }
+      .status-note {
+        font-size: 0.9rem;
+        color: var(--ink-muted);
+        margin: 0.6rem 0 0;
+      }
+      .takes-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.75rem 0 0;
+      }
+      .take-item {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.65rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+      .take-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      audio {
+        width: 100%;
+      }
+      .summary-pill {
+        display: inline-block;
+        background: var(--amber-bg);
+        border: 1px solid var(--amber-border);
+        color: var(--amber);
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="d8-banner" role="note" id="d8Notice">
+      Recordings stay on this device and are never uploaded.
+    </div>
+
+    <header>
+      <div class="wrap">
+        <h1>Speaking Studio</h1>
+        <p class="lead">
+          Practice speaking out loud, listen back on this device, and check your ideas with the 3-line self-check.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="card" aria-labelledby="partnerHeading">
+        <h2 id="partnerHeading">1. Choose Practice Mode</h2>
+        <div class="mode-row" role="group" aria-label="Partner mode toggle">
+          <button type="button" class="btn" data-mode="solo" aria-pressed="true">Solo Practice</button>
+          <button type="button" class="btn" data-mode="A" aria-pressed="false">Partner Mode: Partner A</button>
+          <button type="button" class="btn" data-mode="B" aria-pressed="false">Partner Mode: Partner B</button>
+        </div>
+        <div class="prompt-box" id="promptBox">
+          <strong id="promptLabel">Solo Speaking Prompt</strong>
+          <p id="promptText">Share two complete sentences about today's unit question using a key vocabulary word.</p>
+          <p class="status-note" id="starterText"></p>
+          <div class="kw-list" id="kwList"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="recHeading">
+        <h2 id="recHeading">2. Record on This Device</h2>
+        <div class="rec-controls">
+          <button type="button" class="btn btn-primary" id="recordBtn">Start Recording</button>
+          <button type="button" class="btn btn-teal" id="manualBtn">I Said It Out Loud (No Mic)</button>
+          <span class="summary-pill" id="summaryPill">Completed on this device: 0</span>
+        </div>
+        <p class="status-note" id="recStatus" role="status">
+          Microphone is off. Recordings stay on this device and are never uploaded.
+        </p>
+      </section>
+
+      <section class="card" aria-labelledby="checkHeading">
+        <h2 id="checkHeading">3. Three-Line Self-Check</h2>
+        <ul class="check-list" id="selfCheckList"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="savedHeading">
+        <h2 id="savedHeading">4. My On-Device Recordings</h2>
+        <p class="status-note">
+          Use the one-tap Delete button on any recording to remove it from this device immediately.
+        </p>
+        <ul class="takes-list" id="takesList"></ul>
+      </section>
+    </main>
+
+    <script type="module">
+      import {
+        D8_ON_DEVICE_NOTICE,
+        SELF_CHECK_LINES,
+        assertOnDeviceOnly,
+        buildPartnerTurn,
+        completionSummary,
+        deleteRecording,
+        getRecording,
+        listRecordings,
+        saveRecording,
+      } from "/shared/bcpss/speaking-studio.js";
+
+      assertOnDeviceOnly();
+      document.getElementById("d8Notice").textContent = D8_ON_DEVICE_NOTICE;
+
+      const params = new URLSearchParams(location.search);
+      const unitId = params.get("unit") || "";
+      let activeUnit = {
+        unit: {
+          id: unitId || "practice",
+          unit_title: "Classroom Speaking Practice",
+          essential_question: "What is one important idea from today's lesson and why does it matter?",
+        },
+        connections: [{ tier2_tier3_vocab: [{ term: "evidence" }, { term: "explain" }, { term: "connect" }] }],
+      };
+
+      let mode = "solo";
+      let mediaRecorder = null;
+      let chunks = [];
+      let recStart = 0;
+
+      const checkListEl = document.getElementById("selfCheckList");
+      for (const item of SELF_CHECK_LINES) {
+        const li = document.createElement("li");
+        li.innerHTML = `<label><input type="checkbox" data-check="${item.id}" /><span><strong>${item.en}</strong><span class="check-es">${item.es}</span></span></label>`;
+        checkListEl.appendChild(li);
+      }
+
+      function selectedChecks() {
+        return [...checkListEl.querySelectorAll("input:checked")].map((el) => el.dataset.check);
+      }
+
+      function renderPrompt() {
+        const labelEl = document.getElementById("promptLabel");
+        const textEl = document.getElementById("promptText");
+        const starterEl = document.getElementById("starterText");
+        const kwEl = document.getElementById("kwList");
+
+        if (mode === "A" || mode === "B") {
+          const turn = buildPartnerTurn(activeUnit, mode);
+          labelEl.textContent = turn.partnerLabel;
+          textEl.textContent = turn.prompt;
+          starterEl.textContent = `Sentence starter: ${turn.sentenceStarter}`;
+          kwEl.innerHTML = turn.targetWords.map((w) => `<span class="kw">${w}</span>`).join("");
+        } else {
+          const turn = buildPartnerTurn(activeUnit, "B");
+          labelEl.textContent = `Solo Practice — ${turn.unitTitle}`;
+          textEl.textContent = `Answer in 2 complete sentences: "${turn.essentialQuestion}"`;
+          starterEl.textContent = `Sentence starter: ${turn.sentenceStarter}`;
+          kwEl.innerHTML = turn.targetWords.map((w) => `<span class="kw">${w}</span>`).join("");
+        }
+      }
+
+      async function renderRecordings() {
+        const listEl = document.getElementById("takesList");
+        const summaryEl = document.getElementById("summaryPill");
+        const rows = await listRecordings();
+        const summary = completionSummary(rows);
+        summaryEl.textContent = `Completed on this device: ${summary.completedCount}`;
+        listEl.innerHTML = "";
+
+        if (!rows.length) {
+          const empty = document.createElement("li");
+          empty.className = "status-note";
+          empty.textContent = "No recordings saved on this device yet.";
+          listEl.appendChild(empty);
+          return;
+        }
+
+        for (const row of rows) {
+          const li = document.createElement("li");
+          li.className = "take-item";
+          const top = document.createElement("div");
+          top.className = "take-top";
+          const info = document.createElement("span");
+          info.textContent = `${row.partnerRole === "solo" ? "Solo" : `Partner ${row.partnerRole}`} · ${row.durationSeconds}s · ${new Date(row.createdAt).toLocaleTimeString()}`;
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "btn btn-danger";
+          delBtn.textContent = "Delete";
+          delBtn.addEventListener("click", async () => {
+            await deleteRecording(row.id);
+            await renderRecordings();
+          });
+          top.append(info, delBtn);
+          li.appendChild(top);
+
+          const full = await getRecording(row.id);
+          if (full?.blob) {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.src = URL.createObjectURL(full.blob);
+            li.appendChild(audio);
+          }
+          listEl.appendChild(li);
+        }
+      }
+
+      document.querySelectorAll("[data-mode]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          mode = btn.dataset.mode;
+          document.querySelectorAll("[data-mode]").forEach((b) => {
+            b.setAttribute("aria-pressed", String(b === btn));
+          });
+          renderPrompt();
+        });
+      });
+
+      const recBtn = document.getElementById("recordBtn");
+      const statusEl = document.getElementById("recStatus");
+
+      recBtn.addEventListener("click", async () => {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+          recBtn.textContent = "Start Recording";
+          statusEl.textContent = "Saved on this device. Microphone is off.";
+          return;
+        }
+        if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+          statusEl.textContent = "Microphone recording is unavailable in this browser. Use 'I Said It Out Loud'.";
+          return;
+        }
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          chunks = [];
+          recStart = Date.now();
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) chunks.push(e.data);
+          };
+          mediaRecorder.onstop = async () => {
+            stream.getTracks().forEach((t) => t.stop());
+            const blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
+            const seconds = Math.max(1, Math.round((Date.now() - recStart) / 1000));
+            await saveRecording({
+              unitId: activeUnit.unit.id,
+              durationSeconds: seconds,
+              mimeType: blob.type,
+              partnerRole: mode,
+              selfCheck: selectedChecks(),
+              blob,
+            });
+            await renderRecordings();
+          };
+          mediaRecorder.start();
+          recBtn.textContent = "Stop Recording";
+          statusEl.textContent = "Recording on this device...";
+        } catch {
+          statusEl.textContent = "Microphone access was not granted. Use 'I Said It Out Loud' instead.";
+        }
+      });
+
+      document.getElementById("manualBtn").addEventListener("click", async () => {
+        await saveRecording({
+          unitId: activeUnit.unit.id,
+          durationSeconds: 0,
+          mimeType: "text/plain",
+          partnerRole: mode,
+          selfCheck: selectedChecks(),
+          blob: null,
+        });
+        statusEl.textContent = "Spoken practice check saved on this device.";
+        await renderRecordings();
+      });
+
+      if (unitId) {
+        fetch(`/api/bcpss/units/${encodeURIComponent(unitId)}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((detail) => {
+            if (detail?.unit) {
+              activeUnit = detail;
+              renderPrompt();
+            }
+          })
+          .catch(() => {});
+      }
+
+      renderPrompt();
+      renderRecordings();
+    </script>
+  </body>
+</html>
