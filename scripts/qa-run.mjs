@@ -250,6 +250,20 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // PRIVACY (Prompt 3): the data inventory, the never-collect scan, deletion + receipts + retention and their
+  // docs. First in the table because `shared/`, `functions/api/` and `docs/` have broader rules below that would
+  // otherwise claim these paths. The two validators also run inside `test` (the real-repo cases of
+  // tools/privacy-inventory.test.mjs), so a full gate covers them without a line in `validate`.
+  [
+    /^(docs\/privacy\/(data-inventory|restore-policy|privacy-page-draft)\.md$|docs\/runbooks\/retention\.md$|shared\/privacy\/|tools\/privacy-[a-z0-9-]+\.(test\.)?mjs$|functions\/(_lib|api)\/privacy\/|migrations\/00(20|21)_)/,
+    [
+      "test:privacy",
+      "validate:privacy-inventory",
+      "validate:privacy-forbidden",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
   // The two link audits and the audit note they were written against. Each audit script is run by its own npm
   // script, so a change to one is covered by that check; without a rule here an edit escalated to the full gate.
   [
@@ -488,6 +502,27 @@ const COVERAGE = [
   [
     /^(tools\/(access-integration-e2e|generate-access-finder-metadata|generate-access-packs|generate-newcomer-packs|generate-program-content)\.mjs|tools\/(access-finder-facets|access-packs|family-today-plan|lesson-pack|live-rooms|newcomer-packs|program-content|speaking-enterprise|speaking-task-packs)\.test\.mjs)$/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
+  ],
+  // CONTENT SCHEMA v2 (Prompt 3 Wave 1) — shared/content-schema (v2 + migration), the conditional-read helpers and
+  // the unit detail endpoint they wrap. G-25 round trip over all 162 units, G-26 provenance and hash invalidation.
+  [
+    /^(shared\/content-schema\/|functions\/_lib\/bcpss\/conditional\.js$|functions\/api\/bcpss\/units\/\[unitId\]\.js$|tools\/(content-schema|bcpss-conditional)\.test\.mjs$)/,
+    ["test:content-schema", "validate:gate-coverage", "validate:js-syntax", "check"],
+  ],
+  // FLAGS, FIXTURES, EGRESS PROBE — the flag registry/evaluator/endpoint, the synthetic fixture library and the egress
+  // probe harness. Listed before the broad `shared/` rule below so these paths get their own gates. The probe selftest
+  // opens a browser (a missing one is a SKIP locally, a FAIL in CI).
+  [
+    /^(shared\/(flags|fixtures)\/|functions\/_lib\/flags\.js$|functions\/api\/flags\.js$|tools\/(flags-[\w-]+|fixtures-[\w-]+)(\.test)?\.mjs$|tools\/egress-probe\/|docs\/(flags|testing)\/)/,
+    [
+      "validate:flags",
+      "validate:fixtures-digest",
+      "validate:egress-probe",
+      "test:flags",
+      "validate:gate-coverage",
+      "validate:js-syntax",
+      "check",
+    ],
   ],
   // SCAFFOLD STUDIO — the support layer (src/scaffold, scaffold-studio.css, content/scaffold, the /styleguide view) and its
   // gates. Contrast and content are static; the logic test is `test:scaffold`; the styleguide browser check is on demand
@@ -957,12 +992,20 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // SECURITY + OBSERVABILITY (Prompt 3 Wave 1): shared HTTP plumbing and its logger/CSP/limits, the free-text PII screen, the
+  // health and CSP-report endpoints, and the abuse, synthetic-check and secret-scan tools. `test` runs their suites (they are
+  // *.test.mjs, found by tools/run-tests.mjs); `validate:bcpss` carries api-contract.test.mjs for the shared handler.
+  [
+    /^(functions\/_lib\/(http\.js|http\.test\.mjs|security\/)|functions\/api\/(health(\.test)?|csp-report)\.m?js|shared\/privacy\/|tools\/(abuse-endpoints|synthetic-check|secret-scan)(\.test)?\.mjs|docs\/(security\/|runbooks\/observability\.md))/,
+    ["test", "validate:bcpss", "validate:secrets", "validate:js-syntax", "typecheck", "check"],
+  ],
   // BCPSS K–8 Curriculum-to-Language Hub: standalone pages, Neon/D1 migrations,
   // modular K–8 seed data, and Cloudflare Pages Functions.
   [
     /^(bcpss-teachers\/|family\/bcpss\/|db\/|data\/bcpss-curriculum-seed\.mjs|docs\/(esol-premium|reports\/esol-premium-phases-0-3\.md)|scripts\/(generate-bcpss-packets|audit-bcpss-content)\.mjs|tools\/(validate-bcpss-studio|validate-bcpss-writing|build-bcpss-studio-index|bcpss-studio-context|validate-bcpss-lessons|validate-bcpss-terms|build-bcpss-terms|lesson-kinds\.test|lesson-ui\.test|bcpss-writing-context|bcpss-grammar-gate|bcpss-kinds-visual|package-bcpss-marketplace)\.mjs|schemas\/|config\/ip-denylist\.txt|functions\/(api\/bcpss|api\/public|bcpss-teachers|family|_lib\/bcpss)\/|migrations\/0018_bcpss_ecosystem\.sql)/,
     [
       "validate:bcpss",
+      "test",
       "validate:bcpss-studio",
       "validate:static",
       "validate:js-syntax",

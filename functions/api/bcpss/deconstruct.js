@@ -1,12 +1,15 @@
 import { matchBlueprintVector } from "../../_lib/bcpss/db.js";
 import { deconstructPassage, SUPPORTED_L1S } from "../../_lib/bcpss/embeddings.js";
 import { badRequest, handler, json } from "../../_lib/http.js";
+import { LIMITS } from "../../_lib/security/schema.js";
 
 export const onRequest = handler({
   methods: ["POST"],
+  requireObjectBody: true,
+  ...LIMITS.deconstruct,
   async handle({ body, env }) {
-    const passage = typeof body?.passage === "string" ? body.passage : "";
-    const l1 = typeof body?.l1 === "string" ? body.l1.trim() : "Spanish";
+    const passage = typeof body.passage === "string" ? body.passage : "";
+    const l1 = typeof body.l1 === "string" ? body.l1.trim() : "Spanish";
 
     if (passage.trim().length < 1 || passage.trim().length > 1500) {
       return badRequest("passage must be between 1 and 1500 characters.");

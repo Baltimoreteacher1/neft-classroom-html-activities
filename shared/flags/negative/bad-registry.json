@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "flags": [
+    {
+      "key": "student_content_egress",
+      "description": "Egress root left ON by default (known bad).",
+      "owner": "platform",
+      "default": true,
+      "removalDate": "2027-12-31",
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": true,
+      "sendsStudentContent": false,
+      "requires": []
+    },
+    {
+      "key": "expired_flag",
+      "description": "Past its removal date.",
+      "owner": "platform",
+      "default": false,
+      "removalDate": "2020-01-01",
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": false,
+      "requires": []
+    },
+    {
+      "key": "no_owner",
+      "description": "Missing owner and removal date.",
+      "default": false,
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": false,
+      "requires": []
+    },
+    {
+      "key": "email_owner",
+      "description": "Owner is a personal email.",
+      "owner": "someone@example.com",
+      "default": false,
+      "removalDate": "2027-01-01",
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": false,
+      "requires": []
+    },
+    {
+      "key": "sends_without_egress",
+      "description": "Sends student content but does not require egress.",
+      "owner": "platform",
+      "default": false,
+      "removalDate": "2027-01-01",
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": true,
+      "requires": []
+    },
+    {
+      "key": "cycle_a",
+      "description": "Cycle with cycle_b.",
+      "owner": "platform",
+      "default": false,
+      "removalDate": "2027-01-01",
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": false,
+      "requires": ["cycle_b"]
+    },
+    {
+      "key": "cycle_b",
+      "description": "Cycle with cycle_a.",
+      "owner": "platform",
+      "default": false,
+      "removalDate": "2027-01-01",
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": false,
+      "requires": ["cycle_a"]
+    },
+    {
+      "key": "dangling",
+      "description": "Requires a flag that does not exist, and has a bad environments block.",
+      "owner": "platform",
+      "default": false,
+      "removalDate": "2027-01-01",
+      "environments": { "production": "yes" },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": false,
+      "requires": ["ghost"]
+    },
+    {
+      "key": "dup",
+      "description": "Duplicate key, first copy.",
+      "owner": "platform",
+      "default": false,
+      "removalDate": "2027-01-01",
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": false,
+      "requires": []
+    },
+    {
+      "key": "dup",
+      "description": "Duplicate key, second copy.",
+      "owner": "platform",
+      "default": false,
+      "removalDate": "2027-13-45",
+      "environments": { "production": null, "staging": null, "preview": null, "local": null },
+      "cohorts": { "teacher": [], "class": [], "demo": [] },
+      "killSwitch": false,
+      "sendsStudentContent": false,
+      "requires": []
+    }
+  ]
+}

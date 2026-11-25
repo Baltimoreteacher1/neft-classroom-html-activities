@@ -28,12 +28,16 @@
  * when it needs full control.
  */
 
+import { logError, logRequest, requestIdFrom } from "./security/log.js";
+import { ANON_TOKEN_HEADER, ANON_TOKEN_RE } from "./security/schema.js";
+
 /** Header block every JSON endpoint here already used, in one place. */
 export const JSON_HEADERS = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": `Content-Type, ${ANON_TOKEN_HEADER}, X-Request-Id`,
+  "Access-Control-Expose-Headers": "X-Request-Id",
   "Cache-Control": "no-store",
 };
 
@@ -88,26 +92,79 @@ export function createRateLimiter({ max = 30, windowMs = 60_000, maxTrackedIps =
   };
 }
 
-/** Body size cap: refuse absurd payloads before parsing them. */
+/** Body size cap: refuse absurd payloads before parsing them. Endpoints pass a tighter `maxBodyBytes`. */
 const DEFAULT_MAX_BODY_BYTES = 5_000_000;
+
+const tooLarge = () => json({ ok: false, error: "payload too large" }, 413);
+
+/**
+ * Read a request body with a hard byte cap. Rejects early on a declared Content-Length, and
+ * again while streaming, so a chunked or lying client cannot buffer more than `max` bytes.
+ * Returns `{ raw }` or `{ response }`.
+ */
+export async function readBodyCapped(request, max) {
+  const declared = request.headers.get("Content-Length");
+  if (declared !== null) {
+    const n = Number(declared);
+    if (!Number.isFinite(n) || n < 0) return { response: badRequest("invalid Content-Length") };
+    if (n > max) return { response: tooLarge() };
+  }
+  if (!request.body) return { raw: "" };
+  const reader = request.body.getReader();
+  const chunks = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > max) {
+      await reader.cancel();
+      return { response: tooLarge() };
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    bytes.set(c, offset);
+    offset += c.byteLength;
+  }
+  return { raw: new TextDecoder().decode(bytes) };
+}
+
+/** A well-formed anonymous token, or "" (a malformed one is ignored, never trusted or logged). */
+function anonToken(request) {
+  const t = request.headers.get(ANON_TOKEN_HEADER) || "";
+  return ANON_TOKEN_RE.test(t) ? t : "";
+}
 
 /**
  * Wrap a handler with the guards every endpoint should have had:
  * OPTIONS preflight, method allow-list, body cap + JSON parse, optional rate
- * limit, and a catch-all that returns JSON instead of an HTML 500 and never
- * echoes the internal message to the caller.
+ * limit, request-id propagation, one structured log line per request, and a
+ * catch-all that returns JSON instead of an HTML 500 and never echoes the
+ * internal message to the caller.
+ *
+ * `rateLimit: { max, windowMs, ipMax? }` limits per IP + anonymous token (header
+ * X-Anon-Token, ignored when malformed). `ipMax` additionally caps the IP as a whole so
+ * rotating tokens does not escape the limit. Without a token the key is the IP alone.
+ * `requireObjectBody` rejects a body that parses to anything but a JSON object (400).
  */
 export function handler({
   methods = ["GET", "POST"],
   rateLimit = null,
   maxBodyBytes = DEFAULT_MAX_BODY_BYTES,
+  requireObjectBody = false,
   handle,
 }) {
   const allowed = new Set(methods.map((m) => m.toUpperCase()));
   const limiter = rateLimit ? createRateLimiter(rateLimit) : null;
+  const ipLimiter = rateLimit?.ipMax
+    ? createRateLimiter({ max: rateLimit.ipMax, windowMs: rateLimit.windowMs })
+    : null;
   const allowHeader = [...allowed, "OPTIONS"].join(", ");
 
-  return async function onRequest(context) {
+  async function respond(context, requestId) {
     const { request } = context;
     const method = request.method.toUpperCase();
 
@@ -122,30 +179,57 @@ export function handler({
       return json({ ok: false, error: "method not allowed" }, 405, { Allow: allowHeader });
     }
 
-    if (limiter?.(clientIp(request))) return tooManyRequests();
+    if (limiter) {
+      const ip = clientIp(request);
+      const token = anonToken(request);
+      if (ipLimiter?.(ip) || limiter(token ? `${ip}|${token}` : ip)) return tooManyRequests();
+    }
 
     let body = null;
     if (method !== "GET" && method !== "HEAD") {
-      const declared = Number(request.headers.get("Content-Length") || 0);
-      if (declared > maxBodyBytes) return json({ ok: false, error: "payload too large" }, 413);
-      const raw = await request.text();
-      if (raw.length > maxBodyBytes) return json({ ok: false, error: "payload too large" }, 413);
-      if (raw) {
+      const read = await readBodyCapped(request, maxBodyBytes);
+      if (read.response) return read.response;
+      if (read.raw) {
         try {
-          body = JSON.parse(raw);
+          body = JSON.parse(read.raw);
         } catch {
           return badRequest("body must be valid JSON");
         }
       }
+      if (requireObjectBody && (body === null || typeof body !== "object" || Array.isArray(body))) {
+        return badRequest("body must be a JSON object");
+      }
     }
 
     try {
-      const result = await handle({ ...context, body });
+      const result = await handle({ ...context, body, requestId });
       return result instanceof Response ? result : json(result ?? { ok: true });
     } catch (err) {
-      // The caller gets a stable JSON error; the detail goes to the log only.
-      console.error("api error", request.url, err?.stack || err);
+      // The caller gets a stable JSON error; the log gets the error class and first frame only,
+      // because an error message can echo request text.
+      logError({ request, params: context.params, requestId, err });
       return json({ ok: false, error: "internal error" }, 500);
     }
+  }
+
+  return async function onRequest(context) {
+    const startedAt = Date.now();
+    const requestId = requestIdFrom(context.request);
+    let response = await respond(context, requestId);
+    try {
+      response.headers.set("X-Request-Id", requestId);
+    } catch {
+      // Immutable headers (a proxied fetch Response): rebuild with the id attached.
+      response = new Response(response.body, response);
+      response.headers.set("X-Request-Id", requestId);
+    }
+    logRequest({
+      request: context.request,
+      params: context.params,
+      requestId,
+      status: response.status,
+      startedAt,
+    });
+    return response;
   };
 }
