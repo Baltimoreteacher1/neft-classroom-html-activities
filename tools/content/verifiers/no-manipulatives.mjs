@@ -22,7 +22,7 @@
 // (physical tiles) and stays flagged, `Fundations keyword cards` are paper and pass, "blocks sunlight/the view", "building
 // blocks of" (idiom) and "block of houses". Remaining uncertainty: a clause such as "Count the cubes in the picture" is
 // reported as MANIP_DIRECTIVE because the verb "count" alone is not trusted to mean "look at a drawing"; a reviewer decides.
-import { isMathOrScience, rootOf, walkStrings } from "./lib/walk.mjs";
+import { derivedPrefixes, isMathOrScience, rootOf, walkStrings } from "./lib/walk.mjs";
 
 export const name = "no-manipulatives";
 export const coverageCodes = ["MANIP_CHECKED"];
@@ -92,8 +92,10 @@ export function verify(target) {
   const findings = [];
   const weakOk = isMathOrScience(target);
   let checked = 0;
+  // Derived activities (Listening Lab) copy authored strings verbatim; the authored source is scanned (see derivedPrefixes).
+  const derived = derivedPrefixes(target);
   for (const { path, text } of walkStrings(rootOf(target))) {
-    if (SKIP_PATH.test(path)) continue;
+    if (SKIP_PATH.test(path) || derived.some((p) => path.startsWith(p))) continue;
     if (WRAPPER.test(text)) continue;
     checked += 1;
     if (/(?:^|\.)materials\[\d+\]$/.test(path)) {

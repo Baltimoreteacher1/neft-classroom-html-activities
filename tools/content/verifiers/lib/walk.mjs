@@ -74,6 +74,17 @@ export function* walkObjects(value, path = "") {
 }
 
 /** Studio plus lessons as one rooted object so paths read "studio.activities[3]..." / "lessons[1].arc[2]...". */
+/**
+ * Path prefixes of DERIVED activities (the Listening Lab). Their items are verbatim copies of authored strings
+ * (gate G-53 proves each equals its source) and their other text is fixed template wording, so verifiers that count
+ * repeats of authored text skip them: the authored source is still scanned, and counting the copy would count every
+ * existing finding twice. Verifiers that judge text on its own merits (sensitivity, arithmetic) still read them.
+ */
+export const derivedPrefixes = (target) =>
+  (target.studio?.activities || []).flatMap((a, i) =>
+    a?.derived ? [`studio.activities[${i}].`] : [],
+  );
+
 export const rootOf = (target) => ({ studio: target.studio, lessons: target.lessons || [] });
 
 export const subjectOf = (target) =>

@@ -23,7 +23,7 @@
 // a clue or an audio button. A reviewer decides which are worth rewriting; the baseline only stops the count from rising.
 import { BCPSS_UNITS } from "../../../data/bcpss-curriculum-seed.mjs";
 import { loadTarget } from "./lib/targets.mjs";
-import { rootOf, walkStrings } from "./lib/walk.mjs";
+import { derivedPrefixes, rootOf, walkStrings } from "./lib/walk.mjs";
 import { stemWord, wordsOf } from "./lib/words.mjs";
 
 export const name = "duplicates";
@@ -32,7 +32,7 @@ export const coverageCodes = ["DUP_CHECKED"];
 // Scaffolds that every unit shares on purpose: supports and tips, level descriptors, commands, frames, connectors, material lists,
 // the teacher card, picture cues, word families, tell frames and move stems.
 const EXEMPT =
-  /(?:^|\.)(?:support|tip|by_level|differentiation|listen_for|checklist|command|connectors|frames|tell_frames|stem|materials|teacher_card|cue|family|label|wida|standards)(?:\[|\.|$)/;
+  /(?:^|\.)(?:support|tip|by_level|differentiation|listen_for|checklist|command|connectors|frames|tell_frames|stem|materials|materials_revision|teacher_card|cue|family|label|wida|standards)(?:\[|\.|$)/;
 const MIN_WORDS = 8;
 const SIM = 0.8;
 const BOILERPLATE_OTHER_UNITS = 3;
@@ -109,8 +109,10 @@ function ownTerms(target) {
 export function contentStrings(target) {
   const terms = ownTerms(target);
   const seen = new Map();
+  // Derived activities copy authored strings by design (see derivedPrefixes); the residue and title-leak checks below still read them.
+  const derived = derivedPrefixes(target);
   for (const { path, text } of walkStrings(rootOf(target))) {
-    if (EXEMPT.test(path)) continue;
+    if (EXEMPT.test(path) || derived.some((p) => path.startsWith(p))) continue;
     const key = norm(text);
     if (key.split(" ").length < MIN_WORDS || seen.has(key)) continue;
     const stems = new Set(wordsOf(text).map(stemWord));

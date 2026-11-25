@@ -52,6 +52,14 @@ export const KIND_TIER = Object.freeze({
   write_scaffold: 2,
 });
 
+/**
+ * Kinds the content pipeline DERIVES at load time (the Listening Lab: db/seeds/bcpss/v2/listening-lab.mjs) and that no
+ * author writes, so they are not in ACTIVITY_KINDS or the content schema. Accepted only on an activity that carries
+ * its `derived` marker, so an unknown hand-written kind still throws.
+ */
+export const DERIVED_KIND_DOMAINS = Object.freeze({ listen_and_show: ["listening"] });
+export const DERIVED_KIND_TIER = Object.freeze({ listen_and_show: 0 });
+
 const ELA_STANDARD = /^(RL|RI|RF|SL|W|L)\./;
 
 export function gradeBandIndex(grade) {
@@ -63,7 +71,7 @@ export function gradeBandIndex(grade) {
 }
 
 export function pitchBand(kind, grade) {
-  const sum = KIND_TIER[kind] + gradeBandIndex(grade);
+  const sum = (KIND_TIER[kind] ?? DERIVED_KIND_TIER[kind]) + gradeBandIndex(grade);
   return sum <= 1 ? "1_2" : sum === 2 ? "3_4" : "5_6";
 }
 
@@ -93,7 +101,8 @@ const standardDomains = (code) =>
     : ["reading", "listening"];
 
 function languageDomainsOf(activity) {
-  if (!ACTIVITY_KINDS.includes(activity.kind)) {
+  const derivedOk = Boolean(activity.derived) && activity.kind in DERIVED_KIND_DOMAINS;
+  if (!ACTIVITY_KINDS.includes(activity.kind) && !derivedOk) {
     throw new Error(`unknown activity kind "${activity.kind}"`);
   }
   if (!ACTIVITY_DOMAINS.includes(activity.domain)) {
@@ -102,7 +111,9 @@ function languageDomainsOf(activity) {
   const own = LANG_DOMAINS.includes(activity.domain.toLowerCase())
     ? [activity.domain.toLowerCase()]
     : [];
-  return [...new Set([...own, ...KIND_DOMAINS[activity.kind]])];
+  return [
+    ...new Set([...own, ...(KIND_DOMAINS[activity.kind] ?? DERIVED_KIND_DOMAINS[activity.kind])]),
+  ];
 }
 
 function assertUnit(unit) {

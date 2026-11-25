@@ -22,7 +22,7 @@
 // at all, only weapons and acts of violence; "shoot" is only flagged when aimed at a person or animal (a basketball, a photo and
 // plant shoots are ordinary); "kill" is flagged in all forms except "kill time"; a gendered pair in a short sentence ("Mom bakes,
 // Dad paints") is flagged once even when both roles are mixed - a reviewer reads it, and quoted historical text is not exempt.
-import { isMathOrScience, rootOf, subjectOf, walkStrings } from "./lib/walk.mjs";
+import { derivedPrefixes, isMathOrScience, rootOf, subjectOf, walkStrings } from "./lib/walk.mjs";
 
 export const name = "sensitivity";
 export const coverageCodes = ["SENS_CHECKED"];
@@ -112,8 +112,10 @@ export function verify(target) {
   const mathSci = isMathOrScience(target);
   const names = [];
   let checked = 0;
+  // Derived activities (Listening Lab) copy authored strings verbatim; the authored source is scanned (see derivedPrefixes).
+  const derived = derivedPrefixes(target);
   for (const { path, text } of walkStrings(rootOf(target))) {
-    if (SKIP_PATH.test(path)) continue;
+    if (SKIP_PATH.test(path) || derived.some((p) => path.startsWith(p))) continue;
     checked += 1;
     const plain = text.replace(QUOTED, (q) => (q.length > 40 ? q : " "));
     if (young) {

@@ -37,9 +37,16 @@ test("constants match the content schema (single source of truth)", () => {
   assert.deepEqual(Object.keys(KIND_TIER).sort(), [...KINDS].sort());
 });
 
-test("G-29 sweep: 162 units, 2,011 activities, every activity has >= 1 node, no orphans", () => {
+test("G-29 sweep: 162 units, 2,011 authored + derived activities, every activity has >= 1 node, no orphans", () => {
   assert.equal(loaded.length, 162);
-  assert.equal(tagged.length, 2011);
+  const all = loaded.flatMap((l) => l.studio.activities);
+  const derived = all.filter((a) => a.derived);
+  assert.equal(all.length - derived.length, 2011, "authored activities");
+  assert.ok(
+    derived.every((a) => a.derived.status === "draft"),
+    "derived activities are draft",
+  );
+  assert.equal(tagged.length, all.length);
   const findings = coverageFindings(graph, tagged);
   assert.deepEqual(findings.slice(0, 10), []);
   assert.equal(new Set(tagged.map((t) => t.id)).size, tagged.length, "activity ids are unique");
