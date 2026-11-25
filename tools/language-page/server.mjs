@@ -10,6 +10,7 @@ import * as apiTelemetry from "../../functions/api/bcpss/telemetry.js";
 import * as apiLessons from "../../functions/api/bcpss/units/[unitId]/lessons.js";
 import * as apiUnit from "../../functions/api/bcpss/units/[unitId].js";
 import * as apiUnits from "../../functions/api/bcpss/units.js";
+import * as apiFlags from "../../functions/api/flags.js";
 import * as apiReviewSummary from "../../functions/api/review/summary.js";
 import { newEnv } from "../review-test-kit.mjs";
 
@@ -39,7 +40,6 @@ function route(pathname) {
   const m = pathname.match(/^\/api\/bcpss\/units\/([^/]+)(\/lessons)?$/);
   if (m) return { mod: m[2] ? apiLessons : apiUnit, params: { unitId: decodeURIComponent(m[1]) } };
   const exact = {
-    "/api/flags": apiFlags,
     "/api/bcpss/units": apiUnits,
     "/api/bcpss/insights": apiInsights,
     "/api/bcpss/pathways": apiPathways,

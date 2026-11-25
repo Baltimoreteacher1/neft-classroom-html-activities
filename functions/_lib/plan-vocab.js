@@ -5624,6 +5624,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/bcpss-teachers/my-week/",
+    title: "My Week planner — BCPSS Teachers",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/bcpss-teachers/pathways/",
     title: "Year Pathways — BCPSS K–8 Curriculum & Language Bridge",
     category: "Tool",
