@@ -290,7 +290,7 @@ const COVERAGE = [
   // THE LANGUAGE PAGE TRUST GATES: what the host sends over the network, what its copy claims, and what its docs say
   // about the code. The network gate opens a browser; a missing one is a SKIP locally and a FAIL in CI.
   [
-    /^(tools\/(validate-language-page-network|access-lab-claims\.test|language-page-docs-truth\.test)\.mjs|data\/(language-page-third-parties|language-page-claims-review)\.json|docs\/language-page\/(claims-ledger|decisions-2026-11-24)\.md|docs\/(language-page-migration|wida-data-studio-architecture|wida-data-privacy|class-platform)\.md)$/,
+    /^(tools\/(validate-language-page-network|access-lab-claims\.test|language-page-docs-truth\.test|generate-language-page-privacy-doc|language-page-privacy-doc\.test)\.mjs|data\/(language-page-third-parties|language-page-claims-review)\.json|docs\/language-page\/(claims-ledger|decisions-2026-11-24|privacy|acr|logic-model|efficacy-plan|usability-protocol|pilot-kit|program-state|human-required)\.md|docs\/(language-page-migration|wida-data-studio-architecture|wida-data-privacy|class-platform)\.md)$/,
     ["validate:language-page-network", "test", "check"],
   ],
   [

@@ -7,6 +7,11 @@
  * titles loaded from JSON, code/pre, and the Spanish-mode language switch itself. What is left is chrome:
  * if it contains English function words ("the", "your", "and", "you", "to", "with"...) it was not localized.
  *
+ * It also measures LANGUAGE TAGGING: the lab keeps <html lang="en"> (the practice text is English) and marks its
+ * Spanish interface text lang="es" element by element, which is what a screen reader needs to pronounce it. Of the
+ * Spanish-looking interface text it finds, at least TAG_FLOOR must sit inside a lang="es" element. Measured live on
+ * 2026-11-24: 104 of 105, 161 of 163 and 124 of 125 text nodes on three routes (about 99%).
+ *
  *   node tools/access-es-leak-scan.mjs [--max N] [--verbose]
  */
 import { createReadStream, existsSync, statSync } from "node:fs";
@@ -51,6 +56,11 @@ await new Promise((resolve) => server.listen(0, resolve));
 const origin = `http://localhost:${server.address().port}`;
 
 const BASE = "/access-practice-lab";
+/** Share of Spanish interface text that must sit inside lang="es" (see header). */
+const TAG_FLOOR = 0.97;
+// Spanish interface text: accents or common Spanish function words, and none of the English ones the leak scan uses.
+const SPANISH =
+  /[áéíóúñ¿¡]|(?<!\p{L})(el|la|los|las|de|del|para|tu|tus|con|una|un|por|que|en|al|su|sus|es|más)(?!\p{L})/iu;
 const ROUTES = [
   "/",
   "/warmup?grades=6-8",
@@ -119,7 +129,9 @@ const ENGLISH =
 const STRONG =
   /(?<!\p{L})(the|your|you|and|with|this|that|from|are|will|can|have|each|then)(?!\p{L})/iu;
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(
+  process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
+);
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 await context.addInitScript(() =>
   localStorage.setItem(
@@ -133,6 +145,8 @@ page.on("pageerror", (e) => !/web-vitals/.test(e.message) && pageErrors.push(e.m
 
 let total = 0;
 const report = [];
+const tagTotals = { spanish: 0, tagged: 0 };
+const tagRoutes = [];
 for (const route of ROUTES) {
   await page.goto(`${origin}${BASE}${route}`, { waitUntil: "networkidle" }).catch(() => {});
   await page.waitForTimeout(350);
@@ -166,6 +180,33 @@ for (const route of ROUTES) {
     },
     { ENGLISH: ENGLISH.source, STRONG: STRONG.source },
   );
+  const tags = await page.evaluate(
+    ({ SPANISH, ENGLISH }) => {
+      const es = new RegExp(SPANISH, "iu");
+      const en = new RegExp(ENGLISH, "iu");
+      const SKIP =
+        "script, style, pre, code, svg, textarea, input, .stimulus, .passage, .prompt-text, .choice, .choice-text, .opt, [data-content], .act-context";
+      let spanish = 0;
+      let tagged = 0;
+      const untagged = [];
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const text = n.textContent.replace(/\s+/g, " ").trim();
+        const el = n.parentElement;
+        if (text.length < 12 || !el || el.closest(SKIP) || el.closest("[hidden]")) continue;
+        if (getComputedStyle(el).display === "none" || el.closest("#labBuild")) continue;
+        if (!es.test(text) || en.test(text)) continue;
+        spanish += 1;
+        if ((el.closest("[lang]")?.getAttribute("lang") || "").startsWith("es")) tagged += 1;
+        else if (untagged.length < 4) untagged.push(text.slice(0, 80));
+      }
+      return { spanish, tagged, untagged };
+    },
+    { SPANISH: SPANISH.source, ENGLISH: ENGLISH.source },
+  );
+  tagTotals.spanish += tags.spanish;
+  tagTotals.tagged += tags.tagged;
+  tagRoutes.push([route, tags]);
   total += leaks.length;
   report.push([route, leaks]);
 }
@@ -180,6 +221,23 @@ for (const [route, leaks] of report) {
 console.log(
   `\naccess-es-leak-scan: ${ROUTES.length} routes, ${total} English interface string(s) found in Español mode`,
 );
+const share = tagTotals.spanish ? tagTotals.tagged / tagTotals.spanish : 0;
+console.log(
+  `language tagging: ${tagTotals.tagged} of ${tagTotals.spanish} Spanish interface text nodes sit inside lang="es" (${(share * 100).toFixed(1)}%, floor ${TAG_FLOOR * 100}%)`,
+);
+const worst = tagRoutes
+  .filter(([, t]) => t.spanish >= 8)
+  .map(([route, t]) => [route, t.tagged / t.spanish, t])
+  .sort((a, b) => a[1] - b[1])
+  .slice(0, 4);
+for (const [route, r, t] of worst)
+  if (VERBOSE || r < TAG_FLOOR)
+    console.log(`   ${route}: ${(r * 100).toFixed(0)}% e.g. ${t.untagged.slice(0, 2).join(" | ")}`);
+const tagFail = tagTotals.spanish < 500 || share < TAG_FLOOR;
+if (tagTotals.spanish < 500)
+  console.log(
+    `language tagging: only ${tagTotals.spanish} Spanish text nodes measured — a sweep that found almost nothing proves nothing`,
+  );
 if (pageErrors.length)
   console.log(`page errors: ${[...new Set(pageErrors)].slice(0, 3).join(" | ")}`);
-process.exit(total > MAX || pageErrors.length ? 1 : 0);
+process.exit(total > MAX || pageErrors.length || tagFail ? 1 : 0);

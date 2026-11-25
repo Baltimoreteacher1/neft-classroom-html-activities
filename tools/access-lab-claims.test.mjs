@@ -66,6 +66,7 @@ export function tagComplaints(source, file, rows) {
 /** What a public page may not say about itself without a ledger row behind it. */
 export const CLAIM_PHRASES = [
   /\bpublisher[- ]grade\b/i,
+  /\bpublication[- ]grade\b/i,
   /\bresearch[- ]based\b/i,
   /\bresearch (shows|suggests|proves)\b/i,
   /\bstudies show\b/i,
@@ -109,6 +110,16 @@ export function htmlClaimSurface(html) {
   const t = /<title>([^<]*)<\/title>/i.exec(html);
   if (t) bits.push(t[1]);
   return bits.join("\n");
+}
+
+/** The words a visitor reads on a page: markup, scripts, styles and comments removed. */
+export function htmlVisibleText(html) {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<(script|style|noscript)\b[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/[ \t]+/g, " ");
 }
 
 export function staleReviewEntries(review, hitKeys) {
@@ -176,6 +187,13 @@ export function staleReviewEntries(review, hitKeys) {
   assert.ok(
     /Publisher-grade/.test(surface) && !/var proven/.test(surface),
     "HTML surface extraction is wrong",
+  );
+  const visible = htmlVisibleText(
+    '<p>Our publication-grade feedback</p><script>var s="publisher-grade"</script><style>.x{}</style><!-- proven -->',
+  );
+  assert.ok(
+    phraseHits(visible).length === 1 && /publication/i.test(visible),
+    "visible text must keep prose and drop scripts",
   );
   const keys = new Set(["a.js::proven"]);
   assert.equal(
@@ -261,7 +279,11 @@ for (const f of htmlFiles) {
   const src = readFileSync(f, "utf8");
   const rel = relative(ROOT, f);
   complaints.push(...tagComplaints(src, rel, rows));
-  for (const h of phraseHits(htmlClaimSurface(src))) {
+  // The studios' own prose is public copy too; scripts (praise strings a learner is shown) are not scanned.
+  const surface = /^wida-access\//.test(rel)
+    ? `${htmlClaimSurface(src)}\n${htmlVisibleText(src)}`
+    : htmlClaimSurface(src);
+  for (const h of phraseHits(surface)) {
     const key = `${rel}::${h.phrase.toLowerCase()}`;
     hitKeys.add(key);
     if (!allowed.has(key)) complaints.push(`${rel}: page text says "${h.phrase}" — ${h.text}`);
@@ -281,5 +303,5 @@ if (complaints.length) {
   process.exit(1);
 }
 console.log(
-  `access-lab-claims: PASS (${rows.length} ledger rows, ${jsFiles.length} scripts and ${htmlFiles.length} pages swept, ${review.length} reviewed exception(s), 8 mutation self-tests)`,
+  `access-lab-claims: PASS (${rows.length} ledger rows, ${jsFiles.length} scripts and ${htmlFiles.length} pages swept, ${review.length} reviewed exception(s), 9 mutation self-tests)`,
 );

@@ -94,7 +94,12 @@ jobs:
   validate-and-build:
     name: Required quality gate
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # 25 -> 75 (Joel, 2026-11-25: "Handle all needs your attention"). `npm test` alone now takes about 24 minutes
+    # (1,049 scripts), so the 25-minute budget cancelled this job before it reached validation, the build or the
+    # browser journeys: the last five runs on main all ended `cancelled` at 25m, and the gate reported nothing.
+    # The checks below are independent and each reports even when an earlier one failed, so the job needs room
+    # for all of them. If this ever needs to be tighter again, SPLIT the suite; do not shrink the budget back.
+    timeout-minutes: 75
     permissions:
       contents: read
     steps:
