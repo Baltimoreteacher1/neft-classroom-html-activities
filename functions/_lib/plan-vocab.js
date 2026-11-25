@@ -5612,6 +5612,18 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/bcpss-teachers/demo/",
+    title: "Demo Mode (Synthetic Data Only) — BCPSS K–8 Curriculum & Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/bcpss-teachers/efficacy/",
+    title: "Efficacy Brief — BCPSS K–8 Curriculum & Language Bridge",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/bcpss-teachers/insights/",
     title: "Beta Usage — BCPSS K–8 Curriculum & Language Bridge",
     category: "Tool",
@@ -5632,6 +5644,12 @@ export const ACTIVITIES = [
   {
     path: "/bcpss-teachers/studio/",
     title: "BCPSS Teacher Studio",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/bcpss-teachers/trust/",
+    title: "Privacy & Trust — BCPSS K–8 Curriculum & Language Bridge",
     category: "Tool",
     unit: null,
   },
