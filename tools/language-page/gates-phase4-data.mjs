@@ -210,7 +210,7 @@ export function checkTierArtifacts({ units, list, cands, baseline }) {
     errors.push("tier-candidates.json counts differ from the rubric result");
   const rows = new Map(
     units.flatMap((d) =>
-      d.connections[0].tier2_tier3_vocab.map((v) => [`${d.unit.id}|${v.term}`, v.tier]),
+      d.connections[0].tier2_tier3_vocab.map((v) => [`${d.unit.id}|${fold(v.term)}`, v.tier]),
     ),
   );
   for (const c of cands.candidates) {
@@ -230,11 +230,7 @@ export function checkTierArtifacts({ units, list, cands, baseline }) {
       errors.push(`${c.term}: Tier 3 suggestions are low confidence`);
     if (!c.units.length) errors.push(`${c.term}: no units listed`);
     for (const u of c.units) {
-      const tier =
-        rows.get(`${u.unit}|${c.term}`) ??
-        rows.get(
-          `${u.unit}|${[...rows.keys()].map((k) => k.split("|")[1]).find((t) => t.toLowerCase() === c.term.toLowerCase())}`,
-        );
+      const tier = rows.get(`${u.unit}|${fold(c.term)}`);
       if (tier === undefined) errors.push(`${c.term}: ${u.unit} has no such term`);
       else if (tier !== u.current)
         errors.push(`${c.term}: ${u.unit} current tier ${tier} != ${u.current}`);
