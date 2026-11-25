@@ -2,6 +2,8 @@
 // exports) and the browser (Studio badge) so the wording cannot drift. Nothing here ever marks content
 // "reviewed": that state comes only from lessons[].review set by a person.
 
+// Short form for page footers (print and Word); the full notice appears once in the document.
+export const DRAFT_FOOTER = "Draft: not yet reviewed";
 export const DRAFT_NOTICE = "Draft: not yet reviewed by a teacher or language specialist.";
 
 const REVIEW_FIELDS = ["pedagogy", "language_qa"];

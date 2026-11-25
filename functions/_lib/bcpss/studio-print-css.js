@@ -24,9 +24,9 @@ function toneRules() {
   return rules.join("\n");
 }
 
-function pageRules(unitTitle) {
+function pageRules(unitTitle, footerLabel) {
   const foot = (extra = "") =>
-    `@bottom-left{content:${cssString(unitTitle)};${extra}} @bottom-center{content:"The Language Page";${extra}} @bottom-right{content:"Page " counter(page);${extra}}`;
+    `@bottom-left{content:${cssString(unitTitle)};${extra}} @bottom-center{content:${cssString(footerLabel ? `The Language Page · ${footerLabel}` : "The Language Page")};${extra}} @bottom-right{content:"Page " counter(page);${extra}}`;
   const style =
     "font:600 8pt/1 " +
     FONT_BODY +
@@ -38,9 +38,9 @@ function pageRules(unitTitle) {
 /* ${style.length} */`;
 }
 
-export function printCss(unitTitle) {
+export function printCss(unitTitle, footerLabel) {
   const T = TOKENS;
-  return `${pageRules(unitTitle)}
+  return `${pageRules(unitTitle, footerLabel)}
 ${toneRules()}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:#fff;color:${T.ink};font-family:${FONT_BODY};font-size:11pt;line-height:1.38;-webkit-print-color-adjust:exact;print-color-adjust:exact}

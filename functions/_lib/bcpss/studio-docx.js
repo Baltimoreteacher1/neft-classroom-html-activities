@@ -37,13 +37,13 @@ ${head("Heading1", "heading 1", 50, 0, 160)}${head("Heading2", "heading 2", 34, 
 <w:style w:type="paragraph" w:styleId="Footer"><w:name w:val="footer"/><w:basedOn w:val="Normal"/><w:uiPriority w:val="99"/></w:style></w:styles>`;
 }
 
-function footerXml(unitTitle, width) {
+function footerXml(unitTitle, width, footerLabel) {
   const o = { bold: true, size: 16, color: MUTED };
   return wFooter(
     wParagraph(
       textRuns(unitTitle, o) +
         wRun("", { ...o, tab: true }) +
-        wRun("The Language Page", o) +
+        wRun(footerLabel ? `The Language Page · ${footerLabel}` : "The Language Page", o) +
         wRun("", { ...o, tab: true }) +
         wRun("Page ", o) +
         wField("PAGE", o),
@@ -109,8 +109,8 @@ export function renderStudioDocx(
     documentXml: wDocument(documentBody(doc)),
     stylesXml: stylesXml(),
     footers: {
-      [FOOTERS.portrait]: footerXml(doc.unitTitle, WIDTH.portrait),
-      [FOOTERS.landscape]: footerXml(doc.unitTitle, WIDTH.landscape),
+      [FOOTERS.portrait]: footerXml(doc.unitTitle, WIDTH.portrait, doc.footerLabel),
+      [FOOTERS.landscape]: footerXml(doc.unitTitle, WIDTH.landscape, doc.footerLabel),
       [FOOTERS.bleed]: wFooter(wGap(20)),
     },
     title: doc.title,

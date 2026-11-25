@@ -1,6 +1,7 @@
 // Language Studio print: renders a document model (studio-doc.js) to a complete, print-ready HTML string,
 // and exposes the one entry point used by the export endpoint and tests: renderStudioPart().
 
+import { DRAFT_FOOTER } from "../../../shared/bcpss-provenance.js";
 import { levelFromWida, palette, TOKENS } from "./studio-doc.js";
 import { buildBook } from "./studio-doc-book.js";
 import { buildFamily } from "./studio-doc-family.js";
@@ -241,10 +242,11 @@ export function renderDocumentHtml(doc) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(doc.title)} — ${esc(doc.partLabel || "The Language Page")}</title>
-<style>${printCss(doc.unitTitle)}</style>
+<style>${printCss(doc.unitTitle, doc.footerLabel)}</style>
 </head>
 <body class="${body}">
 ${secs}
+${doc.notice ? `<p class="draft-notice" style="font-size:8.5pt;margin:6pt 0 0;color:#7a3a07">${esc(doc.notice)}</p>` : ""}
 </body>
 </html>`;
 }
@@ -267,11 +269,13 @@ export const PRINT_PARTS = [
 const KITS = new Set(["cards", "bingo", "wall", "poster", "strips", "talk"]);
 
 // part: packet | book | key | cards | bingo | wall | poster | strips | talk | family | writing | writing-key | activity-<n>
-/** Every export of unreviewed content carries the draft notice as the last line of the last section. */
+/** Unreviewed content marks every export: `doc.notice` (full text) and `doc.footerLabel` (every page footer). */
 function withProvenanceNotice(doc, detail) {
   const notice = detail?.provenance?.notice;
-  const last = doc?.sections?.[doc.sections.length - 1];
-  if (notice && last) last.blocks.push({ type: "footerNote", text: notice });
+  if (notice && doc) {
+    doc.notice = notice;
+    doc.footerLabel = DRAFT_FOOTER;
+  }
   return doc;
 }
 

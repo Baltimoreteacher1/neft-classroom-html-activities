@@ -5,7 +5,7 @@ import {
   buildStudioDocument,
   renderStudioPart,
 } from "../../functions/_lib/bcpss/studio-print-html.js";
-import { DRAFT_NOTICE } from "../../shared/bcpss-provenance.js";
+import { DRAFT_FOOTER, DRAFT_NOTICE } from "../../shared/bcpss-provenance.js";
 import { clone } from "./dataset.mjs";
 import { setupDom } from "./render.mjs";
 
@@ -35,9 +35,8 @@ export async function checkProvenance(detail, lessonsDoc, renderOverview) {
     if (!html.includes(DRAFT_NOTICE)) errors.push(`${id}: HTML/PDF export lacks the draft notice`);
     for (const part of ["book", "family"]) {
       const doc = buildStudioDocument(detail, { part, level: "l3_4" });
-      const blocks = doc.sections.at(-1).blocks;
-      if (!blocks.some((b) => b.type === "footerNote" && b.text === DRAFT_NOTICE))
-        errors.push(`${id}: ${part} document model (Word/PDF) lacks the notice`);
+      if (doc.notice !== DRAFT_NOTICE || doc.footerLabel !== DRAFT_FOOTER)
+        errors.push(`${id}: ${part} document model (Word/PDF) lacks the notice and footer label`);
     }
   }
   return errors;
