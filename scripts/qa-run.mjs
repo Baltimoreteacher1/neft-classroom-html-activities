@@ -1040,6 +1040,12 @@ const COVERAGE = [
     /^(functions\/_lib\/(http\.js|http\.test\.mjs|security\/)|functions\/api\/(health(\.test)?|csp-report)\.m?js|shared\/privacy\/|tools\/(abuse-endpoints|synthetic-check|secret-scan)(\.test)?\.mjs|docs\/(security\/|runbooks\/observability\.md))/,
     ["test", "validate:bcpss", "validate:secrets", "validate:js-syntax", "typecheck", "check"],
   ],
+  // Language Page truthfulness gates (G-01..G-12): vocabulary cards, cognate stats, telemetry/insights contract,
+  // provenance, palette. Runs the real modules in jsdom, the real handlers in-process and two browser probes.
+  [
+    /^(shared\/bcpss-[a-z-]+\.js|tools\/(validate-language-page\.mjs|language-page\/|audit\/language-page-baseline\.mjs)|data\/language-page-baselines\.json)/,
+    ["validate:language-page", "validate:bcpss", "validate:js-syntax", "check"],
+  ],
   // BCPSS K–8 Curriculum-to-Language Hub: standalone pages, Neon/D1 migrations,
   // modular K–8 seed data, and Cloudflare Pages Functions.
   [

@@ -5613,7 +5613,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/bcpss-teachers/insights/",
-    title: "District Trends — BCPSS K–8 Curriculum & Language Bridge",
+    title: "Beta Usage — BCPSS K–8 Curriculum & Language Bridge",
     category: "Tool",
     unit: null,
   },
