@@ -1,0 +1,50 @@
+[
+  {
+    "path": "activities[].activity_order",
+    "reason": "Sort key only: the activity rows are shown in this order (db.js and unit-packet.js sort by it) but the number itself is never printed."
+  },
+  {
+    "path": "connections[].interactive_cloze_items",
+    "reason": "Derived copy of studio.vocab sentences (clozeFromVocab in functions/_lib/bcpss/studio.js); the playable form is the Language Studio cloze activity and the unit packet prints it."
+  },
+  {
+    "path": "esol_pack.unit_id",
+    "reason": "Identity key that repeats unit.id; there is nothing for a teacher to read, and every routine block is already keyed by the open unit."
+  },
+  {
+    "path": "esol_pack.version",
+    "reason": "Generator version number of the ESOL pack (ESOL_PACK_VERSION); bookkeeping for cache and fixtures, not teaching content."
+  },
+  {
+    "path": "esol_pack.week_plan",
+    "reason": "Reserved for the A2 My Week planner, which has to enforce the teacher's block length; until it ships the 5-day plan is printed in the unit packet. Remove this entry when A2 renders it."
+  },
+  {
+    "path": "family_card.en_summary",
+    "reason": "Legacy two-line family card superseded by the bilingual family guide (family.* and /family/bcpss/); the summary reaches teachers only through the unit packet export."
+  },
+  {
+    "path": "family_card.es_summary",
+    "reason": "Spanish half of the legacy family card, superseded by the family guide (family.* and /family/bcpss/); it is printed in the unit packet and has no screen of its own."
+  },
+  {
+    "path": "family_card.translations_json",
+    "reason": "Per-language copy of the legacy family card (title, summary, dinner question) that family-guide.js reads server-side; the family guide page is the screen that shows it."
+  },
+  {
+    "path": "family_card.unit_id",
+    "reason": "Identity key that repeats unit.id on the legacy family card; nothing for a teacher to read."
+  },
+  {
+    "path": "module.unit_id",
+    "reason": "Identity key that repeats unit.id on the ELA module facts; the module block is shown through studio-module.js using module.title and week data."
+  },
+  {
+    "path": "provenance.notice",
+    "reason": "The Overview and exports print the same sentence from the shared DRAFT_NOTICE constant (shared/bcpss-provenance.js, proven by G-07); the field is a copy carried on API payloads."
+  },
+  {
+    "path": "provenance.source",
+    "reason": "Internal source key (draft_standards_based, authored) that is already turned into the visible provenance label; the raw key would only confuse a teacher."
+  }
+]
