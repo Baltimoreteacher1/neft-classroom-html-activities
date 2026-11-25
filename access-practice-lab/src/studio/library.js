@@ -13,6 +13,8 @@ import {
   saveLocal,
   studioApi,
 } from "./drafts.js";
+import { ORIGIN_FILTERS, groupVariants, isPlatform, originOf, passesOrigin } from "./editor/customize-logic.js";
+import { TIER_LABEL } from "./editor/source-banner.js";
 import { button, clear, field, h, openDialog, say, select, textInput } from "./editor/ui.js";
 
 const KIND = {
@@ -20,6 +22,17 @@ const KIND = {
   worksheet: ["Worksheet", "Hoja de trabajo"],
   game: ["Game", "Juego"],
   check: ["Quick check", "Revisión rápida"],
+};
+const ORIGIN = {
+  customized: ["Customized from a platform activity", "Personalizada a partir de una actividad de la plataforma"],
+  created: ["Created from scratch", "Creada desde cero"],
+  version: ["Differentiated version", "Versión diferenciada"],
+};
+const ORIGIN_OPTION = {
+  all: ["All", "Todas"],
+  customized: ["Customized", "Personalizadas"],
+  created: ["Created", "Creadas"],
+  version: ["Versions", "Versiones"],
 };
 const STATE = {
   published: ["Published", "Publicada"],
@@ -67,8 +80,8 @@ export async function loadItems(fetchImpl) {
   return [...byId.values()].sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
-export function mountLibrary(root, { S, goTo, onOpen, onNew, onPreview, onShare, fetchImpl }) {
-  const state = { items: [], q: "", status: "all", grade: "", subject: "" };
+export function mountLibrary(root, { S, goTo, onOpen, onNew, onCustomize, onPreview, onShare, fetchImpl }) {
+  const state = { items: [], q: "", status: "all", origin: "all", grade: "", subject: "" };
   const list = h("div.st-lib-list");
   const empty = h(
     "div.st-empty",
@@ -77,7 +90,11 @@ export function mountLibrary(root, { S, goTo, onOpen, onNew, onPreview, onShare,
       "p",
       S("Make your first activity in three steps.", "Haga su primera actividad en tres pasos."),
     ),
-    button(S("Create an activity", "Crear una actividad"), onNew, "primary"),
+    h(
+      "div.st-add-row",
+      button(S("Create an activity", "Crear una actividad"), onNew, "primary"),
+      onCustomize ? button(S("Customize something", "Personalizar algo"), onCustomize, "", { "data-act": "customize-new" }) : null,
+    ),
   );
   const meta = (it) => it.activity || it.summary || {};
   const gradeOf = (it) => it.activity?.context?.grade || it.summary?.grade || "";
@@ -89,14 +106,43 @@ export function mountLibrary(root, { S, goTo, onOpen, onNew, onPreview, onShare,
       const m = meta(it);
       if (state.status === "draft" && it.state === "published") return false;
       if (state.status === "published" && it.state !== "published") return false;
+      if (!passesOrigin(it, state.origin)) return false;
       if (state.grade && gradeOf(it) !== state.grade) return false;
       if (state.subject && subjOf(it) !== state.subject) return false;
       return !q || [m.title, subjOf(it), m.context?.unitTitle].join(" ").toLowerCase().includes(q);
     });
   }
 
-  function card(it) {
+  function originBadge(it) {
+    const kind = originOf(it.activity);
+    if (!kind) return null;
+    const tier = it.activity.lineage?.tier;
+    const label = kind === "version" && TIER_LABEL[tier] ? S(`${TIER_LABEL[tier].en} version`, `Versión ${TIER_LABEL[tier].es}`) : S(...ORIGIN[kind]);
+    return h("span.st-pill.origin", { "data-origin": kind }, label);
+  }
+
+  function versionsBlock(list) {
+    if (!list?.length) return null;
+    return h(
+      "details.st-lib-versions",
+      h("summary", S(`${list.length} versions`, `${list.length} versiones`)),
+      h(
+        "ul",
+        list.map((v) =>
+          h(
+            "li",
+            h("span", S(...(TIER_LABEL[v.activity.lineage?.tier] ? [TIER_LABEL[v.activity.lineage.tier].en, TIER_LABEL[v.activity.lineage.tier].es] : ["Version", "Versión"]))),
+            button(S("Edit", "Editar"), () => onOpen(v.id), "small", { "aria-label": S(`Edit ${meta(v).title}`, `Editar ${meta(v).title}`) }),
+            button(S("Preview", "Vista previa"), () => onPreview(v.id), "small ghost", { "aria-label": S(`Preview ${meta(v).title}`, `Vista previa de ${meta(v).title}`) }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  function card(it, versions) {
     const m = meta(it);
+    const lin = it.activity?.lineage;
     const updated = new Date(it.updatedAt || Date.now()).toLocaleDateString();
     const updatedState =
       it.state === "published" && it.rev && it.publishedRev && it.rev > it.publishedRev;
@@ -106,6 +152,7 @@ export function mountLibrary(root, { S, goTo, onOpen, onNew, onPreview, onShare,
       h(
         "div.st-lib-top",
         h("span.st-pill", S(...(KIND[m.kind] || ["Activity", "Actividad"]))),
+        originBadge(it),
         h(
           "span.st-pill.state",
           { "data-state": it.state },
@@ -126,6 +173,10 @@ export function mountLibrary(root, { S, goTo, onOpen, onNew, onPreview, onShare,
           .join(" · ") || S("No grade or subject yet", "Aún sin grado ni materia"),
       ),
       h("p.st-lib-date", S(`Updated ${updated}`, `Actualizada ${updated}`)),
+      isPlatform(lin) && lin.url
+        ? h("p", h("a.st-source-link", { href: lin.url, target: "_blank", rel: "noopener noreferrer" }, S("Return to original", "Volver al original"), h("span.st-sr", S(" (opens in a new tab)", " (se abre en una pestaña nueva)"))))
+        : null,
+      versionsBlock(versions),
       h(
         "div.st-lib-actions",
         button(S("Edit", "Editar"), () => onOpen(it.id), "primary small"),
@@ -201,7 +252,10 @@ export function mountLibrary(root, { S, goTo, onOpen, onNew, onPreview, onShare,
           ),
         ),
       );
-    else for (const it of items) list.append(card(it));
+    else if (state.origin === "all") {
+      const { top, versionsOf } = groupVariants(items);
+      for (const it of top) list.append(card(it, versionsOf.get(it.id)));
+    } else for (const it of items) list.append(card(it));
   }
   async function refresh() {
     state.items = await loadItems(fetchImpl);
@@ -253,6 +307,14 @@ export function mountLibrary(root, { S, goTo, onOpen, onNew, onPreview, onShare,
     field(
       S("Show", "Mostrar"),
       select(
+        ORIGIN_FILTERS.map((o) => [o, S(...ORIGIN_OPTION[o])]),
+        "all",
+        (v) => ((state.origin = v), draw()),
+      ),
+    ),
+    field(
+      S("Status", "Estado"),
+      select(
         [
           ["all", S("Everything", "Todo")],
           ["draft", S("Drafts", "Borradores")],
@@ -294,7 +356,11 @@ export function mountLibrary(root, { S, goTo, onOpen, onNew, onPreview, onShare,
       h(
         "div.st-lib-head",
         h("h1", { tabindex: "-1" }, S("My activities", "Mis actividades")),
-        button(S("Create an activity", "Crear una actividad"), onNew, "primary"),
+        h(
+          "div.st-add-row",
+          button(S("Create an activity", "Crear una actividad"), onNew, "primary"),
+          onCustomize ? button(S("Customize something", "Personalizar algo"), onCustomize, "", { "data-act": "customize-new" }) : null,
+        ),
       ),
       filters,
       list,

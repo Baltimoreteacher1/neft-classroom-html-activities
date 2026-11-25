@@ -368,6 +368,10 @@ function syncSummaryBar() {
   }
 
   bar.hidden = false;
+  const customizeLink = $("#customizeActivityLink");
+  if (customizeLink && state.unitId) {
+    customizeLink.href = `/access-practice-lab/activity-studio/customize?family=bcpss-unit&ref=${encodeURIComponent(state.unitId)}&band=${encodeURIComponent(state.wida)}`;
+  }
   if (textEl) {
     textEl.textContent = `${gradeLabel(u.grade)} · ${u.subject} · Unit ${u.unit_number}: ${u.unit_title}`;
   }

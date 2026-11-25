@@ -285,6 +285,29 @@ export function cleanBlock(b) {
 
 const WIDA = [0, 1, 2, 3, 4, 5, 6];
 
+/** Differentiated versions of one activity, in the order a teacher meets them. "" = the grade-level original. */
+export const TIERS = Object.freeze(["emerging", "developing", "expanding", "extension"]);
+
+/**
+ * Where an activity came from. `family` + `ref` name a platform resource (see adapters/registry.js); the platform
+ * original is never edited, so this is only a pointer plus a fingerprint of what was copied (`sourceHash`).
+ * `variantOf` is the id of the teacher activity a differentiated version was made from; `tier` says which one;
+ * `added` lists block ids the customizer added (so a teacher can see and review them). null = made from scratch.
+ */
+export function cleanLineage(l) {
+  if (!l || typeof l !== "object" || !str(l.family, 40)) return null;
+  return {
+    family: str(l.family, 40),
+    ref: str(l.ref, 120),
+    title: str(l.title, LIMITS.title),
+    url: SAFE_PATH.test(String(l.url || "")) ? String(l.url) : "",
+    sourceHash: str(l.sourceHash, 24),
+    variantOf: isId(l.variantOf) ? l.variantOf : "",
+    tier: TIERS.includes(l.tier) ? l.tier : "",
+    added: list(l.added, LIMITS.blocks).filter(isId),
+  };
+}
+
 /**
  * A complete, safe activity from untrusted input. Unknown fields are dropped; missing ones get defaults.
  * Never throws; run validateActivity (validate.js) for what the teacher must still fix.
@@ -349,6 +372,7 @@ export function normalizeActivity(input) {
       workspace: opt.workspace === "roomy" ? "roomy" : "normal",
       answerKey: opt.answerKey !== false,
     },
+    lineage: cleanLineage(a.lineage),
     blocks: uniqueIds(list(a.blocks, LIMITS.blocks).map(cleanBlock).filter(Boolean)),
     notes: {
       teacher: str(notes.teacher, 2000),

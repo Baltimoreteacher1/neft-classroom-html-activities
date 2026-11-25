@@ -123,7 +123,7 @@ export async function mountContentPanel(root, doc = document) {
       return h(doc, "li", { class: "acc-item-row" },
         h(doc, "p", { class: "acc-item-stem", "data-i18n-skip": "", text: row.stem }),
         h(doc, "p", { class: "acc-hint" }, `${row.domain} · ${row.klu} · ${row.context} · ${row.band} · language demand ${row.languageDemand} · ${row.explicit ? "framework" : "supplementary"}`),
-        h(doc, "div", { class: "acc-actions" }, open, h(doc, "a", { class: "acc-btn", href: `/access-practice-lab/assess/${row.setId}?mode=formative`, text: "Practice this set (learning mode)" }), h(doc, "a", { class: "acc-btn", href: `/access-practice-lab/assess/${row.setId}?mode=summative`, text: "Practice this set (test simulation)" })),
+        h(doc, "div", { class: "acc-actions" }, open, h(doc, "a", { class: "acc-btn", href: `/access-practice-lab/assess/${row.setId}?mode=formative`, text: "Practice this set (learning mode)" }), h(doc, "a", { class: "acc-btn", href: `/access-practice-lab/assess/${row.setId}?mode=summative`, text: "Practice this set (test simulation)" }), h(doc, "a", { class: "acc-btn", href: `/access-practice-lab/activity-studio/customize?family=access-bank&ref=${encodeURIComponent(row.setId)}`, text: "Customize Activity", "data-customize-activity": "" })),
         host);
     });
     root.replaceChildren(

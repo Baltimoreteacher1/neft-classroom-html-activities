@@ -4,14 +4,18 @@
 import { getLocal, saveLocal, studioApi } from "../drafts.js";
 import { createContentPanel } from "./content-panel.js";
 import { createPreview } from "./preview.js";
+import { isPlatform, isVersion } from "./customize-logic.js";
+import { createQuickPanel } from "./quick.js";
 import { createSaver } from "./save.js";
 import { openShare } from "./share.js";
+import { handoff, notesBanner, sourceBanner } from "./source-banner.js";
 import { lookPanel, moreOptions, supportsPanel } from "./side-panels.js";
 import { createStore } from "./store.js";
 import { button, clear, h, iconButton, openDialog, say } from "./ui.js";
 
 const TABS = [
-  ["content", "Content", "Contenido"],
+  ["quick", "Quick Customize", "Personalizar rápido"],
+  ["content", "Edit content", "Editar contenido"],
   ["look", "Look & Feel", "Aspecto"],
   ["supports", "Student Supports", "Apoyos para estudiantes"],
 ];
@@ -29,11 +33,13 @@ const STATUS = {
 };
 
 /** Mount the editor for one activity into `root`. Returns { destroy }. */
-export function mountEditor(root, { activity, S, lang, goTo, onFlush }) {
+export function mountEditor(root, { activity, S, lang, goTo, onFlush, ai, nav }) {
   const entry = getLocal(activity.id);
   let link = entry?.link?.code ? { ...entry.link } : null;
   const store = createStore(activity);
-  let tab = "content";
+  let tab = isPlatform(activity.lineage) || isVersion(activity.lineage) ? "quick" : "content";
+  const notes = handoff.get(activity.id);
+  handoff.delete(activity.id);
 
   const statusEl = h("span.st-save", { role: "status", "aria-live": "polite" });
   const showStatus = ({ phase, detail }) => {
@@ -66,6 +72,27 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush }) {
   const tabBar = h("div.st-tabs.side", { role: "tablist" });
   const panel = h("div.st-side-panel", { role: "tabpanel" });
   const more = h("div.st-more-wrap");
+
+  const quick = createQuickPanel(store, {
+    S,
+    ai,
+    nav: (path) => nav?.(path),
+    goTo,
+    saver,
+    goContent: () => switchTab("content"),
+    openAdvanced: () => {
+      const d = more.querySelector("details");
+      if (!d) return;
+      d.open = true;
+      d.querySelector("summary")?.focus();
+    },
+  });
+  const customize = button(
+    S("Customize", "Personalizar"),
+    () => (switchTab("quick"), quick.focus()),
+    "ghost",
+    { "data-act": "customize" },
+  );
 
   const undo = iconButton(
     "↶",
@@ -183,7 +210,8 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush }) {
     panel.id = "st-side-panel";
     panel.setAttribute("aria-labelledby", `st-tab-${tab}`);
     clear(panel);
-    if (tab === "content") (content.render(), panel.append(content.el));
+    if (tab === "quick") (quick.render(), panel.append(quick.el));
+    else if (tab === "content") (content.render(), panel.append(content.el));
     else panel.append(tab === "look" ? lookPanel(store, { S }) : supportsPanel(store, { S }));
     clear(more).append(moreOptions(store, { S, notify: say }));
   }
@@ -218,7 +246,7 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush }) {
       h("a.st-back-link", { href: goTo.mine }, S("← My activities", "← Mis actividades")),
       h("div.st-titlebox", h("strong.st-title", store.get().title), contextBar()),
       statusEl,
-      h("div.st-top-actions", undo, redo, fullPreview, share),
+      h("div.st-top-actions", undo, redo, customize, fullPreview, share),
     );
     undo.disabled = !store.canUndo();
     redo.disabled = !store.canRedo();
@@ -229,7 +257,8 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush }) {
     { "aria-label": S("Live preview", "Vista previa en vivo") },
     preview.el,
   );
-  const editor = h("div.st-editor", top, h("div.st-main", stage, sidebar));
+  const banners = h("div.st-banners", sourceBanner({ store, S }), notesBanner({ notes, S }));
+  const editor = h("div.st-editor", top, banners, h("div.st-main", stage, sidebar));
   sidebar.append(tabBar, panel, more);
   clear(root).append(editor);
   drawTop();
@@ -242,6 +271,7 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush }) {
     preview.later();
     if (reason !== "type") {
       if (tab === "content") content.render();
+      else if (tab === "quick") reason !== "rev" && quick.render();
       else if (reason !== "rev") drawSide();
       clear(more).append(moreOptions(store, { S, notify: say }));
     }

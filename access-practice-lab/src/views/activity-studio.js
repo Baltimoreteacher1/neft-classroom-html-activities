@@ -12,12 +12,14 @@ import { SUBJECTS } from "../studio/core/curriculum.js";
 import { ID_RE, getLocal, knownClasses, newActivityId, saveLocal, siteKey } from "../studio/drafts.js";
 import { KIND_IDS, chooseScreen, contentScreen } from "../studio/editor/create.js";
 import { mountEditor } from "../studio/editor/shell.js";
-import { say } from "../studio/editor/ui.js";
+import { chooserScreen, customizeCallout } from "../studio/editor/source-chooser.js";
+import { fetchJson, handoff } from "../studio/editor/source-banner.js";
+import { h, say } from "../studio/editor/ui.js";
 import { mountLibrary } from "../studio/library.js";
 import { BASE, html, storage } from "../util.js";
 
 const HOME = `${BASE}/activity-studio`;
-const GOTO = { mine: `${HOME}/mine`, new: `${HOME}/new`, edit: (id) => `${HOME}/${id}` };
+const GOTO = { mine: `${HOME}/mine`, new: `${HOME}/new`, customize: `${HOME}/customize`, edit: (id) => `${HOME}/${id}` };
 const WELCOME_KEY = "accessPracticeLab:v1:studio-welcome";
 
 let current = null; // { destroy }
@@ -57,7 +59,7 @@ export async function render(ctx) {
       <div
         class="st-root"
         id="st-root"
-        data-studio="${id === "mine" || ID_RE.test(id) ? id : "create"}"
+        data-studio="${id === "mine" || id === "customize" || ID_RE.test(id) ? id : "create"}"
       >
         <p class="st-loading" role="status">${I.S("Loading…", "Cargando…")}</p>
       </div>`,
@@ -89,9 +91,17 @@ export async function mount(rootEl, ctx) {
       );
       return;
     }
-    current = mountEditor(host, { activity: entry.activity, S, lang, goTo: GOTO });
+    current = mountEditor(host, {
+      activity: entry.activity,
+      S,
+      lang,
+      goTo: GOTO,
+      nav,
+      ai: { available: aiAvailable(), edit: aiEdit },
+    });
     return;
   }
+  if (id === "customize") return mountCustomize(host, { S, q, nav });
   if (id === "mine") {
     current = {
       destroy() {},
@@ -99,6 +109,7 @@ export async function mount(rootEl, ctx) {
         S,
         goTo: GOTO,
         onNew: () => nav(GOTO.new),
+        onCustomize: () => nav(GOTO.customize),
         onOpen: (aid) => nav(GOTO.edit(aid)),
         onPreview: (aid) => nav(GOTO.edit(aid)),
         onShare: (aid) => nav(GOTO.edit(aid)),
@@ -144,6 +155,7 @@ export async function mount(rootEl, ctx) {
             onDismissWelcome: () => (storage.set(WELCOME_KEY, "1"), redraw()),
           }),
     );
+    if (!wizard.kind) host.append(customizeCallout({ S, onGo: () => nav(GOTO.customize) }));
   };
   function onCreate(res) {
     const activity = {
@@ -166,9 +178,56 @@ export async function mount(rootEl, ctx) {
   redraw();
 }
 
+/**
+ * /activity-studio/customize: the chooser. With ?family=&ref= it opens a draft straight away (the adapter copies the
+ * platform activity; the original is never touched) and shows what could not be carried over, once.
+ */
+async function mountCustomize(host, { S, q, nav }) {
+  const scratch = () => nav(GOTO.new);
+  const fail = () =>
+    host.replaceChildren(
+      h(
+        "section.st-chooser",
+        h("h1", { tabindex: "-1" }, S("That activity could not be opened", "No se pudo abrir esa actividad")),
+        h("p", S("It may have moved or is not available to customize. Pick another one.", "Puede que se haya movido o que no se pueda personalizar. Elija otra.")),
+        h("p", h("a", { href: GOTO.customize, onclick: (e) => (e.preventDefault(), nav(GOTO.customize)) }, S("Choose an activity", "Elegir una actividad"))),
+      ),
+    );
+  if (q.family && q.ref) {
+    host.replaceChildren(h("p.st-loading", { role: "status" }, S("Making your copy…", "Creando su copia…")));
+    try {
+      const { customizeFrom } = await import("../studio/adapters/registry.js");
+      const { activity, notes } = await customizeFrom(q.family, q.ref, { fetchJson, ...(["1_2", "3_4", "5_6"].includes(q.band) ? { band: q.band } : {}) });
+      if (!activity) return fail();
+      saveLocal(activity, null);
+      handoff.set(activity.id, [
+        ...(notes || []),
+        { en: "Your copy is a draft. The original activity is unchanged.", es: "Su copia es un borrador. La actividad original no cambió." },
+      ]);
+      return nav(GOTO.edit(activity.id));
+    } catch (err) {
+      console.warn("[studio] customize failed", err?.code || err);
+      return fail();
+    }
+  }
+  host.replaceChildren(chooserScreen({ S, onScratch: scratch, onCustomize: (family, ref) => nav(`${GOTO.customize}?family=${encodeURIComponent(family)}&ref=${encodeURIComponent(ref)}`) }));
+  host.querySelector("h1")?.focus();
+}
+
 export function unmount() {
   current?.destroy?.();
   current = null;
+}
+
+/** Ask the optional helper to edit an activity. The reply is a suggestion only; the editor shows it for review. */
+async function aiEdit({ prompt, activity }) {
+  const klass = knownClasses()[0];
+  if (!klass && !siteKey()) return { ok: false, error: "unauthorized" };
+  const headers = { "content-type": "application/json", ...(siteKey() ? { "x-teacher-key": siteKey() } : {}), ...(klass?.passcode ? { "x-class-teacher": klass.passcode } : {}) };
+  const c = activity.context || {};
+  const context = { grade: c.grade, subject: c.subject, unitTitle: c.unitTitle, objective: c.objective };
+  const res = await fetch("/api/studio/ai", { method: "POST", headers, body: JSON.stringify({ code: klass?.code, mode: "edit", prompt, kind: activity.kind, context, activity }) });
+  return res.json().catch(() => ({ ok: false, error: "failed" }));
 }
 
 /** The optional drafting helper: used only when the server reports a model is configured. */

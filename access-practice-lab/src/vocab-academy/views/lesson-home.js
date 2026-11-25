@@ -3,7 +3,7 @@
 // example sentence, word forms, Spanish), then the sections in order (the word list study, Exercises A to F, the lesson
 // review) with their real status and a Start / Continue / Review button, then practice and games with these words.
 // A lesson with no published file says so plainly. The teacher strip exists in the DOM ONLY on a teacher device.
-import { html, raw } from "../../util.js";
+import { BASE, html, raw } from "../../util.js";
 import { speak } from "../../speech.js";
 import { LESSONS, sectionTitle } from "../contract.js";
 import {
@@ -121,6 +121,16 @@ const teacherStrip = (I, g, key, unit) =>
     <a class="btn va-btn" href="${vaHref("teacher")}?assign=${encodeURIComponent(unit.id)}"
       >${I.T("Assign", "Asignar")}</a
     >
+    ${
+      isCustomId(key)
+        ? ""
+        : html`<a
+            class="btn va-btn"
+            data-customize-activity
+            href="${BASE}/activity-studio/customize?family=vocab-academy&ref=${encodeURIComponent(unit.id)}"
+            >${I.T("Customize Activity", "Personalizar actividad")}</a
+          >`
+    }
     ${unit.pacingDays ? html`<span class="fine">${I.T(`About ${unit.pacingDays} class days`, `Unos ${unit.pacingDays} días de clase`)}</span>` : ""}
   </nav>`;
 

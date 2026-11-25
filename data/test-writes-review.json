@@ -245,6 +245,36 @@
       "file": "tools/studio-shell.test.mjs",
       "targets": "tmpdir",
       "reason": "Writes a throwaway manifest fixture tree only inside mkdtempSync(join(tmpdir(), 'studio-manifest-')) and removes it afterwards; no repository data is changed."
+    },
+    {
+      "file": "tools/content/verifiers-a.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes throwaway baseline JSON files only inside mkdtempSync(join(tmpdir(), content-baselines-)) and removes the directory afterwards; no repository data is changed."
+    },
+    {
+      "file": "tools/content/verifiers-b.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes a throwaway standards baseline copy only inside mkdtempSync(join(tmpdir(), vb-baseline-)) and removes the directory afterwards; no repository data is changed."
+    },
+    {
+      "file": "tools/content/verifiers-c.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes throwaway baselines and a mutated copy of verifier-counts.js (the live file is only read) only inside mkdtempSync(join(tmpdir(), vc-base- and vc-counts-)) and removes the directory afterwards; no repository data is changed."
+    },
+    {
+      "file": "tools/privacy-delete.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes throwaway receipt-chain JSON files only inside mkdtempSync(join(tmpdir(), privacy-receipts- and privacy-restore-)) and removes the directory afterwards; no repository data is changed."
+    },
+    {
+      "file": "tools/privacy-inventory.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Builds a fixture repository tree and hand-edits its generated doc (the test passes --root to the tool, so the real tree is never written) only inside mkdtempSync(join(tmpdir(), privacy-fixture-)) and removes the directory afterwards; no repository data is changed."
+    },
+    {
+      "file": "tools/secret-scan.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes throwaway sample files that contain fake credentials for the scanner only inside mkdtempSync(join(tmpdir(), secret-scan-)) and removes the directory afterwards; no repository data is changed."
     }
   ]
 }
