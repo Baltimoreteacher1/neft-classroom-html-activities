@@ -9,6 +9,7 @@ import * as seed from "../../../data/bcpss-curriculum-seed.mjs";
 import { cosineSimilarity, embedText, toPgVectorLiteral } from "./embeddings.js";
 import { buildEsolPack } from "./esol-pack.js";
 import { loadLessonLinks, withLessonLinks } from "./lesson-links.js";
+import { loadModuleFacts, moduleOf } from "./module-facts.js";
 import {
   applyStudio,
   loadFamily,
@@ -621,6 +622,7 @@ export async function getUnitDetail(env, unitId) {
   if (result.detail) {
     applyStudio(result.detail, await loadStudio(unitId));
     result.detail.studio = withLessonLinks(result.detail.studio, await loadLessonLinks(unitId));
+    result.detail.module = moduleOf(await loadModuleFacts(unitId));
     result.detail.family = await loadFamily(unitId);
     result.detail.writing = await loadWriting(unitId);
     const esol_pack = buildEsolPack({

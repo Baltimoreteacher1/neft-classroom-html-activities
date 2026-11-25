@@ -4,6 +4,7 @@ import { LEVEL_INFO, h } from "./studio-core.js";
 import { icon } from "./studio-icons.js";
 import { renderTeacherCard } from "./studio-lesson-card.js";
 import { practiceSection, revealSection } from "./studio-lesson-links.js";
+import { modulePanel, weekChip, weekNote } from "./studio-module.js";
 import {
   DRAFT_SOURCE,
   DRAFT_TEXT,
@@ -120,6 +121,7 @@ function timelineItem(app, l) {
         minutesChip(l.minutes),
         kluChip(l.klu),
         demandBadge(l.language_demand_score),
+        weekChip(l.module_week),
         l.source === DRAFT_SOURCE ? draftChip() : null,
       ),
       h("p", { class: "sl-tl__goal" }, `Language goal: ${l.function}.`),
@@ -159,6 +161,7 @@ export function lessonsSection(app) {
       const data = await loadUnitLessons(app.unitId);
       if (!data?.lessons?.length) return section.remove();
       body.replaceChildren(
+        modulePanel(data.module),
         data.lessons.some((l) => l.source === DRAFT_SOURCE)
           ? h("p", { class: "sl-chips" }, draftChip())
           : null,
@@ -247,6 +250,7 @@ function pageHead(app, route, lesson) {
       !student && lesson.source === DRAFT_SOURCE ? draftChip() : null,
     ),
     h("h1", null, lesson.title),
+    student ? null : weekNote(lesson.module_week),
     student
       ? h(
           "p",
