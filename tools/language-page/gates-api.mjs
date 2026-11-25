@@ -1,8 +1,8 @@
 // G-05 api-client-contract, G-06 data-integrity, G-08 domain-coverage, G-11 telemetry-validation.
 import fs from "node:fs";
 import { getInsights, recordTelemetry } from "../../functions/_lib/bcpss/db.js";
-import * as apiTelemetry from "../../functions/api/bcpss/telemetry.js";
 import { LIMITS } from "../../functions/_lib/security/schema.js";
+import * as apiTelemetry from "../../functions/api/bcpss/telemetry.js";
 import { INSIGHTS_KEYS } from "../../shared/bcpss-telemetry-schema.js";
 import { clone } from "./dataset.mjs";
 
@@ -293,9 +293,9 @@ export async function checkTelemetryHandler(onRequest) {
   };
   await expect("valid event", await post(onRequest, ok, { ip: "198.51.100.1" }), 202);
   await expect(
-    "unknown unit",
+    "well-formed but unregistered unit (422 by contract)",
     await post(onRequest, { ...ok, unit_id: "g9-math-u9" }, { ip: "198.51.100.2" }),
-    400,
+    422,
   );
   await expect(
     "malformed unit id",
