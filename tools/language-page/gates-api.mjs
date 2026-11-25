@@ -233,10 +233,14 @@ export function checkDomains({ units }, base = baselines) {
   const errors = [];
   const domains = ["Listening", "Speaking", "Reading", "Writing"];
   let listening = 0;
+  const perUnit = base.minListeningPerUnit ?? 3;
   for (const d of units) {
     const have = new Set(d.activities.map((a) => a.domain));
     for (const dom of domains) if (!have.has(dom)) errors.push(`${d.unit.id}: no ${dom} activity`);
-    listening += d.activities.filter((a) => a.domain === "Listening").length;
+    const here = d.activities.filter((a) => a.domain === "Listening").length;
+    if (here < perUnit)
+      errors.push(`${d.unit.id}: ${here} Listening activities, need at least ${perUnit}`);
+    listening += here;
   }
   const floor = Math.floor(base.listeningActivities * base.floorRatio);
   if (listening < floor) errors.push(`listening activities ${listening} below floor ${floor}`);
@@ -265,8 +269,14 @@ export const g08 = {
     noWriting.units[0].activities = noWriting.units[0].activities.filter(
       (a) => a.domain !== "Writing",
     );
+    const twoListening = clone(data);
+    twoListening.units[5].activities = twoListening.units[5].activities.filter(
+      (a, k, all) =>
+        a.domain !== "Listening" || k === all.findIndex((x) => x.domain === "Listening"),
+    );
     return [
       { name: "listening activities removed from 40 units", errors: checkDomains(copy) },
+      { name: "one unit drops to a single Listening activity", errors: checkDomains(twoListening) },
       { name: "a unit loses all Writing", errors: checkDomains(noWriting) },
     ];
   },
