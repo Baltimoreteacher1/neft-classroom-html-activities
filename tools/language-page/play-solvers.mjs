@@ -193,15 +193,26 @@ async function clueGame(page, { payload: p }, mode) {
   const n = p.cards.length;
   let total = 0;
   for (let c = 0; c < n; c++) {
-    const clue = await page.$eval(".sg-clue.is-open .sg-clue__text", (e) => e.textContent);
-    const card = p.cards.find((x) => x.clues[0] === clue);
-    if (!card) throw new Error(`clue not in payload: ${clue.slice(0, 40)}`);
+    // Several cards can open with the same clue ("I have 4 sides."), so reveal more until one card fits every open clue.
     let shown = 1;
-    if (mode === "stumble" && c === 0) {
+    let candidates = p.cards;
+    for (;;) {
+      const open = await page.$$eval(".sg-clue.is-open .sg-clue__text", (els) =>
+        els.map((e) => e.textContent),
+      );
+      candidates = p.cards.filter((x) => open.every((t, k) => x.clues[k] === t));
+      if (candidates.length <= 1 || shown >= 3) break;
+      await click(page, key("more"));
+      shown++;
+    }
+    const card = candidates[0];
+    if (!card) throw new Error("open clues match no card in the payload");
+    if (candidates.length > 1) throw new Error(`${candidates.length} cards share all three clues`);
+    if (mode === "stumble" && c === 0 && shown < 3) {
       const bad = p.cards.find((x) => x.term !== card.term)?.term;
       if (bad) {
         await click(page, key(`t-${bad}`));
-        shown = 2;
+        shown++;
       }
     }
     await click(page, key(`t-${card.term}`));
