@@ -201,6 +201,72 @@ const registry = {
       sendsStudentContent: false,
       requires: [],
     },
+    {
+      key: "class_dashboard_v2",
+      description:
+        "Class dashboard 2.0 in the teacher class panel: completion by unit and domain, assigned vs finished, goal meter and the three-bullet weekly brief. Read-only (no server write), aliases only, nothing sent to any model.",
+      owner: "classroom",
+      default: true,
+      removalDate: "2027-06-30",
+      environments: {
+        production: null,
+        staging: null,
+        preview: null,
+        local: null,
+      },
+      cohorts: {
+        teacher: [],
+        class: [],
+        demo: [],
+      },
+      killSwitch: true,
+      sendsStudentContent: false,
+      requires: [],
+    },
+    {
+      key: "family_weekly_plan",
+      description:
+        "Weekly 10-minute family plan (bilingual, printable, on-device read-aloud) on the Family Guide, assembled from the unit's authored family block. Static, no server write.",
+      owner: "classroom",
+      default: true,
+      removalDate: "2027-06-30",
+      environments: {
+        production: null,
+        staging: null,
+        preview: null,
+        local: null,
+      },
+      cohorts: {
+        teacher: [],
+        class: [],
+        demo: [],
+      },
+      killSwitch: true,
+      sendsStudentContent: false,
+      requires: [],
+    },
+    {
+      key: "family_text_tips",
+      description:
+        "Copyable text-message-sized family tips (160 characters or fewer, English and Spanish) in the teacher Family tab. The site sends nothing.",
+      owner: "classroom",
+      default: true,
+      removalDate: "2027-06-30",
+      environments: {
+        production: null,
+        staging: null,
+        preview: null,
+        local: null,
+      },
+      cohorts: {
+        teacher: [],
+        class: [],
+        demo: [],
+      },
+      killSwitch: true,
+      sendsStudentContent: false,
+      requires: [],
+    },
   ],
 };
 

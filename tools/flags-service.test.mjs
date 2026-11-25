@@ -31,8 +31,15 @@ const reg = (...flags) => ({ version: 1, flags });
 
 test("registry defaults: every initial flag is off and documented", () => {
   const all = evaluateAll({ env: "production" });
-  assert.equal(Object.keys(all).length, 9);
-  assert.ok(Object.values(all).every((v) => v === false));
+  // Read-only classroom features that write nothing and send nothing anywhere ship on, each with a kill switch.
+  const READ_ONLY_ON = ["class_dashboard_v2", "family_weekly_plan", "family_text_tips"];
+  assert.equal(Object.keys(all).length, 9 + READ_ONLY_ON.length);
+  for (const key of READ_ONLY_ON) {
+    const flag = registry.flags.find((f) => f.key === key);
+    assert.equal(all[key], true, key);
+    assert.ok(flag.killSwitch && !flag.sendsStudentContent && !flag.requires.length, key);
+  }
+  assert.ok(Object.entries(all).every(([k, v]) => READ_ONLY_ON.includes(k) || v === false));
   for (const key of [
     "student_content_egress",
     "student_feedback_model",
@@ -183,7 +190,7 @@ test("GET /api/flags returns booleans only", async () => {
   assert.equal(res.status, 200);
   const body = await res.json();
   assert.equal(body.ok, true);
-  assert.equal(Object.keys(body.flags).length, 9);
+  assert.equal(Object.keys(body.flags).length, registry.flags.length);
   assert.ok(Object.values(body.flags).every((v) => typeof v === "boolean"));
   assert.deepEqual(Object.keys(body).sort(), ["flags", "ok"]);
   const text = JSON.stringify(body);
