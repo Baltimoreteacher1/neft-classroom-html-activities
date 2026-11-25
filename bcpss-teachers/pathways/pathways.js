@@ -4,7 +4,7 @@
 import { keepView } from "../keep-view.js";
 import { renderCoverage } from "./pathways-coverage.js";
 import { renderPlay } from "./pathways-play.js";
-import { $, announce, esc, store } from "./pathways-util.js";
+import { $, announce, applyPacingOrder, esc, isCustomPacingOrder, pacingStore, store } from "./pathways-util.js";
 import { renderAtlas, renderCoPlan, renderYearMap } from "./pathways-views.js";
 
 const TABS = ["map", "coplan", "play", "atlas"];
@@ -82,7 +82,9 @@ async function show() {
     } else {
       const data = await gradeData();
       if (state.tab === "map")
-        panel.innerHTML = renderYearMap(data, store.read().taught) + renderCoverage(await coverageData(), state.grade);
+        panel.innerHTML =
+          renderYearMap(data, store.read().taught, pacingStore.read()) +
+          renderCoverage(await coverageData(), state.grade);
       else if (state.tab === "coplan") panel.innerHTML = renderCoPlan(data);
       else renderPlay(panel, data);
     }
@@ -118,6 +120,46 @@ function updateProgress(panel) {
   if (text) text.textContent = `${done} of ${boxes.length} units marked taught on this device`;
 }
 
+function rerenderMap(data, coverage, focusSelector = null) {
+  const panel = $("#panel-map");
+  keepView(panel, () => {
+    panel.innerHTML = renderYearMap(data, store.read().taught, pacingStore.read()) + renderCoverage(coverage, state.grade);
+  });
+  if (focusSelector) {
+    const next = panel.querySelector(focusSelector);
+    if (next && !next.disabled) next.focus();
+  }
+}
+
+async function moveUnitPacing(subject, unitId, direction) {
+  const data = state.grades.get(state.grade);
+  const lane = data?.lanes.find((l) => l.subject === subject);
+  if (!lane) return;
+  const ordered = applyPacingOrder(lane.units, pacingStore.getOrder(state.grade, subject));
+  const idx = ordered.findIndex((u) => u.id === unitId);
+  const target = direction === "earlier" ? idx - 1 : idx + 1;
+  if (idx < 0 || target < 0 || target >= ordered.length) return;
+  const ids = ordered.map((u) => u.id);
+  [ids[idx], ids[target]] = [ids[target], ids[idx]];
+  if (isCustomPacingOrder(lane.units, ids)) pacingStore.setOrder(state.grade, subject, ids);
+  else pacingStore.resetLane(state.grade, subject);
+  const coverage = await coverageData();
+  const unit = ordered[idx];
+  const fallbackDir = direction === "earlier" ? "later" : "earlier";
+  const atEdge = (direction === "earlier" && target === 0) || (direction === "later" && target === ids.length - 1);
+  const sel = `[data-pacing-move="${atEdge ? fallbackDir : direction}"][data-unit="${CSS.escape(unitId)}"]`;
+  rerenderMap(data, coverage, sel);
+  announce(`Moved ${subject} Unit ${unit.unit_number} ${direction} to position ${target + 1}.`);
+}
+
+async function resetLanePacing(subject) {
+  const data = state.grades.get(state.grade);
+  if (!data) return;
+  pacingStore.resetLane(state.grade, subject);
+  rerenderMap(data, await coverageData());
+  announce(`Reset ${subject} pacing order to default.`);
+}
+
 function bindEvents() {
   $("#pwGrades").addEventListener("click", (e) => {
     const pill = e.target.closest("[data-grade]");
@@ -140,6 +182,16 @@ function bindEvents() {
   main.addEventListener("click", (e) => {
     if (e.target.closest("[data-print]")) window.print();
     if (e.target.closest("[data-retry]")) show();
+    const moveBtn = e.target.closest("[data-pacing-move]");
+    if (moveBtn && !moveBtn.disabled) {
+      moveUnitPacing(moveBtn.dataset.subject, moveBtn.dataset.unit, moveBtn.dataset.pacingMove);
+      return;
+    }
+    const resetBtn = e.target.closest("[data-pacing-reset]");
+    if (resetBtn) {
+      resetLanePacing(resetBtn.dataset.pacingReset);
+      return;
+    }
     const view = e.target.closest("[data-atlas-view]");
     if (view && view.dataset.atlasView !== state.atlasView) {
       state.atlasView = view.dataset.atlasView;

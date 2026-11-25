@@ -1,6 +1,6 @@
 // Year map, Co-plan and Move atlas views (pure string renderers; pathways.js wires events).
 
-import { esc, kluPill } from "./pathways-util.js";
+import { applyPacingOrder, esc, isCustomPacingOrder, kluPill, pacingLaneKey } from "./pathways-util.js";
 
 const KLU = ["Narrate", "Inform", "Explain", "Argue"];
 const gradeWord = (label) => esc(label);
@@ -10,9 +10,11 @@ const unitLinks = (u) => `<div class="pw-links">
   <a href="/family/bcpss/${encodeURIComponent(u.id)}">Family guide</a>
 </div>`;
 
-function unitCard(u, taught) {
+function unitCard(u, taught, { index = 0, total = 1, subject = u.subject } = {}) {
   const tier3 = u.terms.filter((t) => t.tier === 3).map((t) => t.term);
-  return `<li class="pw-unit">
+  const first = index === 0;
+  const last = index >= total - 1;
+  return `<li class="pw-unit" data-unit-id="${esc(u.id)}">
     <label class="pw-check no-print">
       <input type="checkbox" data-taught="${esc(u.id)}" ${taught ? "checked" : ""} />
       <span>Mark taught<span class="pw-sr"> ${esc(u.subject)} Unit ${esc(u.unit_number)}</span></span>
@@ -29,6 +31,14 @@ function unitCard(u, taught) {
         <p class="pw-small"><strong>Standards:</strong> ${esc(u.standards.join(", "))}</p>
       </details>
       ${unitLinks(u)}
+      ${
+        total > 1
+          ? `<div class="pw-pacing-controls no-print" role="group" aria-label="Pacing order for ${esc(u.subject)} Unit ${esc(u.unit_number)}">
+        <button type="button" class="pw-pacing-btn" data-pacing-move="earlier" data-subject="${esc(subject)}" data-unit="${esc(u.id)}" aria-label="Move ${esc(u.subject)} Unit ${esc(u.unit_number)} earlier" ${first ? "disabled" : ""}>← Move earlier</button>
+        <button type="button" class="pw-pacing-btn" data-pacing-move="later" data-subject="${esc(subject)}" data-unit="${esc(u.id)}" aria-label="Move ${esc(u.subject)} Unit ${esc(u.unit_number)} later" ${last ? "disabled" : ""}>Move later →</button>
+      </div>`
+          : ""
+      }
     </div>
   </li>`;
 }
@@ -39,7 +49,7 @@ const kluBar = (mix, total) =>
   </div>
   <p class="pw-small pw-muted">Every unit practises one WIDA Key Language Use. ${total} units this year.</p>`;
 
-export function renderYearMap(g, taughtMap) {
+export function renderYearMap(g, taughtMap, pacingMap = {}) {
   const done = g.lanes.flatMap((l) => l.units).filter((u) => taughtMap[u.id]).length;
   const s = g.stats;
   return `
@@ -59,12 +69,23 @@ export function renderYearMap(g, taughtMap) {
       <span id="pwProgressText">${done} of ${s.units} units marked taught on this device</span>
     </div>
     ${g.lanes
-      .map(
-        (lane) => `<section class="pw-lane" aria-labelledby="lane-${lane.subject.replace(/\W/g, "")}">
-          <h3 id="lane-${lane.subject.replace(/\W/g, "")}">${esc(lane.subject)} <small>${esc(lane.curriculum)}</small></h3>
-          <ol class="pw-units">${lane.units.map((u) => unitCard(u, taughtMap[u.id])).join("")}</ol>
-        </section>`,
-      )
+      .map((lane) => {
+        const saved = pacingMap[pacingLaneKey(g.grade, lane.subject)];
+        const ordered = applyPacingOrder(lane.units, saved);
+        const custom = isCustomPacingOrder(lane.units, saved);
+        const laneId = `lane-${lane.subject.replace(/\W/g, "")}`;
+        return `<section class="pw-lane" aria-labelledby="${laneId}">
+          <div class="pw-lane-head">
+            <h3 id="${laneId}">${esc(lane.subject)} <small>${esc(lane.curriculum)}</small></h3>
+            ${
+              custom
+                ? `<button type="button" class="pw-btn pw-pacing-reset no-print" data-pacing-reset="${esc(lane.subject)}">Reset pacing order</button>`
+                : ""
+            }
+          </div>
+          <ol class="pw-units">${ordered.map((u, index) => unitCard(u, taughtMap[u.id], { index, total: ordered.length, subject: lane.subject })).join("")}</ol>
+        </section>`;
+      })
       .join("")}`;
 }
 

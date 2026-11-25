@@ -35,6 +35,7 @@ export function seededShuffle(items, seed) {
 }
 
 const STORE_KEY = "bcpss_pathways_v1";
+export const PACING_KEY = "bcpssPathways:v1:pacingOrder";
 
 /** Per-device progress (units taught, game stars, cognates found). Storage may be blocked: it must never throw. */
 export const store = {
@@ -58,6 +59,70 @@ export const store = {
     mutator(data);
     store.write(data);
     return data;
+  },
+};
+
+export const pacingLaneKey = (grade, subject) => `${grade}::${subject}`;
+
+/** Reorder a lane's units according to saved IDs; unknown IDs are ignored and unlisted units keep default order at the end. */
+export function applyPacingOrder(units, savedIds) {
+  if (!Array.isArray(savedIds) || !savedIds.length) return units;
+  const byId = new Map(units.map((u) => [u.id, u]));
+  const ordered = [];
+  const seen = new Set();
+  for (const id of savedIds) {
+    const u = byId.get(id);
+    if (u && !seen.has(id)) {
+      ordered.push(u);
+      seen.add(id);
+    }
+  }
+  for (const u of units) {
+    if (!seen.has(u.id)) ordered.push(u);
+  }
+  return ordered;
+}
+
+/** True when the effective pacing order differs from the default curriculum order. */
+export function isCustomPacingOrder(units, savedIds) {
+  const ordered = applyPacingOrder(units, savedIds);
+  return ordered.some((u, i) => u.id !== units[i]?.id);
+}
+
+/** On-device pacing calendar order per grade+subject lane (D7 compliant: zero server writes). */
+export const pacingStore = {
+  read() {
+    try {
+      const raw = JSON.parse(window.localStorage.getItem(PACING_KEY) || "{}");
+      return raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    } catch {
+      return {};
+    }
+  },
+  write(map) {
+    try {
+      const keys = Object.keys(map);
+      if (keys.length) window.localStorage.setItem(PACING_KEY, JSON.stringify(map));
+      else window.localStorage.removeItem(PACING_KEY);
+    } catch {
+      /* private mode or blocked storage: pacing order simply isn't kept */
+    }
+  },
+  getOrder(grade, subject) {
+    const order = pacingStore.read()[pacingLaneKey(grade, subject)];
+    return Array.isArray(order) ? order : null;
+  },
+  setOrder(grade, subject, ids) {
+    const map = pacingStore.read();
+    map[pacingLaneKey(grade, subject)] = [...ids];
+    pacingStore.write(map);
+    return map;
+  },
+  resetLane(grade, subject) {
+    const map = pacingStore.read();
+    delete map[pacingLaneKey(grade, subject)];
+    pacingStore.write(map);
+    return map;
   },
 };
 
