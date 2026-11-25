@@ -32,7 +32,7 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 | --- | --- | --- |
 | CI job timeout 25 → 75 minutes | tooling | the last five `main` gate runs ended `cancelled` at 25 min |
 | 4 activity strings had no Spanish; added | E3 (part) | `tools/access-es-strings.test.mjs` passes |
-| Muted text on the 8 studio pages darkened (4.33:1 → 5.25:1) | T6 | axe: 5 pages clean after; production re-measure after release |
+| Muted text on the 8 studio pages darkened (4.33:1 → 5.25:1) | T6 | production axe: 2 of 5 pages clean, 3 reduced to the active-label node; that node fixed in the follow-up (full opacity), production re-measure after release |
 | Spanish tagging measured in the leak scan (floor 97%; 98.2% today) | E4 | `tools/access-es-leak-scan.mjs` |
 | Claims gate scans studios' visible prose; "publication-grade" removed | X4 | `tools/access-lab-claims.test.mjs` |
 | logic model, efficacy plan, usability protocol, pilot kit, ACR draft, privacy doc | X3 | `docs/language-page/*.md`; privacy.md is generated and tested |

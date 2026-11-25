@@ -11,7 +11,8 @@ Do not publish this as a conformance claim.
 | Test | Scope | Date | Result |
 | --- | --- | --- | --- |
 | axe-core (A, AA, 2.1 AA, 2.2 AA rules), desktop 1366×768, English | 85 production pages (the sitemap plus 6 sibling entry points) | 2026-11-24 | **One rule failed: `color-contrast`, on 5 pages** (`/wida-access/` listening, reading, speaking, writing, directions-trainer). No other axe rule failed on any page |
-| axe-core after the contrast fix, raw source pages | the same 5 pages | 2026-11-25 | 0 violations |
+| axe-core on production after release 1 (muted-text colour fixed) | the same 5 pages | 2026-11-25 | 2 clean; 3 pages with 1 node each: the active task card's label (`opacity: 0.7`) |
+| axe-core on production with that opacity removed (injected style, not yet shipped) | the 3 pages | 2026-11-25 | 0 violations |
 | Phone layout at 390×844, no horizontal scroll | the same 85 pages | 2026-11-24 | 0 pages overflowed horizontally |
 | One visible `h1` per page | the same 85 pages | 2026-11-24 | 85 of 85 |
 | Touch-target size (44 px), phone | lab pages: median 5% of controls under 44 px; sibling pages: 63–96% under 44 px on six pages | 2026-11-24 | **Does not meet** on the sibling apps (`/studios/language/*`, `/learning-studios/`, `/language-adventures/`) |
@@ -21,7 +22,7 @@ axe finds only some WCAG failures automatically. **"No axe violations" is not "c
 
 ## Known issues
 1. **Target size** on the sibling apps (compiled output with no source in the repository; Joel decided to stop featuring them, `lp-sibling-apps-keep-urls-stop-featuring`).
-2. **Contrast** of muted text on the studio pages was 4.33:1 against a 4.5:1 minimum; corrected in this release. One axe report ("1.07:1" on an active task card) is contradicted by the computed colours (about 4.8:1) and a screenshot; re-measure on production after release.
+2. **Contrast** of muted text on the studio pages was 4.33:1 against a 4.5:1 minimum; corrected (release 1, confirmed clean on 2 pages and reduced on 3 on production). The remaining report, "1.07:1" on the active task card's label, comes from a 0.7 opacity that contrast checkers read against the page behind the card (real contrast about 4.8:1, legible in a screenshot); release 2 sets that label to full opacity (about 8:1). **Re-measure on production after release 2.**
 3. **Language of parts:** about 1.8% of Spanish interface text, mostly select options, is not marked `lang="es"`.
 4. **Chrome weight:** four stacked navigation bars before content on phones (usability, not a WCAG failure).
 
