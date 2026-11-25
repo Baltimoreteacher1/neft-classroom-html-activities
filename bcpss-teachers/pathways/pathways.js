@@ -2,6 +2,7 @@
 // Nothing is preselected: a teacher chooses a grade (the atlas needs none).
 
 import { keepView } from "../keep-view.js";
+import { renderCoverage } from "./pathways-coverage.js";
 import { renderPlay } from "./pathways-play.js";
 import { $, announce, esc, store } from "./pathways-util.js";
 import { renderAtlas, renderCoPlan, renderYearMap } from "./pathways-views.js";
@@ -55,6 +56,12 @@ const prompt = (panel, text) => {
   panel.innerHTML = `<p class="pw-empty">${esc(text)}</p>`;
 };
 
+/** The coverage report, or null when it cannot be loaded (the section is then simply absent). */
+async function coverageData() {
+  state.coverage ||= fetchJson("/data/bcpss-standards-coverage.json").catch(() => null);
+  return state.coverage;
+}
+
 async function gradeData() {
   if (!state.grades.has(state.grade)) {
     state.grades.set(state.grade, await fetchJson(`/api/bcpss/pathways?grade=${encodeURIComponent(state.grade)}`));
@@ -74,7 +81,8 @@ async function show() {
       panel.innerHTML = renderAtlas(state.atlas, state.atlasView, state.atlasPick);
     } else {
       const data = await gradeData();
-      if (state.tab === "map") panel.innerHTML = renderYearMap(data, store.read().taught);
+      if (state.tab === "map")
+        panel.innerHTML = renderYearMap(data, store.read().taught) + renderCoverage(await coverageData(), state.grade);
       else if (state.tab === "coplan") panel.innerHTML = renderCoPlan(data);
       else renderPlay(panel, data);
     }
