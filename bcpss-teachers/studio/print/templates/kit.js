@@ -67,8 +67,9 @@ export const SUBJECT_FRAMES = {
   },
 };
 export const framesFor = (ctx, tier, klu) => {
+  // Subject discourse first: a math sheet should model how mathematicians explain, not a generic cause frame.
   const set = SUBJECT_FRAMES[ctx.subject]?.[tier] || [];
-  return [...(FRAMES[klu || "Explain"][tier] || []), ...set];
+  return [...set, ...(FRAMES[klu || "Explain"][tier] || [])];
 };
 
 export const TIER_SUPPORT = {
@@ -223,7 +224,8 @@ export function supportBlocks(ctx, tier, { bankWords = [], klu } = {}) {
   const spec = TIER_SUPPORT[tier];
   const out = [];
   if (spec.bank && bankWords.length) out.push(B.bank(bankWords.slice(0, 10), label(ctx, "words", "Word bank")));
-  const fr = klu ? framesFor(ctx, tier, klu).slice(0, spec.frames) : ctx.frames(tier);
+  // Bridging / Reaching prints no frames (see TIER_SUPPORT.br): the precision checklist replaces them.
+  const fr = tier === "br" ? [] : klu ? framesFor(ctx, tier, klu).slice(0, spec.frames) : ctx.frames(tier);
   if (fr.length) out.push(B.frames(fr, "Sentence frames"));
   else out.push(B.check(["I used the exact vocabulary words.", "I gave a reason or evidence.", "I checked that my answer makes sense."]));
   return out;

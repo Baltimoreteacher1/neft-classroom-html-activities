@@ -67,15 +67,19 @@ const causeEffect = tpl({
   },
   build(ctx) {
     const rows = ctx.k2 ? 2 : ctx.band === "3-5" ? 3 : 4;
-    const h = fillLines(ctx, topMm(ctx) + 90, rows, 2, 8);
     const head = ctx.k2 ? ["Why did it happen?", "", "What happened?"] : ["Cause", "", "Effect"];
-    const pages = ctx.eachTier((tier) => [
-      page([
-        ...top(ctx, heading(ctx, "Cause and effect"), ctx.k2 ? "Draw or write the cause. Draw or write the effect." : "Write each cause and the effect it leads to."),
-        B.table({ cols: [4, 0.7, 4], head, rows: Array.from({ length: rows }, () => [{ t: "", h }, { t: "→", kind: "arrow" }, { t: "", h }]) }),
-        ...supportBlocks(ctx, tier, { bankWords: wordsOf(ctx), klu: "Explain" }),
-      ]),
-    ]);
+    // Row height comes from the space the supports actually leave, so richer support levels never push past the page.
+    const pages = ctx.eachTier((tier) =>
+      organizerPages(ctx, {
+        before: top(ctx, heading(ctx, "Cause and effect"), ctx.k2 ? "Draw or write the cause. Draw or write the effect." : "Write each cause and the effect it leads to."),
+        makeTable: (h) => B.table({ cols: [4, 0.7, 4], head, rows: Array.from({ length: rows }, () => [{ t: "", h }, { t: "→", kind: "arrow" }, { t: "", h }]) }),
+        support: supportBlocks(ctx, tier, { bankWords: wordsOf(ctx), klu: "Explain" }),
+        fixedMm: topMm(ctx) + BLOCK_GAP_MM + 8,
+        rows,
+        min: 2,
+        max: 8,
+      }),
+    );
     return { pages };
   },
 });

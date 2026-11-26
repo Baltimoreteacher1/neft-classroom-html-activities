@@ -82,14 +82,20 @@ function notesPages(ctx, tpl) {
   const pages = [];
   let cur = [];
   let used = 0;
-  for (const b of blocks) {
-    const h = blockMm(b, ctx);
-    if (used + h > ctx.bodyH - 30 && cur.length) {
+  // A heading travels with the block after it, so no page ends on a heading whose text is overleaf.
+  const units = [];
+  for (let i = 0; i < blocks.length; i++) {
+    if (blocks[i].type === "h" && i + 1 < blocks.length) units.push([blocks[i], blocks[++i]]);
+    else units.push([blocks[i]]);
+  }
+  for (const unit of units) {
+    const h = unit.reduce((a, b) => a + blockMm(b, ctx), 0);
+    if (used + h > ctx.bodyH - 12 && cur.length) {
       pages.push(page(cur));
       cur = [B.title("Teacher implementation notes", "continued")];
       used = 24;
     }
-    cur.push(b);
+    cur.push(...unit);
     used += h;
   }
   if (cur.length) pages.push(page(cur));

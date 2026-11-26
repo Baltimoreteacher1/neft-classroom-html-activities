@@ -121,7 +121,16 @@ export function unitPages(ctx, head, items, perMax, build, rows, extras = [0]) {
     const groups = chunk(items, per);
     for (const [x, r] of grid(extras, rows)) {
       const made = groups.map((g, gi) => g.flatMap((it, i) => build(it, gi * per + i + 1, r, x)));
-      if (made.every((bl) => sumMm(ctx, [...head, ...bl]) <= limitMm(ctx))) return made.map((bl) => page([...head, ...bl]));
+      const fits = (bl) => sumMm(ctx, [...head, ...bl]) <= limitMm(ctx);
+      if (!made.every(fits)) continue;
+      // Each page then takes the roomiest work area it can hold, so short items do not leave the bottom of the page empty.
+      return groups.map((g, gi) => {
+        for (const rr of rows) {
+          const bl = g.flatMap((it, i) => build(it, gi * per + i + 1, rr, x));
+          if (fits(bl)) return page([...head, ...bl]);
+        }
+        return page([...head, ...made[gi]]);
+      });
     }
   }
   return chunk(items, 1).flatMap((g, gi) => pack(ctx, head, build(g[0], gi + 1, rows[rows.length - 1], extras[extras.length - 1]), () => head));
@@ -186,7 +195,7 @@ const mathExplain = tpl({
           B.lines(1, label(ctx, "answer", "Answer")),
           ...supportBlocks(ctx, tier, { bankWords: wordsOf(ctx), klu: "Explain" }).slice(-1),
         ];
-      }, [8, 6, 5, 4, 3, 2], [70, 48, 32]),
+      }, [11, 10, 9, 8, 6, 5, 4, 3, 2], [70, 48, 32]),
     );
     const key = keyPages(ctx, "solve and explain", set.map((it, i) => [String(i + 1), it.answer, it.explain]));
     return { pages, key };
