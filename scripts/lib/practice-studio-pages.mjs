@@ -1,6 +1,7 @@
 // HTML templates for the Practice Studio v2 pages: a lesson's Practice page, its Challenge twin, and the finder.
 // The runtime (assets/studio/*.js) draws the problems from the JSON this page ships; this file only lays out the shell.
 
+import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
 import { FAVICON } from "./practice-studio-worlds.mjs";
 import {
   WP_STEP_PANELS,
@@ -189,6 +190,33 @@ function expressionPartsModel() {
  * @param {{wb: any[], cog: any[], pic: Record<string, any>, frL: Record<string, any>}} [o.lang] the language layer (scripts/lib/practice-studio-language.mjs)
  * @param {any} [o.concept] source-backed lesson skill graph entry
  */
+/**
+ * The lesson's living scene (launch.conceptIntro.livingScene) as a studio
+ * card: the same See it / Try it / Explain it film the Learn It and the family
+ * page show, from the same config. Callers use it on Practice pages only (the
+ * Challenge asks for transfer without the model). Open, collapsible, and
+ * nothing waits on it; the page must also load LIVING_SCENE_SCRIPT.
+ */
+export const LIVING_SCENE_SCRIPT =
+  '<script type="module" src="/assets/homework-lesson-models.js"></script>';
+export function livingCardFor(/** @type {string} */ id, /** @type {any} */ cfg) {
+  const living = cfg?.launch?.conceptIntro?.livingScene;
+  if (living?.kind !== "living-scene") return "";
+  const host = interactiveVisualHost(
+    { ...living, lessonId: `studio-${id}` },
+    {
+      ariaLabel: "Interactive scene: see it, try it, explain it",
+      fallback: "Turn on JavaScript to step through this interactive scene.",
+    },
+  );
+  if (!host) return "";
+  return `    <details class="stage-card living-card" open>
+      <summary><strong>${bi("See it first", "Míralo primero")}</strong> · ${bi("an interactive model, about 3 minutes", "un modelo interactivo, unos 3 minutos")}</summary>
+      <div data-living-host>${host}</div>
+    </details>
+`;
+}
+
 export function pageFor({
   id,
   mode,
@@ -257,6 +285,7 @@ export function pageFor({
   const partsModel = !challenge && !isPart2 && ld.focusPractice?.model === "expression-parts";
   const algExprModel =
     !challenge && isPart2 && ld.focusPracticePart2?.model === "algebraic-expressions";
+  const livingCard = !challenge && !isPart2 ? livingCardFor(id, cfg) : "";
   // Closed in the markup: assets/studio/clarity.js opens it on a student's first visit, and it is a small chip after that.
   const missionCard = `<details class="mission-card">
         <summary><span class="world-glyph" aria-hidden="true">${world.emoji}</span><span class="mission-title">${bi("Mission", "Misión")} · ${bi(world.name, world.nameEs)}${challenge ? ` · ${bi("night shift", "turno de noche")}` : ""}</span></summary>
@@ -304,7 +333,7 @@ ${NSR_HEAD}
 ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
 ${wordProblemsInlineHead()}
 ${partsModel ? '  <script src="/assets/studio/expression-parts.js" defer></script>' : ""}
-${algExprModel ? '  <script src="/assets/studio/algebraic-expressions.js" defer></script>' : ""}
+${algExprModel ? '  <script src="/assets/studio/algebraic-expressions.js" defer></script>' : ""}${livingCard ? `\n  ${LIVING_SCENE_SCRIPT}` : ""}
 </head>
 <body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="light" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
   ${themeBoot(unit, id, challenge)}
@@ -344,7 +373,7 @@ ${tabs}
 ${ld.glossary?.length ? `      ${glossaryBlock(ld.glossary)}\n` : ""}    </div>
 
 ${partsModel ? `    ${expressionPartsModel()}` : ""}${algExprModel ? `    ${algebraicExpressionsModel()}` : ""}
-
+${livingCard}
 ${panels}
   </main>
 

@@ -2204,6 +2204,22 @@ export function renderLearnItPanel(container, config, options = {}) {
                  </div>`
               : ""
           }`;
+        // A lesson-authored living scene (launch.conceptIntro.livingScene):
+        // the same idea as a model the student steps through and changes.
+        // Mounted at once, not behind the paced steps, and never in place of
+        // the lesson's own tool block above.
+        const living = concept.livingScene;
+        if (living && living.kind === "living-scene") {
+          const block = document.createElement("div");
+          block.className = "vl-living-block";
+          block.style.marginTop = "var(--sp-4, 20px)";
+          block.innerHTML = interactiveVisualHost(
+            { ...living, lessonId: config.lessonId || living.lessonId },
+            { ariaLabel: isEs ? "Escena interactiva" : "Interactive scene", fallback: "" },
+          );
+          host.appendChild(block);
+          mountInteractiveVisuals(block, { state });
+        }
         speakButtonsIn(host);
         wireVisualZoom(host);
         // Each step's workspace, mounted where its own sentence sits. Loaded on

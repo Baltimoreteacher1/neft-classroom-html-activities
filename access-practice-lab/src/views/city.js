@@ -6,6 +6,8 @@
 //   /city/<building>/<mission>    one mission, step by step
 //   /city/progress                city map progress: independent and supported runs, kept apart
 //   /city/teacher                 teacher-facing notes and this device's evidence
+//   /city/market/community-market the Community Market episode (city-episode.js): explore, listen, compare, shop,
+//                                 ask and write, with the support level changing the language asked for
 import { crumbsHTML, setComponentsI18n } from "../components.js";
 import { BUILDINGS, MISSIONS, buildingOf, missionOf, missionsAt } from "../content/city.js";
 import { i18nFor } from "../i18n.js";
@@ -14,6 +16,18 @@ import { BASE, html, icon, raw } from "../util.js";
 import { cityMapSVG, facadeThumbSVG, interiorSVG, portraitSVG } from "./city-art.js";
 import { guideHTML } from "./city-guide.js";
 import { cityHref, missionPage, onMissionClick, onMissionInput } from "./city-mission.js";
+import {
+  EPISODE_ID,
+  EPISODE_PLACE,
+  episodeHref,
+  episodePage,
+  loadMarket,
+  mountEpisode,
+  onEpisodeClick,
+  onEpisodeInput,
+  resetEpisodeUi,
+} from "./city-episode.js";
+import { BLURB as EPISODE_BLURB, STEPS as EPISODE_STEPS, TITLE as EPISODE_TITLE } from "../content/city-market-episode.js";
 import { cityState, resetUi, saveCity } from "./city-state.js";
 import { LEARNER_LOOKS, characterSVG } from "./scenario-art.js";
 import { bandFor, speakBtn, studioHero } from "./studio-kit.js";
@@ -133,6 +147,7 @@ function hubHTML(ctx, I, st) {
         <a class="btn" href="${cityHref("progress", band)}"
           >${I.T("My city progress", "Mi progreso en la ciudad")}</a
         >
+        <a class="btn" href="${episodeHref(band)}">${icon("worlds")} ${P(I, EPISODE_TITLE)}</a>
       </div>
     </section>
     <section class="task-group" aria-labelledby="ct-list-h">
@@ -196,12 +211,33 @@ function buildingHTML(ctx, I, st, b) {
           })}
         </div>
       </section>
+      ${b.id === EPISODE_PLACE ? episodeCard(ctx, I) : ""}
       <div class="wl-actions">
         <a class="btn" href="${cityHref("", band)}"
           >${icon("arrow-left")} ${I.T("Back to the city map", "Volver al mapa de la ciudad")}</a
         >
       </div>
     </article>`;
+}
+
+/** The Community Market episode, offered on the Corner Market page (and from the hub). */
+function episodeCard(ctx, I) {
+  const m = loadMarket();
+  const started = m.runs > 0 || m.seen.length > 0;
+  const status = m.done
+    ? I.T(`Visited ${m.runs} ${m.runs === 1 ? "time" : "times"}`, `Visitado ${m.runs} ${m.runs === 1 ? "vez" : "veces"}`)
+    : started
+      ? I.T(`In progress: step ${m.step + 1} of ${EPISODE_STEPS.length}`, `En curso: paso ${m.step + 1} de ${EPISODE_STEPS.length}`)
+      : I.T("Not started", "Sin empezar");
+  return html`<section class="task-group" aria-labelledby="ct-episode-h">
+    <h2 id="ct-episode-h">${I.T("Episode on this block", "Episodio en esta cuadra")}</h2>
+    <a class="card task-card city-card mk-episode-card" href="${episodeHref(bandFor(ctx.band))}">
+      <strong class="task-title">${P(I, EPISODE_TITLE)}</strong>
+      <span class="task-desc">${P(I, EPISODE_BLURB)}</span>
+      <span class="fine">${I.T("Listening, reading, speaking and writing · choose your support level", "Escuchar, leer, hablar y escribir · elige tu nivel de apoyo")}</span>
+      <span class="city-chip">${status}</span>
+    </a>
+  </section>`;
 }
 
 function progressHTML(ctx, I, st) {
@@ -273,6 +309,8 @@ export async function render(ctx) {
   const building = buildingOf(id);
   if (!building)
     return { title: I.S("Language City", "Ciudad del lenguaje"), html: page(hubHTML(ctx, I, st)) };
+  if (building.id === EPISODE_PLACE && missionId === EPISODE_ID)
+    return { title: title(EPISODE_TITLE.en, EPISODE_TITLE.es), html: page(episodePage(ctx, I)) };
   const mission = missionId ? missionOf(id, missionId) : null;
   if (!mission)
     return {
@@ -297,6 +335,7 @@ export function onClick(e, ctx) {
     saveCity(st);
     return (ctx.rerender(), true);
   }
+  if (isEpisode(ctx)) return onEpisodeClick(e, ctx, i18nFor(ctx));
   const mission = ctx.route?.missionId ? missionOf(ctx.route.id, ctx.route.missionId) : null;
   if (!mission) return false;
   const st = cityState();
@@ -306,6 +345,15 @@ export function onClick(e, ctx) {
   );
   return onMissionClick(e, ctx, mission, i18nFor(ctx), next);
 }
-export const onInput = (e) => onMissionInput(e);
-export const onChange = (e) => onMissionInput(e);
-export const unmount = () => resetUi();
+const isEpisode = (ctx) => ctx.route?.id === EPISODE_PLACE && ctx.route?.missionId === EPISODE_ID;
+export const onInput = (e, ctx) =>
+  ctx && isEpisode(ctx) ? onEpisodeInput(e, i18nFor(ctx), ctx) : onMissionInput(e);
+export const onChange = (e, ctx) =>
+  ctx && isEpisode(ctx) ? onEpisodeInput(e, i18nFor(ctx), ctx) : onMissionInput(e);
+export const mount = (root, ctx) => {
+  if (isEpisode(ctx)) mountEpisode(root);
+};
+export const unmount = () => {
+  resetUi();
+  resetEpisodeUi();
+};

@@ -370,6 +370,23 @@ const REGISTRY = {
     });
     return null;
   },
+  // A concept that unfolds scene by scene on one persistent stage
+  // (engine/core/living-scene.js). `play` picks from a FIXED map — never a
+  // path built from config — and a play whose config fails validation draws
+  // nothing rather than a wrong model.
+  "living-scene": async (host, cfg) => {
+    const { LIVING_PLAYS } = await import("../components/living/index.js");
+    const load = Object.hasOwn(LIVING_PLAYS, cfg.play) ? LIVING_PLAYS[cfg.play] : null;
+    if (!load) return null;
+    const build = await load();
+    const play = build(cfg);
+    if (!play) return null;
+    const { mountLivingScene } = await import("./living-scene.js");
+    const lessonId = String(
+      cfg.lessonId || (typeof location !== "undefined" ? location.pathname : ""),
+    ).replace(/[^\w/-]/g, "");
+    return mountLivingScene(host, play, { storeKey: `${cfg.play}:${lessonId}` });
+  },
   // Generic bridge for any shared/projects "manip-<name>.js" widget that
   // registers window.NeftManips["<name>"] = init. Config:
   //   { kind: "manip", manip: "number-line", attrs: { range: 120, unit: "m" } }

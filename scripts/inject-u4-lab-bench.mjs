@@ -24,7 +24,12 @@ import { UNIT4 } from "./generate-practice-studios.mjs";
 import { withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
 import { benchItems, benchProblems } from "./lib/practice-studio-bench.mjs";
 import { targetEsProblems } from "./lib/practice-studio-data.mjs";
-import { glossaryBlock, targetChip } from "./lib/practice-studio-pages.mjs";
+import {
+  glossaryBlock,
+  LIVING_SCENE_SCRIPT,
+  livingCardFor,
+  targetChip,
+} from "./lib/practice-studio-pages.mjs";
 import { usedTraps } from "./lib/u4-traps.mjs";
 
 const read = (/** @type {string} */ rel) => readFileSync(join(REPO_ROOT, rel), "utf8");
@@ -60,7 +65,11 @@ const TARGET_BLOCK = /\n?[ \t]*<!-- u4-target:begin[\s\S]*?<!-- u4-target:end --
 const MAIN = '<main class="main-container">';
 
 /** The context row with the lesson's target, placed first in <main>. */
-function targetBlock(/** @type {string} */ id, /** @type {any} */ ld) {
+function targetBlock(
+  /** @type {string} */ id,
+  /** @type {any} */ ld,
+  /** @type {"practice"|"challenge"} */ mode,
+) {
   const problems = targetEsProblems(id, ld.targetEs);
   if (problems.length) throw new Error(problems.join("; "));
   const cfg = JSON.parse(read(`lessons/${id}/config.json`));
@@ -71,7 +80,10 @@ function targetBlock(/** @type {string} */ id, /** @type {any} */ ld) {
   const terms = withPlainDefinitions(cfg.vocabulary || [], id)
     .filter((v) => String(v.term).toLowerCase() !== String(cfg.title).toLowerCase())
     .map((v) => ({ t: v.term, tEs: v.termEs, d: v.definition, dEs: v.definitionEs }));
-  return `\n    <!-- u4-target:begin (scripts/inject-u4-lab-bench.mjs) -->\n    <div class="studio-context">${targetChip(cfg.contentObjective, ld.targetEs)}${glossaryBlock(terms)}</div>\n    <!-- u4-target:end -->`;
+  // The lesson's living scene, on Practice pages only (same card as the generated studios).
+  const living = mode === "practice" ? livingCardFor(id, cfg) : "";
+  const livingHtml = living ? `${living}    ${LIVING_SCENE_SCRIPT}\n` : "";
+  return `\n    <!-- u4-target:begin (scripts/inject-u4-lab-bench.mjs) -->\n    <div class="studio-context">${targetChip(cfg.contentObjective, ld.targetEs)}${glossaryBlock(terms)}</div>\n${livingHtml}    <!-- u4-target:end -->`;
 }
 
 /**
@@ -174,7 +186,7 @@ export function outputs() {
         );
       const main = page.indexOf(MAIN);
       if (main < 0) throw new Error(`${rel} has no ${MAIN}`);
-      page = `${page.slice(0, main + MAIN.length)}${targetBlock(id, ld)}${page.slice(main + MAIN.length)}`;
+      page = `${page.slice(0, main + MAIN.length)}${targetBlock(id, ld, mode)}${page.slice(main + MAIN.length)}`;
       const head = page.indexOf("</head>");
       if (head < 0) throw new Error(`${rel} has no </head>`);
       page = `${page.slice(0, head).trimEnd()}${headBlock(slug)}\n${page.slice(head)}`;

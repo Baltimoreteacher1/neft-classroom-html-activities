@@ -5631,7 +5631,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/bcpss-teachers/efficacy/",
-    title: "Efficacy Brief — BCPSS K–8 Curriculum & Language Bridge",
+    title: "Coverage & Verification Brief — BCPSS K–8 Curriculum & Language Bridge",
     category: "Tool",
     unit: null,
   },

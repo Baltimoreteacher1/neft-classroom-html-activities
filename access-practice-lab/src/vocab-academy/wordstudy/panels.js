@@ -6,6 +6,7 @@ import {
 
 export const TOOLS = [
   { id: "build", from: "K", to: "8", en: "Build a Word", es: "Construye una palabra", dEn: "Tap word parts to build real words and see how the meaning is built.", dEs: "Toca partes de palabras para construir palabras reales y ver cómo se forma el significado." },
+  { id: "architect", from: "3", to: "8", en: "Word Architect", es: "Arquitecto de palabras", dEn: "Build a word from a prefix, a root and a suffix. Watch the meaning, the part of speech and the Spanish change.", dEs: "Construye una palabra con un prefijo, una raíz y un sufijo. Mira cómo cambian el significado, la categoría gramatical y el español." },
   { id: "apart", from: "1", to: "8", en: "Take It Apart", es: "Desarma la palabra", dEn: "Find the parts inside a word, or type a word to check.", dEs: "Encuentra las partes dentro de una palabra o escribe una palabra para revisarla." },
   { id: "predict", from: "2", to: "8", en: "Predict the Meaning", es: "Predice el significado", dEn: "Use the parts to work out what a word means.", dEs: "Usa las partes para deducir qué significa una palabra." },
   { id: "families", from: "3", to: "8", en: "Word Families", es: "Familias de palabras", dEn: "Words that share a root or base, and the look-alikes that do not.", dEs: "Palabras que comparten una raíz o base, y las parecidas que no la comparten." },

@@ -547,6 +547,12 @@ function buildVisual(v) {
         fallback: `Cross-section explorer for a ${shapeName}. Turn on JavaScript to slice it and see the 2D cross-sections.`,
       });
     }
+    case "living-scene":
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          v.label || "Interactive scene: a model that changes step by step as you predict and try",
+        fallback: "Interactive scene. Turn on JavaScript to step through the model.",
+      });
     case "net-folder": {
       // Fold a 2D net into a 3D solid. It has been in the interactive-visual
       // REGISTRY (for small-group labs, which mount via figureBlock) without a

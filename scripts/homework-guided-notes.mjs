@@ -1,6 +1,7 @@
 import { familyGuidance, householdMission } from "./homework-family-guidance.mjs";
 import { renderExplainStudio } from "./lib/homework-explain-studio.mjs";
 import { renderLearningReplayShell } from "./lib/homework-learning-replay.mjs";
+import { renderLivingScene } from "./lib/homework-living.mjs";
 /**
  * Guided family notes content + HTML sections for interactive homework.
  * Derives bilingual EN/ES content from lesson config.json fields.
@@ -8420,7 +8421,7 @@ export function renderLearnTab(
   /* STEP 1: Look & Learn. The goal, one worked example, the picture; notice/wonder and the prerequisite
      check are optional folds, not part of the path. */
   const hasModel = Boolean(missionModelFor(config));
-  const conceptVisualHtml = renderPrimaryConceptVisual(config);
+  const conceptVisualHtml = `${renderPrimaryConceptVisual(config)}${renderLivingScene(config)}`;
   const connect = `
     <div ${tabPanelAttrs("connect")}>
       ${renderLookAndLearn(config, { conceptVisualHtml, modelHtml: pieces.model, wordsHtml: caseFileHtml, noticeHtml: renderNoticeWonder(), warmupHtml: `${renderConfidence("before")}${pieces.spiral}` })}

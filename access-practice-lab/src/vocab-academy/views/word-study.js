@@ -9,6 +9,7 @@ import { analyze as analyzeIn } from "../wordstudy/model.js";
 import { getIndex, morphDataset } from "../wordstudy/index.js";
 import * as Items from "../wordstudy/items.js";
 import { readPrefs, recordMorph, writePrefs } from "../wordstudy/record.js";
+import { architectAction, architectInput, architectPanel } from "../wordstudy/architect.js";
 import { TOOLS, analysisHTML, apartPanel, buildPanel, familiesFor, familiesPanel, kitsFor, originsPanel, predictPanel, shiftsPanel, studioPanel, toolAvailable } from "../wordstudy/panels.js";
 
 const CSS = `${BASE}/vocab-academy-wordstudy.css`;
@@ -66,7 +67,7 @@ function setTool(tool) {
   if (tool === "studio" && !["compound", "plural", "past", "now", "compare"].includes(S.mode)) S.mode = "compound";
   if (tool === "build") setupBuild();
   if (tool === "families") setupFamilies();
-  if (tool !== "build" && tool !== "families" && tool !== "apart" && tool !== "hub") nextItem();
+  if (tool !== "build" && tool !== "families" && tool !== "apart" && tool !== "hub" && tool !== "architect") nextItem();
   if (tool === "apart" || tool === "families") nextItem();
 }
 function setupBuild() {
@@ -134,6 +135,7 @@ function panel(I) {
   const idx = S.idx;
   switch (S.tool) {
     case "build": return buildPanel(I, S, idx);
+    case "architect": return architectPanel(I);
     case "apart": return apartPanel(I, S, idx);
     case "predict": return predictPanel(I, S, idx);
     case "families": return familiesPanel(I, S, idx);
@@ -277,6 +279,14 @@ function onClick(e) {
   const el = e.target.closest?.("[data-ws]");
   if (!el || !S.host?.contains(el) || el.getAttribute("aria-disabled") === "true") return;
   const act = el.dataset.ws;
+  if (act.startsWith("arch-")) {
+    const r = architectAction(S.va.I, act, el, S.host);
+    if (r.recordWord) count(r.ok !== false, r.recordWord);
+    S.focus = r.focus || "";
+    repaint();
+    if (r.say) say(r.say);
+    return;
+  }
   switch (act) {
     case "tool": {
       leaveUnsolved();
@@ -359,6 +369,7 @@ export function mount(root) {
   host.addEventListener("click", onClick);
   host.addEventListener("change", onChange);
   host.addEventListener("keydown", onKey);
+  host.addEventListener("input", (e) => architectInput(e.target));
 }
 export function unmount() {
   leaveUnsolved();
