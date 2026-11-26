@@ -26,6 +26,7 @@ import { scoreAssessment } from "../assessment.js";
 import { assessListHTML } from "../lessons/item-ui.js";
 import { ensureLessonCss } from "../lessons/ui.js";
 import { recordResult } from "../model.js";
+import { noteAcademyResult } from "../lens.js";
 import { crumbs, gradeName, gradeNameS, notPublishedPanel, rootCrumb } from "../ui.js";
 import { buildCrossword, cellsOf, checkCrossword, pickWords } from "../unit/crossword.js";
 import { buildUnitTest } from "../unit/test.js";
@@ -380,6 +381,7 @@ function finishCrossword(va) {
         unit: S.gid,
         grade: S.g,
       });
+      noteAcademyResult({ wordId: e.wordId, ok: true, sup: helped || cw.bank ? ["wordBank"] : [] });
     } catch (error) {
       console.warn("[vocab-academy] crossword evidence not recorded", error);
     }
@@ -627,6 +629,7 @@ function onSubmit(e, ctx, va) {
         unit: S.gid,
         grade: S.g,
       });
+      noteAcademyResult({ wordId: p.wordId, ok: p.ok });
     } catch (error) {
       console.warn("[vocab-academy] unit test evidence not recorded", error);
     }

@@ -7,6 +7,7 @@ import { ACTIVITY_TYPES, buildMixed, buildItems, mountRunner } from "../activiti
 import { buildReviewSession } from "../session.js";
 import { getIndex, getUnit, getUnitsOfGrade, getWords, groupId, groupLessons, lessonHref, vaHref } from "../data.js";
 import { recordResult } from "../model.js";
+import { noteAcademyResult } from "../lens.js";
 import { crumbs, gradeName, rootCrumb } from "../ui.js";
 import { ensureLessonCss } from "../lessons/ui.js";
 
@@ -134,6 +135,7 @@ export function mount(root, ctx, va) {
       } catch (error) {
         console.warn("[vocab-academy] could not record practice evidence", error);
       }
+      noteAcademyResult(r);
       va.save();
     },
     onDone: () => va.save(),

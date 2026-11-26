@@ -184,6 +184,7 @@ export function mountRunner(root, { items = [], ctx = {}, onResult, onDone, onIt
         sup: sp,
         type: it.resultType || it.type,
         activity: it.type,
+        mode: it.mode,
         itemId: it.id,
         firstTry: s.attempt === 1,
         attempt: s.attempt,

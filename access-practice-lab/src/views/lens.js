@@ -7,6 +7,24 @@ import { i18nFor } from "../i18n.js";
 import { lensSummary, loadWords } from "../lang/word-encounters.js";
 import { BASE, html, icon } from "../util.js";
 
+/** lens.css loads here, on /lens only, so the lab shell does not carry a stylesheet most visits never use. */
+let sheet = null;
+function ensureStyles() {
+  if (typeof document === "undefined") return Promise.resolve();
+  const href = `${BASE}/lens.css`;
+  if (document.querySelector(`link[rel="stylesheet"][href^="${href}"]`)) return Promise.resolve();
+  sheet ||= new Promise((resolve) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.addEventListener("load", resolve, { once: true });
+    link.addEventListener("error", resolve, { once: true });
+    setTimeout(resolve, 3000);
+    document.head.append(link);
+  });
+  return sheet;
+}
+
 /** Where a count came from, in the words a learner uses for the activity. */
 const SOURCE_NAMES = {
   wordlab: ["Word Lab", "Laboratorio de palabras"],
@@ -117,6 +135,7 @@ function sourcesHTML(I, sum) {
 }
 
 export async function render(ctx) {
+  await ensureStyles();
   const I = i18nFor(ctx);
   const title = I.S("My Words", "Mis palabras");
   const sum = lensSummary(loadWords());

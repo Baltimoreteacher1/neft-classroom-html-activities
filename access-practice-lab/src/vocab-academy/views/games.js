@@ -7,6 +7,7 @@ import { SHIPPED_GRADES } from "../contract.js";
 import { getIndex, getUnit, getUnitsOfGrade, getWords, groupId, groupLessons, parseGroupId, vaHref } from "../data.js";
 import { GAMES, fitsGrade, getGame } from "../games/index.js";
 import { dueWords, recordResult, wordEntry } from "../model.js";
+import { noteAcademyResult } from "../lens.js";
 import { crumbs, gradeName, gradeNameS, notPublishedPanel, rootCrumb } from "../ui.js";
 
 const REVIEW_STATES = ["learning", "developing", "applying", "review-needed"];
@@ -234,6 +235,7 @@ export function mount(root, ctx, va) {
         unit: unitId || undefined,
         grade,
       });
+      noteAcademyResult(ev);
       va.save();
     },
     onDone: (summary) => {

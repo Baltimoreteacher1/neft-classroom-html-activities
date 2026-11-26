@@ -13,6 +13,7 @@ import {
   vaHref,
 } from "../data.js";
 import { recordResult } from "../model.js";
+import { noteAcademyResult } from "../lens.js";
 import {
   filterRows,
   genresOf,
@@ -286,11 +287,9 @@ async function renderOneReading(va, id) {
       },
       onRecord: (plan) => {
         for (const item of plan || []) {
-          recordResult(progress, item.wordId, {
-            dim: item.dim,
-            correct: item.correct,
-            heavy: Boolean(va.supports("reading")?.readAloud),
-          });
+          const sup = va.supports("reading")?.readAloud ? ["readAloud"] : [];
+          recordResult(progress, { wordId: item.wordId, dim: item.dim, ok: item.ok, sup, type: "reading" });
+          noteAcademyResult({ wordId: item.wordId, ok: item.ok, sup });
         }
         va.save();
       },

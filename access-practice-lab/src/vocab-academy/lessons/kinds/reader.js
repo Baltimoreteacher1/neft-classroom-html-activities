@@ -2,6 +2,7 @@
 // saved marks, notes and read-along state in progress.reading[<passageId>] and recording lesson completion cleanly.
 import { html } from "../../../util.js";
 import { vaHref } from "../../data.js";
+import { noteAcademyResult } from "../../lens.js";
 import { normalizeReading, readingId, readingLabel } from "../../reading/ids.js";
 import { cleanReadingState } from "../../reading/marks.js";
 import { mountReader } from "../../reading/player.js";
@@ -12,7 +13,9 @@ export function htmlOf(S) {
   const p = unit.passage;
   if (!p?.paras?.length) {
     return html`<div class="val-reader">
-      <p class="val-note">${I.T("This lesson does not have a reading passage yet.", "Esta lección todavía no tiene una lectura.")}</p>
+      <p class="val-note">
+        ${I.T("This lesson does not have a reading passage yet.", "Esta lección todavía no tiene una lectura.")}
+      </p>
     </div>`;
   }
   return html`<div class="val-reader" data-val-reader-host></div>`;
@@ -43,17 +46,23 @@ export function mount(S, step, el) {
     },
     onRecord: (plan) => {
       for (const item of plan || []) {
-        S.deps.model.recordResult(S.progress, item.wordId, {
+        const sup = S.sup?.readAloud ? ["readAloud"] : [];
+        S.deps.model.recordResult(S.progress, {
+          wordId: item.wordId,
           dim: item.dim,
-          correct: item.correct,
-          heavy: Boolean(S.sup?.readAloud),
+          ok: item.ok,
+          sup,
+          type: "reading",
         });
+        noteAcademyResult({ wordId: item.wordId, ok: item.ok, sup });
       }
       S.save();
     },
     onLessonDone: () => {
       S.markDone(step.id);
-      S.announce(S.I.S("Saved. You can go on to the questions.", "Guardado. Puedes pasar a las preguntas."));
+      S.announce(
+        S.I.S("Saved. You can go on to the questions.", "Guardado. Puedes pasar a las preguntas."),
+      );
     },
   });
   S.cleanups.push(() => player?.destroy?.());

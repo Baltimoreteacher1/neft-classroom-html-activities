@@ -178,9 +178,11 @@ await check(
   },
 );
 
+// Telemetry v2 (6f17376432) accepts an optional grade K-8 as a dimension, so a VALID grade is no longer an extra; an
+// invalid one, and every identity-style field, is still refused.
 await check("client-supplied grade/tier-style extras are refused, never trusted", async () => {
   for (const extra of [
-    { grade: "8" },
+    { grade: "99" },
     { student_name: "Maria" },
     { wida_level: "6" },
     { class_id: "c1" },

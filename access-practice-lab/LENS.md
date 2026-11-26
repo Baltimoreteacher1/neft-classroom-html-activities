@@ -31,9 +31,14 @@ whether it was right. No sentence, recording, score or level exists in the recor
 | `wordlab`    | build a word, garden review (`lensNote`)    | `chose`; `wrote` for the "use it" and "transfer" sentence tasks  |
 | `teach-back` | a finished explanation (`views/teach-back`) | `wrote`, for key terms and academic-list words the learner typed |
 | `writing`    | Language Coach request (`views/activity`)   | `wrote`, for academic-list words in the draft                    |
+| `vocab-academy` | graded answers in practice, review, games, word cards, crosswords, unit tests and reading (`vocab-academy/lens.js`) | `chose`; `wrote` or `said` only when the item's own `mode` is typed, write or speak; `saw` the first time a word card opens |
+| `reading`    | "Save to Word Notebook" in the Reading Room | `saw` (saving a word is looking at its meaning, not using it)    |
 
-Not wired yet: Vocabulary Academy (four result paths in `vocab-academy/`, to be hooked at the activity layer, not the
-pure model), Reading Room word saves, the arcade games, family practice and the BCPSS lesson activities. The Language
+Vocabulary Academy goes through one helper, `vocab-academy/lens.js`, which looks the headword up in the Academy index
+(an unknown word is skipped) and passes only the word, the kind, whether a support or hint was used, and whether it was
+right. Nothing typed or said reaches the record.
+
+Not wired yet: the arcade games, family practice and the BCPSS lesson activities. The Language
 Demand Analyzer is a teacher tool, so it never writes: a teacher's words are not a learner's encounters.
 
 **Add a source**: add its id to `SOURCES` and a name to `SOURCE_NAMES` in `views/lens.js`, then call

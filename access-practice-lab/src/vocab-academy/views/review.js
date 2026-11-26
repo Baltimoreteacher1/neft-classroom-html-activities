@@ -7,6 +7,7 @@ import { mountRunner } from "../activities/index.js";
 import { buildReviewSession } from "../session.js";
 import { getIndex, getUnitsOfGrade, parseUnitId, lessonHref, vaHref, wordHref } from "../data.js";
 import { dueWords, recordResult, wordEntry } from "../model.js";
+import { noteAcademyResult } from "../lens.js";
 import { crumbs, rootCrumb } from "../ui.js";
 import { ensureLessonCss } from "../lessons/ui.js";
 import { bandOfGrade } from "../contract.js";
@@ -104,6 +105,7 @@ export function mount(root, ctx, va) {
         } catch (error) {
           console.warn("[vocab-academy] could not record review evidence", error);
         }
+        noteAcademyResult(r);
         va.save();
       },
       onDone: () => va.save(),

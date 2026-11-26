@@ -140,6 +140,15 @@ try {
   await page.getByRole("button", { name: "Practice", exact: true }).click();
   await page.locator(".rr-vocab summary").first().click();
   await page.getByRole("button", { name: "Save to Word Notebook" }).first().click();
+  await page.getByRole("button", { name: "Saved to Word Notebook" }).first().waitFor();
+  const lens = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("accessPracticeLab:v1:word-encounters") || "null"),
+  );
+  const met = Object.values(lens?.words || {})[0];
+  assert.ok(
+    met && met.n.saw === 1 && met.s.reading === 1 && !met.n.chose && !met.n.wrote,
+    "saving a Reading Room word records it as seen, never as used",
+  );
   await page.goto(
     `http://localhost:${server.address().port}/access-practice-lab/reading-room/words`,
   );

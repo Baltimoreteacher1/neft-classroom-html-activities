@@ -5,6 +5,7 @@
 import { html, icon, raw } from "../../util.js";
 import { getGradeOverview, getWord, gradeHref, lessonHref, vaHref, wordHref } from "../data.js";
 import { markSeen, recordResult, wordEntry } from "../model.js";
+import { noteAcademyResult, noteAcademySeen } from "../lens.js";
 import { rngFor } from "../rng.js";
 import { crumbs, gradeNameS, notPublishedPanel, posName, rootCrumb, stateBadge } from "../ui.js";
 import { formatDate } from "../../util.js";
@@ -176,6 +177,7 @@ export async function render(ctx, va) {
   // First exposure: the word becomes "learning" (and no more) the first time its card opens on this device.
   if (wordEntry(progress, word.id).state === "new") {
     markSeen(progress, word.id, { unit: unit.id, grade: unit.grade });
+    noteAcademySeen(word.hw);
     va.save();
   }
   const entry = wordEntry(progress, word.id);
@@ -358,6 +360,7 @@ export function onClick(e, ctx, va) {
       unit: entry?.u,
       grade: entry?.g,
     });
+    noteAcademyResult({ wordId: check.wordId, ok: verdict.ok });
     va.save();
     ctx.rerender();
     return true;

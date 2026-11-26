@@ -10,6 +10,7 @@ import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { setComponentsI18n } from "../components.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
+import { noteWords } from "../lang/word-encounters.js";
 import {
   loadReadingState,
   saveReadingState,
@@ -931,7 +932,7 @@ export function onClick(e,ctx){I=i18nFor(ctx);if(readingLogClick(e,ctx,I))return
   if(b.dataset.rrRemoveWord){s.words.splice(Number(b.dataset.rrRemoveWord),1);saveReadingState(s);ctx.rerender();return true;}
   if(b.dataset.rrBookmark){s.bookmarks=s.bookmarks.includes(id)?s.bookmarks.filter(x=>x!==id):[...s.bookmarks,id];saveReadingState(s);ctx.rerender();return true;}
   if(b.dataset.rrAction==="clear"){clearReadingState();notice=I.S("Local Reading Room data cleared.","Se borraron los datos locales de la Sala de lectura.");ctx.rerender();return true;}
-  if(b.dataset.rrWord){const lword=document.querySelector(`[data-rr-word="${CSS.escape(b.dataset.rrWord)}"]`);if(lword){const lessonId=b.dataset.rrLesson;const d=lessonId;loadReadingRoomLessons().then(data=>{const lesson=data.lessons.find(x=>x.id===d),v=lesson?.vocabulary.find(x=>x.term===b.dataset.rrWord);const st=loadReadingState();if(v&&!st.words.some(w=>w.term===v.term&&w.lessonId===d))st.words.push({term:v.term,definition:v.definition,example:v.example,lessonId:d});saveReadingState(st);b.textContent=I.S("Saved to Word Notebook","Guardado en el Cuaderno de palabras");});}return true;}
+  if(b.dataset.rrWord){const lword=document.querySelector(`[data-rr-word="${CSS.escape(b.dataset.rrWord)}"]`);if(lword){const lessonId=b.dataset.rrLesson;const d=lessonId;loadReadingRoomLessons().then(data=>{const lesson=data.lessons.find(x=>x.id===d),v=lesson?.vocabulary.find(x=>x.term===b.dataset.rrWord);const st=loadReadingState();if(v&&!st.words.some(w=>w.term===v.term&&w.lessonId===d)){st.words.push({term:v.term,definition:v.definition,example:v.example,lessonId:d});noteWords([v.term],{src:"reading",mode:"saw"});}saveReadingState(st);b.textContent=I.S("Saved to Word Notebook","Guardado en el Cuaderno de palabras");});}return true;}
   if(b.dataset.rrCheck){loadReadingRoomLessons().then(data=>{const l=data.lessons.find(x=>x.id===id),a=l.activities.find(x=>x.id===b.dataset.rrCheck);p.answers={...(p.answers||{}),[a.id]:nextAnswerState(a,p.answers?.[a.id],activeMode)};s.lessons[key]=p;saveReadingState(s);ctx.rerender();});return true;}
   if(b.dataset.rrReveal){p.answers={...(p.answers||{}),[b.dataset.rrReveal]:{...(p.answers?.[b.dataset.rrReveal]||{}),revealed:true}};s.lessons[key]=p;saveReadingState(s);ctx.rerender();return true;}
   if(b.dataset.rrGloss!=null){toggleGloss(b);return true;}
