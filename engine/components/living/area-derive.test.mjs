@@ -19,7 +19,10 @@ import {
 } from "./area-derive-model.js";
 
 const lesson = (id) => JSON.parse(readFileSync(new URL(`../../../lessons/${id}/config.json`, import.meta.url), "utf8"));
-const living = (id) => lesson(id).launch.conceptIntro.livingScene;
+// 5-1 now teaches through the parallelogram-area play; this play still supports the shape,
+// so its authored scene is kept as a fixture.
+const FIXTURES = JSON.parse(readFileSync(new URL("./authored-fixtures.json", import.meta.url), "utf8"));
+const living = (id) => FIXTURES[id] ?? lesson(id).launch.conceptIntro.livingScene;
 
 // An independent polygon area (shoelace) and boundary test.
 const area = (pts) =>

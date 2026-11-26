@@ -23,7 +23,11 @@ import {
   validateBalanceSolve,
 } from "./balance-solve-model.js";
 
+// 8-2 now teaches through the one-step-equation play; this play still supports the form, so
+// its authored scene is kept as a fixture.
+const FIXTURES = JSON.parse(readFileSync(new URL("./authored-fixtures.json", import.meta.url), "utf8"));
 const lesson = (id) =>
+  FIXTURES[id] ??
   JSON.parse(readFileSync(new URL(`../../../lessons/${id}/config.json`, import.meta.url), "utf8"))
     .launch.conceptIntro.livingScene;
 

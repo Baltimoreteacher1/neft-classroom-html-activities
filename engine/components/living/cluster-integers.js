@@ -1,7 +1,6 @@
 // Plays for the "integers" cluster. One entry per play: name -> () => Promise<builder>.
 // Add a play by creating living/<name>.js (exports build<Name>Play) and one line here.
 export const PLAYS = {
-  "opposites-line": () => import("./opposites-line.js").then((m) => m.buildOppositesLinePlay),
   "rational-line": () => import("./rational-line.js").then((m) => m.buildRationalLinePlay),
   "absolute-distance": () =>
     import("./absolute-distance.js").then((m) => m.buildAbsoluteDistancePlay),

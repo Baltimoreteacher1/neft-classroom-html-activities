@@ -177,7 +177,7 @@ const authored = (id) =>
   JSON.parse(readFileSync(new URL(`../../../lessons/${id}/config.json`, import.meta.url), "utf8"))
     .launch.conceptIntro.livingScene;
 
-for (const id of ["7-1", "7-2", "7-3", "7-4"]) {
+for (const id of ["7-2", "7-3", "7-4"]) {
   test(`${id}: the authored scene builds and every scene replays on resume`, async () => {
     installDom();
     const cfg = authored(id);
