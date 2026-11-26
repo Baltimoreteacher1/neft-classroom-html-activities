@@ -6,6 +6,7 @@ import { DRAFT_NOTICE } from "../shared/bcpss-provenance.js";
 import { normalizeText } from "../shared/bcpss/unified-search.js";
 import { keepView } from "./keep-view.js";
 import { mountFamilyTips } from "./family-tips.js";
+import { renderCompanionTab } from "./companion/companion-tab.js";
 import { renderOverview } from "./overview-tab.js";
 import { chipHtml, primeLive, refreshChips } from "./provenance-live.js";
 import {
@@ -30,7 +31,7 @@ const WIDA_TIERS = [
   { key: "3_4", label: "Levels 3–4", short: "Developing / Expanding" },
   { key: "5_6", label: "Levels 5–6", short: "Bridging / Reaching" },
 ];
-const VALID_TABS = ["studio", "overview", "vocab", "reading", "create", "family"];
+const VALID_TABS = ["studio", "plan", "overview", "vocab", "reading", "create", "family"];
 const DEFAULT_TAB = "studio";
 // Old bookmarks and shared links: map retired tab names onto the v2 tabs.
 const TAB_ALIASES = {
@@ -668,6 +669,7 @@ async function selectUnit(unitId, { skipFetchIfLoaded = false, userInitiated = f
   }
   $("#panel-studio").innerHTML = `<div class="bh-loading" role="status">Loading Language Studio…</div>`;
   $("#panel-overview").innerHTML = `<div class="bh-loading" role="status">Loading unit overview…</div>`;
+  $("#panel-plan").innerHTML = `<div class="bh-loading" role="status">Loading Plan &amp; Respond…</div>`;
   $("#panel-vocab").innerHTML = `<div class="bh-loading" role="status">Loading Visual Vocabulary Studio…</div>`;
   $("#panel-reading").innerHTML = `<div class="bh-loading" role="status">Loading vocabulary reading…</div>`;
   $("#panel-create").innerHTML = `<div class="bh-loading" role="status">Loading Teacher Creation Studio…</div>`;
@@ -681,7 +683,7 @@ async function selectUnit(unitId, { skipFetchIfLoaded = false, userInitiated = f
     }
   } catch (err) {
     const errHtml = `<div class="bh-error" role="alert">Unable to load unit details: ${esc(err.message)}</div>`;
-    for (const tab of ["studio", "overview", "vocab", "reading", "create"]) {
+    for (const tab of ["studio", "plan", "overview", "vocab", "reading", "create"]) {
       $(`#panel-${tab}`).innerHTML = errHtml;
     }
   }
@@ -1004,6 +1006,7 @@ function renderEmptyWorkspace() {
   $("#sharePlanBtn").disabled = true;
   const emptyPanels = {
     studio: "launch the Language Studio",
+    plan: "plan, build a resource set and respond to student work",
     overview: "see the unit overview",
     vocab: "open the Visual Vocabulary Studio",
     reading: "open the vocabulary reading",
@@ -1135,6 +1138,12 @@ function renderTabPanels() {
   const { detail, wida } = state;
   renderStudioTab($("#panel-studio"), { detail, wida });
   renderOverview($("#panel-overview"), { detail, wida });
+  renderCompanionTab($("#panel-plan"), {
+    detail,
+    wida,
+    onOpenTab: (tab) => setActiveTab(tab),
+    onOpenUnit: (id) => openUnitById(id),
+  });
   renderVocabTab();
   renderReadingTab();
   renderCreateTab();
