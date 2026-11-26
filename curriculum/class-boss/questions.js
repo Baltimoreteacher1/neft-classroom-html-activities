@@ -47,6 +47,8 @@ export const BOSS_TAGS = [
   "ratio-compared-without-common-basis",
   "stat-question-no-variability",
   "pattern-unit-position-miscounted",
+  "compare-whole-number-bias",
+  "compare-negative-magnitude",
   "geom-triangle-area-no-half",
   "geom-surface-area-as-volume",
   "geom-volume-added-dimensions",
@@ -2792,7 +2794,142 @@ export const QUESTION_BANK = {
       };
     }),
   ],
+  // Comparison errors. The tag error is a specific PICK, so the four choices are
+  // the quantities being compared and the distractor is the one the bias selects.
+  "compare-whole-number-bias": [
+    T("wnb-unit-greatest", (r) => {
+      const ds = distinctInts(r, 4, 2, 12);
+      return {
+        values: { ds },
+        correct: `1/${Math.min(...ds)}`,
+        distractor: `1/${Math.max(...ds)}`,
+        decoys: ds.filter((d) => d !== Math.min(...ds) && d !== Math.max(...ds)).map((d) => `1/${d}`),
+        prompt: {
+          en: `Each fraction is part of the same whole. Which fraction is the greatest: ${ds.map((d) => `1/${d}`).join(", ")}?`,
+          es: `Cada fracción es parte del mismo total. ¿Cuál fracción es la mayor: ${ds.map((d) => `1/${d}`).join(", ")}?`,
+        },
+      };
+    }),
+    T("wnb-unit-least", (r) => {
+      const ds = distinctInts(r, 4, 2, 12);
+      return {
+        values: { ds },
+        correct: `1/${Math.max(...ds)}`,
+        distractor: `1/${Math.min(...ds)}`,
+        decoys: ds.filter((d) => d !== Math.min(...ds) && d !== Math.max(...ds)).map((d) => `1/${d}`),
+        prompt: {
+          en: `Each fraction is part of the same whole. Which fraction is the least: ${ds.map((d) => `1/${d}`).join(", ")}?`,
+          es: `Cada fracción es parte del mismo total. ¿Cuál fracción es la menor: ${ds.map((d) => `1/${d}`).join(", ")}?`,
+        },
+      };
+    }),
+    T("wnb-decimals", (r) => {
+      // One tenths decimal that is truly largest, three hundredths decimals with
+      // more digits but smaller values.
+      const a = r.int(5, 8);
+      const hs = distinctInts(r, 3, 11, a * 10 - 1).filter((h) => h % 10 !== 0);
+      while (hs.length < 3) {
+        const h = r.int(11, a * 10 - 1);
+        if (h % 10 !== 0 && !hs.includes(h)) hs.push(h);
+      }
+      const top = Math.max(...hs);
+      return {
+        values: { a, hs },
+        correct: `0.${a}`,
+        distractor: `0.${top}`,
+        decoys: hs.filter((h) => h !== top).map((h) => `0.${h}`),
+        prompt: {
+          en: `Which decimal is the greatest: 0.${a}, ${hs.map((h) => `0.${h}`).join(", ")}?`,
+          es: `¿Cuál decimal es el mayor: 0.${a}, ${hs.map((h) => `0.${h}`).join(", ")}?`,
+        },
+      };
+    }),
+    T("wnb-percent-decimal", (r) => {
+      // 0.a beats b% even though b > a; the decoys are smaller still.
+      const a = r.int(5, 8);
+      const b = r.int(a + 2, a * 10 - 5);
+      const e = r.int(1, a);
+      // d stays below b so the printed-digits reading singles out b%, and differs
+      // from e so no two choices share a value.
+      let d = r.int(1, Math.min(9, b - 1));
+      if (d === e) d = d === 1 ? 2 : d - 1;
+      return {
+        values: { a, b, e, d },
+        correct: `0.${a}`,
+        distractor: `${b}%`,
+        decoys: [`${e}%`, `0.0${d}`],
+        prompt: {
+          en: `Which amount is the greatest: 0.${a}, ${b}%, ${e}%, or 0.0${d}?`,
+          es: `¿Cuál cantidad es la mayor: 0.${a}, ${b}%, ${e}% o 0.0${d}?`,
+        },
+      };
+    }),
+  ],
+  "compare-negative-magnitude": [
+    T("neg-greatest", (r) => {
+      const ns = distinctInts(r, 4, 1, 20).map((n) => -n);
+      return {
+        values: { ns },
+        correct: Math.max(...ns),
+        distractor: Math.min(...ns),
+        decoys: ns.filter((n) => n !== Math.max(...ns) && n !== Math.min(...ns)),
+        prompt: {
+          en: `Which number is the greatest: ${ns.join(", ")}?`,
+          es: `¿Cuál número es el mayor: ${ns.join(", ")}?`,
+        },
+      };
+    }),
+    T("neg-least", (r) => {
+      const ns = distinctInts(r, 4, 1, 20).map((n) => -n);
+      return {
+        values: { ns },
+        correct: Math.min(...ns),
+        distractor: Math.max(...ns),
+        decoys: ns.filter((n) => n !== Math.max(...ns) && n !== Math.min(...ns)),
+        prompt: {
+          en: `Which number is the least: ${ns.join(", ")}?`,
+          es: `¿Cuál número es el menor: ${ns.join(", ")}?`,
+        },
+      };
+    }),
+    T("neg-temps", (r) => {
+      const ns = distinctInts(r, 4, 1, 15).map((n) => -n);
+      return {
+        values: { ns },
+        correct: Math.max(...ns),
+        distractor: Math.min(...ns),
+        decoys: ns.filter((n) => n !== Math.max(...ns) && n !== Math.min(...ns)),
+        prompt: {
+          en: `Four towns report these temperatures in °C: ${ns.join(", ")}. Which temperature is the warmest?`,
+          es: `Cuatro pueblos reportan estas temperaturas en °C: ${ns.join(", ")}. ¿Cuál temperatura es la más cálida?`,
+        },
+      };
+    }),
+    T("neg-depths", (r) => {
+      const ns = distinctInts(r, 4, 2, 40).map((n) => -5 * n);
+      return {
+        values: { ns },
+        correct: Math.max(...ns),
+        distractor: Math.min(...ns),
+        decoys: ns.filter((n) => n !== Math.max(...ns) && n !== Math.min(...ns)),
+        prompt: {
+          en: `Four divers stop at these elevations in feet: ${ns.join(", ")}. Which diver is the closest to the surface?`,
+          es: `Cuatro buzos se detienen a estas elevaciones en pies: ${ns.join(", ")}. ¿Cuál buzo está más cerca de la superficie?`,
+        },
+      };
+    }),
+  ],
 };
+
+/** n distinct integers in [lo, hi], drawn from the seeded PRNG. */
+function distinctInts(r, n, lo, hi) {
+  const out = [];
+  while (out.length < n) {
+    const v = r.int(lo, hi);
+    if (!out.includes(v)) out.push(v);
+  }
+  return out;
+}
 
 /* ---------------------------------------------------------------------------
  * Choice assembly. Every question shows four options: the correct answer, the

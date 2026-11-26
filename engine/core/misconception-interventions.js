@@ -336,6 +336,23 @@ export const INTERVENTIONS = {
     then: "One apple is $0.50. That per-ONE amount is the common basis — once both offers are written per one, they can be compared directly.",
     verify: { expr: "3/6", equals: 0.5 },
   },
+  "compare-whole-number-bias": {
+    // Same whole, same numerator: the only thing that changes is how many
+    // pieces, so a student answering "1/5" here has shown the bias, not a slip.
+    probe:
+      "Quick one: one pizza is cut into 3 equal slices, an identical pizza into 5. Which slice is bigger, 1/3 or 1/5?",
+    accept: ["1/3", "one third", "un tercio"],
+    rejects: ["1/5", "one fifth", "un quinto"],
+    then: "More pieces of the same whole means each piece is smaller, so 1/3 is bigger even though 5 is bigger than 3. Now compare the sizes in your problem, not the digits.",
+    verify: { expr: "1/3 > 1/5", assert: true },
+  },
+  "compare-negative-magnitude": {
+    probe: "Quick one: it is −3 °C on Monday and −8 °C on Tuesday. Which day is warmer?",
+    accept: ["monday", "lunes", "-3", "−3"],
+    rejects: ["tuesday", "martes", "-8", "−8"],
+    then: "−3 is warmer: it sits closer to zero and farther right on the number line, so −3 > −8. Now place your numbers on the line and compare where they sit.",
+    verify: { expr: "-3 > -8", assert: true },
+  },
 };
 
 /** Loose normalisation for a typed micro-task answer. */

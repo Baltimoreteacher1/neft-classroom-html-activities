@@ -361,6 +361,41 @@ const EXPECT = {
   "cb-miles": (v) => [v.miles / v.gal, v.miles],
   "cb-pages": (v) => [v.pages / v.mins, v.pages],
 
+  // compare-whole-number-bias — the true extreme is found by VALUE; the error
+  // picks the quantity whose printed digits are the largest (or smallest).
+  "wnb-unit-greatest": (v) => {
+    const byValue = [...v.ds].sort((x, y) => 1 / y - 1 / x);
+    return [`1/${byValue[0]}`, `1/${[...v.ds].sort((x, y) => y - x)[0]}`];
+  },
+  "wnb-unit-least": (v) => {
+    const byValue = [...v.ds].sort((x, y) => 1 / x - 1 / y);
+    return [`1/${byValue[0]}`, `1/${[...v.ds].sort((x, y) => x - y)[0]}`];
+  },
+  "wnb-decimals": (v) => {
+    const all = [`0.${v.a}`, ...v.hs.map((h) => `0.${h}`)];
+    const byValue = [...all].sort((x, y) => Number(y) - Number(x));
+    const byDigits = [...all].sort((x, y) => Number(y.slice(2)) - Number(x.slice(2)));
+    return [byValue[0], byDigits[0]];
+  },
+  "wnb-percent-decimal": (v) => {
+    const all = [
+      { t: `0.${v.a}`, val: v.a / 10, digits: v.a },
+      { t: `${v.b}%`, val: v.b / 100, digits: v.b },
+      { t: `${v.e}%`, val: v.e / 100, digits: v.e },
+      { t: `0.0${v.d}`, val: v.d / 100, digits: v.d },
+    ];
+    const byValue = [...all].sort((x, y) => y.val - x.val);
+    const byDigits = [...all].sort((x, y) => y.digits - x.digits);
+    return [byValue[0].t, byDigits[0].t];
+  },
+
+  // compare-negative-magnitude — greater is farther right; the error compares
+  // distance from zero instead.
+  "neg-greatest": (v) => [Math.max(...v.ns), -Math.max(...v.ns.map(Math.abs))],
+  "neg-least": (v) => [Math.min(...v.ns), -Math.min(...v.ns.map(Math.abs))],
+  "neg-temps": (v) => [Math.max(...v.ns), -Math.max(...v.ns.map(Math.abs))],
+  "neg-depths": (v) => [Math.max(...v.ns), -Math.max(...v.ns.map(Math.abs))],
+
   // op-added-instead-of-multiplied
   "mul-boxes": (v) => [v.a * v.b, v.a + v.b],
   "mul-rows": (v) => [v.a * v.b, v.a + v.b],

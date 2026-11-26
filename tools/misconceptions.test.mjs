@@ -10,6 +10,7 @@
 
 import assert from "node:assert/strict";
 import {
+  comparisonMisconception,
   detectMisconception,
   diagnoseChoice,
   MISCONCEPTIONS,
@@ -304,6 +305,124 @@ assert.equal(
   studentExplanation("sign-dropped", "fr"),
   MISCONCEPTIONS["sign-dropped"].student,
   "an unsupported language falls back to English",
+);
+
+// ---------------------------------------------------------------- comparisons
+// A comparison pick is two-way evidence at best, so the SILENT cases matter as
+// much as the firing ones: the detector names a bias only when the bias singles
+// out exactly the quantity the student chose and that quantity is wrong.
+const mc = (stem, choices, correctIndex) => ({ stem, choices, correctIndex });
+const picks = (item, index, expected, note) => {
+  checks += 1;
+  const got = detectMisconception(item, item.choices[index], index);
+  assert.equal(
+    got,
+    expected,
+    `${note}\n  stem: ${item.stem}\n  picked: ${item.choices[index]}\n  got: ${got}`,
+  );
+};
+picks(
+  mc("Which is greater, 1/3 or 1/5?", ["1/3", "1/5"], 0),
+  1,
+  "compare-whole-number-bias",
+  "bigger denominator read as bigger fraction",
+);
+picks(
+  mc("Which fraction is the least: 1/2, 1/6, 1/4?", ["1/2", "1/6", "1/4"], 1),
+  0,
+  "compare-whole-number-bias",
+  "smallest denominator read as least",
+);
+picks(
+  mc("Which is larger, 0.4 or 0.25?", ["0.4", "0.25"], 0),
+  1,
+  "compare-whole-number-bias",
+  "longer decimal read as larger",
+);
+picks(
+  mc("Which is greater: 0.4 or 35%?", ["0.4", "35%"], 0),
+  1,
+  "compare-whole-number-bias",
+  "percent digits read against decimal digits",
+);
+picks(
+  mc("Which number is greatest?", ["−3", "−8", "−5"], 0),
+  1,
+  "compare-negative-magnitude",
+  "farthest from zero read as greatest",
+);
+picks(
+  mc("Which number is least?", ["-3", "-8", "-5"], 1),
+  0,
+  "compare-negative-magnitude",
+  "closest to zero read as least",
+);
+detects(
+  { stem: "Which is greater, −3 or −8?", answer: "−3" },
+  "−8",
+  "compare-negative-magnitude",
+  "typed comparison response",
+);
+// Must stay silent:
+picks(
+  mc("Which is greater, 1/3 or 1/5?", ["1/3", "1/5"], 0),
+  0,
+  null,
+  "a correct pick is not a misconception",
+);
+picks(
+  mc("Which is greater, 2/3 or 3/5?", ["2/3", "3/5"], 0),
+  1,
+  null,
+  "different numerators: no single whole-number reading",
+);
+{
+  const item = mc("Which is the least: 1/5, 0.25, or 30%?", ["1/5", "0.25", "30%"], 0);
+  checks += 1;
+  assert.equal(
+    comparisonMisconception(item, "30%", 2),
+    null,
+    "bias agrees with the truth, so the comparison detector is silent",
+  );
+  // …and a silent comparison detector falls through, so the diagnosis this item
+  // had before comparisons existed is preserved rather than erased.
+  picks(item, 2, "percent-used-as-whole-number", "pre-existing numeric diagnosis survives");
+}
+picks(
+  mc("Which number is greater than 2?", ["1", "3", "5"], 1),
+  0,
+  null,
+  "key is not the extreme: not a pure comparison",
+);
+picks(
+  mc("Which is greater, −3 or 2?", ["−3", "2"], 1),
+  0,
+  "compare-negative-magnitude",
+  "|−3| > 2 read as −3 > 2",
+);
+picks(
+  mc("Which is greater, −3 or 5?", ["−3", "5"], 1),
+  0,
+  null,
+  "magnitude bias picks 5, the correct answer — nothing to name",
+);
+picks(
+  mc("Which is greater?", ["0.4 is greater", "35% is greater"], 0),
+  1,
+  null,
+  "choices that are not bare quantities silence the detector",
+);
+picks(
+  mc("Order from least to greatest: 1/3, 1/5", ["1/3", "1/5"], 0),
+  1,
+  null,
+  "two directions in one stem",
+);
+detects(
+  { stem: "Which is greater, −3 or −8?", answer: "−3" },
+  "−4",
+  null,
+  "a typed value that is not in the list",
 );
 
 console.log(`misconception detector: ${checks} checks passed.`);

@@ -11,6 +11,16 @@ export const MISCONCEPTIONS = {
     label: "Distributed to the first term only",
     watchFor: "Draw the area model — the outside factor touches BOTH terms.",
   },
+  "compare-negative-magnitude": {
+    label: "Compared negatives by their distance from zero",
+    watchFor:
+      "Have them place both numbers on a vertical number line and say which one is higher up.",
+  },
+  "compare-whole-number-bias": {
+    label: "Compared the digits, not the sizes",
+    watchFor:
+      "Put both amounts on one number line or one fraction strip before anyone names the bigger one.",
+  },
   "coord-xy-swapped": {
     label: "Swapped the x and y coordinates",
     watchFor: "Have them trace the horizontal move with a finger before the vertical one.",

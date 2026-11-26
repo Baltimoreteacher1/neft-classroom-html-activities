@@ -43,6 +43,8 @@ export const TAGS = [
   "factorization-stopped-early",
   "property-order-vs-grouping",
   "ratio-compared-without-common-basis",
+  "compare-whole-number-bias",
+  "compare-negative-magnitude",
   "stat-question-no-variability",
   "pattern-unit-position-miscounted",
   "algebra-distributive-partial",
@@ -3340,6 +3342,97 @@ export const PERSONAS = {
       "Los totales no se pueden comparar porque las ofertas son de tamaños distintos. Divide cada una hasta una sola manzana: $3 ÷ 6 = $0.50 cada una, y $4 ÷ 10 = $0.40 cada una. Ahora comparten una base, y la oferta de 10 manzanas es la más barata: lo contrario de lo que sugerían los totales.",
     wordBank: ["per one", "unit rate", "divide", "compare", "common basis", "total"],
     wordBankEs: ["por una", "tasa unitaria", "dividir", "comparar", "base común", "total"],
+  },  "compare-whole-number-bias": {
+    tag: "compare-whole-number-bias",
+    standards: ["6.NOS.8"],
+    persona: {
+      name: "Digit",
+      blurb: "Thinks the amount with the bigger-looking number always wins.",
+      blurbEs: "Cree que la cantidad con el número que se ve más grande siempre gana.",
+    },
+    wrongIdea: "a fraction with a bigger denominator is a bigger amount",
+    wrongIdeaEs: "una fracción con un denominador más grande es una cantidad más grande",
+    openingLine:
+      "1/8 of a pizza is more than 1/4 of the same pizza. Eight is bigger than four, so the slice must be bigger too.",
+    openingLineEs:
+      "1/8 de una pizza es más que 1/4 de la misma pizza. Ocho es mayor que cuatro, así que el pedazo también debe ser mayor.",
+    probes: [
+      "If I cut the pizza into 8 pieces instead of 4, are the pieces getting bigger or smaller?",
+      "Can you draw both pizzas for me and shade one piece of each?",
+      "So what does the bottom number really tell me about the size of a piece?",
+    ],
+    probesEs: [
+      "Si corto la pizza en 8 pedazos en vez de 4, ¿los pedazos se hacen más grandes o más pequeños?",
+      "¿Puedes dibujarme las dos pizzas y sombrear un pedazo de cada una?",
+      "Entonces, ¿qué me dice de verdad el número de abajo sobre el tamaño de un pedazo?",
+    ],
+    mustAddress: [
+      A(
+        "more-pieces-smaller",
+        "Cutting the same whole into MORE equal pieces makes each piece SMALLER",
+        "Cortar el mismo total en MÁS partes iguales hace cada parte MÁS PEQUEÑA",
+        [["smaller"], ["more pieces"], ["more parts"], ["pequeñ"], ["más partes"], ["más pedazos"]],
+      ),
+      A(
+        "compare-sizes",
+        "Compare the sizes of the pieces, not the digits",
+        "Compara el tamaño de las partes, no los dígitos",
+        [["size"], ["draw"], ["picture"], ["not the number"], ["tamaño"], ["dibuj"], ["no el número"]],
+      ),
+    ],
+    giveawayPhrases: ["1/4 is bigger", "1/4 es mayor", "1/4 is greater"],
+    worked:
+      "The bottom number tells how many equal pieces the pizza was cut into. Cutting the same pizza into 8 pieces makes each piece smaller than cutting it into 4, so 1/8 is less than 1/4, even though 8 is greater than 4.",
+    workedEs:
+      "El número de abajo dice en cuántas partes iguales se cortó la pizza. Cortar la misma pizza en 8 partes hace cada parte más pequeña que cortarla en 4, así que 1/8 es menor que 1/4, aunque 8 sea mayor que 4.",
+    wordBank: ["denominator", "equal pieces", "same whole", "smaller", "compare", "size"],
+    wordBankEs: ["denominador", "partes iguales", "mismo total", "más pequeño", "comparar", "tamaño"],
+  },
+  "compare-negative-magnitude": {
+    tag: "compare-negative-magnitude",
+    standards: ["6.NOS.8"],
+    persona: {
+      name: "Frost",
+      blurb: "Reads a negative number as if the minus sign were not there.",
+      blurbEs: "Lee un número negativo como si el signo menos no estuviera.",
+    },
+    wrongIdea: "−9 is greater than −2 because 9 is greater than 2",
+    wrongIdeaEs: "−9 es mayor que −2 porque 9 es mayor que 2",
+    openingLine:
+      "It was −9 degrees on Monday and −2 degrees on Tuesday. Monday had the bigger temperature, because 9 is more than 2.",
+    openingLineEs:
+      "El lunes hizo −9 grados y el martes −2 grados. El lunes tuvo la temperatura mayor, porque 9 es más que 2.",
+    probes: [
+      "Which day would you rather go outside? Which one is warmer?",
+      "Where are −9 and −2 on a number line? Which one is farther to the right?",
+      "What does being farther from zero mean when the number is negative?",
+    ],
+    probesEs: [
+      "¿Qué día preferirías salir? ¿Cuál es más cálido?",
+      "¿Dónde están −9 y −2 en una recta numérica? ¿Cuál está más a la derecha?",
+      "¿Qué significa estar más lejos del cero cuando el número es negativo?",
+    ],
+    mustAddress: [
+      A(
+        "farther-right",
+        "Greater numbers are farther RIGHT (or higher) on the number line",
+        "Los números mayores están más a la DERECHA (o más arriba) en la recta numérica",
+        [["right"], ["higher"], ["number line"], ["derecha"], ["arriba"], ["recta"]],
+      ),
+      A(
+        "farther-from-zero-less",
+        "A negative that is farther from zero is LESS",
+        "Un negativo que está más lejos del cero es MENOR",
+        [["farther from zero"], ["colder"], ["less"], ["lejos del cero"], ["más frío"], ["menor"]],
+      ),
+    ],
+    giveawayPhrases: ["−2 is greater", "-2 is greater", "−2 es mayor", "-2 es mayor"],
+    worked:
+      "On a number line, −2 sits to the right of −9, so −2 is greater. −9 is farther from zero in the negative direction, which makes it colder and smaller. Distance from zero is absolute value, not size.",
+    workedEs:
+      "En una recta numérica, −2 está a la derecha de −9, así que −2 es mayor. −9 está más lejos del cero hacia los negativos, lo que lo hace más frío y menor. La distancia al cero es el valor absoluto, no el tamaño.",
+    wordBank: ["number line", "greater", "less", "negative", "absolute value", "warmer"],
+    wordBankEs: ["recta numérica", "mayor", "menor", "negativo", "valor absoluto", "más cálido"],
   },
 };
 

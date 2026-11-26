@@ -612,6 +612,20 @@ export const TAGS = Object.freeze({
     watchForEs: "Pregunte cuánto vale UNA de cada una antes de comparar las razones.",
     standards: ["6.AT.3"],
   },
+  "compare-whole-number-bias": {
+    label: "Compared the digits, not the sizes",
+    labelEs: "Comparó los dígitos, no los tamaños",
+    watchFor: "Ask which amount would be bigger if both were pieces of the same pizza.",
+    watchForEs: "Pregunten cuál cantidad sería mayor si las dos fueran pedazos de la misma pizza.",
+    standards: ["6.NOS.8"],
+  },
+  "compare-negative-magnitude": {
+    label: "Compared negatives by their distance from zero",
+    labelEs: "Comparó negativos por su distancia al cero",
+    watchFor: "Ask which temperature is warmer: the one closer to zero is the greater number.",
+    watchForEs: "Pregunten cuál temperatura es más cálida: la más cercana al cero es el número mayor.",
+    standards: ["6.NOS.8"],
+  },
   "geom-triangle-area-no-half": {
     label: "Found base × height but forgot the half",
     labelEs: "Calculó base × altura pero olvidó la mitad",
@@ -1120,6 +1134,50 @@ export const KITCHEN_TABLE = Object.freeze({
     why: "It often flips, and that surprise is the lesson: totals cannot be compared until both are written per one.",
     whyEs:
       "Muchas veces se invierte, y esa sorpresa es la lección: los totales no se pueden comparar hasta que los dos estén escritos por uno.",
+  },
+  "compare-whole-number-bias": {
+    minutes: 5,
+    title: "Fold the paper strips",
+    titleEs: "Doblen las tiras de papel",
+    materials: "Three strips of paper the same length, and a pencil.",
+    materialsEs: "Tres tiras de papel del mismo largo y un lápiz.",
+    steps: [
+      "Fold one strip into 2 equal parts, one into 3, and one into 4. Label one part on each: 1/2, 1/3, 1/4.",
+      "Before comparing, ask your child: which number is biggest, 2, 3, or 4?",
+      "Now line the strips up. Which labeled part is the biggest piece?",
+      "Ask: why does the strip with the most parts have the smallest piece?",
+    ],
+    stepsEs: [
+      "Doblen una tira en 2 partes iguales, otra en 3 y otra en 4. Marquen una parte en cada una: 1/2, 1/3, 1/4.",
+      "Antes de comparar, pregúntenle a su hijo o hija: ¿cuál número es mayor, 2, 3 o 4?",
+      "Ahora alineen las tiras. ¿Cuál parte marcada es el pedazo más grande?",
+      "Pregunten: ¿por qué la tira con más partes tiene el pedazo más pequeño?",
+    ],
+    why: "The biggest number on the bottom made the smallest piece. Seeing that once is what breaks the habit of comparing the digits.",
+    whyEs:
+      "El número más grande abajo hizo el pedazo más pequeño. Verlo una vez es lo que rompe la costumbre de comparar los dígitos.",
+  },
+  "compare-negative-magnitude": {
+    minutes: 5,
+    title: "Warmer or colder?",
+    titleEs: "¿Más cálido o más frío?",
+    materials: "A sheet of paper and a pencil to draw a thermometer.",
+    materialsEs: "Una hoja de papel y un lápiz para dibujar un termómetro.",
+    steps: [
+      "Draw a tall thermometer with 0 in the middle, marks up to 10 above and down to −10 below.",
+      "Mark −2 and −7 on it together.",
+      "Ask: which one is warmer? Which mark is higher up?",
+      "Ask: so which number is greater, −2 or −7? Say why out loud.",
+    ],
+    stepsEs: [
+      "Dibujen un termómetro alto con 0 en el medio, marcas hasta 10 arriba y hasta −10 abajo.",
+      "Marquen juntos −2 y −7.",
+      "Pregunten: ¿cuál es más cálido? ¿Cuál marca está más arriba?",
+      "Pregunten: entonces, ¿cuál número es mayor, −2 o −7? Digan por qué en voz alta.",
+    ],
+    why: "Higher on the thermometer means greater, even when the digit looks smaller. That picture works for every negative number.",
+    whyEs:
+      "Más arriba en el termómetro significa mayor, aunque el dígito se vea más pequeño. Esa imagen sirve para todos los números negativos.",
   },
   "geom-triangle-area-no-half": {
     minutes: 5,

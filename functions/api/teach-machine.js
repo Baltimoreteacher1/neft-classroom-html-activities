@@ -72,6 +72,8 @@ const ALLOWED_TAGS = [
   "factorization-stopped-early",
   "property-order-vs-grouping",
   "ratio-compared-without-common-basis",
+  "compare-whole-number-bias",
+  "compare-negative-magnitude",
   "stat-question-no-variability",
   "pattern-unit-position-miscounted",
   "coord-xy-swapped",

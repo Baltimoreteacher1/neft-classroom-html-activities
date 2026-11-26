@@ -538,6 +538,31 @@ export const MISCONCEPTIONS = {
     studentEs:
       "Dos razones no se pueden comparar lado a lado hasta que compartan una base. Convierte cada una en una cantidad por UNO, o escala las dos hasta que sus segundos números coincidan, y luego compara.",
   },
+  // Comparison errors. These are detected from WHICH quantity a student picked
+  // in a "which is greater / least" item, and a two-way pick can also be a plain
+  // guess — so the student voice is a diagnostic QUESTION, never a verdict. It
+  // asks the one thing that separates the error from a slip, and gives nothing
+  // away: answering it still leaves the comparison to the student.
+  "compare-whole-number-bias": {
+    label: "Compared the digits, not the sizes",
+    labelEs: "Comparó los dígitos, no los tamaños",
+    watchFor:
+      "Put both amounts on one number line or one fraction strip before anyone names the bigger one.",
+    student:
+      "Bigger-looking digits do not always mean a bigger amount. When a whole is cut into more equal pieces, what happens to the size of each piece? Picture each amount as part of the same whole, then compare.",
+    studentEs:
+      "Dígitos más grandes no siempre significan una cantidad más grande. Cuando el total se corta en más partes iguales, ¿qué pasa con el tamaño de cada parte? Imagina cada cantidad como parte del mismo total y luego compara.",
+  },
+  "compare-negative-magnitude": {
+    label: "Compared negatives by their distance from zero",
+    labelEs: "Comparó negativos por su distancia al cero",
+    watchFor:
+      "Have them place both numbers on a vertical number line and say which one is higher up.",
+    student:
+      "On a number line, numbers get greater to the right and less to the left. Where does each of these sit? A negative that is farther from zero is actually less, not greater.",
+    studentEs:
+      "En una recta numérica, los números son mayores hacia la derecha y menores hacia la izquierda. ¿Dónde está cada uno de estos? Un negativo más lejos del cero en realidad es menor, no mayor.",
+  },
 };
 
 // Configs already carry a sparse authored vocabulary in `misconceptionTags` (a
@@ -915,6 +940,141 @@ export function predictions(item, correct) {
   return out;
 }
 
+// ── Comparison items ("Which is greater, 1/3 or 1/5?") ─────────────────────
+//
+// The numeric predictor above reads an OPERATION from the stem and predicts a
+// wrong VALUE. A comparison item has no operation: the student picks one of the
+// listed quantities, so the only evidence is WHICH one. Two biases produce a
+// specific, predictable pick:
+//
+//   compare-whole-number-bias — the quantities are read as the whole numbers
+//     printed in them: 1/5 "beats" 1/3 because 5 > 3, 0.25 beats 0.4 because
+//     25 > 4, 35% beats 0.4 because 35 > 4.
+//   compare-negative-magnitude — negatives are compared by distance from zero:
+//     −8 "beats" −3 because 8 > 3.
+//
+// Conservative by construction, for the same reason as scanExpression: every
+// listed quantity must parse completely (so a choice like "0.4 is greater"
+// silences the detector), the stem must ask for exactly one direction, and the
+// bias must single out one quantity that is NOT the correct one. When the biased
+// reading and the true reading agree, a wrong pick is unexplained and the
+// detector stays silent.
+
+const QUANTITY = /^\s*([−–-]?)\s*(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+))?\s*(%)?\s*$/;
+const QUANTITY_IN_TEXT = /[−–-]?\d+(?:\.\d+)?(?:\s*\/\s*\d+)?%?/g;
+
+function parseQuantity(text) {
+  const m = String(text ?? "").match(QUANTITY);
+  if (!m) return null;
+  const sign = m[1] ? -1 : 1;
+  const body = Number(m[2]);
+  if (m[3] != null && m[4]) return null; // "1/2%" is not a form students compare
+  if (m[3] != null) {
+    const d = Number(m[3]);
+    if (!d || m[2].includes(".")) return null;
+    return { value: (sign * body) / d, kind: "fraction", n: body, d, sign, raw: m[2] };
+  }
+  if (m[4]) return { value: (sign * body) / 100, kind: "percent", sign, raw: m[2] };
+  return { value: sign * body, kind: m[2].includes(".") ? "decimal" : "integer", sign, raw: m[2] };
+}
+
+function comparisonDirection(stem) {
+  const s = String(stem ?? "");
+  // "than" marks a threshold item ("Which number is less than −3?"): its key is
+  // whatever clears the threshold, not an extreme, so it is not a comparison.
+  if (!/\bwhich\b/i.test(s) || /\bhow much\b|\border\b|\bthan\b/i.test(s)) return null;
+  const max = /\b(greater|greatest|larger|largest|bigger|biggest|more|most)\b/i.test(s);
+  const min = /\b(less|least|smaller|smallest|lower|lowest|fewer|fewest)\b/i.test(s);
+  if (max === min) return null;
+  return max ? "max" : "min";
+}
+
+/** The digits a whole-number reader sees, or null when that reading is undefined. */
+function surfaceNumber(q, set) {
+  if (q.kind === "percent" || q.kind === "integer") return Number(q.raw);
+  if (q.kind === "decimal") {
+    const [whole, frac] = q.raw.split(".");
+    // Only the "longer decimal is larger" reading, which needs a shared whole part.
+    const wholes = new Set(set.filter((x) => x.kind === "decimal").map((x) => x.raw.split(".")[0]));
+    return wholes.size === 1 && whole === "0" ? Number(frac) : null;
+  }
+  // Fractions: the denominator reading, defined only when every fraction shares a
+  // numerator — otherwise "bigger denominator" is not a single prediction.
+  const numerators = new Set(set.filter((x) => x.kind === "fraction").map((x) => x.n));
+  return numerators.size === 1 ? q.d : null;
+}
+
+function uniqueExtreme(values, direction) {
+  const target = direction === "max" ? Math.max(...values) : Math.min(...values);
+  const hits = values.flatMap((v, i) => (near(v, target) ? [i] : []));
+  return hits.length === 1 ? hits[0] : null;
+}
+
+/** The quantities a comparison item asks the student to choose between. */
+function comparisonSet(item) {
+  if (Array.isArray(item?.choices) && item.choices.length >= 2) {
+    const parsed = item.choices.map(parseQuantity);
+    return parsed.every(Boolean) ? parsed : null;
+  }
+  const tokens = String(item?.stem ?? "").match(QUANTITY_IN_TEXT) || [];
+  const parsed = tokens.map(parseQuantity);
+  return parsed.length >= 2 && parsed.every(Boolean) ? parsed : null;
+}
+
+/**
+ * Name the comparison bias behind a pick, or return null.
+ * Exported for tests; detectMisconception() calls it before the numeric path.
+ */
+export function comparisonMisconception(item, typed, choiceIndex = null) {
+  const direction = comparisonDirection(item?.stem || item?.title);
+  if (!direction) return null;
+  const set = comparisonSet(item);
+  if (!set) return null;
+  const correct = uniqueExtreme(
+    set.map((q) => q.value),
+    direction,
+  );
+  if (correct == null) return null;
+  // The author's key must agree that the extreme IS the answer. "Which number is
+  // greater than 2?" has a key that is not the maximum; reasoning about such an
+  // item as a pure comparison would invent a diagnosis.
+  const keyIndex = Number.isInteger(item?.correctIndex) ? item.correctIndex : null;
+  if (keyIndex != null && keyIndex !== correct) return null;
+  if (keyIndex == null) {
+    const key = parseQuantity(correctAnswerText(item));
+    if (!key || !near(key.value, set[correct].value)) return null;
+  }
+  let picked = Number.isInteger(choiceIndex) && Array.isArray(item?.choices) ? choiceIndex : null;
+  if (picked == null) {
+    const response = parseQuantity(typed);
+    if (!response) return null;
+    const matches = set.flatMap((q, i) =>
+      q.kind === response.kind && near(q.value, response.value) ? [i] : [],
+    );
+    picked = matches.length === 1 ? matches[0] : null;
+  }
+  if (picked == null || picked === correct) return null;
+
+  const found = [];
+  if (set.some((q) => q.sign < 0)) {
+    const byMagnitude = uniqueExtreme(
+      set.map((q) => Math.abs(q.value)),
+      direction,
+    );
+    if (byMagnitude != null && byMagnitude !== correct && byMagnitude === picked) {
+      found.push("compare-negative-magnitude");
+    }
+  } else if (set.some((q) => q.kind !== "integer")) {
+    const surface = set.map((q) => surfaceNumber(q, set));
+    if (surface.every((v) => v != null)) {
+      const biased = uniqueExtreme(surface, direction);
+      if (biased != null && biased !== correct && biased === picked)
+        found.push("compare-whole-number-bias");
+    }
+  }
+  return found.length === 1 ? found[0] : null;
+}
+
 /**
  * The correct answer as written, across the two item shapes this engine sees.
  * Small-group items carry a free-text `answer`; main-path lesson items carry
@@ -945,6 +1105,11 @@ export function detectMisconception(item, typed, choiceIndex = null) {
     const authored = resolveAuthoredTag(it.misconceptionTags[choiceIndex]);
     if (authored) return authored;
   }
+  // A comparison item is judged by which quantity was picked, not by a value.
+  // When it stays silent, the numeric path below still runs, so a comparison
+  // item never loses a diagnosis it had before this detector existed.
+  const compared = comparisonMisconception(it, typed, choiceIndex);
+  if (compared) return compared;
   const answer = numberOf(correctAnswerText(item));
   const response = numberOf(String(typed ?? "").replace(/[a-z°²³\s./$%]+$/i, ""));
   if (response == null) return null;

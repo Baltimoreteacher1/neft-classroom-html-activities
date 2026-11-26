@@ -70,6 +70,8 @@
     "pattern-unit-position-miscounted": "Landed on the wrong place in the repeating unit",
     "stat-question-no-variability": "Chose a question with only one fixed answer",
     "ratio-compared-without-common-basis": "Compared two ratios without a common basis",
+    "compare-whole-number-bias": "Compared the digits, not the sizes",
+    "compare-negative-magnitude": "Compared negatives by their distance from zero",
   };
 
   var MOVES = {
@@ -143,6 +145,10 @@
     "stat-question-no-variability": "Ask: would two different people give two different answers?",
     "ratio-compared-without-common-basis":
       "Ask what ONE of each is worth before either ratio is compared.",
+    "compare-whole-number-bias":
+      "Put both amounts on one number line or one fraction strip before anyone names the bigger one.",
+    "compare-negative-magnitude":
+      "Have them place both numbers on a vertical number line and say which one is higher up.",
   };
 
   var LANES = {

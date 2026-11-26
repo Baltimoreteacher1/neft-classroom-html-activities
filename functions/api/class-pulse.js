@@ -62,6 +62,14 @@ const TAG_LABELS = {
     "Compared two ratios without a common basis",
     "Comparó dos razones sin una base común",
   ],
+  "compare-whole-number-bias": [
+    "Compared the digits, not the sizes",
+    "Comparó los dígitos, no los tamaños",
+  ],
+  "compare-negative-magnitude": [
+    "Compared negatives by their distance from zero",
+    "Comparó negativos por su distancia al cero",
+  ],
   "decimal-place-value": [
     "Right digits, wrong magnitude",
     "Dígitos correctos, magnitud equivocada",
@@ -201,6 +209,8 @@ const TAG_STANDARDS = {
   "pattern-unit-position-miscounted": ["6.NOS.2"],
   "stat-question-no-variability": ["6.DS.1"],
   "ratio-compared-without-common-basis": ["6.AT.3"],
+  "compare-whole-number-bias": ["6.NOS.8"],
+  "compare-negative-magnitude": ["6.NOS.8"],
   "decimal-place-value": ["6.NOS.3"],
   "exponent-as-multiplication": ["6.AT.5"],
   "fraction-added-denominators": ["6.NOS.1", "6.NOS.4"],
