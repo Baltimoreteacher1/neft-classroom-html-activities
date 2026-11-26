@@ -609,6 +609,31 @@ function lessonConfigs() {
           }
         }
       }
+      /* The lesson's living scene (launch.conceptIntro.livingScene) is the concept's film. A
+         later session of the same lesson (-part2, -part3) or a combined practice page
+         (6-1-6-2-practice) is the same concept again, so it shows its base lesson's scene: the
+         first lesson id in the page id. Those configs carry no launch block of their own; nothing
+         else about the page changes. */
+      const livingBase = dir.name.match(/^(\d+-\d+)-/)?.[1];
+      if (livingBase && !shaped.launch?.conceptIntro?.livingScene) {
+        const basePath = join(lessonsDir, livingBase, "config.json");
+        if (existsSync(basePath)) {
+          try {
+            const living = JSON.parse(readFileSync(basePath, "utf8")).launch?.conceptIntro
+              ?.livingScene;
+            if (living) {
+              shaped.launch = {
+                ...(shaped.launch || {}),
+                conceptIntro: { ...(shaped.launch?.conceptIntro || {}), livingScene: living },
+              };
+            }
+          } catch (e) {
+            console.error(
+              `Could not read ${livingBase} living scene for ${dir.name}: ${e.message}`,
+            );
+          }
+        }
+      }
       /* A Part 2 whose session has AUTHORED practice uses it instead of the
          pool it inherits from day one. `buildGroupLevels` in
          generate-part-two.mjs sources every Part 2's items from the PARENT

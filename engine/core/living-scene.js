@@ -33,7 +33,7 @@ const STYLE_ID = "living-scene-styles";
 const STORE_PREFIX = "nt-living:v1:";
 
 const CSS = `
-.lsx{--lsx-paper:var(--fm-surface,#fbf8f1);--lsx-card:var(--fm-raised,#ffffff);--lsx-ink:var(--fm-text,#12355b);--lsx-muted:var(--fm-text-muted,#4c5d70);--lsx-rule:var(--fm-line,#d9d2c3);--lsx-rule-strong:var(--fm-line-strong,#8796a5);
+.lsx{--lsx-paper:var(--fm-surface,#fbf8f1);--lsx-card:var(--fm-raised,#ffffff);--lsx-ink:var(--fm-text,#12355b);--lsx-muted:var(--fm-text-muted,#4c5d70);--lsx-rule:var(--fm-border,#d9d2c3);--lsx-rule-strong:var(--fm-border-strong,#8796a5);
   --lsx-x:var(--fm-m-part,#1fa6a2);--lsx-x-edge:var(--fm-primary,#0b6e6b);--lsx-on-x:var(--fm-raised,#ffffff);--lsx-u:var(--fm-m-unknown-edge,#e9a23b);--lsx-u-edge:var(--fm-m-unknown,#8a5a00);
   --lsx-hi:var(--fm-accent-ink,#0b6e6b);--lsx-lo:var(--fm-m-unknown,#8a5a00);--lsx-ok-bg:var(--fm-success-tint,#eef7f6);--lsx-ok-edge:var(--fm-success-ink,#0b6e6b);--lsx-cue-bg:var(--fm-warn-tint,#fbf3e4);--lsx-miss:var(--fm-error-ink,#b4413c);
   --lsx-primary:var(--fm-primary,#12355b);--lsx-on-primary:var(--fm-on-primary,#ffffff);--lsx-focus:var(--fm-focus,#c27c0e);--lsx-r:var(--fm-radius-md,12px);--lsx-r-sm:var(--fm-radius-sm,8px);
