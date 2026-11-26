@@ -9,7 +9,7 @@ const WIDTHS = { computer: "100%", tablet: "768px", phone: "375px", print: "816p
 let bundle = null;
 
 /** The player bundle and stylesheet, fetched once and reused for every refresh. */
-async function loadBundle(fetchImpl = fetch) {
+export async function loadBundle(fetchImpl = fetch) {
   bundle ||= Promise.all([
     fetchImpl(`${BASE}/player/studio-player.js`).then((r) => r.text()),
     fetchImpl(`${BASE}/player/studio-player.css`).then((r) => r.text()),

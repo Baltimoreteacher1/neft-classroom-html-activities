@@ -27,7 +27,7 @@ import { stableStringify } from "../access-practice-lab/src/studio/adapters/util
 import { checkResponse, marksOf } from "../access-practice-lab/src/studio/core/check.js";
 import { normalizeActivity } from "../access-practice-lab/src/studio/core/schema.js";
 import { BCPSS_UNITS } from "../data/bcpss-curriculum-seed.mjs";
-import { studentCopyFor } from "../functions/_lib/class-platform/activity-copy.js";
+import { studentCopyFor } from "../access-practice-lab/src/studio/core/student-copy.js";
 import {
   assertMatchCoversVocab,
   BEFORE,

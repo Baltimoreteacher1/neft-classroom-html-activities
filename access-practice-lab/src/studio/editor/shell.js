@@ -2,6 +2,7 @@
 // three tabs on the side (Content, Look & Feel, Student Supports) with More options tucked underneath.
 
 import { getLocal, saveLocal, studioApi } from "../drafts.js";
+import { createCheckPanel } from "./check-panel.js";
 import { createContentPanel } from "./content-panel.js";
 import { createPreview } from "./preview.js";
 import { isPlatform, isVersion } from "./customize-logic.js";
@@ -18,6 +19,7 @@ const TABS = [
   ["content", "Edit content", "Editar contenido"],
   ["look", "Look & Feel", "Aspecto"],
   ["supports", "Student Supports", "Apoyos para estudiantes"],
+  ["check", "Check my work", "Revisar mi trabajo"],
 ];
 
 const STATUS = {
@@ -68,6 +70,10 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush, ai, nav })
     onSelect: (id) => (switchTab("content"), content.select(id)),
   });
   const content = createContentPanel(store, { S, onOpen: (id) => preview.goto(id) });
+  const check = createCheckPanel(store, {
+    S,
+    onGo: (id) => (switchTab("content"), content.select(id)),
+  });
   const sidebar = h("div.st-sidebar");
   const tabBar = h("div.st-tabs.side", { role: "tablist" });
   const panel = h("div.st-side-panel", { role: "tabpanel" });
@@ -212,6 +218,7 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush, ai, nav })
     clear(panel);
     if (tab === "quick") (quick.render(), panel.append(quick.el));
     else if (tab === "content") (content.render(), panel.append(content.el));
+    else if (tab === "check") (panel.append(check.el), check.render());
     else panel.append(tab === "look" ? lookPanel(store, { S }) : supportsPanel(store, { S }));
     clear(more).append(moreOptions(store, { S, notify: say }));
   }

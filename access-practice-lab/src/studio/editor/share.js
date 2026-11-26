@@ -103,6 +103,18 @@ export function openShare({ store, saver, S, lang, link, setLink, goToBlock, fet
         }));
       }
     }
+    items.push(button(S("Download complete package (ZIP)", "Descargar paquete completo (ZIP)"), async () => {
+      say2(S("Building the package…", "Creando el paquete…"));
+      try {
+        const { downloadablePackage } = await import("./package-download.js");
+        const pkg = await downloadablePackage(store.get(), { lang, generatedAt: new Date().toISOString().slice(0, 10), fetchImpl });
+        saveBlob(pkg.blob, `${slug(a.title)}-package.zip`);
+        const note2 = pkg.review.map((r) => S(r.en, r.es)).join(" ");
+        say2(`${S("Downloaded. Open index.html inside to start.", "Descargado. Abra index.html dentro para empezar.")} ${pkg.offline ? "" : S("Some parts need an internet connection.", "Algunas partes necesitan conexión a internet.")} ${note2}`.trim());
+      } catch (err) {
+        say2(S("The package could not be built. Your work is safe; try again.", "No se pudo crear el paquete. Su trabajo está a salvo; intente de nuevo."));
+      }
+    }));
     body.append(out, classBlock, h("section.st-share-block", h("h3", S("Download or print", "Descargar o imprimir")), h("div.st-add-row", items)), note);
   });
 }

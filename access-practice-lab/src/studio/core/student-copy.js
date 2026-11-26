@@ -2,7 +2,7 @@
  * The student copy of an activity (see activities.js): what a student may download once a teacher publishes.
  * ========================================================================== */
 
-import { normalizeActivity } from "../../../access-practice-lab/src/studio/core/schema.js";
+import { normalizeActivity } from "./schema.js";
 
 const MARKER = /\[\[([^\]]+)\]\]/g;
 

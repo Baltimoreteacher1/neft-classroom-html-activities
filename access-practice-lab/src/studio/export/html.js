@@ -1,17 +1,15 @@
 // The standalone HTML export: ONE self-contained document (inline CSS, the inline player bundle, the activity as
 // JSON) that works opened from file://, makes no requests, and carries no teacher-only data.
 
-import { normalizeActivity } from "../core/schema.js";
+import { studentCopyFor } from "../core/student-copy.js";
 
-/** The activity as students may see it: no teacher notes, no note blocks, no teacher-only source note. */
+/**
+ * The activity as students may see it: no teacher notes, no note blocks, no teacher-only source note, and for a
+ * worksheet no answers anywhere (the same `studentCopyFor` the server publishes, one source of truth).
+ */
 export function studentCopy(activity) {
-  const a = normalizeActivity(structuredClone(activity));
-  const { notes: _teacherOnly, ...rest } = a;
-  return {
-    ...rest,
-    context: { ...rest.context, source: { ...rest.context.source, note: "" } },
-    blocks: rest.blocks.filter((b) => b.type !== "note"),
-  };
+  const { notes: _teacherOnly, ...rest } = studentCopyFor(structuredClone(activity));
+  return { ...rest, context: { ...rest.context, source: { ...rest.context.source, note: "" } } };
 }
 
 /** A safe file name for the exported page: lowercase ASCII words from the title. */

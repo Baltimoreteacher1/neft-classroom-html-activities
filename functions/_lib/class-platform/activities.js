@@ -33,7 +33,7 @@ import {
 } from "../../../access-practice-lab/src/studio/core/schema.js";
 import { validateActivity } from "../../../access-practice-lab/src/studio/core/validate.js";
 import { clientIp, json } from "../http.js";
-import { studentCopyFor } from "./activity-copy.js";
+import { studentCopyFor } from "../../../access-practice-lab/src/studio/core/student-copy.js";
 import { choicesOf, evidence, MIN_EVIDENCE } from "./activity-evidence.js";
 import { guardHit, guardOver, parseJson, randomHex, sha256Hex } from "./store.js";
 
