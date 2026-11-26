@@ -13,6 +13,8 @@ import { BUILDER_KEYS } from "./builders.mjs";
 import { PLANE, planePoint } from "./models-space.mjs";
 import { graphPoint } from "./models-algebra.mjs";
 import { checkExpressionChallenge, expressionChallenge, ratioChallenge } from "./challenge-preview.mjs";
+import { designerFor } from "./designers.mjs";
+import { DESIGNER_VIEWS } from "./designers-view.js";
 
 const clip = (v, n) => (typeof v === "string" ? v.slice(0, n) : "");
 /** Additive save fields. Called after state.mjs `clean`, which ignores fields it does not know. */
@@ -24,14 +26,19 @@ export function attachExtras(project, state, raw) {
     builder: Object.fromEntries(BUILDER_KEYS.map((k) => [k, clip(raw?.workbench?.builder?.[k], 12)])),
     mover: raw?.workbench?.mover === "B" ? "B" : "A",
   };
+  const designer = designerFor(project);
+  if (designer) state.workbench[designer.key] = designer.clean(raw?.workbench?.[designer.key]);
   return state;
 }
 
 /** Report lines for the checkpoints the student saved. */
 export function checkpointReport(project, state) {
   const list = state.checkpoints || [];
-  if (!list.length) return [];
+  const designer = designerFor(project);
+  const layout = designer ? designer.report(state.workbench?.[designer.key] ?? designer.clean(null), model(project, state.design).values, format) : [];
+  if (!list.length) return layout;
   return [
+    ...layout,
     "REVISION CHECKPOINTS",
     ...list.map((cp, i) => `${i + 1}. ${cp.name}: ${fieldsFor(project).map((f) => `${f.label} ${cp.design[f.key]}`).join("; ")}\n   Why: ${cp.reason || "[no reason written]"}`),
     "",
@@ -53,6 +60,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     const s = getState();
     s.checkpoints ||= [];
     s.workbench ||= { bin: null, builder: {}, mover: "A" };
+    if (spec && !(spec.key in s.workbench)) s.workbench[spec.key] = spec.clean(null);
     return s;
   };
   const reveal = () => {
@@ -64,6 +72,30 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     const el = $("#wb-status");
     if (el) el.textContent = message;
   };
+  const spec = designerFor(project);
+  const designer =
+    spec && DESIGNER_VIEWS[project.family]
+      ? DESIGNER_VIEWS[project.family]({
+          project,
+          fields,
+          getState: ensure,
+          save,
+          applyDesign: (patch, tag, message) => {
+            applyDesign(patch, tag);
+            const el = $("#fd-status");
+            if (el && message) el.textContent = message;
+          },
+          announce: (message) => {
+            const el = $("#fd-status");
+            if (el) el.textContent = message;
+          },
+          values: () => model(project, ensure().design).values,
+          data: () => ensure().workbench[spec.key],
+          setData: (next) => {
+            ensure().workbench[spec.key] = next;
+          },
+        })
+      : null;
 
   function modelsMarkup(editable) {
     const s = ensure();
@@ -101,6 +133,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
       for (const input of editor.querySelectorAll("[data-wb-datum-input]"))
         if (input !== document.activeElement) input.value = dataValues()[Number(input.dataset.wbDatumInput)] ?? "";
     refreshSidebar();
+    designer?.render();
     const steps = history.steps();
     for (const [name, can] of [["undo", history.canUndo()], ["redo", history.canRedo()]]) {
       const b = $(`[data-wb="${name}"]`);
@@ -164,7 +197,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     const s = ensure();
     const stage = s.stage;
     if (stage === 1 && hasModels(project))
-      return `<h3 id="wb-h">Live models: change a quantity and every picture updates</h3><p class="muted">Values you have not checked yet show as ?. They appear when your answer matches in Test.</p>${statsFamily ? `<div id="wb-editor" data-count="${dataValues().length}">${statisticsEditor(dataValues(), true)}</div>` : controlsHTML(project, s.design, true)}<div id="wb-models" class="wb-models">${modelsMarkup(true)}</div>${["expressions", "ratio"].includes(project.family) ? `<section class="card" aria-labelledby="challenge-heading"><h3 id="challenge-heading">Make a challenge for a partner</h3><p>Choose a different ${project.family === "ratio" ? "scale factor for your ratio" : "input for your rule"}, then preview the challenge. Your partner can test an answer and revise it here.</p><form data-wb-form="challenge-create" novalidate><label for="challenge-input">${project.family === "ratio" ? "Scale factor (whole number from 2 to 20)" : "Input x (whole number from 1 to 30)"}</label><input id="challenge-input" inputmode="numeric" maxlength="2" autocomplete="off"><button type="submit">Prepare preview</button><p id="challenge-status" role="status"></p></form><div id="challenge-preview"></div></section>` : ""}${checkpointPanel()}`;
+      return `${designer ? designer.html() : ""}<h3 id="wb-h">Live models: change a quantity and every picture updates</h3><p class="muted">Values you have not checked yet show as ?. They appear when your answer matches in Test.</p>${statsFamily ? `<div id="wb-editor" data-count="${dataValues().length}">${statisticsEditor(dataValues(), true)}</div>` : controlsHTML(project, s.design, true)}<div id="wb-models" class="wb-models">${modelsMarkup(true)}</div>${["expressions", "ratio"].includes(project.family) ? `<section class="card" aria-labelledby="challenge-heading"><h3 id="challenge-heading">Make a challenge for a partner</h3><p>Choose a different ${project.family === "ratio" ? "scale factor for your ratio" : "input for your rule"}, then preview the challenge. Your partner can test an answer and revise it here.</p><form data-wb-form="challenge-create" novalidate><label for="challenge-input">${project.family === "ratio" ? "Scale factor (whole number from 2 to 20)" : "Input x (whole number from 1 to 30)"}</label><input id="challenge-input" inputmode="numeric" maxlength="2" autocomplete="off"><button type="submit">Prepare preview</button><p id="challenge-status" role="status"></p></form><div id="challenge-preview"></div></section>` : ""}${checkpointPanel()}`;
     if (stage === 2 && hasModels(project))
       return `<details class="wb-details wb-test-models"><summary>Show the live models for this design</summary><div id="wb-models" class="wb-models">${modelsMarkup(false)}</div></details>${hasV2(project) ? judgePanel() : ""}`;
     if (stage === 3 && hasModels(project)) return checkpointPanel();
@@ -173,6 +206,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
 
   function mount() {
     section?.remove();
+    designer?.detach();
     section = null;
     challenge = null;
     const s = ensure();
@@ -186,6 +220,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
     section.className = "wb";
     section.innerHTML = markup;
     footer.before(section);
+    designer?.attach(section);
     section.addEventListener("click", onClick);
     section.addEventListener("input", onInput);
     section.addEventListener("change", () => history.breakRun());
@@ -269,6 +304,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
       const design = restoreDesign(s.checkpoints, t.dataset.wbRestore);
       const cp = s.checkpoints.find((c) => c.id === t.dataset.wbRestore);
       if (design) {
+        if (designer && cp.extra !== undefined) designer.restored(structuredClone(cp.extra));
         history.record(design, null);
         setWholeDesign(design, `Restored checkpoint ${cp.name}. You can undo this. Your math checks need to be run again.`);
       }
@@ -390,6 +426,7 @@ export function createWorkbench({ project, getState, save, refreshSidebar }) {
       name: $("#cp-name").value,
       reason: $("#cp-reason").value,
       design: s.design,
+      extra: designer ? s.workbench[spec.key] : undefined,
       matched: Object.values(s.checked).filter(Boolean).length,
     });
     if (result.error) return announce(result.error);

@@ -3,6 +3,7 @@
  * Stored in the Studio save object under the additive field `checkpoints` (the save version stays 1;
  * older code ignores unknown fields). Pure; no DOM.
  */
+import { designerFor } from "./designers.mjs";
 import { fieldsFor, model } from "./math.mjs";
 
 export const MAX_CHECKPOINTS = 12;
@@ -34,12 +35,13 @@ export function cleanCheckpoints(project, raw) {
       reason: text(item.reason, 500),
       matched: Number.isInteger(item.matched) && item.matched >= 0 && item.matched <= 6 ? item.matched : 0,
       design,
+      ...(designerFor(project) && item.extra !== undefined ? { extra: designerFor(project).clean(item.extra) } : {}),
     });
   }
   return out;
 }
 
-export function addCheckpoint(project, list, { name, reason, design, matched }) {
+export function addCheckpoint(project, list, { name, reason, design, matched, extra }) {
   const clean = cleanDesign(project, design);
   if (!clean) return { error: "Fix the design inputs before saving a checkpoint." };
   if (list.length >= MAX_CHECKPOINTS)
@@ -52,6 +54,7 @@ export function addCheckpoint(project, list, { name, reason, design, matched }) 
     reason: text(reason, 500),
     matched: Math.max(0, Math.min(6, matched | 0)),
     design: clean,
+    ...(designerFor(project) && extra !== undefined ? { extra: designerFor(project).clean(extra) } : {}),
   };
   return { list: [...list, entry], entry };
 }
