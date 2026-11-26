@@ -6,7 +6,11 @@
  * changes design numbers through the workbench (clears checks, records design undo).
  */
 import { createFloorDesigner } from "./floor-designer-view.js";
+import { createMapDesigner } from "./coord-map-view.js";
+import { createSupplyDesigner } from "./supply-plan-view.js";
 
 export const DESIGNER_VIEWS = {
   area: createFloorDesigner,
+  coordinates: createMapDesigner,
+  division: createSupplyDesigner,
 };
