@@ -167,12 +167,30 @@ const content = walk(join(dir, "content"), (n) => n.endsWith(".json")).map(
 const pictures = walk(join(dir, "pictures"), (n) => /\.(svg|png|jpe?g|webp|avif)$/i.test(n)).map(
   (f) => `${BASE}/pictures/${f}`,
 );
+// Route stylesheets: views load these with ensureStylesheet("<file>.css") (src/util.js) instead of the shell linking
+// them, so they are found from those calls and kept offline at the exact URL the view requests.
+const routeSheets = [
+  ...new Set(
+    modules.flatMap((relative) =>
+      [
+        ...readFileSync(join(dir, "src", relative), "utf8").matchAll(
+          /ensureStylesheet\(\s*["']([A-Za-z0-9._-]+\.css)["']\s*\)/g,
+        ),
+      ].map(([, file]) => {
+        if (!existsSync(join(dir, file)))
+          throw new Error(`src/${relative} loads ${file}, which does not exist.`);
+        return `${BASE}/${file}`;
+      }),
+    ),
+  ),
+].sort();
 const staticUrls = staticChain(entryUrl);
 const staticModules = new Set(staticUrls.map((url) => imports[url]));
 const criticalStyles = new Set(criticalSheets);
 const core = [...criticalSheets, ...staticModules, ...externalModules];
 const more = [
   ...sheets.filter((url) => !criticalStyles.has(url)),
+  ...routeSheets,
   ...Object.values(imports).filter((url) => !staticModules.has(url)),
   ...content,
   ...pictures,
