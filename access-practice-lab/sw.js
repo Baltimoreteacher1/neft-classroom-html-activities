@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "26a52c501e87";
+const BUILD_HASH = "178b4e7b4c9a";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=b93c4c2e6d4b",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -162,7 +162,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/library.css?v=990012e707c1",
   "/access-practice-lab/studio.css?v=9eb80fd8ac6d",
   "/access-practice-lab/launch-studio.css?v=031a994e8df4",
-  "/access-practice-lab/sim.css?v=7fb3bb0375d3",
+  "/access-practice-lab/sim.css?v=473ee6d12279",
   "/access-practice-lab/intel.css?v=3558c2be85e0",
   "/access-practice-lab/experience-builder.css?v=4c5ac28c055c",
   "/access-practice-lab/time-machine.css?v=399fc58fda55",
@@ -437,6 +437,13 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/compiler/suggest-rules.js?v=d47cdb041d33",
   "/access-practice-lab/src/compiler/templates.js?v=4f615a6e9245",
   "/access-practice-lab/src/compiler/validate.js?v=c1f88709af64",
+  "/access-practice-lab/src/consequence/engine.js?v=4f3dbb09aaa7",
+  "/access-practice-lab/src/consequence/scenarios/civics.js?v=e8a0722ef111",
+  "/access-practice-lab/src/consequence/scenarios/index.js?v=d2d7d1d49af5",
+  "/access-practice-lab/src/consequence/scenarios/robot.js?v=b831167d9766",
+  "/access-practice-lab/src/consequence/scenarios/science.js?v=a61e65627f89",
+  "/access-practice-lab/src/consequence/scene.js?v=ce8cd9e48225",
+  "/access-practice-lab/src/consequence/view.js?v=9a31c1ee9846",
   "/access-practice-lab/src/content/city-cafe.js?v=2bb545b8e79c",
   "/access-practice-lab/src/content/city-clinic-episode.js?v=648014982cd6",
   "/access-practice-lab/src/content/city-clinic.js?v=75387e7fb5e6",
@@ -1274,7 +1281,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/sentences.js?v=d256ccdaa9bd",
   "/access-practice-lab/src/views/session-done.js?v=e63f2d9468da",
   "/access-practice-lab/src/views/shields.js?v=fd63ffdffcf9",
-  "/access-practice-lab/src/views/simulations.js?v=dec34212a474",
+  "/access-practice-lab/src/views/simulations.js?v=f55d25c12f0b",
   "/access-practice-lab/src/views/speak.js?v=61f165ee6d5e",
   "/access-practice-lab/src/views/stories.js?v=fe89bdea0410",
   "/access-practice-lab/src/views/students.js?v=941ac7714eef",

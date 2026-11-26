@@ -791,3 +791,288 @@ blockquote.sim-ev-body,
     padding: 0;
   }
 }
+
+/* ── Communication Consequence Lab (src/consequence/) ────────────────────────
+   cq- classes, ds.css tokens only. No animation: every consequence is drawn as its end state. Pressed tiles,
+   the goal and the picked box are marked by text and shape as well as colour. */
+.cq-cards {
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cq-card {
+  display: grid;
+  gap: var(--s-2);
+  height: 100%;
+  padding: var(--s-4);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+}
+.cq-card:hover {
+  border-color: var(--brand);
+}
+.cq-play {
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+}
+.cq-head h1 {
+  margin: 0;
+}
+.cq-sub {
+  margin: 0 0 var(--s-2);
+  font-size: 1.15rem;
+}
+.cq-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cq-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+  border: 1px solid var(--line-control);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.cq-steps li.is-now {
+  border: 2px solid var(--brand);
+  font-weight: 700;
+}
+.cq-step-n {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+.cq-grid {
+  display: grid;
+  gap: var(--s-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  align-items: start;
+}
+.cq-col {
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+}
+.cq-consequence,
+.cq-builder,
+.cq-complete {
+  display: grid;
+  gap: var(--s-3);
+  min-width: 0;
+}
+.cq-consequence p,
+.cq-builder p {
+  margin: 0;
+}
+.cq-scene {
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.cq-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 24rem;
+}
+.cq-line {
+  stroke: var(--line-control);
+  stroke-width: 1;
+}
+.cq-tick,
+.cq-item-label,
+.cq-box-label,
+.cq-box-tag {
+  fill: var(--ink);
+  font-size: 13px;
+  text-anchor: middle;
+}
+.cq-item-label,
+.cq-box-tag {
+  font-weight: 700;
+}
+.cq-item rect {
+  fill: var(--surface);
+  stroke: var(--ink-2);
+  stroke-width: 2;
+}
+.cq-item.is-goal rect {
+  fill: var(--accent);
+  stroke: var(--ink);
+}
+.cq-path {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 4;
+  stroke-dasharray: 8 5;
+  stroke-linecap: round;
+}
+.cq-step {
+  fill: var(--brand);
+}
+.cq-robot rect {
+  fill: var(--mi-800);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.cq-robot .cq-eye {
+  fill: var(--ocean-200);
+}
+.cq-robot .cq-wheel {
+  fill: var(--ink);
+}
+.cq-shelf {
+  fill: var(--ink-2);
+}
+.cq-box rect {
+  fill: var(--surface);
+  stroke: var(--line-control);
+  stroke-width: 1.5;
+}
+.cq-box.is-goal rect {
+  fill: var(--accent);
+}
+.cq-box.is-picked rect {
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-dasharray: 7 4;
+}
+.cq-robot-says,
+.cq-said {
+  font-size: 1.05rem;
+}
+.cq-talk {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+}
+.cq-portrait {
+  flex: none;
+}
+.cq-bubble {
+  flex: 1;
+  min-width: 0;
+  padding: var(--s-3);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.cq-bubble .cq-who {
+  margin-bottom: var(--s-1);
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+.cq-status-label {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--ink-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-weight: 700;
+}
+.cq-status.is-done .cq-status-label {
+  border-color: var(--sage-900);
+  background: var(--sage-200);
+  color: var(--sage-900);
+}
+.cq-card-data {
+  padding: var(--s-4);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.cq-card-data ul,
+.cq-bank {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.cq-preview {
+  padding: var(--s-3);
+  border: 2px dashed var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 1.15rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.cq-help {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border-left: 4px solid var(--brand);
+  background: var(--surface-2);
+}
+.cq-builder .cq-slot-label {
+  margin-bottom: var(--s-1);
+  font-weight: 700;
+}
+.cq-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.cq-tile {
+  min-height: 44px;
+  padding: 0.4rem 0.8rem;
+  border: 2px solid var(--line-control);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.cq-tile:hover:not(:disabled) {
+  border-color: var(--brand);
+}
+.cq-tile[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--teal-soft);
+  font-weight: 700;
+}
+.cq-tile[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+.cq-tile:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+.cq-card:focus-visible,
+.cq-tile:focus-visible,
+.cq-complete [data-cq-done]:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.cq-own-label {
+  display: block;
+  margin: var(--s-2) 0 var(--s-1);
+}
+.cq-own textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+.cq-actions .btn {
+  min-height: 44px;
+}
+.cq-said-list {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+}

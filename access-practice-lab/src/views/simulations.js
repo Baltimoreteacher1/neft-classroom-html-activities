@@ -30,6 +30,12 @@ import {
   stopPlayer,
 } from "../sim/ui.js";
 import { BASE, announce, copyText, html, raw } from "../util.js";
+import {
+  CONSEQUENCE_ID,
+  onConsequenceClick,
+  onConsequenceInput,
+  renderConsequence,
+} from "../consequence/view.js";
 
 const EXPERIENCE_URL = "/api/class/experience/get";
 let live = { key: "", session: null };
@@ -189,10 +195,24 @@ function hubHTML(I, band) {
     <ul class="sim-cards">
       ${listMissions(band).map((def) => card(I, def, urlOf(def.id, band), saves[def.id]))}
       ${made.map((x) => card(I, x.def, urlOf(`x/${x.id}`, band), saves[x.def.id], I.T("Made by your teacher", "Hecha por tu docente")))}
+      ${consequenceCard(I, band)}
     </ul>
     ${forTeachers(I, band)}
   </section>`;
 }
+
+// The Communication Consequence Lab (src/consequence/): its own short scenarios, listed here as one card.
+const consequenceCard = (I, band) => html`<li>
+  <a class="sim-card" href="${urlOf(CONSEQUENCE_ID, band)}">
+    <span class="sim-card-art">${raw(sceneSVG("comms"))}</span>
+    <span class="sim-card-body">
+      <span class="sim-tag">${I.T("Short scenarios", "Situaciones cortas")}</span>
+      <strong class="sim-card-title">${I.T("Communication Consequence Lab", "Laboratorio de consecuencias de la comunicación")}</strong>
+      <span>${I.T("Your words change what happens: a robot follows your directions literally, a scientist asks for a clearer cause, a council member asks for evidence. Revise and try again.", "Tus palabras cambian lo que pasa: un robot sigue tus instrucciones al pie de la letra, una científica pide una causa más clara, un miembro del concejo pide evidencia. Revisa e intenta otra vez.")}</span>
+      <span class="sim-card-cta">${I.T("Open the lab", "Abrir el laboratorio")}</span>
+    </span>
+  </a>
+</li>`;
 
 // ── a mission ────────────────────────────────────────────────────────────────
 const PROBLEMS = {
@@ -307,6 +327,12 @@ const restartHTML = (I, session) =>
 
 export async function render(ctx) {
   const I = i18nFor(ctx);
+  if (ctx.route.id === CONSEQUENCE_ID) {
+    const band = bandOf(ctx.band);
+    const lab = [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${band}`];
+    const sims = [I.S("Simulations", "Simulaciones"), `${BASE}/simulations?grades=${band}`];
+    return renderConsequence(ctx, (rest) => crumbsHTML([lab, sims, ...rest]));
+  }
   const r = await resolve(ctx);
   const home = [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${r.band}`];
   const hub = [I.S("Simulations", "Simulaciones"), `${BASE}/simulations?grades=${r.band}`];
@@ -333,6 +359,7 @@ export async function render(ctx) {
 }
 
 export function onClick(e, ctx) {
+  if (ctx.route.id === CONSEQUENCE_ID) return onConsequenceClick(e, ctx);
   if (onDownloadClick(e, ctx)) return true;
   const t = e.target;
   const I = i18nFor(ctx);
@@ -374,7 +401,8 @@ export function onClick(e, ctx) {
   return onPlayerClick(e, ctx, session);
 }
 
-export const onInput = (e, ctx) => onPlayerInput(e, ctx, live.session);
+export const onInput = (e, ctx) =>
+  ctx.route.id === CONSEQUENCE_ID ? onConsequenceInput(e, ctx) : onPlayerInput(e, ctx, live.session);
 export const onChange = (e, ctx) => onPlayerChange(e, ctx, live.session);
 
 export function onKey(e) {
