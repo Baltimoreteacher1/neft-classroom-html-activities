@@ -534,6 +534,7 @@ export const EXACT = {
   "/math/unit-7/games/unit9-coordinate-quest": ["/math/games/u9-coordinate-quest/", 301],
   "/about-curriculum": ["/curriculum/about/", 301],
   "/publisher-demo": ["/curriculum/publisher-demo/", 301],
+  "/find": ["/curriculum/find/", 301],
 };
 
 /** [prefix, destination, status, destinationTakesSplat] */
