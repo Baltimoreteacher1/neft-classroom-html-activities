@@ -1,5 +1,7 @@
 /** Pure-logic tests for the Project Studio floor-plan designer (area missions). */
 import assert from "node:assert/strict";
+import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
+import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
 import {
   addItem,
   boxOnFloor,
@@ -12,8 +14,6 @@ import {
   rotateItem,
   sizeOf,
 } from "../curriculum/projects/studio/floor-designer.mjs";
-import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
-import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
 import { PROJECTS } from "../curriculum/projects/studio/projects.mjs";
 
 const room = roomOf({ a: 6, b: 4, c: 3, d: 2, f: 2, g: 1, h: 1.5 });

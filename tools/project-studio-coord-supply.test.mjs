@@ -4,12 +4,12 @@
  * (integer loops, cents, point sampling), and negative controls prove the checks reject wrong answers.
  */
 import assert from "node:assert/strict";
-import * as CM from "../curriculum/projects/studio/coord-map.mjs";
-import * as SP from "../curriculum/projects/studio/supply-plan.mjs";
-import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
 import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
-import { PROJECTS } from "../curriculum/projects/studio/projects.mjs";
+import * as CM from "../curriculum/projects/studio/coord-map.mjs";
+import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
 import { model } from "../curriculum/projects/studio/math.mjs";
+import { PROJECTS } from "../curriculum/projects/studio/projects.mjs";
+import * as SP from "../curriculum/projects/studio/supply-plan.mjs";
 
 let n = 0;
 const test = (name, fn) => {

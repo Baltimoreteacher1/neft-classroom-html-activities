@@ -4,6 +4,10 @@
  * brute force over whole numbers), and negative controls prove corrupted locks are rejected.
  */
 import assert from "node:assert/strict";
+import { hiddenAnswers, isHidden } from "../curriculum/projects/studio/answer-guard.mjs";
+import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
+import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
+import { parse, show } from "../curriculum/projects/studio/exact.mjs";
 import {
   buildQ,
   cleanLocks,
@@ -19,10 +23,6 @@ import {
   validatePuzzle,
   wholeOutcomes,
 } from "../curriculum/projects/studio/lock-model.mjs";
-import { hiddenAnswers, isHidden } from "../curriculum/projects/studio/answer-guard.mjs";
-import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
-import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
-import { parse, show } from "../curriculum/projects/studio/exact.mjs";
 import { model } from "../curriculum/projects/studio/math.mjs";
 import { PROJECTS } from "../curriculum/projects/studio/projects.mjs";
 

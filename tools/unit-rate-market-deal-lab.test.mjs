@@ -4,7 +4,6 @@
  * DIFFERENT exact implementation (scripts/lib/rational.mjs, class Rat) from the raw shelf numbers,
  * over 300 seeds per family, and proves its own verifier rejects corrupted items. */
 import assert from "node:assert/strict";
-import { Rat } from "../scripts/lib/rational.mjs";
 import {
   bestBuy,
   fmtExact,
@@ -21,16 +20,17 @@ import {
   checkCreate,
   makeCreateItem,
 } from "../curriculum/unit-rate-market-mission/deal-lab-create.mjs";
+import { ratioRows } from "../curriculum/unit-rate-market-mission/deal-lab-draw.mjs";
 import {
-  FAMILIES,
   checkExplain,
   checkPick,
   checkStep,
   checkUnit,
+  FAMILIES,
   makeShopperItem,
   makeSolveItem,
 } from "../curriculum/unit-rate-market-mission/deal-lab-items.mjs";
-import { ratioRows } from "../curriculum/unit-rate-market-mission/deal-lab-draw.mjs";
+import { Rat } from "../scripts/lib/rational.mjs";
 
 const SEEDS = 300;
 let checks = 0;

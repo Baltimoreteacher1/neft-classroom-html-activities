@@ -4,6 +4,11 @@
  * tiles), and negative controls prove a corrupted form or answer is rejected.
  */
 import assert from "node:assert/strict";
+import { hiddenAnswers, isHidden } from "../curriculum/projects/studio/answer-guard.mjs";
+import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
+import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
+import { model } from "../curriculum/projects/studio/math.mjs";
+import { PROJECTS } from "../curriculum/projects/studio/projects.mjs";
 import {
   cleanRules,
   compare,
@@ -12,15 +17,10 @@ import {
   missionTiles,
   numberTile,
   parseRule,
-  ruleText,
   rulesReport,
+  ruleText,
   tileModel,
 } from "../curriculum/projects/studio/rule-engine.mjs";
-import { hiddenAnswers, isHidden } from "../curriculum/projects/studio/answer-guard.mjs";
-import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
-import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
-import { model } from "../curriculum/projects/studio/math.mjs";
-import { PROJECTS } from "../curriculum/projects/studio/projects.mjs";
 
 let n = 0;
 const test = (name, fn) => {

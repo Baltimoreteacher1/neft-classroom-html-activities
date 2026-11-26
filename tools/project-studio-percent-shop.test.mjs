@@ -5,6 +5,10 @@
  * tax on the original price and garbage save data are all rejected.
  */
 import assert from "node:assert/strict";
+import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
+import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
+import { toNumber } from "../curriculum/projects/studio/exact.mjs";
+import { model } from "../curriculum/projects/studio/math.mjs";
 import {
   answersOf,
   cleanShop,
@@ -24,11 +28,7 @@ import {
   stock,
   unstock,
 } from "../curriculum/projects/studio/percent-shop.mjs";
-import { DESIGNERS } from "../curriculum/projects/studio/designers.mjs";
-import { addCheckpoint, cleanCheckpoints } from "../curriculum/projects/studio/checkpoints.mjs";
-import { model } from "../curriculum/projects/studio/math.mjs";
 import { PROJECTS } from "../curriculum/projects/studio/projects.mjs";
-import { toNumber } from "../curriculum/projects/studio/exact.mjs";
 
 let n = 0;
 const test = (name, fn) => {
