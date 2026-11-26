@@ -122,7 +122,7 @@
   .section-head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin:26px 0 14px;padding:0 2px}
   .section-head h3{display:flex;align-items:center;gap:10px;font-size:1.58rem;color:var(--navy);margin:0 0 5px;letter-spacing:-.02em}
   .section-head h3::before{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:var(--teal-soft);border:1px solid #c4e1e3;font-size:1.05rem;flex:0 0 auto}
-  #start .section-head h3::before{content:"◎"} #sort .section-head h3::before{content:"⚡"} #build .section-head h3::before{content:"÷"} #battle .section-head h3::before{content:"🏷"} #cart .section-head h3::before{content:"🛒"} #challenge .section-head h3::before{content:"🔎"} #results .section-head h3::before{content:"✓"}
+  #start .section-head h3::before{content:"◎"} #sort .section-head h3::before{content:"⚡"} #build .section-head h3::before{content:"÷"} #battle .section-head h3::before{content:"🏷"} #cart .section-head h3::before{content:"🛒"} #challenge .section-head h3::before{content:"🔎"} #lab .section-head h3::before{content:"⚖"} #results .section-head h3::before{content:"✓"}
   .section-head p{margin:0;color:var(--muted);line-height:1.55;max-width:760px}
   .mini-goal{background:var(--gold-soft);color:#6e5005;border:1px solid #ecd79e;border-radius:999px;padding:8px 12px;font-size:.8rem;font-weight:900;box-shadow:0 2px 8px rgba(112,79,0,.04)}
 
@@ -504,6 +504,8 @@
 <link rel="stylesheet" href="/curriculum/review-expeditions/campaign.css?v=20261007">
 <script src="/curriculum/review-expeditions/basecamp.js?v=20261007"></script>
 <script src="./case-files.js?v=20261007"></script>
+<link rel="stylesheet" href="./deal-lab.css?v=20261126">
+<script type="module" src="./deal-lab.mjs?v=20261126"></script>
 </head>
 <body>
 <div class="topbar">
@@ -529,7 +531,7 @@
     <div>
       <div class="eyebrow">Mission briefing</div>
       <h2>Can you spot the best deal?</h2>
-      <p>Train your unit-rate skills through quick sorts, step-by-step builds, better-buy battles, real shopping missions, and a shelf-scanning detective game. You get two tries on most questions. Use the hints, show your thinking, and finish every tab.</p>
+      <p>Train your unit-rate skills through quick sorts, step-by-step builds, better-buy battles, real shopping missions, a shelf-scanning detective game, and a Deal Lab where you change deals and debug shopping math. You get two tries on most questions. Use the hints, show your thinking, and finish every tab.</p>
       <div class="hero-chips"><span class="hero-chip">Rate vs. Unit Rate</span><span class="hero-chip">Unit Price</span><span class="hero-chip">Better Buys</span><span class="hero-chip">Whole Packages</span></div>
     </div>
     <div class="formula-card">
@@ -548,7 +550,8 @@
     <button class="tab-btn" data-tab="battle">4. Better Buy Battle</button>
     <button class="tab-btn" data-tab="cart">5. Cart Quest</button>
     <button class="tab-btn" data-tab="challenge">6. Deal Detective</button>
-    <button class="tab-btn" data-tab="results">7. My Results</button>
+    <button class="tab-btn" data-tab="lab">7. Deal Lab</button>
+    <button class="tab-btn" data-tab="results">8. My Results</button>
   </nav>
 
   <section id="start" class="panel active">
@@ -636,6 +639,14 @@
     </div>
   </section>
 
+  <section id="lab" class="panel">
+    <div class="section-head">
+      <div><h3>Deal Lab</h3><p>Play with real deals and watch the shelf, the ratio tables, the double number lines and the graph move together. Then debug a shopper's almost-right thinking and design deals of your own.</p></div>
+      <div class="mini-goal">3 stations • new numbers every case</div>
+    </div>
+    <div id="dealLab" class="deal-lab"><p class="small">The Deal Lab is loading…</p></div>
+  </section>
+
   <section id="results" class="panel">
     <div class="section-head">
       <div><h3>My Results</h3><p>Your work saves automatically on this device. Finish any incomplete tab, then return here to check your progress.</p></div>
@@ -659,6 +670,7 @@
           <div class="badge" id="badgeMaster"><span class="icon">⭐</span><strong>Rate Master</strong></div>
         </div>
         <div class="skill-rows" id="skillRows" aria-label="Results by skill"></div>
+        <div class="dl-results-summary" id="labResults"></div>
         <div class="todo">
           <h5>📌 What to practice next</h5>
           <ul id="todoList"><li>Finish a section to see your list.</li></ul>
@@ -2015,7 +2027,9 @@ function resetAll(){
   if(!confirm('Reset all answers, points, and saved progress for this activity?')) return;
   const keepName=state.name||'';state=JSON.parse(JSON.stringify(defaultState));state.name=keepName;saveState();renderAll();goTab('start');
 }
-function renderAll(){renderSort();renderBuilders();renderBattles();renderCart();startGame(false);updateHUD();}
+function renderAll(){renderSort();renderBuilders();renderBattles();renderCart();startGame(false);updateHUD();if(window.DealLab)window.DealLab.render();}
+/* Deal Lab (deal-lab.mjs) keeps its state in this same save, under state.lab. */
+window.URM={get state(){return state},save:saveState,battles:()=>battleQs};
 renderAll();
 </script>
 </body>
