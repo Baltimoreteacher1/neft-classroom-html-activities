@@ -457,7 +457,9 @@ function adoptLegacyStudioLang() {
   }
 }
 
-if (typeof localStorage !== "undefined") adoptLegacyStudioLang();
+// Called bare: in a browser with storage blocked, even `typeof localStorage` runs the throwing
+// getter (SecurityError), which used to abort this module and every page importing it.
+adoptLegacyStudioLang();
 
 /**
  * The student's language, which is ENGLISH until they say otherwise.

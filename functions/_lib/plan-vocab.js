@@ -1441,6 +1441,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/nexus/play/",
+    title: "Math Mission",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/projects/studio/",
     title: "Project Studio",
     category: "Activity",
@@ -5253,6 +5259,12 @@ export const ACTIVITIES = [
   {
     path: "/curriculum/my-progress/",
     title: "What You Can Do",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/nexus/",
+    title: "Mission Builder",
     category: "Hub",
     unit: null,
   },

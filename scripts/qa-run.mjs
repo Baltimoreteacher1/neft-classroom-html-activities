@@ -181,6 +181,7 @@ const NEEDS_DIST = new Set([
  * time. Both read as real page defects. Both vanish when the check runs on its
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
+  "validate:nexus-browser",
   "validate:engine-games-browser",
   "validate:engine-games-dist",
   "validate:universe-games-browser",
@@ -1225,6 +1226,12 @@ const COVERAGE = [
   ],
   [/^curriculum\/ai-hub\//, ["validate:ai-hub", "validate:hub", "audit:links"]],
   [/^curriculum\/forge\//, ["validate:forge"]],
+  // Project Nexus: the Living Resource core (tools/nexus.test.mjs, in `test`) and the Mission
+  // Builder + player driven in Chromium. Both pages are Rollup entries, so a change also builds.
+  [
+    /^(curriculum\/nexus\/|tools\/nexus\.test\.mjs$|tools\/validate-nexus-browser\.mjs$)/,
+    ["test", "validate:nexus-browser", "validate:js-syntax"],
+  ],
   [/^curriculum\/showcase\//, ["validate:showcase"]],
   [/^curriculum\/publisher-demo\//, ["validate:publisher-demo", "audit:links", "check"]],
   [/^tools\/validate-publisher-demo\.mjs$/, ["validate:publisher-demo", "check"]],

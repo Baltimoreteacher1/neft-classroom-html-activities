@@ -118,7 +118,13 @@ function copyStandaloneHtml() {
   // @engine/ — a bare specifier the browser cannot resolve). The Forge would
   // then be a blank page in production and fine in dev. Same snapshot-and-restore
   // treatment as UNHASHED_BUNDLES, verified by content.
-  const BUILT_HTML_ENTRIES = ["curriculum/forge/index.html"];
+  // The Nexus Mission Builder and player import engine/ modules by relative path, so they are
+  // Rollup entries for the same reason as the Forge.
+  const BUILT_HTML_ENTRIES = [
+    "curriculum/forge/index.html",
+    "curriculum/nexus/index.html",
+    "curriculum/nexus/play/index.html",
+  ];
 
   const plugin = {
     name: "copy-standalone-html",
@@ -433,7 +439,7 @@ function copyStandaloneHtml() {
       // /assets/ bundle. If this ever reads as the source, the Forge shipped dead.
       for (const rel of BUILT_HTML_ENTRIES) {
         const html = readFileSync(resolve(__dirname, "dist", rel), "utf8");
-        if (/src="\.\/[a-z-]+\.js"/.test(html)) {
+        if (/src="\.{1,2}\/[a-z/-]+\.js"/.test(html)) {
           throw new Error(
             `copy-standalone-html: dist/${rel} still references an unbundled relative script, ` +
               "so the static copy clobbered the Rollup output. Aborting rather than publishing " +
@@ -557,6 +563,10 @@ export default defineConfig({
         // — a plain copied static page could not import @engine/. This is what
         // makes a forged lesson a real lesson rather than a preview of one.
         "curriculum-forge": resolve(__dirname, "curriculum/forge/index.html"),
+        // Project Nexus: the Mission Builder and the student mission player mount the living-scene
+        // engine, which is never static-copied, so both pages are bundled like the Forge.
+        "curriculum-nexus": resolve(__dirname, "curriculum/nexus/index.html"),
+        "curriculum-nexus-play": resolve(__dirname, "curriculum/nexus/play/index.html"),
         ...getLessonEntries(),
       },
       output: {
