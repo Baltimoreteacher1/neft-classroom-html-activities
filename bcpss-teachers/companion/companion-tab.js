@@ -15,6 +15,7 @@ import {
 import { openPrint, supportSheetDoc } from "./companion-print.js";
 import { bindCheck, bindReteach, checkView, reteachView } from "./companion-views.js";
 import { NEW_VIEWS, viewById } from "./views-registry.js";
+import { activityBars, activityStats } from "./visuals.js";
 
 export const esc = (v) =>
   String(v ?? "").replace(
@@ -91,7 +92,7 @@ function unitChip(u, label) {
   return `<button type="button" class="cp-seq-card" data-cp-unit="${esc(u.id || u.unit_id)}"><small>${esc(label)}</small><b>Unit ${esc(u.unit_number ?? "")}: ${esc(u.unit_title || u.title)}</b></button>`;
 }
 
-function mapView(map, catalog) {
+function mapView(map, catalog, detail) {
   const u = map.unit;
   const groups = groupCatalog(catalog)
     .map(
@@ -131,6 +132,7 @@ function mapView(map, catalog) {
         ${unitChip(map.after, "Comes next")}
       </div>
       ${spiral}
+      ${glance(map, detail)}
       <div class="cp-two">
         <div class="cp-card"><h4>Key words</h4><ul class="cp-words">${map.words.map((w) => `<li><b>${esc(w.term)}</b>${w.es ? ` <i>${esc(w.es)}</i>` : ""}<span>${esc(w.def)}</span></li>`).join("")}</ul></div>
         <div class="cp-card"><h4>Watch for</h4><ul class="cp-plain">${watch}</ul>${map.connectors.length ? `<p class="cp-muted">Linking words: ${map.connectors.map(esc).join(", ")}</p>` : ""}</div>
@@ -139,6 +141,15 @@ function mapView(map, catalog) {
       <h3 class="cp-h">Everything for this unit</h3>
       <div class="cp-groups">${groups}</div>
     </div>`;
+}
+
+function glance(map, detail) {
+  const stats = activityStats(detail);
+  const minutes = stats.reduce((n, r) => n + r.minutes, 0);
+  const tile = (n, label) => `<div class="cp-tile"><b>${n}</b><span>${esc(label)}</span></div>`;
+  return `<div class="cp-card"><h4>This unit at a glance</h4>
+    <div class="cp-tiles">${tile(map.words.length, "key words")}${tile(detail.studio.activities.length, "activities")}${tile(minutes, "minutes of activities")}${tile(detail.reading?.questions?.length || 0, "reading questions")}${tile((detail.writing?.bbs || []).length, "sentence-building items")}</div>
+    ${activityBars(detail)}</div>`;
 }
 
 // ── Build a set ─────────────────────────────────────────────────────────────
@@ -255,7 +266,7 @@ export function renderCompanionTab(panel, ctx) {
           ? checkView(st, detail)
           : st.view === "reteach"
             ? reteachView(st, detail, map.before)
-            : mapView(map, catalog);
+            : mapView(map, catalog, detail);
     panel.innerHTML = shell(st, inner);
     if (extra?.load) settle(st, extra.load(st, ctx));
   };

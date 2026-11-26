@@ -4,6 +4,7 @@
 
 import { doc, FOOT, openPrint, unitLine } from "./companion-print.js";
 import { esc, markTerms, vstate } from "./util.js";
+import { frayerLines } from "./visuals.js";
 
 const ID = "words";
 
@@ -83,7 +84,10 @@ export function render(st, detail) {
         ${stepping ? `<button type="button" class="cp-btn" data-cp-act="${ID}:showall">Show everything</button>` : ""}
       </div>
       <div class="cp-frayer ${vs.anim ? "cp-frayer--play" : ""}" role="group" aria-label="Concept card for ${esc(card.term)}" aria-live="polite">
-        ${PIECES.map((p) => piece(card, vocab, p, shown(p))).join("")}
+        <div class="cp-frayer-quad">${frayerLines()}${PIECES.filter((p) => p !== "picture")
+          .map((p) => piece(card, vocab, p, shown(p)))
+          .join("")}</div>
+        ${piece(card, vocab, "picture", shown("picture"))}
       </div>
       <div class="cp-card">${extra || `<p class="cp-muted">No extra word notes for this word.</p>`}</div>
       <div class="cp-actions">

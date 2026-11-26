@@ -5,6 +5,7 @@
 
 import { blanks as printBlanks, doc, FOOT, openPrint, unitLine } from "./companion-print.js";
 import { blanks, esc, shuffle, termsIn, vstate } from "./util.js";
+import { chainFlow } from "./visuals.js";
 
 const ID = "labs";
 
@@ -198,7 +199,7 @@ function causeLab(st, detail, vs) {
   return `
     <div class="cp-card">
       <div class="cp-chiprow cp-chiprow--tight">${items.map((_, n) => `<button type="button" class="cp-chip" data-cp-act="${ID}:citem" data-cp-arg="${n}" aria-pressed="${n === i}">Event ${n + 1}</button>`).join("")}</div>
-      <p class="cp-question">${esc(strip(o.kernel))}.</p>
+      ${chainFlow({ because: vs.c[`${i}:because`] === o.because.answer ? strip(item.because) : "", event: strip(o.kernel), so: vs.c[`${i}:so`] === o.so.answer ? strip(item.so) : "" })}
       ${pick("because", "Why did it happen? It happened because…")}
       ${pick("so", "What happened next? So…")}
       ${both ? `<p class="cp-say cp-fadein" role="status">${esc(`${strip(item.kernel)} because ${strip(item.because)}, so ${item.so}`)}</p>` : ""}

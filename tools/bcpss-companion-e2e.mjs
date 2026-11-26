@@ -391,6 +391,78 @@ async function run(width, label) {
   );
   await pj.close();
 
+  // Diagrams
+  await page.click('[data-cp-view="map"]');
+  check(
+    T("map: the at-a-glance chart is drawn and labelled"),
+    (await page.$$eval('svg.cp-svg[aria-label^="Activities in this unit"]', (e) => e.length)) ===
+      1 && (await page.$$eval(".cp-tile", (e) => e.length)) === 5,
+  );
+  await page.click('[data-cp-view="words"]');
+  check(
+    T("word cards: the Frayer diagram has its connecting lines"),
+    (await page.$$eval(".cp-frayer-lines line", (e) => e.length)) === 4,
+  );
+  if (width > 640) {
+    const hit = await page.evaluate(() => {
+      const core = document.querySelector(".cp-frayer-core").getBoundingClientRect();
+      return [
+        ...document.querySelectorAll(
+          ".cp-frayer-quad .cp-piece:not(.cp-frayer-core) p, .cp-frayer-quad .cp-piece h5",
+        ),
+      ].filter((el) => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        return [...range.getClientRects()].some(
+          (r) =>
+            r.right > core.left &&
+            r.left < core.right &&
+            r.bottom > core.top &&
+            r.top < core.bottom,
+        );
+      }).length;
+    });
+    check(
+      T("word cards: the centre circle covers none of the text"),
+      hit === 0,
+      `${hit} text runs overlap`,
+    );
+  }
+  await page.click('[data-cp-view="stations"]');
+  const ring1 = await page.getAttribute("svg.cp-svg--ring", "aria-label");
+  await page.click('[data-cp-act="stations:round"][data-cp-arg="1"]');
+  const ring2 = await page.getAttribute("svg.cp-svg--ring", "aria-label");
+  check(
+    T("stations: the ring diagram changes with the round"),
+    ring1 !== ring2 && /Round 2/.test(ring2),
+    ring2,
+  );
+  await page.click('[data-cp-view="projects"]');
+  await page.waitForSelector(".cp-svg--venn", { timeout: 8000 });
+  const outside = await page.evaluate(() => {
+    const svg = document.querySelector("svg.cp-svg--venn");
+    const box = svg.getBoundingClientRect();
+    return [...svg.querySelectorAll("text")].filter((t) => {
+      const r = t.getBoundingClientRect();
+      return (
+        r.left < box.left - 1 ||
+        r.right > box.right + 1 ||
+        r.top < box.top - 1 ||
+        r.bottom > box.bottom + 1
+      );
+    }).length;
+  });
+  check(
+    T("project: the Venn diagram keeps every word inside its picture"),
+    outside === 0,
+    `${outside} outside`,
+  );
+  await page.click('[data-cp-view="text"]');
+  check(
+    T("read together: the sentence strip marks the current sentence"),
+    (await page.$$eval(".cp-strip .cp-dot--now", (e) => e.length)) === 1,
+  );
+
   // Layout, targets, axe, keyboard
   for (const view of [
     "map",

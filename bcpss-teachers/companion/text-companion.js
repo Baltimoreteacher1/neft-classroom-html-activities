@@ -3,6 +3,7 @@
 // Everything comes from detail.reading / detail.writing.source. Nothing is saved or sent.
 
 import { doc, FOOT, openPrint, unitLine } from "./companion-print.js";
+import { sentenceStrip } from "./visuals.js";
 import { canSpeak, esc, LEVEL_KEY, markTerms, paragraphs, speak, termsIn, vstate } from "./util.js";
 
 const ID = "text";
@@ -115,6 +116,7 @@ export function render(st, detail) {
           <button type="button" class="cp-btn" data-cp-act="${ID}:all" ${vs.i < 0 ? "disabled" : ""}>Show all</button>
           ${canSpeak() ? `<button type="button" class="cp-btn" data-cp-act="${ID}:read">Read aloud${vs.i >= 0 ? " this sentence" : ""}</button>` : ""}
         </div>
+        ${sentenceStrip(flat.length, vs.i, evAt)}
         <div class="cp-passage" data-cp-passage>${body}</div>
         ${focus ? `<p class="cp-note" role="status">${esc(stopPrompt(focus, vocab))}</p>` : ""}
         <p class="cp-muted">Underlined words are this unit's words. Pick one below for its meaning.</p>

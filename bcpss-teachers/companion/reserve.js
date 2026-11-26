@@ -6,6 +6,7 @@
 import { buildCatalog, spiralItems } from "./companion-data.js";
 import { doc, FOOT, openPrint, unitLine } from "./companion-print.js";
 import { esc, vstate } from "./util.js";
+import { domainIcon, rotationSvg } from "./visuals.js";
 
 const SID = "stations";
 const QID = "quick";
@@ -53,8 +54,9 @@ function stationsHtml(plan) {
 }
 
 export function renderStations(st, detail) {
-  const vs = vstate(st, SID, { n: 4, minutes: 12, swap: {} });
+  const vs = vstate(st, SID, { n: 4, minutes: 12, swap: {}, round: 0 });
   const plan = buildStations(detail, st.level, vs);
+  const round = Math.min(vs.round || 0, plan.rounds.length - 1);
   const chip = (act, arg, label, on) =>
     `<button type="button" class="cp-chip" data-cp-act="${SID}:${act}" data-cp-arg="${arg}" aria-pressed="${on}">${label}</button>`;
   return `
@@ -64,12 +66,15 @@ export function renderStations(st, detail) {
         <fieldset class="cp-field"><legend>Stations</legend><div class="cp-chiprow cp-chiprow--tight">${[3, 4].map((n) => chip("n", n, `${n} stations`, vs.n === n)).join("")}</div></fieldset>
         <fieldset class="cp-field"><legend>Minutes at each station</legend><div class="cp-chiprow cp-chiprow--tight">${[10, 12, 15].map((m) => chip("min", m, `${m} min`, vs.minutes === m)).join("")}</div></fieldset>
       </div>
+      <div class="cp-card"><h4>Where each group is</h4>
+        <div class="cp-chiprow cp-chiprow--tight" role="group" aria-label="Round">${plan.rounds.map((r, i) => chip("round", i, `Round ${r.round}`, i === round)).join("")}</div>
+        ${rotationSvg(plan, round)}</div>
       ${stationsHtml(plan)}
       <div class="cp-groups">${plan.stations
         .map(
           (
             s,
-          ) => `<div class="cp-card"><h4>${esc(s.domain)}: ${esc(s.title)}</h4><p>${esc(s.mission)}</p>${s.support ? `<p class="cp-muted"><b>Support:</b> ${esc(s.support)}</p>` : ""}<p class="cp-muted">${[s.grouping, `${s.minutes} min`].filter(Boolean).join(" · ")}</p>
+          ) => `<div class="cp-card"><h4><span aria-hidden="true">${domainIcon(s.domain)}</span> ${esc(s.domain)}: ${esc(s.title)}</h4><p>${esc(s.mission)}</p>${s.support ? `<p class="cp-muted"><b>Support:</b> ${esc(s.support)}</p>` : ""}<p class="cp-muted">${[s.grouping, `${s.minutes} min`].filter(Boolean).join(" · ")}</p>
         <div class="cp-actions">${s.play ? `<a class="cp-btn cp-btn--solid" href="${esc(s.play)}" target="_blank" rel="noopener">Open the activity</a>` : ""}${s.alternatives > 1 ? `<button type="button" class="cp-btn" data-cp-act="${SID}:swap" data-cp-arg="${esc(s.domain)}">Try a different ${esc(s.domain.toLowerCase())} activity</button>` : ""}</div></div>`,
         )
         .join("")}</div>
@@ -79,8 +84,12 @@ export function renderStations(st, detail) {
 
 export function actStations(st, action, arg, ctx) {
   const vs = vstate(st, SID, {});
-  if (action === "n") vs.n = Number(arg);
+  if (action === "n") {
+    vs.n = Number(arg);
+    vs.round = 0;
+  }
   else if (action === "min") vs.minutes = Number(arg);
+  else if (action === "round") vs.round = Number(arg);
   else if (action === "swap") vs.swap[arg] = (vs.swap[arg] || 0) + 1;
   else if (action === "print") {
     openPrint(

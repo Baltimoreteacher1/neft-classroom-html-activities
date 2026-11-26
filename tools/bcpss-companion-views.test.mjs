@@ -26,6 +26,15 @@ import {
 import { transformDoc, transformText } from "../bcpss-teachers/companion/transform.js";
 import { paragraphs, sentences, shuffle } from "../bcpss-teachers/companion/util.js";
 import { NEW_VIEWS } from "../bcpss-teachers/companion/views-registry.js";
+import {
+  activityBars,
+  activityStats,
+  chainFlow,
+  rotationSvg,
+  sentenceStrip,
+  vennData,
+  vennSvg,
+} from "../bcpss-teachers/companion/visuals.js";
 import { GRADES, getUnitDetail, listUnits, SUBJECTS } from "../functions/_lib/bcpss/db.js";
 
 const all = [];
@@ -245,4 +254,42 @@ test("stations: every group visits every station once; warm-up has five question
     }
     clean(warmupDoc(detail), detail.unit.id);
   }
+});
+
+test("visuals: every diagram draws from the unit's data, is labelled, and stays inside its box", () => {
+  for (const detail of all) {
+    const stats = activityStats(detail);
+    assert.equal(
+      stats.reduce((n, r) => n + r.count, 0),
+      detail.studio.activities.length,
+      detail.unit.id,
+    );
+    const bars = activityBars(detail);
+    assert.match(bars, /role="img" aria-label="Activities in this unit by domain/);
+    const plan = buildStations(detail, "3_4", { n: 4 });
+    for (let r = 0; r < 4; r++) {
+      const svg = rotationSvg(plan, r);
+      assert.match(svg, /role="img"/);
+      for (const g of plan.groups)
+        assert.ok(svg.includes(`Group ${g} is at the`), `${detail.unit.id} round ${r}`);
+    }
+    const strip = sentenceStrip(6, 2, 4);
+    assert.match(strip, /sentence 3 of 6/);
+    assert.match(strip, /sentence 5/);
+  }
+  for (const a of all) {
+    const other = all.find(
+      (b) => b.unit.grade === a.unit.grade && b.unit.subject !== a.unit.subject,
+    );
+    const d = vennData(a, other);
+    assert.equal(d.left.length + d.both.length, a.studio.vocab.length, a.unit.id);
+    assert.equal(d.right.length + d.both.length, other.studio.vocab.length, a.unit.id);
+    const svg = vennSvg(a, other, "Explain");
+    assert.match(svg, /role="img" aria-label="Venn diagram/);
+    // every word drawn inside the 560-wide box: x is within the viewBox and no text is cut mid-word
+    for (const m of svg.matchAll(/<text x="(\d+)"/g))
+      assert.ok(Number(m[1]) > 60 && Number(m[1]) < 500);
+  }
+  assert.match(chainFlow({ because: "", event: "E", so: "" }), /<b>\?<\/b>/);
+  assert.match(chainFlow({ because: "B", event: "E", so: "S" }), /<b>B<\/b>/);
 });

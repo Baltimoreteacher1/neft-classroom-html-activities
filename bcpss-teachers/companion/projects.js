@@ -4,6 +4,7 @@
 
 import { blanks as printBlanks, doc, FOOT, openPrint, unitLine } from "./companion-print.js";
 import { blanks, esc, vstate } from "./util.js";
+import { vennSvg } from "./visuals.js";
 
 const ID = "projects";
 const SUBJECTS = ["ELA", "Math", "Science", "Social Studies"];
@@ -130,11 +131,11 @@ export function render(st, detail) {
         </select>
         ${vs.loading ? `<p class="cp-muted" role="status">Loading that unit…</p>` : ""}${vs.error ? `<p class="cp-note cp-note--warn" role="alert">${esc(vs.error)}</p>` : ""}
       </div>
-      ${plan ? planHtml(plan) : `<p class="cp-muted">Pick a partner unit to see the project.</p>`}
+      ${plan ? planHtml(plan, vennSvg(detail, vs.partner, plan.sharedLanguage)) : `<p class="cp-muted">Pick a partner unit to see the project.</p>`}
     </div>`;
 }
 
-function planHtml(p) {
+function planHtml(p, venn) {
   return `
     <div class="cp-card cp-card--lead">
       <p class="cp-eyebrow">${p.provenance === "authored" ? "Authored connection" : "Your pairing"}</p>
@@ -143,6 +144,7 @@ function planHtml(p) {
       ${p.authoredFrame ? `<p class="cp-muted">Frame from the connection: ${blanks(p.authoredFrame)}</p>` : ""}
       ${p.sharedLanguage ? `<p class="cp-muted">Both units build the same language use: ${esc(p.sharedLanguage)}.</p>` : ""}
     </div>
+    <div class="cp-card"><h4>Words each unit brings</h4>${venn}</div>
     <div class="cp-two">${p.strands
       .map(
         (s) =>

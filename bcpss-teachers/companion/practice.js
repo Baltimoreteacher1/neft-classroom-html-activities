@@ -4,6 +4,7 @@
 
 import { blanks as printBlanks, doc, FOOT, openPrint, unitLine } from "./companion-print.js";
 import { blanks, esc, vstate } from "./util.js";
+import { domainIcon } from "./visuals.js";
 
 const ID = "practice";
 const DOMAINS = [
@@ -81,7 +82,7 @@ export function render(st, detail) {
   return `
     <div class="cp-practice">
       <p class="cp-note">Informal practice in all four language domains, built from this unit's own content. It is not an ACCESS test and it gives no scores or levels.</p>
-      <fieldset class="cp-field"><legend>Choose a domain</legend><div class="cp-chiprow">${DOMAINS.map((d) => `<button type="button" class="cp-chip" data-cp-act="${ID}:domain" data-cp-arg="${d.id}" aria-pressed="${d.id === vs.d}">${d.label}<small>${esc(d.hint)}</small></button>`).join("")}</div></fieldset>
+      <fieldset class="cp-field"><legend>Choose a domain</legend><div class="cp-chiprow">${DOMAINS.map((d) => `<button type="button" class="cp-chip" data-cp-act="${ID}:domain" data-cp-arg="${d.id}" aria-pressed="${d.id === vs.d}"><span aria-hidden="true">${domainIcon(d.label)}</span> ${d.label}<small>${esc(d.hint)}</small></button>`).join("")}</div></fieldset>
       <div class="cp-card">${panel(vs.d, pack, vs)}</div>
       ${pack.lookFor ? `<p class="cp-muted"><b>Look for (teacher):</b> ${esc(pack.lookFor)}</p>` : ""}
       <div class="cp-actions"><button type="button" class="cp-btn cp-btn--solid" data-cp-act="${ID}:print" data-cp-arg="student">Print the student set (4 tasks)</button><button type="button" class="cp-btn" data-cp-act="${ID}:print" data-cp-arg="teacher">Print the teacher key</button></div>
