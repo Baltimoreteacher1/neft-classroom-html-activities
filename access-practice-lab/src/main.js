@@ -36,6 +36,7 @@ import { applyFolds } from "./fold.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 import { registerFor } from "./register.js";
+import { mayTeach } from "./create/gate.js";
 import { familyTourHost } from "./family-tour-host.js";
 import { sessionHref, startSession } from "./engagement.js";
 import { maybeHydrateBcpssLab } from "./bcpss-hydrate.js";
@@ -548,6 +549,7 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   document.body.dataset.labRegister = registerFor(route.view);
   mountShell(ctx);
   mountReturnBar(ctx);
+  mountCreateEntry(route);
   view.mount?.(root, ctx);
   void import("./scaffold/baseline.js").then((m) => m.enable()).catch(() => {});
   void maybeHydrateBcpssLab(root);
@@ -576,6 +578,18 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
     if (!framed || document.hasFocus())
       (root.querySelector("[data-focus-first]") || root.querySelector("h1"))?.focus({ preventScroll: true });
   }
+}
+
+// Project Studio: the Create button and packet chip in the header, teacher devices only (src/create/, CREATE.md).
+function mountCreateEntry(route) {
+  if (!mayTeach()) {
+    for (const el of document.querySelectorAll("[data-create]")) el.remove();
+    return;
+  }
+  const I = i18nFor(ctx);
+  void import("./create/launcher.js")
+    .then((m) => m.mountCreate({ route, S: I.S, lang: I.mode, navigate: (path) => navigate(path) }))
+    .catch((err) => console.warn("[create] not available", err));
 }
 
 // ── shared interactions ───────────────────────────────────────────────────────

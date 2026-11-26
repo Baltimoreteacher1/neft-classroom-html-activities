@@ -1,0 +1,487 @@
+/* Project Studio · Create panel, packet tray and header controls. Tokens come from ds.css; the fallbacks keep the panel
+   correct on pages outside the lab (Teacher Hub, BCPSS Teachers) that load this sheet on its own. Light only. */
+
+.cr-glyph {
+  inline-size: 1.1em;
+  block-size: 1.1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+.cr-launch {
+  font-weight: 600;
+}
+/* ds.css hides header links below 960px; Create and the packet chip stay reachable, like the Comfort button */
+.lab-tools > .top-link.cr-launch,
+.lab-tools > .top-link.cr-tray {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  justify-content: center;
+}
+@media (max-width: 600px) {
+  .lab-tools > .top-link.cr-launch > span,
+  .lab-tools > .top-link.cr-tray > span {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.cr-dialog {
+  --cr-ink: var(--text-primary, #182230);
+  --cr-ink-2: var(--text-secondary, #475467);
+  --cr-line: var(--border-subtle, #e4e0d8);
+  --cr-control: var(--border-control, #7c8799);
+  --cr-surface: var(--bg-surface, #fffdf8);
+  --cr-subtle: var(--bg-subtle, #f0e9da);
+  --cr-brand: var(--brand-primary, #1e3a5f);
+  --cr-warn-bg: var(--status-warning-bg, #fff7e6);
+  --cr-warn-ink: var(--status-warning-text, #7a4a00);
+  color: var(--cr-ink);
+  background: var(--cr-surface);
+  border: 1px solid var(--cr-line);
+  border-radius: var(--radius-lg, 14px);
+  box-shadow: var(--shadow-elevated, 0 12px 40px rgb(16 24 40 / 0.18));
+  inline-size: min(1080px, calc(100vw - 32px));
+  max-block-size: calc(100dvh - 32px);
+  padding: 0;
+  font-family: var(--font, Inter, system-ui, sans-serif);
+  font-size: 1rem;
+  line-height: 1.5;
+  overscroll-behavior: contain;
+}
+.cr-dialog::backdrop {
+  background: rgb(16 24 40 / 0.45);
+}
+.cr-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-block-end: 1px solid var(--cr-line);
+  position: sticky;
+  inset-block-start: 0;
+  background: var(--cr-surface);
+  z-index: 1;
+}
+.cr-head h2 {
+  margin: 0;
+  margin-inline-end: auto;
+  font-family: var(--font-display, "Plus Jakarta Sans", system-ui, sans-serif);
+  font-size: 1.35rem;
+}
+.cr-x {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  color: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.cr-x:hover {
+  background: var(--cr-subtle);
+}
+.cr-body {
+  padding: 8px 24px 16px;
+}
+.cr-status {
+  margin: 0;
+  padding: 0 24px 16px;
+  min-block-size: 1.5em;
+  color: var(--cr-ink-2);
+}
+.cr-status:empty {
+  padding-block-end: 0;
+}
+.cr-step {
+  padding-block: 16px;
+  border-block-end: 1px solid var(--cr-line);
+}
+.cr-step:last-child {
+  border-block-end: 0;
+}
+.cr-step h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-family: var(--font-display, "Plus Jakarta Sans", system-ui, sans-serif);
+  font-size: 1.1rem;
+}
+.cr-n {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 50%;
+  background: var(--cr-brand);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  flex: none;
+}
+.cr-context {
+  margin: 0 0 12px;
+  max-inline-size: 72ch;
+}
+.cr-from {
+  color: var(--cr-ink-2);
+}
+.cr-fine {
+  color: var(--cr-ink-2);
+  font-size: 0.925rem;
+}
+.cr-lede {
+  max-inline-size: 68ch;
+}
+.cr-sr {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* step 1: format cards (radio inputs; the whole card is the label) */
+.cr-formats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.cr-format {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px 12px 40px;
+  border: 1px solid var(--cr-control);
+  border-radius: var(--radius-md, 10px);
+  background: var(--cr-surface);
+  cursor: pointer;
+  min-block-size: 44px;
+}
+.cr-format input {
+  position: absolute;
+  inset-inline-start: 14px;
+  inset-block-start: 15px;
+  inline-size: 18px;
+  block-size: 18px;
+  margin: 0;
+  accent-color: var(--cr-brand);
+}
+.cr-format:has(input:checked) {
+  border-color: var(--cr-brand);
+  box-shadow: inset 0 0 0 1px var(--cr-brand);
+  background: color-mix(in srgb, var(--cr-brand) 5%, var(--cr-surface));
+}
+.cr-format:has(input:focus-visible) {
+  outline: 3px solid var(--cr-brand);
+  outline-offset: 2px;
+}
+.cr-format-t {
+  font-weight: 600;
+}
+.cr-format-h {
+  color: var(--cr-ink-2);
+  font-size: 0.9rem;
+}
+
+/* step 2: segmented radio groups */
+.cr-adjust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-block-end: 12px;
+}
+.cr-seg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.cr-seg legend {
+  float: inline-start;
+  margin-inline-end: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0;
+}
+.cr-seg-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-block-size: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--cr-control);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--cr-surface);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.cr-seg-opt input {
+  margin: 0;
+  accent-color: var(--cr-brand);
+}
+.cr-seg-opt:has(input:checked) {
+  border-color: var(--cr-brand);
+  box-shadow: inset 0 0 0 1px var(--cr-brand);
+  font-weight: 600;
+}
+.cr-seg-opt:has(input:focus-visible) {
+  outline: 3px solid var(--cr-brand);
+  outline-offset: 2px;
+}
+.cr-stage {
+  margin-block: 12px;
+  border: 1px solid var(--cr-line);
+  border-radius: var(--radius-md, 10px);
+  background: var(--cr-subtle);
+  overflow: hidden;
+}
+.cr-frame {
+  display: block;
+  inline-size: 100%;
+  block-size: min(62dvh, 640px);
+  border: 0;
+  background: #fff;
+}
+.cr-more {
+  margin-block-start: 8px;
+}
+.cr-more summary {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+.cr-more ul {
+  margin: 4px 0 0;
+  padding-inline-start: 20px;
+  max-inline-size: 80ch;
+}
+.cr-more li {
+  margin-block: 4px;
+}
+.cr-warn {
+  background: var(--cr-warn-bg);
+  color: var(--cr-warn-ink);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.cr-error {
+  background: var(--cr-warn-bg);
+  color: var(--cr-warn-ink);
+  padding: 12px;
+  border-radius: var(--radius-sm, 6px);
+}
+
+/* step 3: actions */
+.cr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-block-size: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--cr-control);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--cr-surface);
+  color: var(--cr-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cr-btn:hover {
+  background: var(--cr-subtle);
+}
+.cr-btn:focus-visible,
+.cr-x:focus-visible,
+.cr-link:focus-visible,
+.cr-pick:focus-visible {
+  outline: 3px solid var(--cr-brand);
+  outline-offset: 2px;
+}
+.cr-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.cr-primary {
+  background: var(--cr-brand);
+  border-color: var(--cr-brand);
+  color: #fff;
+}
+.cr-primary:hover {
+  background: var(--brand-primary-hover, #162d4a);
+}
+.cr-quiet {
+  border-color: transparent;
+  background: transparent;
+}
+.cr-small {
+  min-inline-size: 44px;
+  padding: 0 10px;
+  font-weight: 500;
+}
+.cr-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  min-block-size: 44px;
+  color: var(--cr-brand);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* source picker */
+.cr-input {
+  inline-size: 100%;
+  max-inline-size: 520px;
+  min-block-size: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--cr-control);
+  border-radius: var(--radius-sm, 6px);
+  font: inherit;
+  margin-block: 12px;
+  background: #fff;
+  color: var(--cr-ink);
+}
+.cr-label {
+  display: block;
+  font-weight: 600;
+}
+.cr-pick-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px;
+  max-block-size: 50dvh;
+  overflow: auto;
+}
+.cr-pick {
+  display: grid;
+  gap: 2px;
+  inline-size: 100%;
+  min-block-size: 44px;
+  text-align: start;
+  padding: 10px 12px;
+  border: 1px solid var(--cr-line);
+  border-radius: var(--radius-sm, 6px);
+  background: var(--cr-surface);
+  color: var(--cr-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.cr-pick:hover {
+  border-color: var(--cr-brand);
+}
+.cr-pick span {
+  color: var(--cr-ink-2);
+  font-size: 0.9rem;
+}
+.cr-loading {
+  padding-block: 24px;
+}
+
+/* packet tray */
+.cr-packet {
+  inline-size: min(760px, calc(100vw - 32px));
+}
+.cr-pk-list {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.cr-pk-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--cr-line);
+  border-radius: var(--radius-sm, 6px);
+}
+.cr-pk-t {
+  flex: 1 1 200px;
+}
+.cr-toast {
+  margin: 8px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #b42318;
+  border-radius: 6px;
+}
+
+@media (max-width: 700px) {
+  .cr-dialog {
+    inline-size: 100vw;
+    max-inline-size: 100vw;
+    max-block-size: 100dvh;
+    block-size: 100dvh;
+    border-radius: 0;
+    margin: 0;
+  }
+  .cr-head,
+  .cr-body,
+  .cr-status {
+    padding-inline: 16px;
+  }
+  .cr-frame {
+    block-size: 60dvh;
+  }
+  .cr-seg legend {
+    float: none;
+    inline-size: 100%;
+  }
+  /* phones: compact two-column format choice so the preview is close */
+  .cr-formats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .cr-format {
+    padding: 10px 10px 10px 36px;
+  }
+  .cr-format input {
+    inset-inline-start: 10px;
+    inset-block-start: 13px;
+  }
+  .cr-format-h {
+    display: none;
+  }
+}
+
+@media print {
+  .cr-dialog,
+  [data-create] {
+    display: none !important; /* !important (documented): authoring chrome must never print with a page */
+  }
+}

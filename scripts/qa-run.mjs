@@ -704,6 +704,9 @@ const COVERAGE = [
     /^(engine\/components\/living\/[a-z0-9-]+\.(?:js|test\.mjs)|tools\/(living-scene-configs|access-city-(?:market|episodes)|vocab-academy-word-architect)\.test\.mjs|scripts\/lib\/homework-living(?:-print)?\.mjs|reports\/family-spanish-review\.csv)$/,
     ["validate:js-syntax", "validate:no-purple", "validate:engine-imports", "typecheck"],
   ],
+  // CREATE (Project Studio): the coverage sweep, browser e2e and export lab need a server, Chromium or LibreOffice, so they
+  // are run by hand before shipping (see access-practice-lab/CREATE.md); the unit test is in `npm test`.
+  [/^tools\/create-(coverage|e2e|export-lab)\.mjs$/, ["test", "validate:js-syntax", "check"]],
   [
     /^tools\/(vocab-sets|assign-status|book-editions|present-mode)-e2e\.mjs$|^tools\/vocab-sets\.test\.mjs$/,
     ["test", "validate:js-syntax", "check"],

@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "1e316ba16d08";
+const BUILD_HASH = "61797b53f922";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=b93c4c2e6d4b",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=806a13eca36c",
   "/access-practice-lab/acc.css?v=5f19a73c976b",
   "/access-practice-lab/studios.css?v=3f3a7021a4a0",
-  "/access-practice-lab/src/main.js?v=bb6e4e382daf",
+  "/access-practice-lab/src/main.js?v=9ddeb569716a",
   "/access-practice-lab/src/brand.js?v=af5de68e62e6",
   "/access-practice-lab/src/keep-in-view.js?v=88f120416985",
   "/access-practice-lab/src/components.js?v=d7e0108d194e",
@@ -152,6 +152,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/home-audience.js?v=5d247fec415d",
   "/access-practice-lab/src/sitemap-ui.js?v=08f6b58fb6f1",
   "/access-practice-lab/src/platform/views/resourceHub.js?v=c07637297c83",
+  "/access-practice-lab/src/create/gate.js?v=ffb3854d347d",
   "/access-practice-lab/src/bcpss-hydrate.js?v=603dcd6400bb",
   "/shared/class-platform/contract.js",
   "/shared/math-language-bridge/v2.js",
@@ -502,6 +503,16 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/content/wordlab-lab.js?v=c54332f2f62a",
   "/access-practice-lab/src/content/wordlab-words.js?v=a7a2a402c9b5",
   "/access-practice-lab/src/content/world-missions.js?v=2ece6b5cb6f7",
+  "/access-practice-lab/src/create/build.js?v=8c55fbb39af9",
+  "/access-practice-lab/src/create/files.js?v=34a78dcbdad3",
+  "/access-practice-lab/src/create/handoff.js?v=6984a8aff2aa",
+  "/access-practice-lab/src/create/launcher.js?v=288267fcca8c",
+  "/access-practice-lab/src/create/packet.js?v=c3777d62b47b",
+  "/access-practice-lab/src/create/page-entry.js?v=e38db39fb7f8",
+  "/access-practice-lab/src/create/page.js?v=f747045b422c",
+  "/access-practice-lab/src/create/panel.js?v=3115167e1e4b",
+  "/access-practice-lab/src/create/routes.js?v=264078eb79a3",
+  "/access-practice-lab/src/create/session.js?v=b221bef00ec0",
   "/access-practice-lab/src/demand/analyze.js?v=6b9151433047",
   "/access-practice-lab/src/demand/handoff.js?v=b0d5f4393f28",
   "/access-practice-lab/src/demand/patterns.js?v=c87535a41017",

@@ -6,6 +6,7 @@ import {
   BorderStyle,
   HeightRule,
   ImageRun,
+  LineRuleType,
   Paragraph,
   Table,
   TableCell,
@@ -182,7 +183,19 @@ export const boxed = (text, opts = {}, run = {}) =>
   );
 
 /** Spacer paragraph. */
-export const gap = (after = 160) => new Paragraph({ spacing: { after, line: 120 }, children: [] });
+/** Vertical space between parts. Tagged so the document's trailing gaps can be dropped (see endParagraph). */
+export const gap = (after = 160) =>
+  Object.assign(new Paragraph({ spacing: { after, line: 120 }, children: [] }), { isGap: true });
+
+/**
+ * A Word document must end with a paragraph, even after a table. When the last table fills the page, an ordinary
+ * paragraph is pushed onto a page of its own and the file prints a blank last page. This one is 1pt tall.
+ */
+export const endParagraph = () =>
+  new Paragraph({
+    spacing: { before: 0, after: 0, line: 20, lineRule: LineRuleType.EXACT },
+    children: [],
+  });
 
 // ── images (data: URLs only) ─────────────────────────────────────────────────
 

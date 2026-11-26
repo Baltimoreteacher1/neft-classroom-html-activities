@@ -32,6 +32,7 @@ import { questionBody } from "./docx-formats.js";
 import {
   allBorders,
   boxed,
+  endParagraph,
   FONT,
   gap,
   INK_BORDER,
@@ -428,6 +429,8 @@ export async function buildDocx(input, opts = {}) {
     c.after = part === "all";
     body.push(...keyBlocks(c, a));
   }
+  while (body.length && body.at(-1)?.isGap) body.pop();
+  body.push(endParagraph());
   const doc = new Document({
     creator: "The Language Page",
     lastModifiedBy: "The Language Page",
