@@ -466,8 +466,195 @@ button.cp-seq-card:hover {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cp * {
+  .cp *,
+  .cp-pop {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* ── Grouped view navigation ─────────────────────────────────────────────── */
+.cp-vgroups {
+  display: grid;
+  gap: 0.9rem;
+}
+.cp-vgroup-h {
+  font: 600 0.78rem/1.2 var(--font) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+  margin-bottom: 0.35rem !important;
+}
+
+/* ── Read together ───────────────────────────────────────────────────────── */
+.cp-passage {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  font-size: 1.12rem;
+  line-height: 1.7;
+  max-width: 46rem;
+}
+.cp-para {
+  margin: 0;
+}
+.cp-sent {
+  transition: background 0.2s;
+}
+.cp-sent--dim {
+  color: var(--ink-2);
+}
+.cp-sent--now {
+  background: var(--cognate-bg);
+  box-shadow: 0 0 0 3px var(--cognate-bg);
+  border-radius: 3px;
+}
+.cp-term {
+  font-weight: 650;
+  text-decoration: underline dotted;
+  text-underline-offset: 4px;
+}
+mark.cp-ev {
+  background: var(--trap-bg);
+  color: var(--ink);
+  box-shadow: 0 0 0 2px var(--brand-gold);
+  border-radius: 2px;
+}
+
+/* ── Word cards ──────────────────────────────────────────────────────────── */
+.cp-frayer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+.cp-piece {
+  padding: 0.8rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--radius) + 2px);
+}
+.cp-piece h5 {
+  color: var(--brand-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.78rem;
+}
+.cp-piece p {
+  font-size: 1.05rem;
+}
+.cp-piece--hidden {
+  visibility: hidden;
+}
+.cp-frayer-core {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--brand);
+  color: #fff;
+  grid-column: 1 / -1;
+}
+.cp-frayer-core b {
+  font: 700 2rem/1.2 var(--font-display);
+}
+.cp-frayer-core small {
+  color: #e8eef6;
+}
+.cp-frayer-icon {
+  font-size: 2.2rem;
+}
+@keyframes cp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.cp-frayer--play .cp-piece {
+  animation: cp-rise 0.6s ease-out both;
+  animation-delay: calc(var(--i) * 0.9s);
+}
+
+/* ── Labs ────────────────────────────────────────────────────────────────── */
+.cp-lab-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+}
+.cp-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.cp-stepper output {
+  min-width: 2rem;
+  text-align: center;
+  font: 700 1.2rem/1 var(--font-display);
+}
+.cp-stepper .cp-btn {
+  min-width: 44px;
+  padding: 0;
+  font-size: 1.2rem;
+}
+.cp-svg {
+  width: 100%;
+  max-width: 40rem;
+  height: auto;
+}
+@keyframes cp-popin {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.cp-pop {
+  animation: cp-popin 0.3s ease-out both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.cp-fadein {
+  animation: cp-rise 0.4s ease-out both;
+}
+.cp-table {
+  border-collapse: collapse;
+  min-width: 14rem;
+}
+.cp-table th,
+.cp-table td {
+  border: 1px solid var(--border-control);
+  padding: 0.35rem 0.8rem;
+  text-align: center;
+}
+.cp-table caption {
+  text-align: left;
+  padding-bottom: 0.25rem;
+}
+.cp-ok {
+  color: var(--cognate-ink);
+}
+.cp-chunks {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+.cp-chunks li {
+  margin-bottom: 0.4rem;
+}
+
+.cp-plain li .cp-blank {
+  display: inline-block;
+}
+.cp-pair {
+  display: grid;
+  gap: 0.25rem;
+  flex: 1 1 12rem;
+  max-width: 18rem;
 }

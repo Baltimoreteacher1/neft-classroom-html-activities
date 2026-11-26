@@ -7,12 +7,14 @@ import {
   buildSupportSheet,
   buildUnitMap,
   composeSet,
+  GROUPS,
   groupCatalog,
   LEVELS,
   PURPOSES,
 } from "./companion-data.js";
 import { openPrint, supportSheetDoc } from "./companion-print.js";
 import { bindCheck, bindReteach, checkView, reteachView } from "./companion-views.js";
+import { NEW_VIEWS, viewById } from "./views-registry.js";
 
 export const esc = (v) =>
   String(v ?? "").replace(
@@ -21,10 +23,11 @@ export const esc = (v) =>
   );
 
 const VIEWS = [
-  { id: "map", label: "Unit map", hint: "How this unit fits together" },
-  { id: "build", label: "Build a set", hint: "Pick a purpose, get resources" },
-  { id: "check", label: "Check work", hint: "See what an answer shows" },
-  { id: "reteach", label: "Reteach plan", hint: "A short small-group lesson" },
+  { id: "map", group: "teach", label: "Unit map", hint: "How this unit fits together" },
+  { id: "build", group: "language", label: "Build a set", hint: "Pick a purpose, get resources" },
+  { id: "check", group: "assess", label: "Check work", hint: "See what an answer shows" },
+  { id: "reteach", group: "assess", label: "Reteach plan", hint: "A short small-group lesson" },
+  ...NEW_VIEWS,
 ];
 
 const courseCache = new Map();
@@ -196,7 +199,13 @@ function shell(st, inner) {
     <div class="cp" data-cp-root>
       <div class="cp-top">
         <div><h3 class="cp-title">Plan &amp; Respond</h3><p class="cp-muted">Built from this unit's own words, goals and activities. Nothing you type here leaves this device.</p></div>
-        <div class="cp-views" role="group" aria-label="Plan and respond views">${VIEWS.map((v) => `<button type="button" class="cp-view" data-cp-view="${v.id}" aria-pressed="${v.id === st.view}"><b>${esc(v.label)}</b><small>${esc(v.hint)}</small></button>`).join("")}</div>
+        <nav class="cp-vgroups" aria-label="Plan and respond">${GROUPS.map((g) => ({ g, views: VIEWS.filter((v) => v.group === g.id) }))
+          .filter((x) => x.views.length)
+          .map(
+            ({ g, views }) =>
+              `<div class="cp-vgroup" role="group" aria-labelledby="cpvg-${g.id}"><h4 class="cp-vgroup-h" id="cpvg-${g.id}">${esc(g.label)}</h4><div class="cp-views">${views.map((v) => `<button type="button" class="cp-view" data-cp-view="${v.id}" aria-pressed="${v.id === st.view}"><b>${esc(v.label)}</b><small>${esc(v.hint)}</small></button>`).join("")}</div></div>`,
+          )
+          .join("")}</nav>
       </div>
       <div class="cp-body" data-cp-body>${inner}</div>
     </div>`;
@@ -226,6 +235,7 @@ export function renderCompanionTab(panel, ctx) {
     st.picks = new Map();
     st.text = "";
     st.result = null;
+    st.vs = {};
     st.unitId = detail.unit.id;
   }
   st.level = ctx.wida || st.level || "3_4";
@@ -236,8 +246,10 @@ export function renderCompanionTab(panel, ctx) {
   const draw = () => {
     const catalog = buildCatalog(detail, st.level);
     const map = buildUnitMap(detail, course);
-    const inner =
-      st.view === "build"
+    const extra = viewById(st.view);
+    const inner = extra
+      ? extra.render(st, detail)
+      : st.view === "build"
         ? buildView(st, detail, catalog)
         : st.view === "check"
           ? checkView(st, detail)
@@ -245,6 +257,7 @@ export function renderCompanionTab(panel, ctx) {
             ? reteachView(st, detail, map.before)
             : mapView(map, catalog);
     panel.innerHTML = shell(st, inner);
+    if (extra?.load) settle(st, extra.load(st, ctx));
   };
   st.draw = draw;
   draw();
@@ -260,6 +273,16 @@ export function renderCompanionTab(panel, ctx) {
   panel.addEventListener("input", (e) => onInput(panel, e));
 }
 
+/** A view handler may return true (redraw), false (nothing) or a promise (redraw now, and again when it settles). */
+function settle(st, result) {
+  if (result && typeof result.then === "function") {
+    if (result !== st.pending) st.pending = result;
+    result.then((v) => v !== false && st.ctx && st.draw());
+  } else if (result) st.draw();
+}
+
+const q = (v) => CSS.escape(String(v));
+
 function onClick(panel, e) {
   const st = panelState.get(panel);
   if (!st) return;
@@ -271,6 +294,21 @@ function onClick(panel, e) {
     st.view = d.cpView;
     st.draw();
     panel.querySelector(`[data-cp-view="${st.view}"]`)?.focus();
+    return;
+  }
+  if (d.cpAct) {
+    const [viewId, action] = d.cpAct.split(":");
+    const view = viewById(viewId);
+    if (!view) return;
+    const before = d.cpArg;
+    const res = view.act(st, action, d.cpArg, st.ctx);
+    settle(st, res);
+    if (res) {
+      const sel = `[data-cp-act="${q(d.cpAct)}"]${before !== undefined ? `[data-cp-arg="${q(before)}"]` : ""}`;
+      const refocus = () => panel.querySelector(sel)?.focus();
+      refocus();
+      if (res.then) res.then(refocus);
+    }
     return;
   }
   if (d.cpTab) return st.ctx.onOpenTab?.(d.cpTab);
@@ -295,7 +333,19 @@ function onClick(panel, e) {
   }
 }
 
+function viewInput(panel, e, kind) {
+  const st = panelState.get(panel);
+  const el = e.target.closest("[data-cp-in]");
+  if (!st || !el) return false;
+  const [viewId, field] = el.dataset.cpIn.split(":");
+  const view = viewById(viewId);
+  if (!view?.input) return true;
+  settle(st, view.input(st, field, el.value, kind, st.ctx));
+  return true;
+}
+
 function onChange(panel, e) {
+  if (viewInput(panel, e, "change")) return;
   const st = panelState.get(panel);
   const box = e.target.closest("[data-cp-pick]");
   if (box && st) {
@@ -309,6 +359,7 @@ function onChange(panel, e) {
 }
 
 function onInput(panel, e) {
+  if (viewInput(panel, e, "input")) return;
   const st = panelState.get(panel);
   const ta = e.target.closest("[data-cp-text]");
   if (ta && st) st.text = ta.value;

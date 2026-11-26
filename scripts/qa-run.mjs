@@ -1107,7 +1107,7 @@ const COVERAGE = [
   // Language Studio player: the content gates plus the full render sweep (162 units x 3 bands x every activity x
   // 3 viewports). Ahead of the generic BCPSS rule so the sweep runs for player changes, not for every BCPSS edit.
   [
-    /^(bcpss-teachers\/(language-studio|companion)\/|db\/seeds\/bcpss\/v2\/(lesson-links\/|module-facts\/|index\.mjs$)|data\/ela-modules\.json$|functions\/_lib\/bcpss\/(lesson-links|module-facts)\.js$|functions\/api\/bcpss\/(units\/\[unitId\]\/lessons|lessons\/\[lessonId\])\.js$|tools\/(bcpss-studio-sweep|bcpss-studio-links-e2e|bcpss-module-e2e|bcpss-companion-e2e|bcpss-companion\.test|build-bcpss-activity-lessons|validate-bcpss-activity-lessons|build-bcpss-module-facts|validate-bcpss-module-facts|extract-ela-modules|ela-module-facts\.test|bcpss-activity-lessons\.test)\.mjs$|tools\/lib\/(bcpss-studio-serve|bcpss-activity-lessons|ela-module-facts)\.mjs$)/,
+    /^(bcpss-teachers\/(language-studio|companion)\/|db\/seeds\/bcpss\/v2\/(lesson-links\/|module-facts\/|index\.mjs$)|data\/ela-modules\.json$|functions\/_lib\/bcpss\/(lesson-links|module-facts)\.js$|functions\/api\/bcpss\/(units\/\[unitId\]\/lessons|lessons\/\[lessonId\])\.js$|tools\/(bcpss-studio-sweep|bcpss-studio-links-e2e|bcpss-module-e2e|bcpss-companion-e2e|bcpss-companion(-views)?\.test|build-bcpss-activity-lessons|validate-bcpss-activity-lessons|build-bcpss-module-facts|validate-bcpss-module-facts|extract-ela-modules|ela-module-facts\.test|bcpss-activity-lessons\.test)\.mjs$|tools\/lib\/(bcpss-studio-serve|bcpss-activity-lessons|ela-module-facts)\.mjs$)/,
     [
       "test",
       "validate:bcpss",
