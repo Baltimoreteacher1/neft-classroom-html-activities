@@ -36,6 +36,30 @@ if (livingHosts.length) {
   const watch = new MutationObserver(remountLiving);
   watch.observe(document.body, { attributes: true, attributeFilter: ["class"] });
   watch.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+
+  // Practice Studio "See why" bridge: opens the lesson's living-scene card and
+  // jumps straight to the scene that demonstrates the student's misconception.
+  const openLivingAt = (sceneId) => {
+    const first = livingHosts[0]?.host;
+    if (!first) return false;
+    const details = first.closest("details");
+    if (details) details.open = true;
+    const iv = first.querySelector(".interactive-visual");
+    if (iv) {
+      if (iv.__ivHandle?.openAt) iv.__ivHandle.openAt(sceneId);
+      else iv.dataset.openAt = String(sceneId);
+    }
+    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    (details || first).scrollIntoView?.({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    return true;
+  };
+  window.EwlLiving = { openAt: openLivingAt };
+  document.addEventListener("click", (e) => {
+    const btn = e.target?.closest?.("[data-living-open]");
+    if (!btn) return;
+    const sceneId = btn.dataset.livingOpen;
+    if (sceneId) openLivingAt(sceneId);
+  });
 }
 
 document.querySelectorAll("[data-lesson-model-host]").forEach((host) => {

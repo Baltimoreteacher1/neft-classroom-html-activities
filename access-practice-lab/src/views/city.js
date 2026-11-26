@@ -28,6 +28,17 @@ import {
   resetEpisodeUi,
 } from "./city-episode.js";
 import { BLURB as EPISODE_BLURB, STEPS as EPISODE_STEPS, TITLE as EPISODE_TITLE } from "../content/city-market-episode.js";
+import {
+  MORE_EPISODES,
+  findMoreEpisode,
+  loadMoreEpisode,
+  moreEpisodeHref,
+  moreEpisodePage,
+  moreEpisodesAt,
+  onMoreEpisodeClick,
+  onMoreEpisodeInput,
+  resetMoreUi,
+} from "./city-more-episodes.js";
 import { cityState, resetUi, saveCity } from "./city-state.js";
 import { LEARNER_LOOKS, characterSVG } from "./scenario-art.js";
 import { bandFor, speakBtn, studioHero } from "./studio-kit.js";
@@ -99,9 +110,23 @@ function buildingCard(ctx, I, st, b, i) {
   </a>`;
 }
 
+function cityTotalsWithEpisodes(st) {
+  const base = totalsFor(st.prog, MISSIONS);
+  const mk = loadMarket();
+  const epStates = [mk, ...MORE_EPISODES.map((ep) => loadMoreEpisode(ep))];
+  let indep = base.independent;
+  let supp = base.supported;
+  for (const s of epStates) {
+    if (s.indep > 0) indep += 1;
+    else if (s.runs > 0 || s.done) supp += 1;
+  }
+  const total = base.total + epStates.length;
+  return { total, independent: indep, supported: supp, left: Math.max(0, total - indep - supp) };
+}
+
 function hubHTML(ctx, I, st) {
   const band = bandFor(ctx.band);
-  const t = totalsFor(st.prog, MISSIONS);
+  const t = cityTotalsWithEpisodes(st);
   const next = nextMission(st.prog, MISSIONS);
   const nextB = next ? buildingOf(next.place) : null;
   return html`${cityCrumbs(I, band, null)}
@@ -148,6 +173,7 @@ function hubHTML(ctx, I, st) {
           >${I.T("My city progress", "Mi progreso en la ciudad")}</a
         >
         <a class="btn" href="${episodeHref(band)}">${icon("worlds")} ${P(I, EPISODE_TITLE)}</a>
+        ${MORE_EPISODES.map((ep) => html`<a class="btn" href="${moreEpisodeHref(ep, band)}">${icon("worlds")} ${P(I, ep.title)}</a>`)}
       </div>
     </section>
     <section class="task-group" aria-labelledby="ct-list-h">
@@ -212,6 +238,7 @@ function buildingHTML(ctx, I, st, b) {
         </div>
       </section>
       ${b.id === EPISODE_PLACE ? episodeCard(ctx, I) : ""}
+      ${moreEpisodesAt(b.id).map((ep) => moreEpisodeCard(ctx, I, ep))}
       <div class="wl-actions">
         <a class="btn" href="${cityHref("", band)}"
           >${icon("arrow-left")} ${I.T("Back to the city map", "Volver al mapa de la ciudad")}</a
@@ -240,9 +267,28 @@ function episodeCard(ctx, I) {
   </section>`;
 }
 
+function moreEpisodeCard(ctx, I, ep) {
+  const m = loadMoreEpisode(ep);
+  const started = m.runs > 0 || m.seen.length > 0;
+  const status = m.done
+    ? I.T(`Visited ${m.runs} ${m.runs === 1 ? "time" : "times"}`, `Visitado ${m.runs} ${m.runs === 1 ? "vez" : "veces"}`)
+    : started
+      ? I.T(`In progress: step ${m.step + 1} of ${EPISODE_STEPS.length}`, `En curso: paso ${m.step + 1} de ${EPISODE_STEPS.length}`)
+      : I.T("Not started", "Sin empezar");
+  return html`<section class="task-group" aria-labelledby="ct-ep-${ep.id}">
+    <h2 id="ct-ep-${ep.id}">${I.T("Episode on this block", "Episodio en esta cuadra")}</h2>
+    <a class="card task-card city-card mk-episode-card" href="${moreEpisodeHref(ep, bandFor(ctx.band))}">
+      <strong class="task-title">${P(I, ep.title)}</strong>
+      <span class="task-desc">${P(I, ep.blurb)}</span>
+      <span class="fine">${I.T(`Key Language Use: ${ep.use} · choose your support level`, `Uso clave: ${ep.use} · elige tu nivel de apoyo`)}</span>
+      <span class="city-chip">${status}</span>
+    </a>
+  </section>`;
+}
+
 function progressHTML(ctx, I, st) {
   const band = bandFor(ctx.band);
-  const t = totalsFor(st.prog, MISSIONS);
+  const t = cityTotalsWithEpisodes(st);
   return html`${cityCrumbs(I, band, I.S("My city progress", "Mi progreso en la ciudad"))}
     <header class="act-head">
       <h1 tabindex="-1">${I.T("My city progress", "Mi progreso en la ciudad")}</h1>
@@ -311,6 +357,9 @@ export async function render(ctx) {
     return { title: I.S("Language City", "Ciudad del lenguaje"), html: page(hubHTML(ctx, I, st)) };
   if (building.id === EPISODE_PLACE && missionId === EPISODE_ID)
     return { title: title(EPISODE_TITLE.en, EPISODE_TITLE.es), html: page(episodePage(ctx, I)) };
+  const moreEp = missionId ? findMoreEpisode(building.id, missionId) : null;
+  if (moreEp)
+    return { title: title(moreEp.title.en, moreEp.title.es), html: page(moreEpisodePage(ctx, I, moreEp)) };
   const mission = missionId ? missionOf(id, missionId) : null;
   if (!mission)
     return {
@@ -336,6 +385,8 @@ export function onClick(e, ctx) {
     return (ctx.rerender(), true);
   }
   if (isEpisode(ctx)) return onEpisodeClick(e, ctx, i18nFor(ctx));
+  const moreEp = ctx.route?.missionId ? findMoreEpisode(ctx.route.id, ctx.route.missionId) : null;
+  if (moreEp) return onMoreEpisodeClick(e, ctx, i18nFor(ctx), moreEp);
   const mission = ctx.route?.missionId ? missionOf(ctx.route.id, ctx.route.missionId) : null;
   if (!mission) return false;
   const st = cityState();
@@ -346,14 +397,21 @@ export function onClick(e, ctx) {
   return onMissionClick(e, ctx, mission, i18nFor(ctx), next);
 }
 const isEpisode = (ctx) => ctx.route?.id === EPISODE_PLACE && ctx.route?.missionId === EPISODE_ID;
-export const onInput = (e, ctx) =>
-  ctx && isEpisode(ctx) ? onEpisodeInput(e, i18nFor(ctx), ctx) : onMissionInput(e);
-export const onChange = (e, ctx) =>
-  ctx && isEpisode(ctx) ? onEpisodeInput(e, i18nFor(ctx), ctx) : onMissionInput(e);
+export const onInput = (e, ctx) => {
+  if (ctx && isEpisode(ctx)) return onEpisodeInput(e, i18nFor(ctx), ctx);
+  const moreEp = ctx?.route?.missionId ? findMoreEpisode(ctx.route.id, ctx.route.missionId) : null;
+  return moreEp ? onMoreEpisodeInput(e, moreEp) : onMissionInput(e);
+};
+export const onChange = (e, ctx) => {
+  if (ctx && isEpisode(ctx)) return onEpisodeInput(e, i18nFor(ctx), ctx);
+  const moreEp = ctx?.route?.missionId ? findMoreEpisode(ctx.route.id, ctx.route.missionId) : null;
+  return moreEp ? onMoreEpisodeInput(e, moreEp) : onMissionInput(e);
+};
 export const mount = (root, ctx) => {
   if (isEpisode(ctx)) mountEpisode(root);
 };
 export const unmount = () => {
   resetUi();
   resetEpisodeUi();
+  resetMoreUi();
 };

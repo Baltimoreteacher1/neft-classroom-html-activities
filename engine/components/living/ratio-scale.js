@@ -559,6 +559,32 @@ export function buildRatioScalePlay(cfg) {
     viewBox: `0 0 ${W} ${H}`,
     ariaLabel: copy.ariaLabel,
     printSummary: copy.printSummary,
+    askChild: {
+      situate: {
+        en: `In one batch of ${a} : ${b}, how many total parts make up the mix?`,
+        es: `En una tanda de ${a} : ${b}, ¿cuántas partes forman el total de la mezcla?`,
+      },
+      predict: {
+        en: `If you make ${k} batches, what must you do to BOTH numbers in ${a} : ${b}?`,
+        es: `Si haces ${k} tandas, ¿qué debes hacerles a LOS DOS números en ${a} : ${b}?`,
+      },
+      build: {
+        en: `Which picture (tape, double number line, or table) makes the pattern easiest for you to see?`,
+        es: `¿Qué dibujo (cinta, recta numérica doble o tabla) te hace más fácil ver el patrón?`,
+      },
+      graph: {
+        en: `Why do all equivalent ratio points fall on one straight line through (0, 0)?`,
+        es: `¿Por qué todos los puntos de razones equivalentes quedan en una recta que pasa por (0, 0)?`,
+      },
+      nonequal: {
+        en: `Why did adding ${a} to both numbers change the mix instead of keeping it the same?`,
+        es: `¿Por qué sumar ${a} a los dos números cambió la mezcla en lugar de conservarla?`,
+      },
+      transfer: {
+        en: `What scale factor did you multiply both numbers by in this new recipe?`,
+        es: `¿Por qué factor de escala multiplicaste los dos números en esta receta nueva?`,
+      },
+    },
     setup,
     scenes,
   };

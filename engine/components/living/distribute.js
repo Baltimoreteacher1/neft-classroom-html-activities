@@ -757,6 +757,36 @@ export function buildDistributePlay(cfg) {
       en: `${a}(x + ${c}) means ${a} groups of x + ${c}. Regrouping gives ${a} x's and ${a} × ${c} = ${ac} ones, so ${a}(x + ${c}) = ${a}x + ${ac} for every value of x. ${a}x + ${c} is not equivalent: it counts the ${c} ones only once.`,
       es: `${a}(x + ${c}) significa ${a} grupos de x + ${c}. Al reagrupar hay ${a} x y ${a} × ${c} = ${ac} unidades, así que ${a}(x + ${c}) = ${a}x + ${ac} para cualquier valor de x. ${a}x + ${c} no es equivalente: cuenta las ${c} unidades una sola vez.`,
     },
+    askChild: {
+      situate: {
+        en: `What is inside each of the ${a} bags?`,
+        es: `¿Qué hay dentro de cada una de las ${a} bolsas?`,
+      },
+      predict: {
+        en: `Why is ${a}(x + ${c}) equal to ${a}x + ${ac} and not ${a}x + ${c}?`,
+        es: `¿Por qué ${a}(x + ${c}) es igual a ${a}x + ${ac} y no a ${a}x + ${c}?`,
+      },
+      regroup: {
+        en: `Did the total number of tiles change when you regrouped them?`,
+        es: `¿Cambió el total de fichas cuando las reagrupaste?`,
+      },
+      area: {
+        en: `How does the rectangle show both ${a}x and ${ac} at the same time?`,
+        es: `¿Cómo muestra el rectángulo tanto ${a}x como ${ac} al mismo tiempo?`,
+      },
+      test: {
+        en: `When x changes, why do ${a}(x + ${c}) and ${a}x + ${ac} always stay equal?`,
+        es: `Cuando cambia x, ¿por qué ${a}(x + ${c}) y ${a}x + ${ac} siempre siguen iguales?`,
+      },
+      reverse: {
+        en: `How can you spot the common factor to rewrite a sum back into equal groups?`,
+        es: `¿Cómo puedes encontrar el factor común para reescribir una suma en grupos iguales?`,
+      },
+      transfer: {
+        en: `In your own words, why must the outside number multiply BOTH terms inside the parentheses?`,
+        es: `Con tus propias palabras, ¿por qué el número de afuera debe multiplicar a LOS DOS términos dentro del paréntesis?`,
+      },
+    },
     setup(ctx) {
       draw(ctx, a, c);
     },

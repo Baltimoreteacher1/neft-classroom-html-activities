@@ -1,7 +1,7 @@
 import { familyGuidance, householdMission } from "./homework-family-guidance.mjs";
 import { renderExplainStudio } from "./lib/homework-explain-studio.mjs";
 import { renderLearningReplayShell } from "./lib/homework-learning-replay.mjs";
-import { renderLivingScene } from "./lib/homework-living.mjs";
+import { renderLivingPrintBlock, renderLivingScene } from "./lib/homework-living.mjs";
 /**
  * Guided family notes content + HTML sections for interactive homework.
  * Derives bilingual EN/ES content from lesson config.json fields.
@@ -9259,6 +9259,7 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
               ${watchCues.map((c) => `<li>${c.icon} <span>${esc(c.en)}</span><br/><small lang="es">${esc(c.es)}</small></li>`).join("")}
             </ul>
           </div>
+          ${renderLivingPrintBlock(config)}
         </div>
 
         <div class="rf-col-right">

@@ -1,5 +1,7 @@
 import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
 
+export { renderLivingPrintBlock } from "./homework-living-print.mjs";
+
 /**
  * The lesson's living scene (launch.conceptIntro.livingScene) on the family
  * page: a short See it, Try it, Explain it film the student steps through.

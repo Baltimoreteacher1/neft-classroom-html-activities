@@ -7,6 +7,9 @@ import { ROLE_COPY, SUPPORT_COPY, SUPPORTS, runsOf, totalsFor } from "../lang/ci
 import { TAGS } from "../lang/scenarios.js";
 import { BASE, html } from "../util.js";
 import { cityHref } from "./city-mission.js";
+import { loadMarket } from "./city-episode.js";
+import { EPISODE_ID, TITLE as MARKET_TITLE } from "../content/city-market-episode.js";
+import { MORE_EPISODES, loadMoreEpisode } from "./city-more-episodes.js";
 import { bandFor } from "./studio-kit.js";
 
 const P = (I, pair) => I.T(pair.en, pair.es);
@@ -131,6 +134,17 @@ export function guideHTML(ctx, I, st) {
                 </td>
               </tr>`;
             })}
+            ${[
+              { id: EPISODE_ID, title: MARKET_TITLE, rec: loadMarket() },
+              ...MORE_EPISODES.map((ep) => ({ id: ep.id, title: ep.title, rec: loadMoreEpisode(ep) })),
+            ].map(
+              (ep) => html`<tr>
+                <th scope="row">${P(I, ep.title)}</th>
+                <td>${ep.rec.indep || 0}</td>
+                <td>${ep.rec.supp || (ep.rec.runs && !ep.rec.indep ? ep.rec.runs : 0)}</td>
+                <td>${ep.rec.runs ? I.T(`${ep.rec.runs} visit(s)`, `${ep.rec.runs} visita(s)`) : I.T("not enough evidence yet", "aún no hay suficiente evidencia")}</td>
+              </tr>`,
+            )}
           </tbody>
         </table>
       </div>

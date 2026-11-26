@@ -334,12 +334,16 @@
           A()[it.id] >= 2 && (it.h || []).length > (state.hints[it.id] || 0)
             ? `<p class="item-sub">Stuck? Open a hint below.${es("¿Atascado? Abre una pista abajo.")}</p>`
             : "";
+        const livingSceneId = m.tag && data.livingTraps?.[m.tag];
+        const seeWhy = livingSceneId
+          ? `<p class="fb-line fb-living-why"><button type="button" class="btn btn-sm living-why-btn" style="min-height:44px" data-living-open="${esc(livingSceneId)}">${RT.util.bi("See why in the model", "Ver por qué en el modelo")}</button></p>`
+          : "";
         fb(
           m.kind || "err",
           RT.util.fbMiss(
             m.noLead ? "" : voice("retry", it.id),
             trap ? `<strong>${esc(trap.n)}</strong>${es(trap.nEs)}` : "",
-            `${RT.util.tx(text)}${RT.util.txEs(textEs)}${nudge}`,
+            `${RT.util.tx(text)}${RT.util.txEs(textEs)}${seeWhy}${nudge}`,
           ),
         );
         say("Not yet");

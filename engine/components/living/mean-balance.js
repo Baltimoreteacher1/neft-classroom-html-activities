@@ -591,6 +591,32 @@ export function buildMeanBalancePlay(cfg) {
     viewBox: `0 0 ${W} ${H}`,
     ariaLabel: T.ariaLabel,
     printSummary: T.printSummary,
+    askChild: {
+      situate: {
+        en: "Which tower is tallest and which is shortest before we move any blocks?",
+        es: "¿Qué torre es la más alta y cuál es la más baja antes de mover bloques?",
+      },
+      predict: {
+        en: "If we share all the blocks equally across the towers, about how tall will each tower be?",
+        es: "Si repartimos todos los bloques por igual entre las torres, ¿qué altura tendrá cada torre?",
+      },
+      level: {
+        en: "As you moved blocks from tall towers to short ones, did el total de bloques change?",
+        es: "Mientras movías bloques de las torres altas a las bajas, ¿cambió el total de bloques?",
+      },
+      balance: {
+        en: "Look at the distances left and right of the mean: why do the two sides always add up to the same number?",
+        es: "Mira las distancias a la izquierda y derecha de la media: ¿por qué los dos lados siempre suman lo mismo?",
+      },
+      change: {
+        en: "When one value jumps much higher, what happens to the mean compared with the median?",
+        es: "Cuando un valor sube mucho, ¿qué le pasa a la media en comparación con la mediana?",
+      },
+      transfer: {
+        en: "How can you check whether a mean makes sense before trusting your calculation?",
+        es: "¿Cómo puedes comprobar si una media tiene sentido antes de confiar en tu cálculo?",
+      },
+    },
     setup,
     scenes,
   };

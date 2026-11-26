@@ -738,6 +738,32 @@ export function buildPercentWholePlay(cfg) {
       en: `${p}% means ${p} out of 100. On a 100-cell grid that stands for ${w} ${unit.en}, ${p} cells are shaded. ${p}% = ${f.fraction} = ${f.decimal}, so ${p}% of ${w} = ${f.decimal} × ${w} = ${part} ${unit.en}. With a different whole, the same ${p}% is a different part.`,
       es: `${p}% significa ${p} de cada 100. En una cuadrícula de 100 celdas que representa ${w} ${unit.es}, se sombrean ${p} celdas. ${p}% = ${f.fraction} = ${f.decimal}, así que el ${p}% de ${w} = ${f.decimal} × ${w} = ${part} ${unit.es}. Con otro total, el mismo ${p}% es otra parte.`,
     },
+    askChild: {
+      situate: {
+        en: `Out of 100 squares, how many are shaded for ${p}%?`,
+        es: `De 100 cuadros, ¿cuántos están sombreados para el ${p}%?`,
+      },
+      predict: {
+        en: `Why is ${p}% of ${w} equal to ${part} and not just ${p}?`,
+        es: `¿Por qué el ${p}% de ${w} es ${part} y no simplemente ${p}?`,
+      },
+      bar: {
+        en: `How does the double number line connect 100% to ${w}?`,
+        es: `¿Cómo conecta la recta numérica doble el 100% con ${w}?`,
+      },
+      wholes: {
+        en: `When the whole changes, why does the same ${p}% give a different part?`,
+        es: `Cuando cambia el total, ¿por qué el mismo ${p}% da una parte diferente?`,
+      },
+      fdp: {
+        en: `How are ${p}%, ${f.decimal}, and ${f.fraction} all naming the same shaded share?`,
+        es: `¿Cómo nombran ${p}%, ${f.decimal} y ${f.fraction} la misma parte sombreada?`,
+      },
+      transfer: {
+        en: `What is the first thing you check before finding a percent of a quantity?`,
+        es: `¿Qué es lo primero que revisas antes de hallar el porcentaje de una cantidad?`,
+      },
+    },
     setup(ctx) {
       ctxLang = ctx.lang;
       cur = (pair) => ctx.L(pair);

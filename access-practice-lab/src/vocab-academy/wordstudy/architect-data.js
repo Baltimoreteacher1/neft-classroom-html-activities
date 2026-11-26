@@ -10,6 +10,8 @@
 // Spelling: words are the plain join of their parts, except where a rule in SPELLING applies (ex + spect → expect).
 // The model applies the rules, the page shows the note, and the test checks every join.
 
+import { MORE_AFFIXES, MORE_ROOTS } from "./architect-data-more.js";
+
 export const POS = {
   noun: {
     a: "a noun",
@@ -136,6 +138,7 @@ export const AFFIXES = {
     makes: "verb",
     mean: { en: "to do; to make", es: "hacer" },
   },
+  ...MORE_AFFIXES,
 };
 
 // Universal grammar slots. The cue word in front of the blank is the lesson: a noun follows "the", an adjective
@@ -1279,4 +1282,5 @@ export const ROOTS = [
       es: "ininterrumpido",
     },
   },
+  ...MORE_ROOTS,
 ];

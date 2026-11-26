@@ -76,8 +76,13 @@ const CSS = `
 .lsx-frame label{display:block;font-weight:700;margin-bottom:6px}
 .lsx-frame textarea{width:100%;min-height:72px;font-family:var(--lsx-body);font-size:var(--lsx-fs-md);line-height:1.45;padding:8px;border:1px solid var(--lsx-rule-strong);border-radius:var(--lsx-r-sm);box-sizing:border-box;background:var(--lsx-card);color:var(--lsx-ink)}
 .lsx-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid var(--lsx-rule);padding-top:10px}
+.lsx-ask{margin:0;padding:10px 12px;border-radius:var(--lsx-r-sm);border-left:4px solid var(--lsx-hi);background:var(--lsx-cue-bg);color:var(--lsx-ink);font-size:var(--lsx-fs-sm);line-height:1.5}
+.lsx-ask:empty{display:none}
+.lsx-ask strong{font-weight:800;color:var(--lsx-hi)}
 .lsx-count{display:none;margin:0;font-weight:700;font-size:var(--lsx-fs-sm);color:var(--lsx-muted)}
 @container (max-width: 520px){.lsx-steps{display:none}.lsx-count{display:block}}
+.lsx.is-narrow .lsx-stage{min-height:240px}
+.lsx.is-narrow .lsx-stage text{font-size:1.18em}
 .lsx-print{display:none}
 @media print{.lsx-nav,.lsx-steps,.lsx-panel,.lsx-stage{display:none}.lsx-print{display:block}}
 `;
@@ -107,7 +112,7 @@ export function prefersReducedMotion() {
 export function sceneLang() {
   if (typeof document !== "undefined") {
     const cls = document.body?.classList;
-    if (cls?.contains("lang-mode-es")) return "es";
+    if (cls?.contains("lang-mode-es") || cls?.contains("show-es")) return "es";
     if (cls?.contains("lang-mode-en") || cls?.contains("lang-mode-bilingual")) return "en";
     // Practice studios and lesson pages stamp <html lang> from their own toggle
     // or the saved preference.
@@ -232,25 +237,56 @@ function writeStore(key, value) {
   }
 }
 
+/** Deterministic 32-bit hash for seeded transfer variants (no Math.random). */
+export function seededStep(seedStr, step, count) {
+  if (!count || count <= 1) return 0;
+  let h = 2166136261;
+  const s = `${seedStr}:${step}`;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h % count;
+}
+
+/**
+ * Compute a taller viewBox crop for narrow containers (<520px) when a play does
+ * not supply an explicit `narrowViewBox`. Keeps the stage centred with extra
+ * vertical breathing room so enlarged labels never clip.
+ */
+function narrowViewBoxFor(play) {
+  if (play.narrowViewBox) return play.narrowViewBox;
+  const parts = String(play.viewBox || "0 0 640 360")
+    .trim()
+    .split(/\s+/)
+    .map(Number);
+  if (parts.length !== 4 || parts.some((n) => !Number.isFinite(n))) return play.viewBox;
+  const [x, y, w, h] = parts;
+  const extra = Math.round(h * 0.16);
+  return `${x} ${y - Math.round(extra / 2)} ${w} ${h + extra}`;
+}
+
 /**
  * Mount a play.
  *
- *   mountLivingScene(host, play, { storeKey }) -> { destroy, go }
+ *   mountLivingScene(host, play, { storeKey, openAt, surface }) -> { destroy, go, openAt }
  *
  * play = {
  *   kicker, title: {en,es},
- *   viewBox: "0 0 W H", ariaLabel: {en,es},
+ *   viewBox: "0 0 W H", narrowViewBox?: "0 0 W H2", ariaLabel: {en,es},
  *   setup(ctx)             — draw the persistent cast once
  *   printSummary: {en,es}  — static text for print / no-motion readers
- *   scenes: [{ id, label:{en,es}, enter(ctx, saved) -> void|Promise, gate?: true }]
+ *   askChild?: Record<string, {en,es}> — optional per-scene family prompts
+ *   scenes: [{ id, label:{en,es}, askChild?:{en,es}, enter(ctx, saved) -> void|Promise, gate?: true }]
  * }
  *
  * ctx (handed to setup and every scene):
- *   svg, lang, L(pair), say(pair), expr(html), panel (HTMLElement, cleared per
- *   scene), feedback(pair|html, kind), unlock(), state (per-scene saved object),
- *   save(), tween, svgEl, choices(opts), range(opts), frame(opts), button(opts)
+ *   svg, lang, L(pair), narrow, onNarrow(fn), say(pair), expr(html), panel (HTMLElement,
+ *   cleared per scene), feedback(pair|html, kind), unlock(), state (per-scene saved object),
+ *   save(), tween, svgEl, choices(opts), range(opts), frame(opts), button(opts),
+ *   newNumbersButton(opts)
  */
-export function mountLivingScene(host, play, { storeKey = "" } = {}) {
+export function mountLivingScene(host, play, { storeKey = "", openAt = null, surface = "" } = {}) {
   ensureStyles();
   const lang = sceneLang();
   const tr = (p) => L(p, lang);
@@ -276,6 +312,7 @@ export function mountLivingScene(host, play, { storeKey = "" } = {}) {
     <svg class="lsx-stage" viewBox="${escHtml(play.viewBox)}" role="img" aria-label="${escHtml(tr(play.ariaLabel))}"></svg>
     <p class="lsx-expr" aria-live="polite"></p>
     <p class="lsx-say" aria-live="polite"></p>
+    <p class="lsx-ask" aria-live="polite"></p>
     <div class="lsx-panel"></div>
     <p class="lsx-fb" role="status"></p>
     <div class="lsx-nav">
@@ -288,6 +325,7 @@ export function mountLivingScene(host, play, { storeKey = "" } = {}) {
   const svg = /** @type {SVGSVGElement} */ (root.querySelector(".lsx-stage"));
   const exprEl = /** @type {HTMLElement} */ (root.querySelector(".lsx-expr"));
   const sayEl = /** @type {HTMLElement} */ (root.querySelector(".lsx-say"));
+  const askEl = /** @type {HTMLElement} */ (root.querySelector(".lsx-ask"));
   const panel = /** @type {HTMLElement} */ (root.querySelector(".lsx-panel"));
   const fbEl = /** @type {HTMLElement} */ (root.querySelector(".lsx-fb"));
   const steps = /** @type {HTMLElement} */ (root.querySelector(".lsx-steps"));
@@ -299,11 +337,50 @@ export function mountLivingScene(host, play, { storeKey = "" } = {}) {
   let unlocked = true;
   let abort = new AbortController();
   const persist = () => storeKey && writeStore(storeKey, saved);
+  const narrowVB = narrowViewBoxFor(play);
+  const measureNarrow = () => {
+    const w =
+      root.clientWidth ||
+      host.clientWidth ||
+      (typeof window !== "undefined" ? window.innerWidth : 800);
+    return w > 0 && w < 520;
+  };
+  let isNarrow = measureNarrow();
+  const narrowListeners = new Set();
+  const syncNarrow = () => {
+    const next = measureNarrow();
+    root.classList.toggle("is-narrow", next);
+    svg.setAttribute("viewBox", next ? narrowVB : play.viewBox);
+    if (next !== isNarrow) {
+      isNarrow = next;
+      for (const fn of narrowListeners) {
+        try {
+          fn(isNarrow);
+        } catch {}
+      }
+    }
+  };
+  syncNarrow();
+  let ro = null;
+  if (typeof ResizeObserver === "function") {
+    ro = new ResizeObserver(syncNarrow);
+    ro.observe(root);
+  }
+  const onWinResize = () => syncNarrow();
+  if (typeof window !== "undefined") window.addEventListener("resize", onWinResize);
 
   const ctx = {
     svg,
     lang,
     L: tr,
+    surface,
+    get narrow() {
+      return isNarrow;
+    },
+    onNarrow(fn) {
+      if (typeof fn === "function") narrowListeners.add(fn);
+      return () => narrowListeners.delete(fn);
+    },
     tween: (moves, ms) => tween(moves, ms, { signal: abort.signal }),
     svgEl,
     panel,
@@ -338,6 +415,19 @@ export function mountLivingScene(host, play, { storeKey = "" } = {}) {
       b.textContent = tr(label);
       b.addEventListener("click", onClick);
       return b;
+    },
+    /** Seeded "New numbers" control for transfer scenes. */
+    newNumbersButton({ onNext, label } = {}) {
+      return ctx.button({
+        label: label || { en: "New numbers", es: "Números nuevos" },
+        onClick: () => {
+          const st = ctx.state;
+          st.variant = (Number(st.variant) || 0) + 1;
+          st.solved = false;
+          persist();
+          onNext?.(st.variant);
+        },
+      });
     },
     /**
      * A prediction / choice gate. options: [{label, correct, cue:{en,es}}].
@@ -463,6 +553,13 @@ export function mountLivingScene(host, play, { storeKey = "" } = {}) {
     const sc = play.scenes[i];
     panel.innerHTML = "";
     ctx.feedback("");
+    const askPair = surface === "family" ? sc.askChild || play.askChild?.[sc.id] || null : null;
+    if (askPair) {
+      const prefix = lang === "es" ? "Pregúntale a tu hijo/a: " : "Ask your child: ";
+      askEl.innerHTML = `<strong>${escHtml(prefix)}</strong>${escHtml(tr(askPair))}`;
+    } else {
+      askEl.innerHTML = "";
+    }
     unlocked = !sc.gate || saved.done.includes(sc.id);
     paintNav();
     if (!sc.gate && !saved.done.includes(sc.id)) {
@@ -473,6 +570,34 @@ export function mountLivingScene(host, play, { storeKey = "" } = {}) {
     paintNav();
   }
 
+  function resolveSceneIndex(target) {
+    if (typeof target === "number" && Number.isInteger(target)) {
+      return target >= 0 && target < play.scenes.length ? target : -1;
+    }
+    if (typeof target === "string" && target.trim()) {
+      return play.scenes.findIndex((s) => s.id === target.trim());
+    }
+    return -1;
+  }
+
+  async function jumpTo(target) {
+    const idx = resolveSceneIndex(target);
+    if (idx < 0) return false;
+    abort.abort();
+    abort = new AbortController();
+    for (let i = 0; i < idx; i++) {
+      current = i;
+      const scId = play.scenes[i].id;
+      if (scId && !saved.done.includes(scId)) saved.done.push(scId);
+      await play.scenes[i].enter(
+        { ...ctx, tween: (m) => tween(m, 0), restoring: true },
+        saved.scenes[scId] || {},
+      );
+    }
+    await go(idx);
+    return true;
+  }
+
   backBtn.addEventListener("click", () => go(current - 1));
   nextBtn.addEventListener("click", () => {
     go(current + 1);
@@ -480,9 +605,13 @@ export function mountLivingScene(host, play, { storeKey = "" } = {}) {
   });
 
   play.setup(ctx);
-  const start = Math.min(Math.max(0, Number(saved.scene) || 0), play.scenes.length - 1);
-  // Resuming replays every earlier scene's end state instantly so the stage is
-  // exactly where the student left it (scenes are written to be idempotent).
+  const requested = openAt != null ? resolveSceneIndex(openAt) : -1;
+  const start =
+    requested >= 0
+      ? requested
+      : Math.min(Math.max(0, Number(saved.scene) || 0), play.scenes.length - 1);
+  // Resuming (or opening at a specific scene) replays every earlier scene's end
+  // state instantly so the stage is in the exact state the target scene expects.
   (async () => {
     for (let i = 0; i < start; i++) {
       current = i;
@@ -496,8 +625,12 @@ export function mountLivingScene(host, play, { storeKey = "" } = {}) {
 
   return {
     go,
+    openAt: jumpTo,
     destroy() {
       abort.abort();
+      ro?.disconnect?.();
+      if (typeof window !== "undefined") window.removeEventListener("resize", onWinResize);
+      narrowListeners.clear();
       root.remove();
     },
   };

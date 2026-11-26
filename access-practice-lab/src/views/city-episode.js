@@ -39,7 +39,7 @@ import { BASE, announce, html, icon, raw, safeJson, storage } from "../util.js";
 import { marketSceneSVG } from "./city-episode-art.js";
 import { STEP_BODY, basketHTML, inspectorHTML, selfCheckText } from "./city-episode-steps.js";
 import { cityHref } from "./city-mission.js";
-import { bandFor } from "./studio-kit.js";
+import { bandFor, recordEvidence } from "./studio-kit.js";
 
 export { EPISODE_ID, EPISODE_PLACE };
 const P = (I, pair) => I.T(pair.en, pair.es);
@@ -404,6 +404,20 @@ export function onEpisodeClick(e, ctx, I) {
     } else {
       st.done = true;
       st.runs += 1;
+      const indep = level === "C" && !view(level).es && !ui.transcript && !ui.model;
+      if (indep) st.indep = (st.indep || 0) + 1;
+      else st.supp = (st.supp || 0) + 1;
+      recordEvidence({
+        src: "city",
+        task: `episode:${EPISODE_ID}`,
+        band: bandFor(ctx.band),
+        domain: "Writing",
+        use: "Inform",
+        level: indep ? "C" : level,
+        opened: indep ? {} : { frames: true },
+        kind: st.runs > 1 ? "retry" : "first",
+        m: { spots: st.seen.length, words: wordCount(st.message), steps: STEPS.length },
+      });
     }
     saveMarket(st);
     ctx.rerender();

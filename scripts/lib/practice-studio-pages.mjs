@@ -1,6 +1,7 @@
 // HTML templates for the Practice Studio v2 pages: a lesson's Practice page, its Challenge twin, and the finder.
 // The runtime (assets/studio/*.js) draws the problems from the JSON this page ships; this file only lays out the shell.
 
+import { livingTrapsFor } from "@eduwonderlab/engine/components/living/trap-map.js";
 import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
 import { FAVICON } from "./practice-studio-worlds.mjs";
 import {
@@ -276,6 +277,11 @@ export function pageFor({
         }
       : {}),
     traps: trapNames(sections, traps),
+    ...(!challenge && !isPart2 && cfg?.launch?.conceptIntro?.livingScene?.play
+      ? {
+          livingTraps: livingTrapsFor(cfg.launch.conceptIntro.livingScene.play, sections),
+        }
+      : {}),
     ...(pedagogy ? { pedagogy } : {}),
     ...(lang ? { lang } : {}),
   };

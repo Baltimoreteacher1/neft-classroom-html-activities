@@ -385,7 +385,15 @@ const REGISTRY = {
     const lessonId = String(
       cfg.lessonId || (typeof location !== "undefined" ? location.pathname : ""),
     ).replace(/[^\w/-]/g, "");
-    return mountLivingScene(host, play, { storeKey: `${cfg.play}:${lessonId}` });
+    const surface =
+      cfg.surface ||
+      (lessonId.startsWith("family-")
+        ? "family"
+        : lessonId.startsWith("studio-")
+          ? "studio"
+          : "lesson");
+    const openAt = host.dataset.openAt || cfg.openAt || null;
+    return mountLivingScene(host, play, { storeKey: `${cfg.play}:${lessonId}`, openAt, surface });
   },
   // Generic bridge for any shared/projects "manip-<name>.js" widget that
   // registers window.NeftManips["<name>"] = init. Config:

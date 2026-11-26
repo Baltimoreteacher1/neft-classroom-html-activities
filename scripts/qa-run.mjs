@@ -700,6 +700,10 @@ const COVERAGE = [
   // access-*-e2e files) it is run by hand before shipping a change: `node tools/<name>-e2e.mjs` (vocab-sets, assign-status,
   // book-editions, present-mode).
   [
+    /^(engine\/components\/living\/[a-z0-9-]+\.(?:js|test\.mjs)|tools\/(living-scene-configs|access-city-(?:market|episodes)|vocab-academy-word-architect)\.test\.mjs|scripts\/lib\/homework-living(?:-print)?\.mjs|reports\/family-spanish-review\.csv)$/,
+    ["validate:js-syntax", "validate:no-purple", "validate:engine-imports", "typecheck"],
+  ],
+  [
     /^tools\/(vocab-sets|assign-status|book-editions|present-mode)-e2e\.mjs$|^tools\/vocab-sets\.test\.mjs$/,
     ["test", "validate:js-syntax", "check"],
   ],

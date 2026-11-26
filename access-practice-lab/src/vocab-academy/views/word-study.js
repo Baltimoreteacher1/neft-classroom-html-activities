@@ -10,6 +10,7 @@ import { getIndex, morphDataset } from "../wordstudy/index.js";
 import * as Items from "../wordstudy/items.js";
 import { readPrefs, recordMorph, writePrefs } from "../wordstudy/record.js";
 import { architectAction, architectInput, architectPanel } from "../wordstudy/architect.js";
+import { recordEvidence } from "../../views/studio-kit.js";
 import { TOOLS, analysisHTML, apartPanel, buildPanel, familiesFor, familiesPanel, kitsFor, originsPanel, predictPanel, shiftsPanel, studioPanel, toolAvailable } from "../wordstudy/panels.js";
 
 const CSS = `${BASE}/vocab-academy-wordstudy.css`;
@@ -281,7 +282,19 @@ function onClick(e) {
   const act = el.dataset.ws;
   if (act.startsWith("arch-")) {
     const r = architectAction(S.va.I, act, el, S.host);
-    if (r.recordWord) count(r.ok !== false, r.recordWord);
+    if (r.recordWord) {
+      count(r.ok !== false, r.recordWord);
+      recordEvidence({
+        src: "word-architect",
+        task: `architect:${act === "arch-choose" ? "transfer" : "build"}:${r.recordWord}`,
+        band: Number(S.grade) >= 6 ? "6-8" : "3-5",
+        domain: "Reading",
+        use: "Inform",
+        level: act === "arch-choose" && r.ok !== false ? "C" : "B",
+        kind: r.ok === false ? "retry" : "first",
+        m: { word: r.recordWord, ok: r.ok !== false ? 1 : 0 },
+      });
+    }
     S.focus = r.focus || "";
     repaint();
     if (r.say) say(r.say);
