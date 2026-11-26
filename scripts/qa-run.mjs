@@ -707,6 +707,8 @@ const COVERAGE = [
     /^tools\/(vocab-sets|assign-status|book-editions|present-mode)-e2e\.mjs$|^tools\/vocab-sets\.test\.mjs$/,
     ["test", "validate:js-syntax", "check"],
   ],
+  // READING X-RAY (Language Page Reading Room lenses): the authored lens data and its validator test, run by `npm test`.
+  [/^tools\/lp-reading-xray\.test\.mjs$/, ["test", "validate:js-syntax", "check"]],
 
   // UNIT 4 PRACTICE STUDIO — ten hand-authored pages share one stylesheet and
   // one engagement layer (stars, trail, Bonus Round). The test re-derives every

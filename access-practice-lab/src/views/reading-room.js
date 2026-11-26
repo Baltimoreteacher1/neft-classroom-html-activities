@@ -11,6 +11,7 @@ import { i18nFor, makeI18n } from "../i18n.js";
 import { setComponentsI18n } from "../components.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { noteWords } from "../lang/word-encounters.js";
+import { xrayClick, xrayKey, xrayParagraphText, xrayPrepare, xrayToolbarHTML } from "./reading-xray.js";
 import {
   loadReadingState,
   saveReadingState,
@@ -578,7 +579,7 @@ function paragraphHTML(l, p, i, state, progress, used, evidenceSet, chosen) {
     <span class="rr-paranum" aria-hidden="true">${i + 1}</span>
     <div class="rr-para-body">
       ${mark || isPlace || evidenceSet.has(p.id) ? `<p class="rr-para-flags">${mark ? `<span class="rr-flag">${ic("pin")} ${markLabel(mark)}</span>` : ""}${evidenceSet.has(p.id) ? `<span class="rr-flag rr-flag-evidence">${ic("pin")} ${T("Evidence for a question", "Evidencia para una pregunta")}</span>` : ""}${isPlace ? `<span class="rr-flag rr-flag-place">${ic("bookmark")} ${T("Saved place", "Lugar guardado")}</span>` : ""}</p>` : ""}
-      <p class="rr-para-text">${paragraphTextHTML(p, l, { glossary: activeMode !== "independent", chosen, used })}</p>
+      <p class="rr-para-text">${xrayParagraphText(p, chosen) ?? paragraphTextHTML(p, l, { glossary: activeMode !== "independent", chosen, used })}</p>
       ${activeMode === "independent" ? "" : `<p class="rr-guide">${ic("bulb")}<span><b>${T("Pause and notice:", "Haz una pausa y observa:")}</b> ${p.guidingQuestion ? esc(p.guidingQuestion) : T("What is important in this section?", "¿Qué es importante en esta sección?")}</span></p>`}
       <div class="rr-margin">
         <div class="rr-paragraph-tools"><label>${T("Mark this paragraph", "Marca este párrafo")}<select data-rr-mark="${esc(l.id)}" data-rr-revision="${esc(l.revision)}" data-rr-paragraph="${esc(p.id)}"><option value="">${A("Choose a reading mark", "Elige una marca de lectura")}</option>${MARKS.map(([c, es]) => `<option value="${c}" ${mark === c ? "selected" : ""}>${A(c, es)}</option>`).join("")}</select></label><button type="button" class="btn small" data-rr-position="${esc(p.id)}">${ic("bookmark")} ${T("Save reading place", "Guardar el lugar de lectura")}</button></div>
@@ -687,6 +688,7 @@ async function lessonHTML(ctx, l, state) {
         `<button type="button" data-rr-mode="${value}" aria-pressed="${activeMode === value}">${T(label, es)}</button>`,
     )
     .join("")}</div>`;
+  await xrayPrepare(l, progress, I, activeMode);
   const used = new Set();
   const evidenceSet = evidenceParagraphSet(l, progress);
   const chosen = chosenEvidence(progress);
@@ -697,7 +699,7 @@ async function lessonHTML(ctx, l, state) {
   return `<section class="rr-shell rr-reader d-reading"><nav class="rr-back"><a href="${BASE}/reading-room">${ic("arrow-left")} ${T("Reading shelf", "Estante de lectura")}</a><span>${gradeLabel(l)} · ${esc(l.subject)} · ${l.minutes} min</span><button type="button" class="btn small" data-rr-bookmark="${esc(l.id)}">${ic("bookmark")} ${state.bookmarks.includes(l.id) ? T("Bookmarked", "Con marcador") : T("Bookmark", "Marcador")}</button></nav>
     <header class="rr-title"><p class="rr-eyebrow">${esc(l.genre)} · ${esc(l.keyUse)} · ${esc(l.eldStandard)}</p><h1>${esc(l.title)}</h1><p class="rr-lead">${esc(l.summary)}</p><div class="rr-objectives"><div><b>${T("Content goal", "Meta de contenido")}</b><span>${esc(l.objectives.content)}</span></div><div><b>${T("Language goal", "Meta de lenguaje")}</b><span>${esc(l.objectives.language)}</span></div></div><p class="rr-alignment">${ic("info")} <span>${esc(l.alignmentStatus)} ${TH("Independent editorial review is pending for this lesson package. This is original instructional practice, not an official WIDA assessment or score prediction. ", "La revisión editorial independiente de este paquete de lección está pendiente. Esta es práctica didáctica original, no una evaluación oficial de WIDA ni una predicción de puntajes. ")}<a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noreferrer">${T("Official WIDA test familiarization resources", "Recursos oficiales de WIDA para familiarizarse con la prueba")}</a></span></p></header>
     ${modeControls}${modeNoteHTML(l, progress)}
-    <div class="rr-layout"><section class="rr-text" aria-label="${A("Reading passage", "Pasaje de lectura")}">${displayControls(state)}<section class="rr-before"><h2>${T("Before you read", "Antes de leer")}</h2><p><b>${T("Essential question:", "Pregunta esencial:")}</b> ${esc(l.beforeReading.essentialQuestion)}</p><p>${esc(l.beforeReading.background)} ${esc(l.beforeReading.hook)}</p><p><b>${T("Read to find out:", "Lee para descubrir:")}</b> ${esc(l.beforeReading.purpose)}</p></section>${visualBlockHTML(l)}${activeMode === "independent" ? "" : vocabularyHTML(l)}<div class="rr-passage" style="--rr-font:${Number(state.settings.fontScale) || 1};--rr-leading:${Number(state.settings.lineSpacing) || 1.75}">${paragraphs}</div>${links}</section>${workspaceHTML(l, progress)}</div></section>`;
+    <div class="rr-layout"><section class="rr-text" aria-label="${A("Reading passage", "Pasaje de lectura")}">${displayControls(state)}<section class="rr-before"><h2>${T("Before you read", "Antes de leer")}</h2><p><b>${T("Essential question:", "Pregunta esencial:")}</b> ${esc(l.beforeReading.essentialQuestion)}</p><p>${esc(l.beforeReading.background)} ${esc(l.beforeReading.hook)}</p><p><b>${T("Read to find out:", "Lee para descubrir:")}</b> ${esc(l.beforeReading.purpose)}</p></section>${visualBlockHTML(l)}${activeMode === "independent" ? "" : vocabularyHTML(l)}${xrayToolbarHTML()}<div class="rr-passage" style="--rr-font:${Number(state.settings.fontScale) || 1};--rr-leading:${Number(state.settings.lineSpacing) || 1.75}">${paragraphs}</div>${links}</section>${workspaceHTML(l, progress)}</div></section>`;
 }
 
 export async function render(ctx) {
@@ -840,7 +842,8 @@ function saveOrganizer(el){const s=loadReadingState(),id=el.dataset.rrLesson,key
 function saveConference(el){const s=loadReadingState(),id=el.dataset.lesson;s.conferences={...(s.conferences||{}),[id]:{...(s.conferences?.[id]||{}),[el.dataset.rrConference]:el.value,updatedAt:new Date().toISOString()}};saveReadingState(s);}
 function saveField(el){const s=loadReadingState(),id=el.dataset.rrLesson||el.dataset.rrReflection,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`))||`${id}@1.0.0`,p=s.lessons[key]||{};if(el.dataset.rrNote){p.notes={...(p.notes||{}),[el.dataset.rrNote]:el.value};}else p.reflection=el.value;s.lessons[key]=p;saveReadingState(s);}
 function saveAnswer(id,patch){const s=loadReadingState(),key=Object.keys(s.lessons).find(k=>k.startsWith(`${location.pathname.split("/").pop()}@`)),p=s.lessons[key]||{},a=p.answers||{};a[id]={...(a[id]||{}),...patch};p.answers=a;s.lessons[key]=p;saveReadingState(s);}
-export function onClick(e,ctx){I=i18nFor(ctx);if(readingLogClick(e,ctx,I))return true;if(e.target.closest("[data-rr-more]")){shelfLimit+=SHELF_STEP;ctx.rerender();return true;}const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
+export function onKey(e){xrayKey(e);}
+export function onClick(e,ctx){I=i18nFor(ctx);if(readingLogClick(e,ctx,I))return true;if(xrayClick(e,ctx))return true;if(e.target.closest("[data-rr-more]")){shelfLimit+=SHELF_STEP;ctx.rerender();return true;}const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
   if (b.dataset.rrNoticeMove) {
     if (b.dataset.rrNoticeMove === "strategy" && id?.startsWith("strategy-")) {
       const lessonId = id.slice("strategy-".length);

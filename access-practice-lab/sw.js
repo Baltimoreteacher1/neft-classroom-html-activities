@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "d94d77e60ee6";
+const BUILD_HASH = "26a52c501e87";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=b93c4c2e6d4b",
   "/access-practice-lab/home.css?v=2c8320b3a90c",
@@ -54,7 +54,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/sitemap.js?v=47080a5ae6e1",
   "/access-practice-lab/src/studio-app.js?v=bc50c589cc8b",
   "/access-practice-lab/src/grade-focus-ui.js?v=b66ae8d8ce9a",
-  "/access-practice-lab/src/content.js?v=8d120786e17b",
+  "/access-practice-lab/src/content.js?v=5dddfbee589f",
   "/access-practice-lab/src/store.js?v=116b0ce4dd1a",
   "/access-practice-lab/src/lang/ledger.js?v=e16dfd00f9e0",
   "/access-practice-lab/src/lang/word-encounters.js?v=9019aa9a19fc",
@@ -829,6 +829,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/lang/providers.js?v=03dd3b9732ad",
   "/access-practice-lab/src/lang/reader.js?v=017842d19ea2",
   "/access-practice-lab/src/lang/readiness.js?v=ea8f0aa9261d",
+  "/access-practice-lab/src/lang/reading-xray.js?v=fe386591aa58",
   "/access-practice-lab/src/lang/register-dial.js?v=c4d8d4a9857c",
   "/access-practice-lab/src/lang/rehearsal-route.js?v=a73f9dc97faa",
   "/access-practice-lab/src/lang/scaffold-check.js?v=277609aa2602",
@@ -1237,7 +1238,9 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/reader.js?v=03b0c064b66b",
   "/access-practice-lab/src/views/reading-log.js?v=230361fa61a9",
   "/access-practice-lab/src/views/reading-room-support.js?v=31bdf4cfbadc",
-  "/access-practice-lab/src/views/reading-room.js?v=5ce003a3bb32",
+  "/access-practice-lab/src/views/reading-room.js?v=640c3e69e79c",
+  "/access-practice-lab/src/views/reading-xray-styles.js?v=fbd311b11265",
+  "/access-practice-lab/src/views/reading-xray.js?v=170757d6c856",
   "/access-practice-lab/src/views/ready-plan.js?v=65abb3cd2bc9",
   "/access-practice-lab/src/views/reality.js?v=aa6a0990f6c9",
   "/access-practice-lab/src/views/retell.js?v=fea8213c58cf",
@@ -1639,6 +1642,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/content/reading-room/quality-debt.json",
   "/access-practice-lab/content/reading-room/strategy-coverage.json",
   "/access-practice-lab/content/reading-room/strategy-lessons.json",
+  "/access-practice-lab/content/reading-room/xray.json",
   "/access-practice-lab/content/road.json",
   "/access-practice-lab/content/rubrics/speaking-practice.json",
   "/access-practice-lab/content/rubrics/writing-practice.json",

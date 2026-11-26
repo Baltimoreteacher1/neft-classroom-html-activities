@@ -53,6 +53,8 @@ export const loadBlueprint = () => getJson("blueprints.json");
 export const loadAlignment = () => getJson("alignment-index.json");
 export const loadReadingRoomLessons = () => getJson("reading-room/lessons.json");
 export const loadReadingAdventures = () => getJson("reading-room/adventures.json");
+/** Reading X-Ray lens annotations, keyed by Reading Room lesson id (src/lang/reading-xray.js validates them). */
+export const loadReadingXray = () => getJson("reading-room/xray.json");
 export const loadReadingStrategies = () => getJson("reading-room/strategy-lessons.json");
 export const loadLadder = () => getJson("ladder/passages.json");
 export const loadGrammar = () => getJson("grammar/packs.json");
