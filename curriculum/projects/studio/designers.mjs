@@ -11,6 +11,8 @@
 import { cleanLayout, layoutReport, roomOf } from "./floor-designer.mjs";
 import { cleanMap, mapReport } from "./coord-map.mjs";
 import { cleanPlan, planReport } from "./supply-plan.mjs";
+import { cleanLocks, locksReport } from "./lock-model.mjs";
+import { cleanRules, rulesReport } from "./rule-engine.mjs";
 
 export const DESIGNERS = {
   area: {
@@ -20,6 +22,16 @@ export const DESIGNERS = {
   },
   coordinates: { key: "map", clean: cleanMap, report: mapReport },
   division: { key: "supply", clean: cleanPlan, report: planReport },
+  expressions: {
+    key: "rules",
+    clean: cleanRules,
+    report: (data, values) => rulesReport(data, values),
+  },
+  equations: {
+    key: "locks",
+    clean: cleanLocks,
+    report: (data, values) => locksReport(data, values),
+  },
 };
 
 export const designerFor = (project) => DESIGNERS[project?.family] || null;

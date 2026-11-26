@@ -8,9 +8,13 @@
 import { createFloorDesigner } from "./floor-designer-view.js";
 import { createMapDesigner } from "./coord-map-view.js";
 import { createSupplyDesigner } from "./supply-plan-view.js";
+import { createLockStudio } from "./lock-studio-view.js";
+import { createRuleEditor } from "./rule-editor-view.js";
 
 export const DESIGNER_VIEWS = {
   area: createFloorDesigner,
   coordinates: createMapDesigner,
   division: createSupplyDesigner,
+  expressions: createRuleEditor,
+  equations: createLockStudio,
 };
