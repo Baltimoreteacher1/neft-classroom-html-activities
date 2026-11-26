@@ -13,6 +13,8 @@ import { cleanMap, mapReport } from "./coord-map.mjs";
 import { cleanPlan, planReport } from "./supply-plan.mjs";
 import { cleanLocks, locksReport } from "./lock-model.mjs";
 import { cleanRules, rulesReport } from "./rule-engine.mjs";
+import { cleanShop, shopReport } from "./percent-shop.mjs";
+import { cleanRatioLab, ratioReport } from "./ratio-lab.mjs";
 
 export const DESIGNERS = {
   area: {
@@ -32,6 +34,8 @@ export const DESIGNERS = {
     clean: cleanLocks,
     report: (data, values) => locksReport(data, values),
   },
+  percent: { key: "shop", clean: cleanShop, report: shopReport },
+  ratio: { key: "ratiolab", clean: cleanRatioLab, report: ratioReport },
 };
 
 export const designerFor = (project) => DESIGNERS[project?.family] || null;

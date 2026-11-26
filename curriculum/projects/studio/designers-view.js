@@ -10,6 +10,8 @@ import { createMapDesigner } from "./coord-map-view.js";
 import { createSupplyDesigner } from "./supply-plan-view.js";
 import { createLockStudio } from "./lock-studio-view.js";
 import { createRuleEditor } from "./rule-editor-view.js";
+import { createPercentShop } from "./percent-shop-view.js";
+import { createRatioLab } from "./ratio-lab-view.js";
 
 export const DESIGNER_VIEWS = {
   area: createFloorDesigner,
@@ -17,4 +19,6 @@ export const DESIGNER_VIEWS = {
   division: createSupplyDesigner,
   expressions: createRuleEditor,
   equations: createLockStudio,
+  percent: createPercentShop,
+  ratio: createRatioLab,
 };
