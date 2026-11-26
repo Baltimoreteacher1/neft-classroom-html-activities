@@ -286,6 +286,9 @@ function lessonFolder(id) {
   return `Lesson-${core}`;
 }
 
+/** A lesson title is a string or a localized { en, es } record; links and labels take the English text. */
+const titleText = (t) => (t && typeof t === "object" ? t.en || "" : t || "");
+
 /** Build one resource record. Returns null when nothing usable is there. */
 function makeResource({ unit, lessonId, lessonTitle, type, url, label, note, section }) {
   const meta = TYPE_BY_ID.get(type);
@@ -307,7 +310,7 @@ function makeResource({ unit, lessonId, lessonTitle, type, url, label, note, sec
     group: meta.group,
     order: meta.order,
     label: label || meta.label,
-    title: lessonTitle ? `${lessonTitle} — ${label || meta.label}` : label || meta.label,
+    title: lessonTitle ? `${titleText(lessonTitle)} — ${label || meta.label}` : label || meta.label,
     url,
     // "file" is fetched and written into the zip; "link" is listed in LINKS.html
     // with a working URL. Never claim a live page or a Google doc was packaged.
