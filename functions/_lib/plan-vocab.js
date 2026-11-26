@@ -5213,6 +5213,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/find/",
+    title: "Find a resource — EduWonderLab Grade 6 Math",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/fluency/",
     title: "Fluency Practice Studio & Lessons Index",
     category: "Hub",
