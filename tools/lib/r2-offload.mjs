@@ -6,7 +6,12 @@ import { readFileSync } from "node:fs";
 export const BUCKET = "eduwonderlab-downloads";
 export const MANIFEST = "data/r2-offload-manifest.json";
 // Exactly what functions/lessons/[[path]].js serves from R2; the two must agree.
-export const OFFLOAD_RE = /^lessons\/[^/]+\/downloads\/.+\.(docx|pdf|pptx|xlsx|zip)$/i;
+// Covers lesson downloads plus the lesson-level binaries the build copies beside index.html
+// (homework.docx, homework-answer-key.docx, homework-es.docx, slides.pptx) and the readiness
+// worksheets (readiness/*.docx): 422 more files out of the 20,000-file Pages deployment.
+// Teacher gating is unchanged: functions/_middleware.js answers before this fallback runs.
+export const OFFLOAD_RE =
+  /^lessons\/[^/]+\/(?:downloads\/.+|readiness\/[^/]+|homework(?:-answer-key|-es)?|slides)\.(docx|pdf|pptx|xlsx|zip)$/i;
 
 export const TYPES = {
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

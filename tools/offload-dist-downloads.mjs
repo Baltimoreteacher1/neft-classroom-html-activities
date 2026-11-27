@@ -15,7 +15,7 @@ import { existsSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LESSONS_DIR } from "./lib/curriculum-source.mjs";
-import { MANIFEST, planOffload, sha256 } from "./lib/r2-offload.mjs";
+import { isOffloadable, MANIFEST, planOffload, sha256 } from "./lib/r2-offload.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -48,7 +48,7 @@ function main() {
     .filter((p) => statSync(p).size > 0)
     .map((p) => {
       const rel = relative(DIST, p).split(sep).join("/");
-      return { rel, abs: p, hash: /\/downloads\//.test(rel) ? sha256(p) : "" };
+      return { rel, abs: p, hash: isOffloadable(rel) ? sha256(p) : "" };
     });
   const { drop, stale } = planOffload(files, uploaded);
   if (stale.length) {
