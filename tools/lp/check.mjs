@@ -65,6 +65,14 @@ async function getBase() {
   base = server.base;
   return base;
 }
+/** Negative-control fixtures always come from the local server, also in --live runs: production never serves them. */
+let fixtureServer = null;
+async function getFixtureBase() {
+  if (!LIVE) return getBase();
+  if (!fixtureServer)
+    fixtureServer = await startServer({ port: 4990 + Math.floor(Math.random() * 9) });
+  return fixtureServer.base;
+}
 const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 /* ---------- gate definitions ---------- */
@@ -246,7 +254,7 @@ gate(
     return { errs: [...all.errs, ...themed.errs], count: all.count + themed.count };
   },
   async () => {
-    const b = await getBase();
+    const b = await getFixtureBase();
     return axeRun([`${b}/__fixtures/fixture-axe.html`]);
   },
   { browser: true },
@@ -306,7 +314,8 @@ gate(
 async function networkRun(urls, interact) {
   const b = await getBrowser();
   if (!b) return { skip: "no browser" };
-  const origin = new URL(await getBase()).origin;
+  // Same-origin means the origin of the pages under test (local server, or production with --live).
+  const origin = new URL(urls[0]).origin;
   const errs = [];
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
   const pg = await ctx.newPage();
@@ -339,7 +348,7 @@ gate(
     );
   },
   async () => {
-    const b = await getBase();
+    const b = await getFixtureBase();
     return networkRun([`${b}/__fixtures/fixture-external.html`]);
   },
   { browser: true },
@@ -589,7 +598,7 @@ gate(
     return visualRun(VISUAL.map((p) => b + p));
   },
   async () => {
-    const b = await getBase();
+    const b = await getFixtureBase();
     return visualRun([`${b}/__fixtures/fixture-overflow.html`], [320], false);
   },
   { browser: true },
@@ -714,6 +723,7 @@ for (const g of GATES) {
 }
 await browser?.close();
 server?.server.close();
+fixtureServer?.server.close();
 fs.writeFileSync(
   path.join(REPORT_DIR, `check${LIVE ? "-live" : ""}.json`),
   `${JSON.stringify({ at: new Date().toISOString(), base, live: LIVE, rows }, null, 1)}\n`,
