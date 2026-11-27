@@ -1,10 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>Language Page Journey</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="A presentable, animated journey through thelanguagepage.com: what it is, how it works, and what is still to do.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Language Page Tour</title>
+<meta name="description" content="A live, presentable tour of The Language Page: the audience joins from a phone, answers each stop's question and tries the demos.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2317324D'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Georgia' font-weight='700' font-size='16' fill='%23F2C15B'%3EAa%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="/assets/fonts/fraunces-175f6e93.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* VOICE occasion: a talk to teachers, leaders and families; warm, confident, honest
    IDEA a field-guide map: one drawn trail across warm paper, each stop a page of the guide, a token travels the trail
@@ -12,6 +16,10 @@
    COLOUR warm paper #F7F4EC, harbor navy #17324D, teal #1FA6A2 for the trail and progress, amber #F2C15B for the one next action
    TYPE Fraunces display + Atkinson Hyperlegible text (the site's own pair)
    LAYOUT one 1600x900 stop fills the screen; HUD along the bottom; under 760px the stops stack as a readable page */
+@font-face{font-family:"Fraunces";font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/fraunces-175f6e93.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/atkinson-hyperlegible-ef295152.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:italic;font-weight:400;font-display:swap;src:url(/assets/fonts/atkinson-hyperlegible-2f9137da.woff2) format("woff2")}
 :root{color-scheme:light;--paper:#F7F4EC;--paper2:#EFE8D8;--card:#FFFDF8;--navy:#17324D;--navy2:#274A6A;--navy3:#0F2438;--teal:#1FA6A2;--teal-ink:#0E6E6A;--teal-soft:#DFF2EE;--amber:#F2C15B;--amber-soft:#FFF3D8;--ink:#24323F;--muted:#55636F;--line:#E4DCCB;--listen:#075568;--speak:#E07A5F;--speak-ink:#A8432B;--read:#2E4A94;--write:#9A4A26;--tests:#6F7F8C;--ok:#1E7F4F;--warn:#A8432B}
 *{box-sizing:border-box;min-width:0}
 [hidden]{display:none!important}
@@ -391,9 +399,55 @@ body.reader{overflow:auto}
 .reader .card3{position:relative;left:auto;transform:none!important;flex:none;width:260px;height:170px;backface-visibility:visible}
 .reader .flip{height:auto;perspective:none}.reader .flip .inner{transform:none!important;display:flex;flex-direction:column;gap:12px}
 .reader .face{position:relative;inset:auto;backface-visibility:visible;padding:20px}.reader .face.back{transform:none}
+/* live mode: join screen, results panel, reactions, remote */
+.hb.live{background:var(--teal);color:#fff}
+.is-live .hb.live{background:rgba(255,255,255,.1)}
+#live-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(31,166,162,.22);border-radius:999px;padding:6px 14px;font-size:15px;white-space:nowrap}
+#live-badge i{width:10px;height:10px;border-radius:50%;background:#5FE0B5;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+#live-badge b{font-family:"Atkinson Hyperlegible",sans-serif;letter-spacing:.08em;color:var(--amber)}
+.ov{position:absolute;inset:0;z-index:7;display:grid;place-items:center;background:rgba(15,36,56,.82);padding:24px}
+.jbox{background:var(--card);border-radius:32px;padding:36px 44px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px 44px;align-items:center;max-width:980px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.jqr{grid-row:span 5;width:min(330px,36vh);aspect-ratio:1;background:#fff;border-radius:20px;padding:14px;box-shadow:0 0 0 3px var(--line)}
+.jqr svg{width:100%;height:100%;display:block}
+.jbox h3{font:600 clamp(28px,4vh,44px)/1.05 Fraunces,Georgia,serif;color:var(--navy);margin:0}
+.jurl{font:700 clamp(20px,2.6vh,28px) "Atkinson Hyperlegible",sans-serif;color:var(--teal-ink)}
+.jcode{font:800 clamp(56px,10vh,104px)/1 Fraunces,Georgia,serif;letter-spacing:.12em;color:var(--navy)}
+.jpeople{font-size:22px;color:var(--muted)}
+.jpeople b{font:800 30px Fraunces,serif;color:var(--navy);margin-right:6px}
+.jbtns{display:flex;flex-wrap:wrap;gap:12px}
+.rbox{background:var(--card);border-radius:28px;padding:30px 36px;max-width:620px;width:100%;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center}
+.rbox h3{font:600 34px Fraunces,serif;color:var(--navy);margin:0}
+.rbox p{margin:0;font-size:19px}
+.rqr{width:300px;height:300px;background:#fff;border-radius:18px;padding:12px;box-shadow:0 0 0 3px var(--line);filter:blur(14px);transition:filter .2s;user-select:none;-webkit-user-select:none;touch-action:none}
+.rqr.show{filter:none}
+.rqr svg{width:100%;height:100%;display:block}
+#livepanel{position:absolute;right:max(18px,env(safe-area-inset-right,0px));bottom:82px;z-index:6;width:min(440px,calc(100vw - 36px));background:var(--navy3);color:#fff;border-radius:22px;padding:16px 20px;box-shadow:0 22px 50px rgba(0,0,0,.35);cursor:pointer;transition:transform .4s cubic-bezier(.3,.8,.2,1)}
+#livepanel .lp-top{display:flex;justify-content:space-between;gap:12px;font-size:14px;color:#B9C6D2}
+#livepanel .lp-top b{color:var(--amber);font-size:16px}
+#livepanel h3{font:600 20px/1.2 Fraunces,serif;margin:6px 0 0}
+#lp-bars{display:none;flex-direction:column;gap:8px;margin-top:12px}
+#livepanel.open #lp-bars{display:flex}
+#livepanel.open .lp-hint{display:none}
+.lp-hint{font-size:14px;color:#B9C6D2;margin-top:6px}
+#livepanel.left{right:auto;left:max(18px,env(safe-area-inset-left,0px))}
+.lpb{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:4px 10px;align-items:center;font-size:15px}
+.lpb .tr{grid-column:1/-1;height:12px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}
+.lpb .tr i{display:block;height:100%;width:0;border-radius:6px;background:var(--teal);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.lpb.top .tr i{background:var(--amber)}
+.lpb b{text-align:right;font-variant-numeric:tabular-nums}
+.lp-foot{font-size:14px;color:#B9C6D2;margin-top:10px}
+.lp-foot b{color:#fff;letter-spacing:.08em}
+#reactlayer{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden}
+.rfloat{position:absolute;bottom:70px;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;color:#fff;box-shadow:0 10px 20px -8px rgba(0,0,0,.45)}
+.rfloat svg{width:30px;height:30px}
+#toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%);z-index:9;background:var(--navy3);color:#fff;border-radius:14px;padding:12px 20px;font-size:17px;max-width:min(640px,calc(100vw - 32px));box-shadow:0 14px 40px rgba(0,0,0,.35)}
+.reader #livepanel,.reader #reactlayer,.reader #b-live,.reader #live-badge{display:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 
+</head>
+<body>
 <div id="app">
 <canvas id="dust" aria-hidden="true"></canvas>
 <div id="viewport">
@@ -683,9 +737,10 @@ body.reader{overflow:auto}
 
 <nav id="hud" aria-label="Presentation controls">
   <span class="brand">The Language Page</span>
-  <div class="now"><div class="dots" id="dots"></div><span id="now-title"></span></div>
+  <div class="now"><span id="live-badge" hidden><i></i><b id="lb-code"></b><span id="lb-people">0 here</span></span><div class="dots" id="dots"></div><span id="now-title"></span></div>
   <button class="hb" id="b-prev" aria-label="Previous">←</button>
   <button class="hb next" id="b-next">Next →</button>
+  <button class="hb live" id="b-live">Go live</button>
   <button class="hb" id="b-over" aria-pressed="false">Map</button>
   <button class="hb" id="b-notes" aria-pressed="false">Notes</button>
   <button class="hb" id="b-full" aria-label="Full screen">⛶</button>
@@ -696,41 +751,49 @@ body.reader{overflow:auto}
   <dt><kbd>→</kbd> <kbd>Space</kbd> <kbd>PgDn</kbd></dt><dd>Next build or stop (clickers work)</dd>
   <dt><kbd>←</kbd> <kbd>PgUp</kbd></dt><dd>Back</dd>
   <dt><kbd>M</kbd> or <kbd>O</kbd></dt><dd>The whole map; click any stop to fly there</dd>
+  <dt><kbd>G</kbd></dt><dd>Go live: the room joins from their phones</dd>
+  <dt><kbd>J</kbd></dt><dd>Show the join code again</dd>
+  <dt><kbd>R</kbd></dt><dd>Show or hide the room’s answers</dd>
   <dt><kbd>N</kbd></dt><dd>Speaker notes and timer</dd>
   <dt><kbd>F</kbd></dt><dd>Full screen</dd>
   <dt><kbd>B</kbd></dt><dd>Black screen</dd>
   <dt><kbd>L</kbd></dt><dd>Spotlight pointer</dd>
   <dt><kbd>Home</kbd> <kbd>End</kbd></dt><dd>First or last stop</dd>
 </dl><button class="btn" id="help-close">Close</button></div></div>
+<div id="joinov" class="ov" hidden><div class="jbox" role="dialog" aria-modal="true" aria-labelledby="j-title">
+  <div class="jqr" id="j-qr"></div>
+  <h3 id="j-title">Join on your phone</h3>
+  <div class="jurl" id="j-url">thelanguagepage.com/tour/join</div>
+  <div class="jcode" id="j-code" aria-label="Room code">-----</div>
+  <div class="jpeople"><b id="j-people">0</b>people here. No name, no account; answers are counted, never named.</div>
+  <div class="jbtns"><button class="btn amber" id="j-close">Start the tour</button><button class="btn ghost" id="j-remote">Use my phone as a remote</button><button class="btn ghost" id="j-end">End the room</button></div>
+</div></div>
+<div id="remoteov" class="ov" hidden><div class="rbox" role="dialog" aria-modal="true" aria-labelledby="r-title">
+  <h3 id="r-title">Your phone as a remote</h3>
+  <p>Press and hold the code, then scan it yourself. Anyone holding it can move the tour, so keep it to yourself. Ending the room cancels it.</p>
+  <div class="rqr" id="r-qr" aria-label="Remote code, press and hold to show"></div>
+  <p style="font-size:16px;color:var(--muted)">On the remote: next and back, your speaker notes, the timer and live answer counts.</p>
+  <button class="btn" id="r-close">Done</button>
+</div></div>
+<aside id="livepanel" hidden aria-live="polite" title="Show or hide results (R)"><div class="lp-top"><span>Live from the room</span><b id="lp-n">0 answers</b></div><h3 id="lp-q"></h3><div class="lp-hint">Press R or click to show the room’s answers.</div><div id="lp-bars"></div><div class="lp-foot">Answer on your phone: <span id="lp-host">thelanguagepage.com/tour/join</span> · <b id="lp-code"></b></div></aside>
+<div id="reactlayer" aria-hidden="true"></div>
+<div id="toast" role="status" hidden></div>
 <div id="black"></div><div id="laser"></div><div id="fade"></div>
 </div>
 
-<script>
+<script type="module">
+import { STOPS } from "./stops.js";
+import { ITEM, checkUpgrade } from "./upgrade-check.js";
+import * as live from "./live.js";
+import { PROMPTS, promptForStop } from "/shared/tour-live/prompts.js";
+import { qrSvg } from "/shared/qr/qr-code.mjs";
 {
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const RM = matchMedia("(prefers-reduced-motion: reduce)");
 const W = 1600, H = 900, HUD = 64;
 
-/* ---------- the stops: where each sits on the map, its builds and the speaker notes ---------- */
-const STOPS = [
-  {x:0,y:0,r:0,t:"The Language Page",b:0,n:["Welcome. This is a walk through thelanguagepage.com, the way a student, a teacher and a family meet it.","Everything you will see is live on the site today. Where something is not finished, I will say so."]},
-  {x:2700,y:700,r:-3,t:"Why it exists",b:3,n:["Three people, one problem. The learner learns English and school subjects at the same time.","The teacher cannot easily tell whether a task was done alone or with help. The family wants to help and often speaks another language.","This comes from the project’s logic model. It describes intent; it does not claim results."]},
-  {x:5400,y:100,r:2,t:"One page, four doors",b:3,n:["One front page asks a single question: who is here today?","Click each door to show where it leads. A teacher lands on Start Here, a student on their Learning Journey, a family on the Family Tour.","BCPSS teachers have a fourth door with curriculum-to-language bridges."],u:"https://thelanguagepage.com/access-practice-lab/"},
-  {x:8100,y:900,r:-2,t:"What is inside",b:1,n:["933 core activities in four domains, Listening, Speaking, Reading and Writing, plus 51 practice-test items in grades 6–8.","Tap a domain to light it up across the five grade bands, Kindergarten to grade 8.","Grades 6–8 has the most. The early grades are a known gap the team is working on."]},
-  {x:8600,y:3300,r:3,t:"Supports fade",b:2,n:["This is the heart of it. The prompt never changes. Only the help around it changes.","Press Next twice and watch the frame and the word bank fade. The record on the right changes from supported to independent.","Supported work is never recorded as independent. That is what lets a teacher trust the evidence."],u:"https://thelanguagepage.com/access-practice-lab/voice/ladder/school-hallway"},
-  {x:6000,y:3900,r:-2,t:"Speaking ladder",b:2,n:["One picture, three steps. Step one names things. Step two tells what is happening and why. Step three explains a change and gives a reason.","Press Hear first to play the model. The voice is synthesized speech today; recorded human voices are on the to-do list.","Recording is optional. The microphone is asked for only when someone presses Record. In the room, partner talk is the whole task."],u:"https://thelanguagepage.com/access-practice-lab/voice/ladder/school-hallway"},
-  {x:3300,y:3500,r:2,t:"Upgrade a sentence",b:2,n:["Invite someone to type a better version of “Phones in class are bad.” Then press Check my work.","The checker on this slide is the site’s own code. It looks for new information, a precise word with the general one gone, and a connector joining two ideas.","It names one thing to fix with a question. It never writes the answer and never gives a score."],u:"https://thelanguagepage.com/access-practice-lab/scaffold/language-upgrade?item=lu68-argue-phones"},
-  {x:600,y:4300,r:-3,t:"A ten-minute lesson",b:2,n:["The featured lesson: Notice 1 minute, Speak 2, Write 3, Improve 2, Share 2.","Click any step to see the teacher move and the student move. Play it fast to show the shape, or run the live clock to actually teach it.","Then compare the drafts. One cue, “add an example that starts with For example,” produces the change, the reason and the example."],u:"https://thelanguagepage.com/access-practice-lab/start/lesson"},
-  {x:1800,y:6600,r:2,t:"Places to practice",b:0,n:["A library of places, each built around one clear job. Drag the ring or click a card.","Every caption is the page’s own description. Use Open live to jump to the real page if you want to show it."]},
-  {x:4700,y:7100,r:-2,t:"Passport",b:2,n:["Learners collect stamps for finished practice, saved on their own device.","The Growth Map suggests next steps, and there is a one-page letter for home in English, Spanish or both.","Say it plainly: stamps are not an ACCESS score or a WIDA level."],u:"https://thelanguagepage.com/access-practice-lab/passport"},
-  {x:7600,y:6500,r:2,t:"For teachers",b:2,n:["The Teacher Hub: find an activity, plan a lesson, run a class, review student work. It is open on this site.","The WIDA Data Studio: teachers type official results and the analysis runs in the browser. Sample mode uses 12 fictional students, so you can learn it with no real data.","It refuses to report growth across the 2025–26 ACCESS scale reset rather than show a misleading number."],u:"https://thelanguagepage.com/access-teacher/"},
-  {x:10400,y:7000,r:-3,t:"Families",b:1,n:["The Family Tour opens with a promise: you do not need perfect English to help. Ask, wait and listen.","Tap the card to flip it to Spanish. No account is needed.","The Spanish is machine-drafted until a bilingual reviewer signs it off; say so if asked."],u:"https://thelanguagepage.com/access-practice-lab/family-tour/"},
-  {x:12300,y:4900,r:2,t:"Privacy",b:2,n:["Progress stays on the learner’s own device. No account is needed to practice.","No ads, and no third-party analytics or trackers. A network test of 79 live pages passed on 25 November.","Press Send to show the one exception: a recording leaves only when the learner chooses to send it."],u:"https://thelanguagepage.com/access-practice-lab/privacy"},
-  {x:11900,y:2200,r:-2,t:"By the numbers",b:0,n:["These are counts of content, measured from the code: 933 activities, 1,432 words with Spanish glosses, 774 sentence items, 234 listening scripts.","They are not results. No study of impact has been done yet."]},
-  {x:12600,y:-500,r:3,t:"The road ahead",b:1,n:["What is not done: recorded human voices, a bilingual review of the Spanish, a trained review of the content tags, usability sessions, and a pilot.","Naming this openly is part of the design. The site makes no claim it cannot back up."]},
-  {x:15400,y:300,r:0,t:"Start here",b:0,n:["Leave the room with one question: where do your students need to speak or write more?","Scan the code or type the address. It opens Start Here, which links to everything you saw today."],u:"https://thelanguagepage.com/access-practice-lab/start"}
-];
+/* ---------- the stops come from ./stops.js (shared with the audience page and the phone remote) ---------- */
 const secs = STOPS.map((_, i) => $("#s" + i));
 const world = $("#world"), viewport = $("#viewport"), app = $("#app");
 
@@ -853,6 +916,7 @@ function hud() {
   $("#n-title").textContent = s.t;
   $("#n-body").innerHTML = s.n.map(p => `<p>${p}</p>`).join("") + (s.u ? `<p><a href="${s.u}" target="_blank" rel="noopener">Open the live page ↗</a></p>` : "");
   try { history.replaceState(null, "", "#stop-" + (cur + 1)); } catch (e) {}
+  if (LIVE.code) { schedulePush(); renderPanel(); }
 }
 function enter(i) {
   secs.forEach((el, j) => el.classList.toggle("live", j === i));
@@ -864,6 +928,7 @@ async function go(i, k = 0) {
   if (!started) { started = true; t0 = Date.now(); }
   if (overview) setOverview(false, true);
   const fromL = tokenL;
+  if (i !== cur) LIVE.open = false;
   cur = i; seen.add(i);
   setBuild(i, k); hud();
   await fly(fitStop(i), { fromL, toL: LEN[i] });
@@ -883,6 +948,7 @@ function setOverview(on, silent) {
   overview = on;
   app.classList.toggle("overview", on);
   $("#b-over").setAttribute("aria-pressed", on);
+  renderPanel();
   if (!silent) fly(on ? fitAll() : fitStop(cur), { ms: 1400 });
 }
 secs.forEach((el, i) => el.addEventListener("click", () => { if (overview) go(i); }));
@@ -903,7 +969,10 @@ addEventListener("keydown", e => {
   else if (k === "b" || k === "B" || k === ".") $("#black").classList.toggle("on");
   else if (k === "l" || k === "L") { laserOn = !laserOn; $("#laser").style.display = laserOn ? "block" : "none"; }
   else if (k === "?") $("#help").hidden = !$("#help").hidden;
-  else if (k === "Escape") { $("#help").hidden = true; $("#black").classList.remove("on"); if (overview) go(cur); }
+  else if (k === "g" || k === "G") goLive();
+  else if (k === "j" || k === "J") { if (LIVE.code) showJoin($("#joinov").hidden); }
+  else if (k === "r" || k === "R") { if (LIVE.code) { LIVE.open = !LIVE.open; renderPanel(); } }
+  else if (k === "Escape") { $("#help").hidden = true; $("#joinov").hidden = true; $("#remoteov").hidden = true; $("#black").classList.remove("on"); if (overview) go(cur); }
 });
 $("#b-next").onclick = next; $("#b-prev").onclick = prev;
 $("#b-over").onclick = () => setOverview(!overview);
@@ -1052,39 +1121,7 @@ const HOOKS = [];
 }
 // 6 language upgrade: the site's own checkUpgrade (access-practice-lab/src/lang/scaffold-check.js)
 {
-  const ITEM = { informal: "Phones in class are bad.", avoid: ["bad"], precision: ["distract", "distraction", "attention", "focus", "notifications", "harmful", "learning", "concentration"], connectors: ["because", "so", "which", "since", "as a result", "although", "however", "when", "after"], minAdded: 6, hint: "How exactly do phones affect students? Name the effect precisely." };
-  const escapeRe = w => String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const hasPhrase = (t, p) => new RegExp(`(^|[^a-z'])${escapeRe(p.toLowerCase())}($|[^a-z'])`).test(String(t).toLowerCase());
-  const startsWord = (t, s) => new RegExp(`(^|[^a-z])${escapeRe(s.toLowerCase())}`).test(String(t).toLowerCase());
-  const countWords = t => (String(t).match(/[A-Za-z0-9°']+/g) || []).length;
-  const FILLER = new Set("a an the and or but so very really just quite too also then than that this these those it its he she they them we you i me my our your his her their is are was were be been am do does did to of in on at as by for with from up out about into it's thing things stuff".split(" "));
-  const contentWords = t => (String(t).toLowerCase().match(/[a-z0-9°']+/g) || []).filter(w => !FILLER.has(w));
-  function checkUpgrade(item, revised = "") {
-    const text = String(revised).trim(), words = countWords(text), base = countWords(item.informal);
-    const norm = x => x.toLowerCase().replace(/\W+/g, " ").trim();
-    const changed = norm(text) !== norm(item.informal);
-    const avoidLeft = item.avoid.filter(w => hasPhrase(text, w));
-    const precisionUsed = item.precision.filter(w => startsWord(text, w));
-    const connectorsUsed = item.connectors.filter(w => hasPhrase(text, w));
-    const oldWords = new Set(contentWords(item.informal));
-    const newWords = [...new Set(contentWords(text))].filter(w => !oldWords.has(w) && !item.connectors.includes(w) && !item.avoid.includes(w));
-    const need = Math.max(2, Math.ceil(item.minAdded / 2));
-    const joined = connectorsUsed.some(c => {
-      const at = text.toLowerCase().search(new RegExp(`(^|[^a-z])${escapeRe(c)}($|[^a-z])`));
-      const after = contentWords(text.slice(at + c.length + 1)).length, before = contentWords(text.slice(0, Math.max(0, at))).length;
-      return after >= 2 && (before >= 2 || /^(although|however|when|after|since)$/.test(c));
-    });
-    const checks = { detail: changed && words >= base + item.minAdded && newWords.length >= need, precision: changed && precisionUsed.length > 0 && avoidLeft.length === 0, connector: changed && joined };
-    const messages = [];
-    if (!changed) messages.push(`Your revision is the same as the original. Change it so it says exactly what you mean. ${item.hint}`);
-    else {
-      if (!checks.detail) messages.push(newWords.length < need ? "Add new information: what exactly, where, when, or how much? Repeating words does not add detail." : "Add one more detail: what exactly, where, when, or how much?");
-      if (avoidLeft.length) messages.push(`"${avoidLeft[0]}" is a general word. ${item.hint}`);
-      else if (!precisionUsed.length) messages.push(`Name it exactly. ${item.hint}`);
-      if (!checks.connector) messages.push(connectorsUsed.length ? `Put an idea on each side of "${connectorsUsed[0]}" so it joins two ideas, not just sits in the sentence.` : "Join two ideas with a connector such as because, so or which.");
-    }
-    return { ok: Object.values(checks).every(Boolean), checks, messages: messages.length ? messages : ["You added new information, used a precise word and connected two ideas."] };
-  }
+  // ITEM and checkUpgrade are the lab's own, imported from ./upgrade-check.js.
   const ta = $("#up-text"), msgs = $("#up-msgs");
   const esc = s => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const lamp = (id, ok) => { const l = $(id); l.classList.remove("ok", "no"); void l.offsetWidth; l.classList.add(ok ? "ok" : "no"); $("i", l).textContent = ok ? "✓" : "!"; };
@@ -1290,6 +1327,151 @@ const HOOKS = [];
   document.addEventListener("visibilitychange", () => { cancelAnimationFrame(raf); if (!document.hidden && !RM.matches && !document.body.classList.contains("reader")) draw(); });
 }
 
+/* ---------- live mode: the room joins from phones, answers each stop's question, sends reactions ---------- */
+const LIVE = { code: "", token: "", version: 0, people: 0, results: null, last: null, timer: 0, pushT: 0, open: false };
+const toastEl = $("#toast");
+let toastT = 0;
+function toast(msg) {
+  toastEl.textContent = msg; toastEl.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { toastEl.hidden = true; }, 5200);
+}
+const joinUrl = () => `${location.origin}/tour/join/?r=${LIVE.code}`;
+function remember() {
+  try { LIVE.code ? sessionStorage.setItem("tourLive:v1:room", JSON.stringify({ code: LIVE.code, token: LIVE.token })) : sessionStorage.removeItem("tourLive:v1:room"); } catch (e) {}
+}
+function showJoin(on) {
+  $("#joinov").hidden = !on;
+  if (on) { $("#j-code").textContent = LIVE.code; $("#j-url").textContent = `${location.host}/tour/join`; $("#j-qr").innerHTML = qrSvg(joinUrl(), { px: 320 }); $("#j-close").focus(); }
+}
+function setPeople(n) {
+  LIVE.people = n;
+  $("#lb-people").textContent = `${n} here`; $("#j-people").textContent = n;
+}
+async function goLive() {
+  if (LIVE.code) { showJoin(true); return; }
+  const btn = $("#b-live"); btn.disabled = true; btn.textContent = "Opening…";
+  const r = await live.openRoom();
+  btn.disabled = false; btn.textContent = "Go live";
+  if (!r.ok) {
+    toast(r.status === 429 ? "Too many rooms were opened from this network in the last hour. Try again later." :
+      "A live room needs a connection and thelanguagepage.com/tour. The tour still works without one.");
+    return;
+  }
+  LIVE.code = r.code; LIVE.token = r.token; remember();
+  startLive(); showJoin(true); pushNow();
+}
+function startLive() {
+  app.classList.add("is-live");
+  $("#live-badge").hidden = false; $("#lb-code").textContent = LIVE.code; $("#lp-code").textContent = LIVE.code;
+  $("#lp-host").textContent = `${location.host}/tour/join`;
+  $("#b-live").textContent = "Join code";
+  clearInterval(LIVE.timer); LIVE.timer = setInterval(poll, 2000); poll(); renderPanel();
+}
+function endLive(msg) {
+  clearInterval(LIVE.timer);
+  Object.assign(LIVE, { code: "", token: "", version: 0, results: null, last: null, open: false });
+  remember();
+  app.classList.remove("is-live"); $("#live-badge").hidden = true; $("#livepanel").hidden = true;
+  $("#joinov").hidden = true; $("#remoteov").hidden = true; $("#b-live").textContent = "Go live";
+  if (msg) toast(msg);
+}
+function schedulePush() { if (!LIVE.code) return; clearTimeout(LIVE.pushT); LIVE.pushT = setTimeout(pushNow, 150); }
+async function pushNow() {
+  if (!LIVE.code) return;
+  const r = await live.setState(LIVE.code, LIVE.token, { stop: cur, build, prompt: promptForStop(cur), from: "deck" });
+  if (r.ok) LIVE.version = Math.max(LIVE.version, r.version || 0);
+  else if (r.status === 404) endLive("The live room has closed (rooms last 6 hours). Press Go live to open a new one.");
+}
+async function poll() {
+  if (!LIVE.code || document.hidden) return;
+  const [st, res] = await Promise.all([live.getState(LIVE.code), live.getResults(LIVE.code)]);
+  if (st.status === 404) { endLive("The live room has closed (rooms last 6 hours). Press Go live to open a new one."); return; }
+  if (st.ok) {
+    setPeople(st.people || 0);
+    if ((st.version || 0) > LIVE.version) {
+      LIVE.version = st.version;
+      if (st.from === "remote" && (st.stop !== cur || st.build !== build)) {
+        if (st.stop === cur) { setBuild(cur, st.build); hud(); } else go(st.stop, st.build);
+      }
+    }
+  }
+  if (res.ok) { LIVE.results = res; renderPanel(); floatReactions(res.reactions || {}); }
+}
+const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function rowsFor(id, cell) {
+  const counts = cell?.counts || {};
+  if (id === "upgrade") {
+    const total = cell?.total || 0;
+    const pass = (i) => Object.entries(counts).reduce((a, [bits, n]) => a + (bits[i] === "1" ? n : 0), 0);
+    return [["All three checks", counts["111"] || 0, total], ["New information", pass(0), total], ["A precise word", pass(1), total], ["Two ideas joined", pass(2), total]];
+  }
+  const total = cell?.total || 0;
+  return PROMPTS[id].choices.map(([v, label]) => [label, counts[v] || 0, total]);
+}
+function renderPanel() {
+  const panel = $("#livepanel"), id = promptForStop(cur);
+  if (!LIVE.code || !id || overview) { panel.hidden = true; return; }
+  panel.hidden = false;
+  panel.classList.toggle("open", LIVE.open);
+  panel.classList.toggle("left", cur === STOPS.length - 1);
+  const cell = LIVE.results?.prompts?.[id];
+  const total = cell?.total || 0;
+  $("#lp-q").textContent = PROMPTS[id].q;
+  $("#lp-n").textContent = `${total} ${total === 1 ? "answer" : "answers"}`;
+  const rows = rowsFor(id, cell);
+  const max = Math.max(1, ...rows.map((r) => r[1]));
+  const box = $("#lp-bars");
+  if (box.dataset.id !== id || box.children.length !== rows.length) {
+    box.dataset.id = id;
+    box.innerHTML = rows.map(([label]) => `<div class="lpb"><span>${esc(label)}</span><b>0</b><div class="tr"><i></i></div></div>`).join("");
+  }
+  rows.forEach(([, n, tot], i) => {
+    const el = box.children[i];
+    el.querySelector("b").textContent = id === "upgrade" ? `${n}/${tot}` : n;
+    el.querySelector("i").style.width = `${(id === "upgrade" ? (tot ? n / tot : 0) : n / max) * 100}%`;
+    el.classList.toggle("top", n > 0 && n === max && id !== "upgrade");
+  });
+}
+function floatReactions(now) {
+  const prev = LIVE.last; LIVE.last = { ...now };
+  if (!prev || RM.matches) return;
+  const layer = $("#reactlayer");
+  let k = 0;
+  for (const [kind, n] of Object.entries(now)) {
+    const d = Math.min(8, n - (prev[kind] || 0));
+    for (let i = 0; i < d; i++, k++) {
+      const el = document.createElement("div");
+      el.className = "rfloat"; el.innerHTML = live.REACTION_ICONS[kind] || ""; el.style.background = live.REACTION_COLORS[kind] || "#17324D";
+      el.style.right = `${30 + Math.random() * 260}px`;
+      layer.appendChild(el);
+      const drift = (Math.random() - .5) * 120;
+      el.animate([{ transform: "translateY(0) scale(.4)", opacity: 0 }, { transform: `translate(${drift / 3}px,-120px) scale(1.1)`, opacity: 1, offset: .2 },
+        { transform: `translate(${drift}px,-${380 + Math.random() * 200}px) scale(1)`, opacity: 0 }],
+        { duration: 2600, delay: k * 140, easing: "cubic-bezier(.2,.6,.3,1)", fill: "both" }).onfinish = () => el.remove();
+    }
+  }
+}
+$("#b-live").onclick = goLive;
+$("#j-close").onclick = () => showJoin(false);
+$("#j-end").onclick = () => endLive("The live room is closed. The tour carries on as a presentation.");
+$("#j-remote").onclick = () => {
+  $("#joinov").hidden = true; $("#remoteov").hidden = false;
+  $("#r-qr").innerHTML = qrSvg(`${joinUrl()}#k=${LIVE.token}`, { px: 300 });
+  $("#r-close").focus();
+};
+$("#r-close").onclick = () => { $("#remoteov").hidden = true; $("#r-qr").classList.remove("show"); };
+{
+  const q = $("#r-qr"), on = (e) => { e.preventDefault(); q.classList.add("show"); }, off = () => q.classList.remove("show");
+  q.addEventListener("pointerdown", on); q.addEventListener("pointerup", off); q.addEventListener("pointerleave", off); q.addEventListener("pointercancel", off);
+  q.tabIndex = 0; q.addEventListener("keydown", (e) => { if (e.key === " " || e.key === "Enter") on(e); }); q.addEventListener("keyup", off);
+}
+$("#livepanel").onclick = () => { LIVE.open = !LIVE.open; renderPanel(); };
+document.addEventListener("visibilitychange", () => { if (!document.hidden && LIVE.code) poll(); });
+try {
+  const saved = JSON.parse(sessionStorage.getItem("tourLive:v1:room") || "null");
+  if (saved && live.CODE_RE.test(saved.code) && /^[0-9a-f]{32}$/.test(saved.token)) { LIVE.code = saved.code; LIVE.token = saved.token; queueMicrotask(startLive); }
+} catch (e) {}
+
 /* ---------- layout: presenting mode, or a readable page on narrow screens ---------- */
 function layout() {
   const reader = innerWidth < 760 || innerHeight < 420;
@@ -1311,3 +1493,5 @@ if (!document.body.classList.contains("reader")) {
 }
 }
 </script>
+</body>
+</html>

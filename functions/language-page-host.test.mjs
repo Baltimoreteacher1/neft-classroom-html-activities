@@ -448,4 +448,11 @@ await t("the BCPSS Teachers Hub, shared plan routes, family cards, insights, and
   }
 });
 
+await t("the presented tour and its live room are served on the lab host; look-alike paths are not", () => {
+  for (const path of ["/tour", "/tour/", "/tour/join/?r=ABCDE", "/tour/stops.js", "/api/tour-room/state?code=ABCDE", "/api/tour-room/open"])
+    assert.deepEqual(at(`https://thelanguagepage.com${path}`), { kind: "serve" }, path);
+  for (const path of ["/tourist", "/tours/", "/api/tour-roomx/state"])
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "redirect", `${path} must go to eduwonderlab.com`);
+});
+
 console.log(`language-page-host: ${passed} checks passed.`);
