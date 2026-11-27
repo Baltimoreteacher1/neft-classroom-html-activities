@@ -150,7 +150,7 @@ async function portfolioPage(ctx, I, cat, qs, h) {
       })}
       <label class="q-label" for="pf-r-${key}">${I.T("How did my writing improve? What will I try next?", "¿Cómo mejoró mi escritura? ¿Qué probaré después?")}</label>
       <textarea id="pf-r-${key}" rows="2" class="q-textarea" data-q-pf="reflect" data-key="${key}">${reflection}</textarea>
-      <div class="q-actions"><button type="button" class="btn" data-q-act="pf-pick" data-key="${key}" aria-pressed="${String(picked)}">${icon("star")} ${picked ? I.T("Remove from best work", "Quitar de mi mejor trabajo") : I.T("Choose as my best work", "Elegir como mi mejor trabajo")}</button><a class="btn" href="${href(`mission/${mission.id}`, mission.band)}">${I.T("Open the mission", "Abrir la misión")}</a><a class="btn" href="${href(`family/${mission.id}`, mission.band)}">${I.T("Family summary", "Resumen para la familia")}</a></div></article>`;
+      <div class="q-actions"><button type="button" class="btn" data-q-act="pf-pick" data-key="${key}" aria-pressed="${String(picked)}">${icon("star")} ${picked ? I.T("Remove from best work", "Quitar de mi mejor trabajo") : I.T("Choose as my best work", "Elegir como mi mejor trabajo")}</button><a class="btn" href="${href(mission.studio ? `speaking/${mission.id.slice(9)}` : `mission/${mission.id}`, mission.band)}">${mission.studio ? I.T("Open the picture", "Abrir la imagen") : I.T("Open the mission", "Abrir la misión")}</a>${mission.studio ? "" : html`<a class="btn" href="${href(`family/${mission.id}`, mission.band)}">${I.T("Family summary", "Resumen para la familia")}</a>`}</div></article>`;
   });
   const mine = qs.creations || [];
   return {

@@ -393,7 +393,7 @@ async function playMission(browser, base, mission, axeOnce) {
         .analyze();
       ok(
         r.violations.filter((v) => ["serious", "critical"].includes(v.impact)).length === 0,
-        `axe (player): ${r.violations.map((v) => `${v.id}[${v.nodes[0]?.html.slice(0, 80)}]`).join(", ")}`,
+        `axe (player): ${r.violations.map((v) => `${v.id}[${v.nodes[0]?.html.slice(0, 80)}] ${JSON.stringify(v.nodes[0]?.any?.[0]?.data || {}).slice(0, 200)}`).join(", ")}`,
       );
     }
     if (si === 0) {
@@ -540,6 +540,45 @@ async function hubChecks(browser, base) {
   ok(
     (await page.locator(".q-present-line").innerText()).includes("Mina lived"),
     "present mode shows the panel text",
+  );
+  // Speaking Studio: observe, prepare (expand a response), speak (typed rehearsal), review, improve, save
+  await page.goto(`${base}/quest/speaking?grades=3-5`);
+  await page.waitForSelector(".q-mcard");
+  ok(
+    (await page.locator(".q-mcard").count()) >= 3,
+    "the Speaking Studio lists pictures for the grade band",
+  );
+  await page.goto(`${base}/quest/speaking/park?grades=3-5`);
+  await page.waitForSelector('[data-q-act="exp-next"]');
+  await page.click('[data-q-act="exp-next"]');
+  await page.click('[data-q-act="exp-next"]');
+  ok((await page.locator(".q-quote mark").count()) > 0, "the expansion step marks the new words");
+  if (AxeBuilder) {
+    const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag22aa"]).analyze();
+    ok(
+      r.violations.filter((v) => ["serious", "critical"].includes(v.impact)).length === 0,
+      `axe speaking studio: ${r.violations.map((v) => `${v.id}[${v.nodes[0]?.html.slice(0, 70)}]`).join(", ")}`,
+    );
+  }
+  await page.locator(".q-typed summary").click();
+  await page
+    .locator('[data-q-act="typed-text"]')
+    .fill(
+      "I see a red kite flying above the trees and a fox next to the tree because the sun is shining today.",
+    );
+  await page.locator('[data-q-act="self"][data-self="see"]').check();
+  await page.locator('[data-q-act="self"][data-self="where"]').check();
+  await page.locator('[data-q-act="note-text"]').fill("Next time I will add a color");
+  await page.click('[data-q-act="speak-finish"]');
+  ok(
+    /typed rehearsal/i.test(await page.locator('[data-q-item="speak"]').innerText()),
+    "studio typed practice is labelled typed rehearsal",
+  );
+  await page.goto(`${base}/quest/teacher/evidence?grades=3-5`);
+  await page.waitForSelector(".q-ev");
+  ok(
+    (await page.locator(".q-ev").allInnerTexts()).some((t) => t.includes("Describe the Park")),
+    "teacher evidence includes the Speaking Studio run",
   );
   // reduced motion: nothing animates
   const rm = await browser.newContext({ reducedMotion: "reduce" });

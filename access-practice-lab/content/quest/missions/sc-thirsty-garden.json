@@ -1,0 +1,605 @@
+{
+  "id": "sc-thirsty-garden",
+  "world": "science-city",
+  "band": "3-5",
+  "domains": [
+    "Reading",
+    "Speaking",
+    "Writing"
+  ],
+  "functions": [
+    "Explain",
+    "Compare"
+  ],
+  "keyUses": [
+    "Explain",
+    "Inform"
+  ],
+  "minutes": 30,
+  "tags": [
+    "science",
+    "plants",
+    "cause and effect"
+  ],
+  "title": {
+    "en": "The Thirsty Garden",
+    "es": "El jardín con sed"
+  },
+  "objective": {
+    "en": "Read a chart and explain a cause and an effect using because and so.",
+    "es": "Leer un gráfico y explicar una causa y un efecto usando because y so."
+  },
+  "success": [
+    {
+      "en": "I can read a bar chart.",
+      "es": "Puedo leer un gráfico de barras."
+    },
+    {
+      "en": "I can ask a scientist a question.",
+      "es": "Puedo hacerle una pregunta a una científica."
+    },
+    {
+      "en": "I can explain a cause and an effect with because.",
+      "es": "Puedo explicar una causa y un efecto con because."
+    },
+    {
+      "en": "I can add a number from the chart to my writing.",
+      "es": "Puedo agregar un número del gráfico a mi escritura."
+    }
+  ],
+  "narrative": "Dr. Sora's class grew four bean plants in the school garden. Each plant got a different amount of water. Now the plants look very different! Look at the chart, ask Dr. Sora questions, and explain what happened. The numbers are made up for practice.",
+  "characters": [
+    "scientist"
+  ],
+  "scene": {
+    "theme": "forest",
+    "alt": "A school garden with four bean plants in pots of different sizes, a watering can and a bright sun above. One pot has a puddle around it.",
+    "objects": []
+  },
+  "vocab": [
+    {
+      "term": "cause",
+      "def": "The reason something happens."
+    },
+    {
+      "term": "effect",
+      "def": "What happens because of the cause."
+    },
+    {
+      "term": "chart",
+      "def": "A picture that shows numbers."
+    },
+    {
+      "term": "too much",
+      "def": "More than a plant needs."
+    }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Look at the garden",
+      "items": [
+        {
+          "id": "garden",
+          "kind": "explore",
+          "prompt": "Select things in the garden. Decide: does it help explain why the plants are different?",
+          "need": 3,
+          "objects": [
+            {
+              "id": "dry",
+              "label": "The dry plant",
+              "glyph": "tree",
+              "x": 180,
+              "y": 300,
+              "relevant": true,
+              "terms": [
+                "dry",
+                "plant",
+                "no water"
+              ],
+              "text": "This plant got no water. It is small and yellow.",
+              "why": "Useful. It shows what happens with no water."
+            },
+            {
+              "id": "good",
+              "label": "The tall plant",
+              "glyph": "tree",
+              "x": 440,
+              "y": 280,
+              "relevant": true,
+              "terms": [
+                "tall",
+                "plant",
+                "two cups"
+              ],
+              "text": "This plant got 2 cups of water. It is tall and green.",
+              "why": "Useful. It shows what happens with enough water."
+            },
+            {
+              "id": "puddle",
+              "label": "The plant in the puddle",
+              "glyph": "tree",
+              "x": 700,
+              "y": 300,
+              "relevant": true,
+              "terms": [
+                "puddle",
+                "plant",
+                "four cups"
+              ],
+              "text": "This plant got 4 cups of water. It is droopy, and the pot has a puddle.",
+              "why": "Useful. It shows what happens with too much water."
+            },
+            {
+              "id": "sun",
+              "label": "The sun",
+              "glyph": "sun",
+              "x": 820,
+              "y": 120,
+              "relevant": false,
+              "terms": [
+                "sun"
+              ],
+              "text": "The sun shines on all four plants the same.",
+              "why": "Not useful for this question. All four plants got the same sun."
+            },
+            {
+              "id": "can",
+              "label": "The watering can",
+              "glyph": "flask",
+              "x": 120,
+              "y": 160,
+              "relevant": false,
+              "terms": [
+                "can",
+                "watering"
+              ],
+              "text": "A blue watering can sits by the pots.",
+              "why": "Not useful. The can does not explain the plants."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Read the chart and ask",
+      "items": [
+        {
+          "id": "chart",
+          "kind": "check",
+          "prompt": "Look at the chart. Which plant was tallest after two weeks?",
+          "options": [
+            {
+              "id": "a",
+              "label": "The plant with no water",
+              "fb": "Look for the longest bar."
+            },
+            {
+              "id": "b",
+              "label": "The plant with 2 cups of water",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "The plant with 4 cups of water",
+              "fb": "Check the numbers. Is 4 cups the tallest?"
+            },
+            {
+              "id": "d",
+              "label": "The plant with 1 cup of water",
+              "fb": "Look for the longest bar."
+            }
+          ],
+          "answer": "b",
+          "chart": {
+            "title": "Plant height after two weeks (made-up data)",
+            "unit": " cm",
+            "min": 0,
+            "rows": [
+              {
+                "label": "0 cups of water",
+                "value": 4
+              },
+              {
+                "label": "1 cup of water",
+                "value": 9
+              },
+              {
+                "label": "2 cups of water",
+                "value": 14
+              },
+              {
+                "label": "4 cups of water",
+                "value": 8
+              }
+            ]
+          },
+          "why": "The bar for 2 cups of water is the longest at 14 cm, so that plant grew tallest. The plant with 4 cups reached only 8 cm."
+        },
+        {
+          "id": "ask-sora",
+          "kind": "ask",
+          "character": "scientist",
+          "prompt": "Ask Dr. Sora about the garden. Pick questions, and write one question of your own.",
+          "speakers": {
+            "sora": "Dr. Sora",
+            "host": "Dr. Sora"
+          },
+          "needFlags": [
+            "asked-water",
+            "asked-why",
+            "ready"
+          ],
+          "compose": 1,
+          "dialogue": {
+            "start": "hub",
+            "nodes": {
+              "n-q-water": {
+                "who": "sora",
+                "say": [
+                  "A bean plant needs some water, but not too much. In our garden, 2 cups worked best."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-why": {
+                "who": "sora",
+                "say": [
+                  "Too much water fills the soil, so the roots cannot get air. The plant gets weak because the roots cannot breathe."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-sun": {
+                "who": "sora",
+                "say": [
+                  "No. All four plants got the same sun. Only the water was different."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "hub": {
+                "who": "sora",
+                "say": [
+                  "What would you like to know about the plants?"
+                ],
+                "options": [
+                  {
+                    "id": "q-water",
+                    "label": "How much water does a bean plant need?",
+                    "once": true,
+                    "next": "n-q-water",
+                    "sets": [
+                      "asked-water"
+                    ]
+                  },
+                  {
+                    "id": "q-why",
+                    "label": "Why did the plant with 4 cups get droopy?",
+                    "once": true,
+                    "next": "n-q-why",
+                    "sets": [
+                      "asked-why"
+                    ]
+                  },
+                  {
+                    "id": "q-sun",
+                    "label": "Did the sun change the results?",
+                    "once": true,
+                    "next": "n-q-sun"
+                  },
+                  {
+                    "id": "q-done",
+                    "label": "I have enough to start.",
+                    "requires": [
+                      "asked-water",
+                      "asked-why"
+                    ],
+                    "sets": [
+                      "ready"
+                    ],
+                    "next": "done"
+                  }
+                ],
+                "compose": {
+                  "label": "Write your own question for Dr. Sora",
+                  "checks": [
+                    {
+                      "id": "q",
+                      "kind": "question",
+                      "label": "Ends with a question mark and asks something"
+                    }
+                  ],
+                  "routes": [
+                    {
+                      "terms": [
+                        "soil",
+                        "roots",
+                        "dirt"
+                      ],
+                      "next": "n-q-why"
+                    },
+                    {
+                      "terms": [
+                        "water",
+                        "cup"
+                      ],
+                      "next": "n-q-water"
+                    },
+                    {
+                      "terms": [
+                        "sun",
+                        "light"
+                      ],
+                      "next": "n-q-sun"
+                    }
+                  ],
+                  "fallback": "unsure"
+                }
+              },
+              "unsure": {
+                "who": "sora",
+                "say": [
+                  "Hmm, I am not sure about that one. You could ask about water, the sun or the roots."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Try another question.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "done": {
+                "who": "sora",
+                "say": [
+                  "Great questions. Now you can explain it. Use the words because and so."
+                ],
+                "end": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Explain it",
+      "items": [
+        {
+          "id": "explain",
+          "kind": "write",
+          "prompt": "Explain why the plants were different. Use because or so. Use a number from the chart.",
+          "purpose": "Dr. Sora will add your explanation to the class science book.",
+          "minWords": 20,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "20 or more words",
+              "min": 20
+            },
+            {
+              "id": "because",
+              "kind": "any",
+              "label": "Uses because or so",
+              "terms": [
+                "because",
+                "so ",
+                "since"
+              ]
+            },
+            {
+              "id": "num",
+              "kind": "any",
+              "label": "Uses a number from the chart",
+              "terms": [
+                "14",
+                "9",
+                "8",
+                "4 cm",
+                "2 cups",
+                "4 cups",
+                "1 cup",
+                "0 cups",
+                "cm"
+              ]
+            },
+            {
+              "id": "water",
+              "kind": "any",
+              "label": "Talks about water",
+              "terms": [
+                "water",
+                "cups",
+                "cup"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: The plant with 2 cups of water grew 14 cm because it got enough water. The plant with 4 cups grew only 8 cm because too much water hurt the roots.",
+            "frame": "The plant with ___ grew ___ because ___.",
+            "partial": "The plant with ___ grew ___ cm.",
+            "cue": "Plant. Number. Because."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Add the effect",
+      "items": [
+        {
+          "id": "revise-explain",
+          "kind": "write",
+          "reviseOf": "explain",
+          "prompt": "Add a sentence with so. Tell what happens because of too much water or too little water.",
+          "purpose": "A cause and an effect make the science clear.",
+          "minWords": 25,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "25 or more words",
+              "min": 25
+            },
+            {
+              "id": "so",
+              "kind": "any",
+              "label": "Uses so to show an effect",
+              "terms": [
+                "so ",
+                "so,",
+                "that is why",
+                "as a result"
+              ]
+            },
+            {
+              "id": "because",
+              "kind": "any",
+              "label": "Still uses because",
+              "terms": [
+                "because",
+                "since"
+              ]
+            },
+            {
+              "id": "water",
+              "kind": "any",
+              "label": "Talks about water",
+              "terms": [
+                "water",
+                "cups",
+                "cup"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: The plant got no water, so it stayed small and yellow.",
+            "frame": "The plant got ___, so ___.",
+            "partial": "___ so ___.",
+            "cue": "Cause, so, effect."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Say it and try again",
+      "items": [
+        {
+          "id": "tell",
+          "kind": "speak",
+          "prompt": "Tell a partner what you learned about plants and water.",
+          "typedMin": 15,
+          "ladder": {
+            "frame": "Plants need ___. Too much water ___ because ___.",
+            "partial": "I learned that ___.",
+            "cue": "Water, because, so."
+          },
+          "selfChecks": [
+            {
+              "id": "because",
+              "label": "I used because or so."
+            },
+            {
+              "id": "number",
+              "label": "I said a number."
+            },
+            {
+              "id": "clear",
+              "label": "My partner understood."
+            }
+          ],
+          "needSelf": 2
+        },
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "A plant sat in a dark closet and turned pale. Which sentence tells the cause?",
+          "options": [
+            {
+              "id": "a",
+              "label": "The plant is pale.",
+              "fb": "That is the effect, not the cause."
+            },
+            {
+              "id": "b",
+              "label": "The plant got no light.",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "The plant is in a pot.",
+              "fb": "That does not explain the color."
+            },
+            {
+              "id": "d",
+              "label": "The closet is big.",
+              "fb": "That does not explain the color."
+            }
+          ],
+          "answer": "b",
+          "why": "The plant got no light, and that is why it turned pale. A cause tells why something happens, and the effect is what you see."
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "book",
+      "title": "In the science book",
+      "when": {
+        "revised": [
+          "revise-explain"
+        ]
+      },
+      "text": "Dr. Sora adds your page to the class science book. 'You used a number, a cause and an effect,' she says. 'That is how scientists explain!'"
+    },
+    {
+      "id": "ok",
+      "title": "A good explanation",
+      "text": "Dr. Sora reads your explanation and smiles. 'You used the chart,' she says. 'Next time, add a sentence with so to show the effect.'"
+    }
+  ],
+  "family": {
+    "skill": {
+      "en": "reading a chart and explaining a cause and an effect with because and so",
+      "es": "leer un gráfico y explicar una causa y un efecto con because y so"
+    },
+    "talk": {
+      "en": "Ask: 'What happened to the plant? What caused it? What number from the chart helped you?'",
+      "es": "Pregunta: '¿Qué le pasó a la planta? ¿Qué lo causó? ¿Qué número del gráfico te ayudó?'"
+    },
+    "vocab": [
+      {
+        "term": "cause",
+        "es": "causa"
+      },
+      {
+        "term": "effect",
+        "es": "efecto"
+      },
+      {
+        "term": "chart",
+        "es": "gráfico"
+      }
+    ]
+  }
+}
