@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Writing Studio engagement and teaching extras (the second half of access-practice-lab/src/views/write-plus.js).
+ * Writing Studio engagement and teaching extras (access-practice-lab/src/views/write.js).
  *   - every quick-write prompt is bilingual, and a picture prompt names a drawing that exists and describes it
  *   - quick writes live in the studio document in a task's shape and never count as task writing
  *   - badges are facts about what a writer did; none can be read as a score, and a new one is named once
@@ -21,7 +21,7 @@ import {
   quickWrites,
   surpriseTask,
   studioStats,
-} from "../access-practice-lab/src/views/write-plus.js";
+} from "../access-practice-lab/src/views/write.js";
 
 const lab = new URL("../access-practice-lab/", import.meta.url);
 const tasks = JSON.parse(readFileSync(new URL("content/studio/writing.json", lab))).tasks;
