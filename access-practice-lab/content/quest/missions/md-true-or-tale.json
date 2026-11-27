@@ -1,0 +1,556 @@
+{
+  "id": "md-true-or-tale",
+  "world": "media-detectives",
+  "band": "3-5",
+  "domains": [
+    "Reading",
+    "Speaking",
+    "Writing"
+  ],
+  "functions": [
+    "Evaluate",
+    "Inform"
+  ],
+  "keyUses": [
+    "Inform"
+  ],
+  "minutes": 30,
+  "tags": [
+    "news",
+    "fact and opinion",
+    "checking"
+  ],
+  "title": {
+    "en": "True or Just a Tale?",
+    "es": "¿Verdad o solo un cuento?"
+  },
+  "objective": {
+    "en": "Tell a fact from an opinion and write a short true report that says who told you.",
+    "es": "Distinguir un hecho de una opinión y escribir un informe breve y verdadero que diga quién te lo contó."
+  },
+  "success": [
+    {
+      "en": "I can tell a fact from an opinion.",
+      "es": "Puedo distinguir un hecho de una opinión."
+    },
+    {
+      "en": "I can ask how to check a story.",
+      "es": "Puedo preguntar cómo comprobar una noticia."
+    },
+    {
+      "en": "I can write who said it with according to or said.",
+      "es": "Puedo escribir quién lo dijo con according to o said."
+    },
+    {
+      "en": "I can make my report clearer.",
+      "es": "Puedo hacer mi informe más claro."
+    }
+  ],
+  "narrative": "Two posts about a lost dog named Pepper are going around school. They tell the story in different ways. Penn the Editor needs your help to report what is true. All names and posts here are made up.",
+  "characters": [
+    "editor"
+  ],
+  "scene": {
+    "theme": "newsroom",
+    "alt": "A small school newsroom with desks, a corkboard with two notes pinned to it, and a window. A pencil and a book lie on a desk.",
+    "objects": []
+  },
+  "vocab": [
+    {
+      "term": "fact",
+      "def": "Something you can check."
+    },
+    {
+      "term": "opinion",
+      "def": "What someone thinks or feels."
+    },
+    {
+      "term": "according to",
+      "def": "Words that tell who said it."
+    },
+    {
+      "term": "report",
+      "def": "A short telling of what happened."
+    }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Read the posts",
+      "items": [
+        {
+          "id": "posts",
+          "kind": "read",
+          "prompt": "Read both posts about Pepper. Open both.",
+          "sources": [
+            {
+              "id": "p1",
+              "title": "Post from Mr. Ortiz, the crossing guard",
+              "text": [
+                "Pepper, a brown dog, ran away from the park on Tuesday at 4 o'clock.",
+                "Mr. Ortiz said he saw Pepper run toward the library."
+              ]
+            },
+            {
+              "id": "p2",
+              "title": "Post from a classmate",
+              "text": [
+                "Pepper is the best dog in the world and a thief!",
+                "Everyone knows Pepper is gone forever."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Check and ask",
+      "items": [
+        {
+          "id": "sort-fo",
+          "kind": "sort",
+          "prompt": "Is each sentence a fact you can check, or an opinion?",
+          "categories": [
+            {
+              "id": "fact",
+              "label": "Fact: I can check it"
+            },
+            {
+              "id": "op",
+              "label": "Opinion: what someone thinks"
+            }
+          ],
+          "cards": [
+            {
+              "id": "c1",
+              "text": "Pepper ran away from the park on Tuesday.",
+              "cat": "fact",
+              "why": "You could ask people who were there."
+            },
+            {
+              "id": "c2",
+              "text": "Pepper is the best dog in the world.",
+              "cat": "op",
+              "why": "'Best' is what someone thinks."
+            },
+            {
+              "id": "c3",
+              "text": "Mr. Ortiz saw Pepper run toward the library.",
+              "cat": "fact",
+              "why": "Mr. Ortiz said it, and someone can check it."
+            },
+            {
+              "id": "c4",
+              "text": "Everyone knows Pepper is gone forever.",
+              "cat": "op",
+              "why": "Nobody knows this. It is an idea."
+            },
+            {
+              "id": "c5",
+              "text": "Pepper is a brown dog.",
+              "cat": "fact",
+              "why": "You can look at Pepper."
+            }
+          ]
+        },
+        {
+          "id": "ask-penn",
+          "kind": "ask",
+          "character": "editor",
+          "prompt": "Ask Penn how to check a story. Pick questions, and write one question of your own.",
+          "speakers": {
+            "penn": "Penn",
+            "host": "Penn"
+          },
+          "needFlags": [
+            "asked-check",
+            "asked-who",
+            "ready"
+          ],
+          "compose": 1,
+          "dialogue": {
+            "start": "hub",
+            "nodes": {
+              "n-q-check": {
+                "who": "penn",
+                "say": [
+                  "Ask who saw it. Look for a name, a time and a place. Then ask a second person."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-who": {
+                "who": "penn",
+                "say": [
+                  "When you say 'according to Mr. Ortiz', readers know where the fact came from."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-opinion": {
+                "who": "penn",
+                "say": [
+                  "A report tells facts. Opinions go in a different place, and we say they are opinions."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "hub": {
+                "who": "penn",
+                "say": [
+                  "What would you like to know about checking stories?"
+                ],
+                "options": [
+                  {
+                    "id": "q-check",
+                    "label": "How can I check if a story is true?",
+                    "once": true,
+                    "next": "n-q-check",
+                    "sets": [
+                      "asked-check"
+                    ]
+                  },
+                  {
+                    "id": "q-who",
+                    "label": "Why should I say who told me?",
+                    "once": true,
+                    "next": "n-q-who",
+                    "sets": [
+                      "asked-who"
+                    ]
+                  },
+                  {
+                    "id": "q-opinion",
+                    "label": "Can a report have opinions?",
+                    "once": true,
+                    "next": "n-q-opinion"
+                  },
+                  {
+                    "id": "q-done",
+                    "label": "I have enough to start.",
+                    "requires": [
+                      "asked-check",
+                      "asked-who"
+                    ],
+                    "sets": [
+                      "ready"
+                    ],
+                    "next": "done"
+                  }
+                ],
+                "compose": {
+                  "label": "Write your own question for Penn",
+                  "checks": [
+                    {
+                      "id": "q",
+                      "kind": "question",
+                      "label": "Ends with a question mark and asks something"
+                    }
+                  ],
+                  "routes": [
+                    {
+                      "terms": [
+                        "check",
+                        "true",
+                        "sure"
+                      ],
+                      "next": "n-q-check",
+                      "sets": [
+                        "asked-check"
+                      ]
+                    },
+                    {
+                      "terms": [
+                        "who",
+                        "said",
+                        "told",
+                        "name"
+                      ],
+                      "next": "n-q-who",
+                      "sets": [
+                        "asked-who"
+                      ]
+                    },
+                    {
+                      "terms": [
+                        "opinion"
+                      ],
+                      "next": "n-q-opinion"
+                    }
+                  ],
+                  "fallback": "unsure"
+                }
+              },
+              "unsure": {
+                "who": "penn",
+                "say": [
+                  "I am not sure. You could ask how to check, who told you or opinions."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Try another question.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "done": {
+                "who": "penn",
+                "say": [
+                  "Good. Now write your short report."
+                ],
+                "end": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Write the report",
+      "items": [
+        {
+          "id": "report",
+          "kind": "write",
+          "prompt": "Write a short true report about Pepper. Say who told you with according to or said.",
+          "purpose": "Penn will print your report in the class news.",
+          "minWords": 20,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "20 or more words",
+              "min": 20
+            },
+            {
+              "id": "who",
+              "kind": "any",
+              "label": "Says who told you",
+              "terms": [
+                "according to",
+                "said",
+                "says",
+                "told"
+              ]
+            },
+            {
+              "id": "fact",
+              "kind": "any",
+              "label": "Includes a fact",
+              "terms": [
+                "tuesday",
+                "park",
+                "library",
+                "brown",
+                "4 o'clock",
+                "ran"
+              ]
+            },
+            {
+              "id": "neutral",
+              "kind": "avoid",
+              "label": "Leaves out opinion words",
+              "terms": [
+                "best",
+                "thief",
+                "forever",
+                "worst",
+                "amazing"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: According to Mr. Ortiz, Pepper, a brown dog, ran away from the park on Tuesday. He said he saw Pepper run toward the library.",
+            "frame": "According to ___, ___. ___ said that ___.",
+            "partial": "___ said that ___.",
+            "cue": "Who. What. When or where."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Make it clearer",
+      "items": [
+        {
+          "id": "revise-report",
+          "kind": "write",
+          "reviseOf": "report",
+          "prompt": "Make your report clearer. Add where or when. Say what is still not known.",
+          "purpose": "A clear report helps readers find Pepper.",
+          "minWords": 28,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "28 or more words",
+              "min": 28
+            },
+            {
+              "id": "who",
+              "kind": "any",
+              "label": "Still says who told you",
+              "terms": [
+                "according to",
+                "said",
+                "says",
+                "told"
+              ]
+            },
+            {
+              "id": "unknown",
+              "kind": "any",
+              "label": "Says what is not known",
+              "terms": [
+                "not known",
+                "do not know",
+                "don't know",
+                "not sure",
+                "still",
+                "unknown",
+                "we do not"
+              ]
+            },
+            {
+              "id": "neutral",
+              "kind": "avoid",
+              "label": "Still leaves out opinion words",
+              "terms": [
+                "best",
+                "thief",
+                "forever",
+                "worst",
+                "amazing"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: We do not know where Pepper is now. According to Mr. Ortiz, Pepper ran toward the library on Tuesday.",
+            "frame": "We do not know ___. According to ___, ___.",
+            "partial": "We do not know ___.",
+            "cue": "What we know. What we do not know."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Say it and check a headline",
+      "items": [
+        {
+          "id": "tell",
+          "kind": "speak",
+          "prompt": "Tell a partner what is true about Pepper. Say who told you.",
+          "typedMin": 15,
+          "ladder": {
+            "frame": "According to ___, Pepper ___. We do not know ___.",
+            "partial": "___ said that ___.",
+            "cue": "Who. What. Not known."
+          },
+          "selfChecks": [
+            {
+              "id": "who",
+              "label": "I said who told me."
+            },
+            {
+              "id": "fact",
+              "label": "I told a fact."
+            },
+            {
+              "id": "clear",
+              "label": "My partner understood."
+            }
+          ],
+          "needSelf": 2
+        },
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "Which headline tells a fact?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Pepper Is the Best Dog Ever!",
+              "fb": "The word best is an opinion, because people can disagree. Look for a headline you can check."
+            },
+            {
+              "id": "b",
+              "label": "Brown Dog Missing from Park on Tuesday",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "Everyone Is Sad Forever",
+              "fb": "Nobody can check this, so it is not a fact. Look for details such as a day or a place."
+            },
+            {
+              "id": "d",
+              "label": "Pepper Is a Thief",
+              "fb": "Calling Pepper a thief is not checked, so it is only a claim. Look for a headline with details you can check."
+            }
+          ],
+          "answer": "b",
+          "why": "A fact can be checked: a brown dog, the park and Tuesday can all be checked. The other headlines use opinion words or claims nobody can check."
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "printed",
+      "title": "Printed in the class news",
+      "when": {
+        "revised": [
+          "revise-report"
+        ]
+      },
+      "text": "Penn pins your report on the board. 'You said who told you and what is not known,' says Penn. 'Readers can trust a report like that.'"
+    },
+    {
+      "id": "ok",
+      "title": "A true report",
+      "text": "Penn reads your report and nods. 'You told facts and said who told you,' says Penn. 'Next time, say what is still not known.'"
+    }
+  ],
+  "family": {
+    "skill": {
+      "en": "telling a fact from an opinion and saying who told you",
+      "es": "distinguir un hecho de una opinión y decir quién te lo contó"
+    },
+    "talk": {
+      "en": "Ask: 'Is that a fact or an opinion? How could we check it? Who said it?'",
+      "es": "Pregunta: '¿Eso es un hecho o una opinión? ¿Cómo podríamos comprobarlo? ¿Quién lo dijo?'"
+    },
+    "vocab": [
+      {
+        "term": "fact",
+        "es": "hecho"
+      },
+      {
+        "term": "opinion",
+        "es": "opinión"
+      },
+      {
+        "term": "report",
+        "es": "informe"
+      }
+    ]
+  }
+}

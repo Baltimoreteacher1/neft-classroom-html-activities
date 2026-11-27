@@ -1,12 +1,13 @@
-# Language World progress (continuation checkpoint, 2026-11-16)
+# Language World progress (continuation checkpoint, 2026-11-27)
 
 Branch: `claude/eduwonderlab-instructional-motion-f3gdco`. Audit: `docs/language-world-audit.md`. Ledger: `docs/language-world-coverage.json`.
 
 ## Completed and verified (automated browser or unit test)
 
-- Mission engine, 14 item kinds, deterministic dialogue machine, support ladder with fading, recommender with reasons, teacher catalog filter, family summary, teacher evidence, portfolio rows. `node --test tools/quest-engine.test.mjs`: 15 pass.
-- 10 missions across all 9 worlds: Missing Prototype, City That Needs a Plan, Build the Perfect Story, Great Debate, Word Forge (3-5 and 6-8), Newsroom Investigation, Lost Compass, Bell of Port Alder, Signal from the Tower. `node tools/validate-quest.mjs` passes (schema, unique ids, original-adventure links exist on disk, no level names, no SPED labels).
-- `node tools/quest-e2e.mjs`: each mission is played start to finish in Chromium (author solution, real clicks and typing); wrong sort/choice gets a hint not the answer; Finish stays disabled until the checklist is met; revision must change words; reload resumes; portfolio, family summary and teacher evidence read the run; no overflow at 1280 and 375; axe serious/critical zero on the pages it visits; reduced motion leaves no running animation. Run per mission in parallel (about 50 s each); a full serial run takes about nine minutes.
+- Mission engine, 14 item kinds, deterministic dialogue machine, support ladder with fading, recommender with reasons, teacher catalog filter, family summary, teacher evidence, portfolio rows. `node --test tools/quest-engine.test.mjs`: 15 pass; `validate-quest` also checks every world has both bands and every Speaking Studio task.
+- 17 missions across all 9 worlds, every world with a grades 3-5 and a grades 6-8 mission. Wave 1: Missing Prototype, City That Needs a Plan, Build the Perfect Story, Great Debate, Word Forge (3-5 and 6-8), Newsroom Investigation, Lost Compass, Bell of Port Alder, Signal from the Tower. Wave 2: The Missing Lunchbox, The Thirsty Garden, Market Day Long Ago, The Class Pet Vote, True or Just a Tale?, Message from the Lighthouse, Panel Discussion Prep.
+- Speaking Studio 2.0 at `/quest/speaking`: six picture-description tasks (three per band), vocabulary with read-aloud, a step-by-step "see how a response grows" demonstration with the new words marked, then the five-step speak item; its runs reach the portfolio and teacher evidence. `node tools/validate-quest.mjs` passes (schema, unique ids, original-adventure links exist on disk, no level names, no SPED labels).
+- `node tools/quest-e2e.mjs`: each of the 17 missions is played start to finish in Chromium (author solution, real clicks and typing); wrong sort/choice gets a hint not the answer; Finish stays disabled until the checklist is met; revision must change words; reload resumes; portfolio, family summary and teacher evidence read the run; no overflow at 1280 and 375; axe serious/critical zero on the pages it visits; reduced motion leaves no running animation. Run per mission in parallel (about 50 s each); a full serial run takes about nine minutes.
 - Hub, worlds, quick practice, teacher hub, creative studio, portfolio render and pass axe.
 - Wiring: route, sitemap and home registry entries, stylesheet, offline cache lists (`tools/sync-access-shell.mjs`). Biome clean on all new files.
 
@@ -25,9 +26,9 @@ Branch: `claude/eduwonderlab-instructional-motion-f3gdco`. Audit: `docs/language
 
 ## Partially implemented
 
-- Speaking Studio 2.0: the observe, prepare, speak, review, improve flow exists as the `speak` item inside missions. The existing `/speak` studio was not rewritten.
-- Grade-band coverage (see ledger `gaps`): not every world has both bands.
-- Character engine: six original characters with consistent coach lines and deterministic mission dialogue. Only the Investigator has a branching interview (Mission 1); the others coach through hints, checklists and listeners.
+- The existing `/speak` studio was not rewritten; Speaking Studio 2.0 is the new `/quest/speaking` route and the speak item inside missions.
+- Character engine: all six characters now have a branching hub-and-spoke interview (Investigator, Scientist, Storyteller, Editor, Guide, Word Architect) with one learner-written question. They are question menus plus a lexical router, not open conversation, and there is still no AI.
+- Replay value: one or two missions per world per band.
 
 ## Blocked / not started
 

@@ -1,0 +1,593 @@
+{
+  "id": "dc-class-pet-vote",
+  "world": "diplomacy-chronicles",
+  "band": "3-5",
+  "domains": [
+    "Reading",
+    "Speaking",
+    "Writing"
+  ],
+  "functions": [
+    "Argue",
+    "Counter"
+  ],
+  "keyUses": [
+    "Argue"
+  ],
+  "minutes": 30,
+  "tags": [
+    "opinion",
+    "respect",
+    "class vote"
+  ],
+  "title": {
+    "en": "The Class Pet Vote",
+    "es": "La votación de la mascota del salón"
+  },
+  "objective": {
+    "en": "Give an opinion with a reason, and answer a different opinion politely.",
+    "es": "Dar una opinión con una razón y responder con cortesía a una opinión distinta."
+  },
+  "success": [
+    {
+      "en": "I can say my opinion and give a reason.",
+      "es": "Puedo decir mi opinión y dar una razón."
+    },
+    {
+      "en": "I can tell what another person thinks.",
+      "es": "Puedo decir lo que piensa otra persona."
+    },
+    {
+      "en": "I can disagree politely.",
+      "es": "Puedo no estar de acuerdo con cortesía."
+    },
+    {
+      "en": "I can speak clearly to the class.",
+      "es": "Puedo hablar con claridad ante la clase."
+    }
+  ],
+  "narrative": "Room 12 can have one class pet: a hamster or a fish. Everyone has an opinion! Sol the Conversation Guide will help you share your idea with a reason, listen to others and answer kindly. This class vote is made up.",
+  "characters": [
+    "guide"
+  ],
+  "scene": {
+    "theme": "forum",
+    "alt": "A classroom meeting area with a wooden floor, a poster of a hamster on one wall and a poster of a fish on the other, and chairs in a circle.",
+    "objects": []
+  },
+  "vocab": [
+    {
+      "term": "opinion",
+      "def": "What you think or feel."
+    },
+    {
+      "term": "reason",
+      "def": "Why you think it."
+    },
+    {
+      "term": "polite",
+      "def": "Kind and respectful."
+    },
+    {
+      "term": "agree",
+      "def": "To think the same."
+    }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Hear both sides",
+      "items": [
+        {
+          "id": "sides",
+          "kind": "read",
+          "prompt": "Read what two classmates said. Open both.",
+          "sources": [
+            {
+              "id": "ana",
+              "title": "Ana",
+              "text": [
+                "I want a hamster because it is soft and funny.",
+                "A hamster can run on a wheel, and we can watch it."
+              ]
+            },
+            {
+              "id": "ben",
+              "title": "Ben",
+              "text": [
+                "I want a fish because it is quiet and easy.",
+                "A fish does not need us to clean a cage every day."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Opinions and reasons",
+      "items": [
+        {
+          "id": "sort-or",
+          "kind": "sort",
+          "prompt": "Is each sentence an opinion or a reason?",
+          "categories": [
+            {
+              "id": "op",
+              "label": "Opinion: what I want"
+            },
+            {
+              "id": "re",
+              "label": "Reason: why I want it"
+            }
+          ],
+          "cards": [
+            {
+              "id": "c1",
+              "text": "We should get a hamster.",
+              "cat": "op",
+              "why": "This says what the speaker wants."
+            },
+            {
+              "id": "c2",
+              "text": "A hamster can run on a wheel.",
+              "cat": "re",
+              "why": "This tells why. It is a reason."
+            },
+            {
+              "id": "c3",
+              "text": "We should get a fish.",
+              "cat": "op",
+              "why": "This says what the speaker wants."
+            },
+            {
+              "id": "c4",
+              "text": "A fish is quiet.",
+              "cat": "re",
+              "why": "This tells why. It is a reason."
+            },
+            {
+              "id": "c5",
+              "text": "I like the hamster best.",
+              "cat": "op",
+              "why": "This says what the speaker likes."
+            }
+          ]
+        },
+        {
+          "id": "side",
+          "kind": "choose",
+          "prompt": "Choose your opinion. You can choose the hamster, the fish, or a way to share.",
+          "pick": 1,
+          "options": [
+            {
+              "id": "hamster",
+              "label": "I want a hamster.",
+              "detail": "A soft pet that runs and plays.",
+              "terms": [
+                "hamster"
+              ],
+              "sets": [
+                "side-hamster"
+              ]
+            },
+            {
+              "id": "fish",
+              "label": "I want a fish.",
+              "detail": "A quiet pet that is easy to care for.",
+              "terms": [
+                "fish"
+              ],
+              "sets": [
+                "side-fish"
+              ]
+            },
+            {
+              "id": "both",
+              "label": "I want to share: one pet at a time.",
+              "detail": "Try one pet first, then the other.",
+              "terms": [
+                "share",
+                "both",
+                "turn"
+              ],
+              "sets": [
+                "side-both"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-sol",
+          "kind": "ask",
+          "character": "guide",
+          "prompt": "Practice with Sol. Pick questions, and write one question of your own.",
+          "speakers": {
+            "sol": "Sol",
+            "host": "Sol"
+          },
+          "needFlags": [
+            "asked-reason",
+            "asked-polite",
+            "ready"
+          ],
+          "compose": 1,
+          "dialogue": {
+            "start": "hub",
+            "nodes": {
+              "n-q-reason": {
+                "who": "sol",
+                "say": [
+                  "Say your opinion, then say because. For example: 'I want a hamster because it runs on a wheel.'"
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-polite": {
+                "who": "sol",
+                "say": [
+                  "Say what the other person thinks first. Then say 'but I think ...' and give your reason."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-listen": {
+                "who": "sol",
+                "say": [
+                  "When you listen, you learn something new, and people feel respected."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "hub": {
+                "who": "sol",
+                "say": [
+                  "What would you like to ask about sharing opinions?"
+                ],
+                "options": [
+                  {
+                    "id": "q-reason",
+                    "label": "How do I give a good reason?",
+                    "once": true,
+                    "next": "n-q-reason",
+                    "sets": [
+                      "asked-reason"
+                    ]
+                  },
+                  {
+                    "id": "q-polite",
+                    "label": "How can I disagree politely?",
+                    "once": true,
+                    "next": "n-q-polite",
+                    "sets": [
+                      "asked-polite"
+                    ]
+                  },
+                  {
+                    "id": "q-listen",
+                    "label": "Why should I listen to others?",
+                    "once": true,
+                    "next": "n-q-listen"
+                  },
+                  {
+                    "id": "q-done",
+                    "label": "I have enough to start.",
+                    "requires": [
+                      "asked-reason",
+                      "asked-polite"
+                    ],
+                    "sets": [
+                      "ready"
+                    ],
+                    "next": "done"
+                  }
+                ],
+                "compose": {
+                  "label": "Write your own question for Sol",
+                  "checks": [
+                    {
+                      "id": "q",
+                      "kind": "question",
+                      "label": "Ends with a question mark and asks something"
+                    }
+                  ],
+                  "routes": [
+                    {
+                      "terms": [
+                        "reason",
+                        "because"
+                      ],
+                      "next": "n-q-reason",
+                      "sets": [
+                        "asked-reason"
+                      ]
+                    },
+                    {
+                      "terms": [
+                        "polite",
+                        "disagree",
+                        "kind",
+                        "nice"
+                      ],
+                      "next": "n-q-polite",
+                      "sets": [
+                        "asked-polite"
+                      ]
+                    },
+                    {
+                      "terms": [
+                        "listen"
+                      ],
+                      "next": "n-q-listen"
+                    }
+                  ],
+                  "fallback": "unsure"
+                }
+              },
+              "unsure": {
+                "who": "sol",
+                "say": [
+                  "I am not sure. You could ask about reasons, being polite or listening."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Try another question.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "done": {
+                "who": "sol",
+                "say": [
+                  "Great. Now you are ready to write your opinion."
+                ],
+                "end": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Share your opinion",
+      "items": [
+        {
+          "id": "opinion",
+          "kind": "write",
+          "prompt": "Write your opinion about the class pet. Give a reason with because.",
+          "purpose": "Sol will read your opinion to the class.",
+          "minWords": 15,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "15 or more words",
+              "min": 15
+            },
+            {
+              "id": "op",
+              "kind": "any",
+              "label": "Says what you want",
+              "terms": [
+                "i want",
+                "i think",
+                "we should",
+                "i like",
+                "i believe"
+              ]
+            },
+            {
+              "id": "because",
+              "kind": "any",
+              "label": "Gives a reason with because",
+              "terms": [
+                "because",
+                "since"
+              ]
+            },
+            {
+              "id": "pet",
+              "kind": "any",
+              "label": "Talks about the pet",
+              "terms": [
+                "hamster",
+                "fish",
+                "pet",
+                "share"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: I want a hamster because it can run on a wheel and we can watch it.",
+            "frame": "I want ___ because ___.",
+            "partial": "I think ___ because ___.",
+            "cue": "Opinion. Because. Reason."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Answer politely",
+      "items": [
+        {
+          "id": "revise-opinion",
+          "kind": "write",
+          "reviseOf": "opinion",
+          "prompt": "Add a polite sentence about the other opinion. Say what the other person thinks. Then say but and your reason.",
+          "purpose": "Polite words keep our class kind.",
+          "minWords": 22,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "22 or more words",
+              "min": 22
+            },
+            {
+              "id": "other",
+              "kind": "any",
+              "label": "Says what another person thinks",
+              "terms": [
+                "ana",
+                "ben",
+                "some people",
+                "other",
+                "i understand",
+                "they think",
+                "someone"
+              ]
+            },
+            {
+              "id": "but",
+              "kind": "any",
+              "label": "Uses but or however",
+              "terms": [
+                "but ",
+                "however",
+                "even so"
+              ]
+            },
+            {
+              "id": "kind",
+              "kind": "avoid",
+              "label": "Uses kind words (no insults)",
+              "terms": [
+                "stupid",
+                "dumb",
+                "silly",
+                "boring",
+                "hate"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: Ben thinks a fish is easy, but I think a hamster is more fun because it plays.",
+            "frame": "___ thinks ___, but I think ___ because ___.",
+            "partial": "___ thinks ___, but I think ___.",
+            "cue": "What they think. But. What I think."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Speak to the class",
+      "items": [
+        {
+          "id": "tell",
+          "kind": "speak",
+          "prompt": "Tell the class your opinion. Give a reason. Thank them for listening.",
+          "typedMin": 15,
+          "ladder": {
+            "frame": "I want ___ because ___. Thank you for listening.",
+            "partial": "I think ___ because ___.",
+            "cue": "Opinion, reason, thanks."
+          },
+          "selfChecks": [
+            {
+              "id": "opinion",
+              "label": "I said my opinion."
+            },
+            {
+              "id": "reason",
+              "label": "I gave a reason."
+            },
+            {
+              "id": "kind",
+              "label": "I spoke kindly."
+            }
+          ],
+          "needSelf": 2
+        },
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "Which sentence disagrees politely?",
+          "options": [
+            {
+              "id": "a",
+              "label": "That idea is dumb.",
+              "fb": "This insults the idea, so it is not polite. Look for a sentence that shows you listened."
+            },
+            {
+              "id": "b",
+              "label": "I see your idea, but I think a different way.",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "You are wrong.",
+              "fb": "This tells a person they are wrong, so it is not polite. Look for kind words."
+            },
+            {
+              "id": "d",
+              "label": "Nobody likes that.",
+              "fb": "This says nobody agrees, which is not kind or true. Look for a sentence that respects the idea."
+            }
+          ],
+          "answer": "b",
+          "why": "A polite answer shows you heard the other idea and says your view without insulting anyone. The other choices attack the person or the idea."
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "kind",
+      "title": "A kind class vote",
+      "when": {
+        "revised": [
+          "revise-opinion"
+        ]
+      },
+      "text": "Sol smiles as the class listens. 'Whichever pet you chose, you gave a reason and answered others kindly,' says Sol. 'That is how a class makes good decisions.'"
+    },
+    {
+      "id": "ok",
+      "title": "Your opinion is heard",
+      "text": "Sol thanks you for sharing. 'You gave a reason,' says Sol. 'Next time, say what another person thinks and answer kindly.'"
+    }
+  ],
+  "family": {
+    "skill": {
+      "en": "giving an opinion with a reason and disagreeing politely",
+      "es": "dar una opinión con una razón y no estar de acuerdo con cortesía"
+    },
+    "talk": {
+      "en": "Ask: 'What is your opinion? What is your reason? How can we disagree kindly?'",
+      "es": "Pregunta: '¿Cuál es tu opinión? ¿Cuál es tu razón? ¿Cómo podemos no estar de acuerdo con amabilidad?'"
+    },
+    "vocab": [
+      {
+        "term": "opinion",
+        "es": "opinión"
+      },
+      {
+        "term": "reason",
+        "es": "razón"
+      },
+      {
+        "term": "polite",
+        "es": "cortés"
+      }
+    ]
+  }
+}

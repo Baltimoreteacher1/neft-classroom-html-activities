@@ -1,0 +1,408 @@
+{
+  "id": "ln-lighthouse-message",
+  "world": "language-nexus",
+  "band": "3-5",
+  "domains": [
+    "Listening",
+    "Reading",
+    "Speaking",
+    "Writing"
+  ],
+  "functions": [
+    "Inform",
+    "Sequence"
+  ],
+  "keyUses": [
+    "Inform"
+  ],
+  "minutes": 30,
+  "tags": [
+    "listening",
+    "integrated",
+    "plan"
+  ],
+  "title": {
+    "en": "Message from the Lighthouse",
+    "es": "Mensaje desde el faro"
+  },
+  "objective": {
+    "en": "Listen and read to find a plan, notice what changed, and write and say the plan.",
+    "es": "Escuchar y leer para encontrar un plan, notar qué cambió, y escribir y decir el plan."
+  },
+  "success": [
+    {
+      "en": "I can listen for the day, the time and the place.",
+      "es": "Puedo escuchar el día, la hora y el lugar."
+    },
+    {
+      "en": "I can read a note and find what changed.",
+      "es": "Puedo leer una nota y encontrar qué cambió."
+    },
+    {
+      "en": "I can write the plan with the new place.",
+      "es": "Puedo escribir el plan con el nuevo lugar."
+    },
+    {
+      "en": "I can say the plan to a partner.",
+      "es": "Puedo decir el plan a un compañero."
+    }
+  ],
+  "narrative": "The lighthouse keeper sends a radio message to the school club. A note on the table might change the plan. Sol the Conversation Guide will help you listen, read, write and speak. This message is made up for practice.",
+  "characters": [
+    "guide"
+  ],
+  "scene": {
+    "theme": "nexus",
+    "alt": "A lighthouse on a hill at sunrise with a radio on a table in front, a printed note next to it, a red bucket and two flashlights.",
+    "objects": []
+  },
+  "vocab": [
+    {
+      "term": "plan",
+      "def": "What we will do and when."
+    },
+    {
+      "term": "change",
+      "def": "To make something different."
+    },
+    {
+      "term": "bring",
+      "def": "To carry something with you."
+    },
+    {
+      "term": "meet",
+      "def": "To come together in one place."
+    }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Listen to the radio",
+      "items": [
+        {
+          "id": "radio",
+          "kind": "check",
+          "prompt": "Listen to the radio message. You can listen again. When is the beach walk?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Monday at nine",
+              "fb": "Listen again for the day."
+            },
+            {
+              "id": "b",
+              "label": "Friday at nine",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "Friday at ten",
+              "fb": "Listen again for the time."
+            },
+            {
+              "id": "d",
+              "label": "Saturday at nine",
+              "fb": "Listen again for the day."
+            }
+          ],
+          "answer": "b",
+          "say": "This is the lighthouse. The beach walk is on Friday at nine in the morning. Please bring a red bucket and two flashlights. We will meet at the big rock. I repeat: Friday, nine o'clock, the big rock.",
+          "transcript": "This is the lighthouse. The beach walk is on Friday at nine in the morning. Please bring a red bucket and two flashlights. We will meet at the big rock. I repeat: Friday, nine o'clock, the big rock.",
+          "why": "The message says the walk is on Friday at nine in the morning, and it repeats Friday and nine o'clock at the end."
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Read the note",
+      "items": [
+        {
+          "id": "note",
+          "kind": "read",
+          "prompt": "Read the note on the table. It was written after the radio message.",
+          "sources": [
+            {
+              "id": "n",
+              "title": "Note from the keeper",
+              "text": [
+                "Update: The big rock is under water on Friday. Please meet at the blue boat.",
+                "The day and the time are the same. Bring the same things."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "changed",
+          "kind": "check",
+          "prompt": "What changed?",
+          "options": [
+            {
+              "id": "a",
+              "label": "The day changed to Monday.",
+              "fb": "The note says the day is the same."
+            },
+            {
+              "id": "b",
+              "label": "The meeting place changed to the blue boat.",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "The time changed to ten.",
+              "fb": "The note says the time is the same."
+            },
+            {
+              "id": "d",
+              "label": "Nobody needs a bucket.",
+              "fb": "The note says to bring the same things."
+            }
+          ],
+          "answer": "b",
+          "why": "The note says the big rock is under water on Friday, so the club meets at the blue boat. The day, time and things to bring stay the same."
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Write and say the plan",
+      "items": [
+        {
+          "id": "plan",
+          "kind": "write",
+          "prompt": "Write the plan for the club. Use the radio and the note: the day, the time, the place and what to bring.",
+          "purpose": "The club will follow your plan on Friday.",
+          "minWords": 15,
+          "flagOn": {
+            "place": "place-correct"
+          },
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "15 or more words",
+              "min": 15
+            },
+            {
+              "id": "day",
+              "kind": "any",
+              "label": "Says the day: Friday",
+              "terms": [
+                "friday"
+              ]
+            },
+            {
+              "id": "time",
+              "kind": "any",
+              "label": "Says the time: nine",
+              "terms": [
+                "nine",
+                "9"
+              ]
+            },
+            {
+              "id": "place",
+              "kind": "any",
+              "label": "Says the new place from the note: the blue boat",
+              "terms": [
+                "blue boat",
+                "boat"
+              ]
+            },
+            {
+              "id": "bring",
+              "kind": "count",
+              "label": "Says what to bring",
+              "terms": [
+                "bucket",
+                "flashlight",
+                "flashlights"
+              ],
+              "min": 2
+            }
+          ],
+          "ladder": {
+            "model": "Model: The beach walk is on Friday at nine. Meet at the blue boat, not the big rock. Bring a red bucket and two flashlights.",
+            "frame": "The walk is on ___ at ___. Meet at ___. Bring ___ and ___.",
+            "partial": "The walk is on ___. Meet at ___.",
+            "cue": "Day. Time. Place. Bring."
+          }
+        },
+        {
+          "id": "reply",
+          "kind": "speak",
+          "prompt": "Tell a partner the plan, and say that the place changed.",
+          "typedMin": 12,
+          "ladder": {
+            "frame": "The walk is on ___ at ___. We will meet at ___. The place changed.",
+            "partial": "We will meet at ___.",
+            "cue": "Day, time, place, change."
+          },
+          "selfChecks": [
+            {
+              "id": "day",
+              "label": "I said the day."
+            },
+            {
+              "id": "place",
+              "label": "I said the new place."
+            },
+            {
+              "id": "clear",
+              "label": "My partner understood."
+            }
+          ],
+          "needSelf": 2
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Explain the change",
+      "items": [
+        {
+          "id": "revise-plan",
+          "kind": "write",
+          "reviseOf": "plan",
+          "flagOn": {
+            "place": "place-correct"
+          },
+          "prompt": "Add a sentence that tells why the place changed. Use because.",
+          "purpose": "A reason helps the club trust the plan.",
+          "minWords": 22,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "22 or more words",
+              "min": 22
+            },
+            {
+              "id": "because",
+              "kind": "any",
+              "label": "Uses because",
+              "terms": [
+                "because",
+                "since"
+              ]
+            },
+            {
+              "id": "place",
+              "kind": "any",
+              "label": "Still says the blue boat",
+              "terms": [
+                "blue boat",
+                "boat"
+              ]
+            },
+            {
+              "id": "why",
+              "kind": "any",
+              "label": "Says the rock is under water",
+              "terms": [
+                "water",
+                "rock"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: We will meet at the blue boat because the big rock is under water.",
+            "frame": "We will meet at ___ because ___.",
+            "partial": "We meet at ___.",
+            "cue": "New place. Because. Reason."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Listen again",
+      "items": [
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "Listen to a new message. When is the picnic?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Saturday at noon",
+              "fb": "Listen again for the day."
+            },
+            {
+              "id": "b",
+              "label": "Sunday at noon",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "Sunday at three",
+              "fb": "Listen again for the time."
+            },
+            {
+              "id": "d",
+              "label": "Saturday at three",
+              "fb": "Listen again for the day."
+            }
+          ],
+          "answer": "b",
+          "say": "Hello, club. The picnic is moved from Saturday to Sunday, because it will rain on Saturday. We will eat at noon by the pond.",
+          "transcript": "Hello, club. The picnic is moved from Saturday to Sunday, because it will rain on Saturday. We will eat at noon by the pond.",
+          "why": "The message says the picnic moved from Saturday to Sunday because of rain, and the club eats at noon by the pond."
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "walk",
+      "title": "The walk begins",
+      "when": {
+        "flags": [
+          "place-correct"
+        ],
+        "revised": [
+          "revise-plan"
+        ]
+      },
+      "text": "On Friday at nine, the club meets at the blue boat with buckets and flashlights. 'You listened, read and told why the place changed,' says Sol. 'The whole club is on the same page.'"
+    },
+    {
+      "id": "good",
+      "title": "A good start",
+      "when": {
+        "flags": [
+          "place-correct"
+        ]
+      },
+      "text": "The club meets at the blue boat on Friday. 'You used the radio and the note,' says Sol. 'Next time, tell why the place changed.'"
+    },
+    {
+      "id": "rock",
+      "title": "At the big rock",
+      "text": "The club walks to the big rock and finds it under water. 'The note changed the plan,' says Sol. 'When two messages are different, the newer one tells what changed.'"
+    }
+  ],
+  "family": {
+    "skill": {
+      "en": "listening and reading for a plan and noticing what changed",
+      "es": "escuchar y leer para encontrar un plan y notar qué cambió"
+    },
+    "talk": {
+      "en": "Ask: 'What did you hear? What did you read? What changed?'",
+      "es": "Pregunta: '¿Qué escuchaste? ¿Qué leíste? ¿Qué cambió?'"
+    },
+    "vocab": [
+      {
+        "term": "plan",
+        "es": "plan"
+      },
+      {
+        "term": "change",
+        "es": "cambio"
+      },
+      {
+        "term": "meet",
+        "es": "reunirse"
+      }
+    ]
+  }
+}

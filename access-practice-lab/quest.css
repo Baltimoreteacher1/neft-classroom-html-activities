@@ -54,8 +54,8 @@
 .q-stage-n { inline-size: 1.6rem; block-size: 1.6rem; display: inline-grid; place-items: center; border-radius: 50%; background: var(--surface-3); color: var(--ink); font-size: 0.95rem; }
 .q-stage.is-on .q-stage-n { background: var(--on-brand); color: var(--brand); }
 .q-layout { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; gap: 1.25rem; align-items: start; }
-.q-side { position: sticky; inset-block-start: 1rem; display: grid; gap: 1rem; }
-@media (max-width: 960px) { .q-layout { grid-template-columns: 1fr; } .q-side { position: static; order: -1; } }
+.q-side { display: grid; gap: 1rem; align-content: start; }
+@media (max-width: 960px) { .q-layout { grid-template-columns: 1fr; } .q-side { order: -1; } }
 .q-main { display: grid; gap: 1rem; min-inline-size: 0; }
 .q-narr { font-size: 1.05rem; max-inline-size: 70ch; }
 .q-stage-title { margin: 0; }
@@ -79,6 +79,7 @@
 .q-coach-name { margin: 0; }
 .q-coach-say { margin: 0.25rem 0 0; }
 .q-coach-extra { display: block; margin-block-start: 0.35rem; color: var(--ink-2); }
+.q-vocab summary { display: flex; align-items: center; min-block-size: 2.75rem; cursor: pointer; }
 .q-vocab dl { margin: 0.5rem 0 0; }
 .q-vocab dt { font-weight: 700; margin-block-start: 0.5rem; }
 .q-vocab dd { margin: 0; color: var(--ink-2); }
@@ -186,13 +187,13 @@
 .q-pick[disabled] { opacity: 0.7; cursor: default; }
 .q-slots { padding-inline-start: 1.25rem; display: grid; gap: 1rem; }
 .q-slot.is-done h4::after { content: " ✓"; color: var(--right); }
-.q-anvil { margin-block: 0.75rem; padding: 1rem; border-radius: var(--radius-md); background: var(--accent); color: var(--hint-soft); text-align: center; min-block-size: 8rem; }
-.q-anvil .fine, .q-anvil .q-forged span { color: var(--hint-soft); }
+.q-anvil { margin-block: 0.75rem; padding: 1rem; border-radius: var(--radius-md); background: var(--brand-deep); color: var(--ivory); text-align: center; min-block-size: 8rem; }
+.q-anvil .fine, .q-anvil .q-forged span { color: var(--copper-200); }
 .q-tiles { display: flex; justify-content: center; gap: 0.3rem; margin-block-end: 0.5rem; }
 .q-tile { padding: 0.5rem 0.9rem; border-radius: var(--radius-sm); font-size: 1.5rem; font-weight: 800; background: var(--surface-2); color: var(--hint); border: 3px solid var(--accent); }
 .q-tile.is-empty { opacity: 0.6; border-style: dashed; }
 .q-anvil.is-lit { box-shadow: 0 0 0 3px var(--status-warning-border), var(--shadow-card); }
-.q-forged strong { font-size: 1.6rem; display: block; color: var(--hint); }
+.q-forged strong { font-size: 1.6rem; display: block; color: var(--copper-200); }
 .q-anvil .q-fb { color: var(--hint); }
 .q-tasks { padding-inline-start: 1.25rem; }
 .q-tasks li.is-now { font-weight: 800; }

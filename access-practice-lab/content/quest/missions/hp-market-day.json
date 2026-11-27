@@ -1,0 +1,543 @@
+{
+  "id": "hp-market-day",
+  "world": "history-portal",
+  "band": "3-5",
+  "domains": [
+    "Reading",
+    "Speaking",
+    "Writing"
+  ],
+  "functions": [
+    "Sequence",
+    "Narrate"
+  ],
+  "keyUses": [
+    "Narrate"
+  ],
+  "minutes": 30,
+  "tags": [
+    "history",
+    "sequence",
+    "market"
+  ],
+  "title": {
+    "en": "Market Day Long Ago",
+    "es": "El día de mercado hace mucho tiempo"
+  },
+  "objective": {
+    "en": "Put events in order and tell what happened with time words like first, next and finally.",
+    "es": "Ordenar sucesos y contar qué pasó con palabras de tiempo como first, next y finally."
+  },
+  "success": [
+    {
+      "en": "I can put events in the right order.",
+      "es": "Puedo poner sucesos en el orden correcto."
+    },
+    {
+      "en": "I can ask a question to learn more about the past.",
+      "es": "Puedo hacer una pregunta para saber más del pasado."
+    },
+    {
+      "en": "I can use first, next, then and finally.",
+      "es": "Puedo usar first, next, then y finally."
+    },
+    {
+      "en": "I can tell a day in order.",
+      "es": "Puedo contar un día en orden."
+    }
+  ],
+  "narrative": "The History Portal opens onto Market Day in the made-up town of Port Alder, long ago. Baker Ada gets up before the sun. Tala the Storyteller helps you find out what happened first, next and last. This town and its people are made up for practice.",
+  "characters": [
+    "storyteller"
+  ],
+  "scene": {
+    "theme": "portal",
+    "alt": "A glowing archway open onto an old market square with a baker's stall, baskets of bread, a bell in a wooden tower and fishing boats in the harbor behind.",
+    "objects": []
+  },
+  "vocab": [
+    {
+      "term": "first",
+      "def": "Before everything else."
+    },
+    {
+      "term": "next",
+      "def": "After that."
+    },
+    {
+      "term": "finally",
+      "def": "At the end."
+    },
+    {
+      "term": "market",
+      "def": "A place where people buy and sell food and things."
+    }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Read Ada's diary",
+      "items": [
+        {
+          "id": "diary",
+          "kind": "read",
+          "prompt": "Read Baker Ada's diary page. Open every part.",
+          "sources": [
+            {
+              "id": "d1",
+              "title": "Morning",
+              "text": [
+                "First, I woke up before the sun and lit the oven.",
+                "Next, I mixed the dough and made twenty loaves."
+              ]
+            },
+            {
+              "id": "d2",
+              "title": "Midday",
+              "text": [
+                "Then I carried the warm bread to the market square.",
+                "After that, the bell rang and the market opened."
+              ]
+            },
+            {
+              "id": "d3",
+              "title": "Evening",
+              "text": [
+                "Finally, I sold the last loaf and walked home.",
+                "Before bed, I wrote this page."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Put it in order and ask",
+      "items": [
+        {
+          "id": "timeline",
+          "kind": "timeline",
+          "prompt": "Put Ada's day in order. Use the time words in her diary. Use the up and down buttons.",
+          "events": [
+            {
+              "id": "e1",
+              "text": "Ada wakes up and lights the oven.",
+              "order": 1,
+              "why": "The diary says 'First, I woke up'."
+            },
+            {
+              "id": "e2",
+              "text": "Ada mixes dough and makes twenty loaves.",
+              "order": 2,
+              "why": "The diary says 'Next'. It comes after waking up."
+            },
+            {
+              "id": "e3",
+              "text": "Ada carries the bread to the market square.",
+              "order": 3,
+              "why": "The diary says 'Then'. The bread has to be made first."
+            },
+            {
+              "id": "e4",
+              "text": "The bell rings and the market opens.",
+              "order": 4,
+              "why": "The diary says 'After that'."
+            },
+            {
+              "id": "e5",
+              "text": "Ada sells the last loaf and walks home.",
+              "order": 5,
+              "why": "The diary says 'Finally'. It is the end of the day."
+            }
+          ]
+        },
+        {
+          "id": "ask-ada",
+          "kind": "ask",
+          "character": "storyteller",
+          "prompt": "Ask Baker Ada about her day. Pick questions, and write one question of your own.",
+          "speakers": {
+            "ada": "Baker Ada",
+            "host": "Tala"
+          },
+          "needFlags": [
+            "asked-early",
+            "asked-bread",
+            "ready"
+          ],
+          "compose": 1,
+          "dialogue": {
+            "start": "hub",
+            "nodes": {
+              "n-q-early": {
+                "who": "ada",
+                "say": [
+                  "Bread takes hours to bake, so I start before dawn. The loaves must be warm when the bell rings."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-bread": {
+                "who": "ada",
+                "say": [
+                  "I baked twenty loaves. I sold every one by the evening."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-bell": {
+                "who": "ada",
+                "say": [
+                  "The bell tells the town that the market is open."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "hub": {
+                "who": "host",
+                "say": [
+                  "Baker Ada is happy to answer. What would you like to know?"
+                ],
+                "options": [
+                  {
+                    "id": "q-early",
+                    "label": "Why did you wake up before the sun?",
+                    "once": true,
+                    "next": "n-q-early",
+                    "sets": [
+                      "asked-early"
+                    ]
+                  },
+                  {
+                    "id": "q-bread",
+                    "label": "How many loaves did you bake?",
+                    "once": true,
+                    "next": "n-q-bread",
+                    "sets": [
+                      "asked-bread"
+                    ]
+                  },
+                  {
+                    "id": "q-bell",
+                    "label": "What is the bell for?",
+                    "once": true,
+                    "next": "n-q-bell"
+                  },
+                  {
+                    "id": "q-done",
+                    "label": "I have enough to start.",
+                    "requires": [
+                      "asked-early",
+                      "asked-bread"
+                    ],
+                    "sets": [
+                      "ready"
+                    ],
+                    "next": "done"
+                  }
+                ],
+                "compose": {
+                  "label": "Write your own question for Ada",
+                  "checks": [
+                    {
+                      "id": "q",
+                      "kind": "question",
+                      "label": "Ends with a question mark and asks something"
+                    }
+                  ],
+                  "routes": [
+                    {
+                      "terms": [
+                        "bell",
+                        "market"
+                      ],
+                      "next": "n-q-bell"
+                    },
+                    {
+                      "terms": [
+                        "early",
+                        "morning",
+                        "wake",
+                        "sun"
+                      ],
+                      "next": "n-q-early",
+                      "sets": [
+                        "asked-early"
+                      ]
+                    },
+                    {
+                      "terms": [
+                        "loaf",
+                        "loaves",
+                        "bread",
+                        "bake"
+                      ],
+                      "next": "n-q-bread",
+                      "sets": [
+                        "asked-bread"
+                      ]
+                    }
+                  ],
+                  "fallback": "unsure"
+                }
+              },
+              "unsure": {
+                "who": "host",
+                "say": [
+                  "I am not sure what you mean. You could ask about the bell, the bread or the morning."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Try another question.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "done": {
+                "who": "host",
+                "say": [
+                  "Wonderful questions. Now tell the day in order."
+                ],
+                "end": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Tell the day in order",
+      "items": [
+        {
+          "id": "account",
+          "kind": "write",
+          "prompt": "Tell Ada's day in order. Use first, next, then and finally.",
+          "purpose": "Tala will read your story at the Portal.",
+          "minWords": 25,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "25 or more words",
+              "min": 25
+            },
+            {
+              "id": "order",
+              "kind": "count",
+              "label": "Uses at least three time words",
+              "terms": [
+                "first",
+                "next",
+                "then",
+                "after that",
+                "finally"
+              ],
+              "min": 3
+            },
+            {
+              "id": "who",
+              "kind": "any",
+              "label": "Names Ada",
+              "terms": [
+                "ada",
+                "baker"
+              ]
+            },
+            {
+              "id": "bread",
+              "kind": "any",
+              "label": "Talks about the bread",
+              "terms": [
+                "bread",
+                "loaves",
+                "loaf",
+                "dough",
+                "oven"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: First, Ada woke up and lit the oven. Next, she made twenty loaves. Then she carried the bread to the market. Finally, she sold the last loaf.",
+            "frame": "First, Ada ___. Next, she ___. Then she ___. Finally, she ___.",
+            "partial": "First, ___. Finally, ___.",
+            "cue": "First. Next. Then. Finally."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Add a detail",
+      "items": [
+        {
+          "id": "revise-account",
+          "kind": "write",
+          "reviseOf": "account",
+          "prompt": "Add a detail to two sentences. Tell where or why. Keep the order.",
+          "purpose": "Details help readers picture the past.",
+          "minWords": 30,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "30 or more words",
+              "min": 30
+            },
+            {
+              "id": "order",
+              "kind": "count",
+              "label": "Still uses time words",
+              "terms": [
+                "first",
+                "next",
+                "then",
+                "after that",
+                "finally"
+              ],
+              "min": 3
+            },
+            {
+              "id": "detail",
+              "kind": "any",
+              "label": "Adds where or why",
+              "terms": [
+                "because",
+                "in the",
+                "at the",
+                "so ",
+                "to the",
+                "before"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: First, Ada woke up before the sun because bread takes a long time to bake.",
+            "frame": "First, Ada ___ because ___.",
+            "partial": "Ada ___ at the ___.",
+            "cue": "Add where or why."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Tell it aloud",
+      "items": [
+        {
+          "id": "tell",
+          "kind": "speak",
+          "prompt": "Tell a partner about Ada's day. Use first, next, then and finally.",
+          "typedMin": 15,
+          "ladder": {
+            "frame": "First, Ada ___. Next, ___. Then ___. Finally, ___.",
+            "partial": "First, ___. Finally, ___.",
+            "cue": "First, next, then, finally."
+          },
+          "selfChecks": [
+            {
+              "id": "order",
+              "label": "I told it in order."
+            },
+            {
+              "id": "words",
+              "label": "I used time words."
+            },
+            {
+              "id": "clear",
+              "label": "My partner could follow."
+            }
+          ],
+          "needSelf": 2
+        },
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "Which sentence uses a time word to show order?",
+          "options": [
+            {
+              "id": "a",
+              "label": "The baker is kind.",
+              "fb": "There is no time word here."
+            },
+            {
+              "id": "b",
+              "label": "Next, the bell rang.",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "The bread smells good.",
+              "fb": "There is no time word here."
+            },
+            {
+              "id": "d",
+              "label": "Ada has an oven.",
+              "fb": "There is no time word here."
+            }
+          ],
+          "answer": "b",
+          "why": "The word next is a time word. It shows that the bell rang after something else happened, so it tells the order."
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "told",
+      "title": "The bell rings",
+      "when": {
+        "revised": [
+          "revise-account"
+        ]
+      },
+      "text": "The bell in the tower rings as your story plays back from morning to evening. 'You told the day in order and added details,' says Tala. 'Every part followed the one before.'"
+    },
+    {
+      "id": "ok",
+      "title": "The day is told",
+      "text": "The bell rings once. 'You told Ada's day in order,' says Tala. 'Next time, add a detail about where or why.'"
+    }
+  ],
+  "family": {
+    "skill": {
+      "en": "putting events in order and telling them with first, next, then and finally",
+      "es": "poner sucesos en orden y contarlos con first, next, then y finally"
+    },
+    "talk": {
+      "en": "Ask: 'What happened first? What happened next? How did the day end?'",
+      "es": "Pregunta: '¿Qué pasó primero? ¿Qué pasó después? ¿Cómo terminó el día?'"
+    },
+    "vocab": [
+      {
+        "term": "first",
+        "es": "primero"
+      },
+      {
+        "term": "next",
+        "es": "luego"
+      },
+      {
+        "term": "finally",
+        "es": "finalmente"
+      }
+    ]
+  }
+}

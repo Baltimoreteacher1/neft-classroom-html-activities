@@ -6,6 +6,7 @@
 //   /quest/world[/<world>]         the nine worlds; one world's scene, character and missions
 //   /quest/mission/<id>            a mission: Discover, Investigate, Communicate, Revise, Apply
 //   /quest/create[/<id>]           Creative Language Studio (see quest-more.js)
+//   /quest/speaking[/<id>]         Speaking Studio 2.0: picture description in five steps (quest-speaking.js)
 //   /quest/portfolio               Living Language Portfolio
 //   /quest/teacher[/<id>|evidence] Teacher Mission Hub
 //   /quest/family/<id>             optional family summary
@@ -23,6 +24,7 @@ import { moreSupport, recommend, suggestRung } from "../quest/pathway.js";
 import { archiveRun, finishRun, historyFor, loadQuest, runFor, saveQuest } from "../quest/state.js";
 import { bi, bs, coachHTML, resetUi, say, syncUi, ui } from "../quest/ui.js";
 import * as More from "./quest-more.js";
+import * as Speaking from "./quest-speaking.js";
 
 const KINDS = { ...A, ...B };
 const KIND_HANDLERS = Object.fromEntries(["explore", "read", "sort", "compare", "ask", "choose", "check"].map((k) => [k, A[k]]).concat(["write", "speak", "story", "forge", "simulate", "route", "timeline"].map((k) => [k, B[k]])));
@@ -95,6 +97,7 @@ function hubHTML(ctx, I, cat, qs) {
     <nav class="panel q-more-links" aria-label="${I.S("More in Language Quest", "Más en Misión del lenguaje")}">
       <a class="btn btn-primary" href="${BASE}/book-studio?grades=${band}">${icon("writing")} ${I.T("Open Book Studio", "Abrir Book Studio")}</a>
       <a class="btn" href="${BASE}/pathways?grades=${band}">${icon("road")} ${I.T("Connected Pathways", "Rutas conectadas")}</a>
+      <a class="btn" href="${questHref("speaking", band)}">${icon("speaking")} ${I.T("Speaking Studio", "Estudio de expresión oral")}</a>
       <a class="btn" href="${questHref("portfolio", band)}">${icon("bookmark")} ${I.T("My portfolio", "Mi portafolio")}</a>
       <a class="btn" href="${questHref("teacher", band)}">${icon("teacher")} ${I.T("Teacher Mission Hub", "Centro de misiones para docentes")}</a>
       <a class="btn" href="${BASE}/city?grades=${band}">${icon("worlds")} ${I.T("Language City", "Ciudad del lenguaje")}</a>
@@ -256,6 +259,10 @@ export async function render(ctx) {
     const out = await missionPage(ctx, I, cat, sub);
     return { title: out.title, html: html`<div class="q-page">${out.html}</div>` };
   }
+  if (id === "speaking") {
+    const out = await Speaking.render(ctx, I, cat, qs, sub, { crumbs });
+    return { title: `${out.title} · ${I.S("Language Quest", "Misión del lenguaje")}`, html: html`<div class="q-page">${out.html}</div>` };
+  }
   const more = await More.render(ctx, I, cat, qs, id, sub, { questHref, crumbs, chip, statusOf, missionCard });
   if (more) return { title: `${more.title} · ${I.S("Language Quest", "Misión del lenguaje")}`, html: html`<div class="q-page">${more.html}</div>` };
   return wrap(I.S("Language Quest", "Misión del lenguaje"), hubHTML(ctx, I, cat, qs));
@@ -321,6 +328,7 @@ function global(el, ctx) {
 }
 
 export function onClick(e, ctx) {
+  if (ctx.route.id === "speaking") return Speaking.onClick(e, ctx);
   const el = e.target.closest("[data-q-act]");
   if (el && (ctx.route.id === "mission" || el.dataset.qAct === "pick-start")) {
     if (global(el, ctx)) return true;
@@ -334,6 +342,7 @@ export function onClick(e, ctx) {
   return More.onClick(e, ctx, { questHref }) || false;
 }
 export function onChange(e, ctx) {
+  if (ctx.route.id === "speaking") return Speaking.onChange(e, ctx);
   const el = e.target.closest("[data-q-act]");
   if (el && ctx.route.id === "mission" && cur) {
     const itemEl = el.closest("[data-q-item]");
@@ -345,6 +354,7 @@ export function onChange(e, ctx) {
 export const onInput = (e, ctx) => onChange(e, ctx);
 /** The lab's recorder calls this when a take ends; the take is noted as made (the audio stays in this tab only). */
 export function onRecorded(key) {
+  if (key.startsWith("quest:speaking-")) return Speaking.onRecorded(key);
   const m = /^quest:([^:]+):(.+)$/.exec(key);
   if (!m || !cur || cur.mission.id !== m[1]) return;
   (cur.run.items[m[2]] ||= {}).took = true;
@@ -352,6 +362,7 @@ export function onRecorded(key) {
 }
 export function unmount() {
   resetUi();
+  Speaking.unmount?.();
   More.unmount?.();
 }
 export const mount = () => {

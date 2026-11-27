@@ -1,0 +1,593 @@
+{
+  "id": "cl-panel-discussion",
+  "world": "communication-lab",
+  "band": "6-8",
+  "domains": [
+    "Reading",
+    "Speaking",
+    "Writing"
+  ],
+  "functions": [
+    "Negotiate",
+    "Explain",
+    "Counter"
+  ],
+  "keyUses": [
+    "Argue",
+    "Explain"
+  ],
+  "minutes": 40,
+  "tags": [
+    "discussion",
+    "speaking",
+    "academic language"
+  ],
+  "title": {
+    "en": "Panel Discussion Prep",
+    "es": "Preparación para un panel de discusión"
+  },
+  "objective": {
+    "en": "Use discussion moves such as building on an idea, asking a question and disagreeing politely, then prepare and give a turn.",
+    "es": "Usar recursos de discusión como desarrollar una idea, hacer una pregunta y no estar de acuerdo con cortesía, y luego preparar y dar un turno."
+  },
+  "success": [
+    {
+      "en": "I can name the moves speakers use in a discussion.",
+      "es": "Puedo nombrar los recursos que usan los oradores en una discusión."
+    },
+    {
+      "en": "I can build on another speaker's idea.",
+      "es": "Puedo desarrollar la idea de otro orador."
+    },
+    {
+      "en": "I can ask a question that moves the discussion forward.",
+      "es": "Puedo hacer una pregunta que haga avanzar la discusión."
+    },
+    {
+      "en": "I can give a clear turn with a reason and an example.",
+      "es": "Puedo dar un turno claro con una razón y un ejemplo."
+    }
+  ],
+  "narrative": "Your school is discussing whether the school day should start an hour later. Sol the Conversation Guide has recorded a short panel discussion. Study how the speakers talk, practice with Sol, and prepare your own turn. The panel and its speakers are made up for practice.",
+  "characters": [
+    "guide"
+  ],
+  "scene": {
+    "theme": "studio",
+    "alt": "A small stage with red curtains and a spotlight. Four chairs sit in a half circle with a speech bubble and a book on a stool in front.",
+    "objects": []
+  },
+  "vocab": [
+    {
+      "term": "build on",
+      "def": "To add to what someone else said."
+    },
+    {
+      "term": "clarify",
+      "def": "To make an idea clearer by asking or explaining."
+    },
+    {
+      "term": "counterpoint",
+      "def": "A point that disagrees with another point."
+    },
+    {
+      "term": "turn",
+      "def": "Your chance to speak in a discussion."
+    }
+  ],
+  "stages": [
+    {
+      "id": "discover",
+      "title": "Study the panel",
+      "items": [
+        {
+          "id": "panel",
+          "kind": "read",
+          "prompt": "Read part of the panel discussion. Notice what each speaker does.",
+          "sources": [
+            {
+              "id": "p1",
+              "title": "Speaker A (Maya)",
+              "text": [
+                "I think school should start an hour later because teenagers need more sleep. Studies say that tired students learn less."
+              ]
+            },
+            {
+              "id": "p2",
+              "title": "Speaker B (Omar)",
+              "text": [
+                "Building on what Maya said, a later start could also help students arrive on time. However, it might make after-school activities end very late."
+              ]
+            },
+            {
+              "id": "p3",
+              "title": "Speaker C (Lena)",
+              "text": [
+                "Could you clarify what you mean by very late, Omar? I wonder if clubs could start earlier in the day."
+              ]
+            },
+            {
+              "id": "p4",
+              "title": "Speaker D (Raj)",
+              "text": [
+                "I respectfully disagree. A later start would make families' morning plans harder, so I would try a half-hour change first."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigate",
+      "title": "Name the moves and practice",
+      "items": [
+        {
+          "id": "sort-moves",
+          "kind": "sort",
+          "prompt": "Which discussion move is each sentence?",
+          "categories": [
+            {
+              "id": "build",
+              "label": "Build on an idea"
+            },
+            {
+              "id": "question",
+              "label": "Ask or clarify"
+            },
+            {
+              "id": "disagree",
+              "label": "Disagree politely"
+            }
+          ],
+          "cards": [
+            {
+              "id": "c1",
+              "text": "Building on what Maya said, a later start could also help students arrive on time.",
+              "cat": "build",
+              "why": "The speaker starts from what someone else said and adds to it."
+            },
+            {
+              "id": "c2",
+              "text": "Could you clarify what you mean by very late?",
+              "cat": "question",
+              "why": "The speaker asks to make an idea clearer."
+            },
+            {
+              "id": "c3",
+              "text": "I respectfully disagree. A later start would make mornings harder for families.",
+              "cat": "disagree",
+              "why": "The speaker says a different view in a polite way."
+            },
+            {
+              "id": "c4",
+              "text": "To add to that, sleep also helps students remember.",
+              "cat": "build",
+              "why": "The speaker adds a new detail to someone else's point."
+            },
+            {
+              "id": "c5",
+              "text": "What evidence supports that idea?",
+              "cat": "question",
+              "why": "The speaker asks for more information."
+            }
+          ]
+        },
+        {
+          "id": "ask-sol",
+          "kind": "ask",
+          "character": "guide",
+          "prompt": "Practice with Sol. Pick questions, and write one question of your own.",
+          "speakers": {
+            "sol": "Sol",
+            "host": "Sol"
+          },
+          "needFlags": [
+            "asked-build",
+            "asked-clarify",
+            "ready"
+          ],
+          "compose": 1,
+          "dialogue": {
+            "start": "hub",
+            "nodes": {
+              "n-q-build": {
+                "who": "sol",
+                "say": [
+                  "Name the speaker and repeat the idea in a few words. Then add a reason, an example or a new detail."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-clarify": {
+                "who": "sol",
+                "say": [
+                  "Try: 'Could you explain what you mean by ...?' It shows you are listening."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "n-q-disagree": {
+                "who": "sol",
+                "say": [
+                  "Say what you agree with first. Then say 'however' or 'I see it differently' and give your reason."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Ask something else.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "hub": {
+                "who": "sol",
+                "say": [
+                  "Ready to practice the moves? What would you like to ask?"
+                ],
+                "options": [
+                  {
+                    "id": "q-build",
+                    "label": "How do I build on another speaker's idea?",
+                    "once": true,
+                    "next": "n-q-build",
+                    "sets": [
+                      "asked-build"
+                    ]
+                  },
+                  {
+                    "id": "q-clarify",
+                    "label": "How do I ask a clarifying question politely?",
+                    "once": true,
+                    "next": "n-q-clarify",
+                    "sets": [
+                      "asked-clarify"
+                    ]
+                  },
+                  {
+                    "id": "q-disagree",
+                    "label": "How do I disagree without being rude?",
+                    "once": true,
+                    "next": "n-q-disagree"
+                  },
+                  {
+                    "id": "q-done",
+                    "label": "I have enough to start.",
+                    "requires": [
+                      "asked-build",
+                      "asked-clarify"
+                    ],
+                    "sets": [
+                      "ready"
+                    ],
+                    "next": "done"
+                  }
+                ],
+                "compose": {
+                  "label": "Write your own question for Sol",
+                  "checks": [
+                    {
+                      "id": "q",
+                      "kind": "question",
+                      "label": "Ends with a question mark and asks something"
+                    }
+                  ],
+                  "routes": [
+                    {
+                      "terms": [
+                        "build",
+                        "add",
+                        "idea"
+                      ],
+                      "next": "n-q-build",
+                      "sets": [
+                        "asked-build"
+                      ]
+                    },
+                    {
+                      "terms": [
+                        "clarify",
+                        "question",
+                        "explain",
+                        "mean"
+                      ],
+                      "next": "n-q-clarify",
+                      "sets": [
+                        "asked-clarify"
+                      ]
+                    },
+                    {
+                      "terms": [
+                        "disagree",
+                        "rude",
+                        "polite"
+                      ],
+                      "next": "n-q-disagree"
+                    }
+                  ],
+                  "fallback": "unsure"
+                }
+              },
+              "unsure": {
+                "who": "sol",
+                "say": [
+                  "I am not sure. You could ask about building on ideas, clarifying or disagreeing."
+                ],
+                "options": [
+                  {
+                    "id": "back",
+                    "label": "Try another question.",
+                    "next": "hub"
+                  }
+                ]
+              },
+              "done": {
+                "who": "sol",
+                "say": [
+                  "Good. Now prepare your own turn."
+                ],
+                "end": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "communicate",
+      "title": "Prepare your turn",
+      "items": [
+        {
+          "id": "turn",
+          "kind": "write",
+          "prompt": "Write what you will say in the panel about starting school an hour later. State your position, build on one speaker by name, and give a reason.",
+          "purpose": "Sol will use your notes to run your turn.",
+          "minWords": 50,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "50 or more words",
+              "min": 50
+            },
+            {
+              "id": "pos",
+              "kind": "any",
+              "label": "States a position",
+              "terms": [
+                "i think",
+                "i believe",
+                "i support",
+                "i oppose",
+                "my position",
+                "i would"
+              ]
+            },
+            {
+              "id": "build",
+              "kind": "any",
+              "label": "Builds on a speaker by name",
+              "terms": [
+                "maya",
+                "omar",
+                "lena",
+                "raj",
+                "building on",
+                "to add to",
+                "as maya",
+                "as omar"
+              ]
+            },
+            {
+              "id": "reason",
+              "kind": "any",
+              "label": "Gives a reason",
+              "terms": [
+                "because",
+                "since",
+                "so that",
+                "this would",
+                "which means"
+              ]
+            },
+            {
+              "id": "ask",
+              "kind": "any",
+              "label": "Includes a question for the panel",
+              "terms": [
+                "could you",
+                "what evidence",
+                "how would",
+                "would you"
+              ],
+              "required": false
+            }
+          ],
+          "ladder": {
+            "model": "Model: I support a later start because sleep helps students focus. Building on what Maya said, tired students also make more mistakes. Could the school try a half-hour change first?",
+            "frame": "I think ___ because ___. Building on what ___ said, ___. Could we ___?",
+            "partial": "I think ___ because ___. Building on ___, ___.",
+            "cue": "Position. Build on a speaker. Reason."
+          }
+        }
+      ]
+    },
+    {
+      "id": "revise",
+      "title": "Make it persuasive",
+      "items": [
+        {
+          "id": "revise-turn",
+          "kind": "write",
+          "reviseOf": "turn",
+          "prompt": "Strengthen your turn. Add an example, and answer a different view politely with however or I respectfully disagree.",
+          "purpose": "A strong turn has a reason, an example and a response.",
+          "minWords": 60,
+          "checks": [
+            {
+              "id": "len",
+              "kind": "words",
+              "label": "60 or more words",
+              "min": 60
+            },
+            {
+              "id": "example",
+              "kind": "any",
+              "label": "Adds an example",
+              "terms": [
+                "for example",
+                "for instance",
+                "such as",
+                "like when"
+              ]
+            },
+            {
+              "id": "polite",
+              "kind": "any",
+              "label": "Answers another view politely",
+              "terms": [
+                "however",
+                "respectfully",
+                "i see it differently",
+                "i understand",
+                "although"
+              ]
+            },
+            {
+              "id": "reason",
+              "kind": "any",
+              "label": "Still gives a reason",
+              "terms": [
+                "because",
+                "since",
+                "so that",
+                "which means"
+              ]
+            }
+          ],
+          "ladder": {
+            "model": "Model: For example, some students sleep only six hours. However, I understand that families need time in the morning, so a half-hour change could help both groups.",
+            "frame": "For example, ___. However, I understand ___, so ___.",
+            "partial": "For example, ___. However, ___.",
+            "cue": "Example. However. Reason."
+          }
+        }
+      ]
+    },
+    {
+      "id": "apply",
+      "title": "Give your turn",
+      "items": [
+        {
+          "id": "give",
+          "kind": "speak",
+          "prompt": "Give your turn in the panel in about one minute. Name a speaker you build on, give a reason and an example.",
+          "typedMin": 30,
+          "ladder": {
+            "frame": "I think ___ because ___. Building on what ___ said, ___. For example, ___.",
+            "partial": "I think ___ because ___. For example, ___.",
+            "cue": "Position, build on, example."
+          },
+          "selfChecks": [
+            {
+              "id": "pos",
+              "label": "I stated my position."
+            },
+            {
+              "id": "build",
+              "label": "I built on a speaker by name."
+            },
+            {
+              "id": "example",
+              "label": "I gave an example."
+            },
+            {
+              "id": "pace",
+              "label": "I spoke clearly and not too fast."
+            }
+          ],
+          "needSelf": 2
+        },
+        {
+          "id": "transfer",
+          "kind": "check",
+          "prompt": "Which sentence builds on another speaker's idea?",
+          "options": [
+            {
+              "id": "a",
+              "label": "That is wrong.",
+              "fb": "This does not add to the idea."
+            },
+            {
+              "id": "b",
+              "label": "Building on Sam's point, students could also vote on the plan.",
+              "fb": ""
+            },
+            {
+              "id": "c",
+              "label": "I do not care.",
+              "fb": "This does not add to the idea."
+            },
+            {
+              "id": "d",
+              "label": "Next topic, please.",
+              "fb": "This moves away from the idea."
+            }
+          ],
+          "answer": "b",
+          "why": "Building on means starting from another speaker's point and adding to it, as this sentence does with Sam's point about the plan."
+        }
+      ]
+    }
+  ],
+  "endings": [
+    {
+      "id": "panel",
+      "title": "A strong panel turn",
+      "when": {
+        "revised": [
+          "revise-turn"
+        ]
+      },
+      "text": "The room listens as you speak. 'You built on a speaker, gave a reason and an example, and answered another view respectfully,' says Sol. 'That is a strong turn.'"
+    },
+    {
+      "id": "ok",
+      "title": "Your turn is ready",
+      "text": "Sol nods. 'You stated a position and a reason,' says Sol. 'Next time, add an example and answer another view politely.'"
+    }
+  ],
+  "family": {
+    "skill": {
+      "en": "joining a discussion: building on ideas, asking questions and disagreeing politely",
+      "es": "participar en una discusión: desarrollar ideas, hacer preguntas y no estar de acuerdo con cortesía"
+    },
+    "talk": {
+      "en": "Ask: 'Whose idea did you build on? What question did you ask? How did you disagree politely?'",
+      "es": "Pregunta: '¿La idea de quién desarrollaste? ¿Qué pregunta hiciste? ¿Cómo mostraste desacuerdo con cortesía?'"
+    },
+    "vocab": [
+      {
+        "term": "build on",
+        "es": "desarrollar sobre"
+      },
+      {
+        "term": "clarify",
+        "es": "aclarar"
+      },
+      {
+        "term": "respectfully",
+        "es": "con respeto"
+      }
+    ]
+  }
+}
