@@ -497,6 +497,14 @@ root.addEventListener("click", (e) => {
     render();
   }
 });
+document.addEventListener("th:filter-domain", (e) => {
+  const next = typeof e.detail?.domain === "string" ? e.detail.domain : "";
+  if (S.domain !== next) {
+    S.domain = next;
+    S.limit = PAGE;
+    render();
+  }
+});
 familyTripHost?.addEventListener("change", (e) => {
   if (!e.target.matches("[data-trip-grade], [data-trip-skill]")) return;
   if (e.target.matches("[data-trip-grade]")) S.tripGrade = e.target.value;

@@ -3,8 +3,72 @@
 .lc-wrap { max-width: 1040px; margin: 0 auto; padding: var(--s-5) var(--s-4) var(--s-7); display: grid; gap: var(--s-5); }
 .lc-intro h1 { margin: 0 0 0.4rem; font-size: clamp(1.8rem, 1.4rem + 1.6vw, 2.6rem); line-height: 1.1; }
 .lc-intro .lead { max-width: 64ch; margin: 0; color: var(--ink-2); }
+.lc-intro .lead a { color: var(--brand-ink, var(--ink)); font-weight: 700; }
 .lc-step { display: inline-grid; place-items: center; width: 1.9rem; height: 1.9rem; margin-inline-end: 0.4rem; border-radius: 50%; background: var(--ink); color: var(--on-brand, #fff); font-size: 1rem; vertical-align: 0.15em; }
 .lc-form h2, .lc-kit > h2 { margin: 0 0 var(--s-3); font-size: 1.35rem; }
+
+/* Unit Finder (Grade -> Subject -> Unit -> Activities) */
+.uf-shell { display: grid; gap: var(--s-4); }
+.uf-picker-grid { display: grid; gap: var(--s-4); padding: var(--s-5); border: 1px solid var(--line-strong); border-radius: var(--r-lg, 14px); background: var(--surface); }
+.uf-step-group { display: grid; gap: var(--s-2); }
+.uf-step-label { font-weight: 700; font-size: 1.05rem; color: var(--ink); }
+.uf-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.uf-pill { min-width: 3.1rem; min-height: 2.75rem; padding: 0.45rem 0.9rem; border: 1px solid var(--line-strong); border-radius: var(--r-sm, 8px); background: var(--surface); color: var(--ink); font: 700 0.98rem/1 var(--font, inherit); cursor: pointer; transition: border-color 120ms ease, background 120ms ease; }
+.uf-pill-wide { min-width: 7.25rem; padding-inline: 1.15rem; }
+.uf-pill:hover { border-color: var(--ink); background: var(--surface-2, #f3f1eb); }
+.uf-pill.is-on { border-color: var(--ink); background: var(--ink); color: var(--on-brand, #fff); }
+.uf-pill:focus-visible { outline: 3px solid var(--focus, var(--brand)); outline-offset: 2px; }
+
+.uf-units-block { display: grid; gap: var(--s-3); }
+.uf-units-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem 1rem; }
+.uf-units-head h2 { margin: 0; font-size: 1.35rem; }
+.uf-units-head .fine { margin: 0; }
+.uf-unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr)); gap: var(--s-3); margin: 0; padding: 0; list-style: none; }
+.uf-unit-card { width: 100%; height: 100%; display: grid; align-content: start; gap: 0.35rem; padding: 1rem 1.1rem; border: 1px solid var(--line-strong); border-radius: var(--r-md, 10px); background: var(--surface); color: var(--ink); text-align: left; font: inherit; cursor: pointer; transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease; }
+.uf-unit-card:hover { border-color: var(--ink); box-shadow: var(--shadow-card); }
+.uf-unit-card.is-on { border: 2px solid var(--brand, var(--ink)); background: var(--brand-soft, #eef4fa); }
+.uf-unit-card:focus-visible { outline: 3px solid var(--focus, var(--brand)); outline-offset: 2px; }
+.uf-unit-num { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--brand-ink, var(--ink-2)); }
+.uf-unit-card strong { font-size: 1.05rem; line-height: 1.25; }
+.uf-unit-sum { color: var(--ink-2); font-size: 0.88rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.uf-unit-go { margin-top: auto; padding-top: 0.35rem; font-size: 0.88rem; font-weight: 700; color: var(--brand-ink, var(--ink)); }
+
+.uf-prompt { padding: var(--s-4); border: 1px dashed var(--line-strong); border-radius: var(--r-md, 10px); background: var(--surface); color: var(--ink-2); }
+.uf-prompt p { margin: 0; }
+.uf-error { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); padding: var(--s-3); border: 1px solid var(--line-strong); border-radius: var(--r-md, 10px); background: var(--surface); }
+.uf-error p { margin: 0; }
+
+.uf-panel { display: grid; gap: var(--s-4); padding: var(--s-5); border: 2px solid var(--brand, var(--ink)); border-radius: var(--r-lg, 14px); background: var(--surface); scroll-margin-top: 5rem; }
+.uf-panel-head { display: grid; gap: var(--s-3); }
+.uf-kicker { margin: 0; font-size: 0.85rem; font-weight: 700; color: var(--ink-2); letter-spacing: 0.03em; }
+.uf-panel-head h3 { margin: 0.2rem 0 0; font: 600 clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem)/1.18 var(--font-display, inherit); }
+.uf-eq { margin: 0.35rem 0 0; color: var(--ink-2); max-width: 66ch; line-height: 1.45; }
+.uf-panel-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.uf-panel-actions .btn { min-height: 2.75rem; }
+
+.uf-filter-row { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.uf-chip { min-height: 2.4rem; padding: 0.3rem 0.8rem; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); color: var(--ink); font: 600 0.88rem/1 var(--font, inherit); cursor: pointer; }
+.uf-chip.is-on { border-color: var(--ink); background: var(--ink); color: var(--on-brand, #fff); }
+.uf-chip:focus-visible { outline: 3px solid var(--focus, var(--brand)); outline-offset: 2px; }
+
+.uf-act-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr)); gap: var(--s-3); margin: 0; padding: 0; list-style: none; }
+.uf-act-card { display: grid; align-content: start; gap: 0.5rem; padding: 1rem; border: 1px solid var(--line); border-radius: var(--r-md, 10px); background: var(--bg, #faf9f6); }
+.uf-act-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.uf-badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.03em; background: var(--surface-2, #eceae2); color: var(--ink); }
+.uf-badge.is-listening { background: #e3f2f6; color: #075568; }
+.uf-badge.is-reading { background: #e6ecfb; color: #2e4a94; }
+.uf-badge.is-speaking { background: #f8e7ee; color: #8a3a5c; }
+.uf-badge.is-writing { background: #faece5; color: #9a4a26; }
+.uf-badge.is-vocab { background: #e7f4ec; color: #1b6540; }
+.uf-badge.is-game { background: #f2ecfa; color: #553586; }
+.uf-act-card h4 { margin: 0; font-size: 1.05rem; line-height: 1.25; }
+.uf-act-desc { margin: 0; color: var(--ink-2); font-size: 0.9rem; line-height: 1.4; }
+.uf-act-links { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: auto; padding-top: 0.35rem; }
+.uf-act-links .btn { min-height: 2.5rem; }
+
+.lc-divider { display: grid; gap: 0.3rem; padding-top: var(--s-5); border-top: 2px solid var(--line); }
+.lc-divider h2 { margin: 0; font-size: 1.45rem; }
+.lc-divider .fine { margin: 0; max-width: 64ch; }
 
 /* Step 1: the lesson */
 .lc-form { display: grid; gap: var(--s-4); padding: var(--s-5); border: 1px solid var(--line-strong); border-radius: var(--r-lg, 14px); background: var(--surface); }

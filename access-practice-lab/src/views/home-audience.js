@@ -52,8 +52,8 @@ export const AUDIENCE_DOORS = Object.freeze([
     role: "classroom",
     title: ["I’m a Classroom Teacher", "Soy docente de aula"],
     text: [
-      "Language supports for the lessons you already teach.",
-      "Apoyos de lenguaje para las lecciones que ya enseña.",
+      "Pick your grade, subject, and unit to open ready activities.",
+      "Elija su grado, materia y unidad para abrir actividades listas.",
     ],
     href: () => "/access-teacher/classroom/",
     art: { src: `${ART}/68-classroom-lesson.svg`, w: 640, h: 400 },
@@ -63,8 +63,8 @@ export const AUDIENCE_DOORS = Object.freeze([
     role: "esol",
     title: ["I’m an ESOL Teacher", "Soy docente de ESOL"],
     text: [
-      "ACCESS practice, WIDA data, your class and language evidence.",
-      "Práctica ACCESS, datos WIDA, su clase y evidencia de lenguaje.",
+      "WIDA materials by domain, ready activities, and ACCESS prep.",
+      "Materiales WIDA por dominio, actividades listas y preparación ACCESS.",
     ],
     href: () => "/access-teacher/?role=esol",
     art: { src: `${ART}/ds/progress-growth.svg`, w: 360, h: 270 },
