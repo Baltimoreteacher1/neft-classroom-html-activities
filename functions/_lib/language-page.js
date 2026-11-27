@@ -16,6 +16,8 @@
 import { STUDIO_APP_PAGES } from "../../access-practice-lab/src/studio-app.js";
 import { STUDIOS, studioFor, studioPath } from "../../access-practice-lab/src/studios.js";
 import { studioLabHtml } from "./language-page-studios.js";
+import { isFrontPath } from "./lp-front.js";
+import { LP_SITEMAP } from "./lp-routes.js";
 
 export const LANGUAGE_PAGE_HOST = "thelanguagepage.com";
 export const LEGACY_HOST = "eduwonderlab.com";
@@ -84,6 +86,8 @@ const isHubPath = (p) => p === HUB_BASE || p.startsWith(`${HUB_BASE}/`);
 
 /** Public lab pages listed in the sitemap: clean URLs the SPA serves through the one rewrite rule. */
 export const SITEMAP_PATHS = [
+  // The front layer (lp/, tools/lp/build-site.mjs): home, Practice, Teacher Tools, Content + Language, ACCESS Guide, About.
+  ...LP_SITEMAP,
   `${LAB_BASE}/`,
   `${LAB_BASE}/access-prep`,
   `${LAB_BASE}/access-prep/daily-drill`,
@@ -179,6 +183,8 @@ const servesOnLabHost = (pathname) => {
   return (
     LAB_EXACT.has(p) ||
     LAB_PREFIXES.some((prefix) => p.startsWith(prefix)) ||
+    // The front layer's clean URLs, answered by functions/_lib/lp-front.js on this host only.
+    isFrontPath(p) ||
     isHubPath(p) ||
     Boolean(studioFor(p))
   );
@@ -201,14 +207,8 @@ export function languagePageRoute(url) {
   }
   if (url.pathname === "/robots.txt") return { kind: "robots" };
   if (url.pathname === "/sitemap.xml") return { kind: "sitemap" };
-  if (url.pathname === "/")
-    return {
-      kind: "redirect",
-      status: 302,
-      location: `${url.origin}${LAB_BASE}/`,
-      // The target never changes, so browsers may cache this hop: a return visit skips a round trip.
-      cacheControl: "public, max-age=3600",
-    };
+  // "/" is the front-layer home page (lp/index.html via functions/index.js); it was a 302 to the lab until the
+  // 2026-11-27 front-layer release, which Joel asked for ("three large entry cards" on the home page).
   if (url.pathname === "/access-prep" || url.pathname === "/access-prep/")
     return {
       kind: "redirect",
@@ -334,6 +334,8 @@ export function hubTitle(html) {
 }
 
 export function brandLabHtml(html, pathname) {
+  // Front-layer pages carry their own title, canonical and share tags (tools/lp/site/layout.mjs).
+  if (html.includes('<meta name="lp-front"')) return html;
   const studio = studioFor(pathname);
   if (studio) return studioLabHtml(html, studio, pathname);
   const canonical = `https://${LANGUAGE_PAGE_HOST}${pathname}`;
