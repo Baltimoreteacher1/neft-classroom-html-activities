@@ -145,6 +145,7 @@ export async function render(ctx) {
           <p class="lead">${L.info?.headline || L.studentGoal || data.description}</p>
           ${band === "6-8" && domain !== "Model-Test" ? gradeFocusHTML(I, focus, { counts: focusCounts }) : ""}
           ${domain !== "Model-Test" ? tierPickerHTML(domain, level, (k) => roomHref(domain, k)) : ""}
+          ${domain === "Listening" ? html`<section class="panel listening-clue-entry"><h2>${T("Listen for the Clue", "Escucha la pista")}</h2><p>${T("Hear a short passage, answer a question, and find the words that support your answer.", "Escucha un pasaje breve, responde una pregunta y encuentra las palabras que apoyan tu respuesta.")}</p><a class="btn" href="${BASE}/listen-for-clue">${T("Start clue rounds", "Empezar las rondas de pistas")}</a></section>` : ""}
           <a class="btn btn-primary btn-big btn-next" href="${activityHref(domain, level, next.id)}">
             <span class="btn-kicker">${doneCount ? T("Keep going", "Sigue adelante") : T("Start here", "Empieza aquí")}</span><span class="next-title">${next.title}</span>${icon("arrow-right")}
           </a>

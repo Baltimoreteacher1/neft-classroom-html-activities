@@ -355,6 +355,7 @@ export const ROUTES = Object.freeze({
     { tray: false },
   ),
   do: excluded(STUDENT_ONLY, { tray: false }),
+  "listen-for-clue": excluded(`${STUDENT_ONLY} A listening practice activity built around existing passages.`, { tray: false }),
   play: excluded(STUDENT_ONLY, { tray: false }),
   "session-done": excluded(STUDENT_ONLY, { tray: false }),
   students: excluded(STUDENT_ONLY, { tray: false }),
