@@ -35,6 +35,8 @@ const { generate, parseNumber } = await imp("functions/_lib/pfa/generators.js");
 const { routePfa } = await imp("functions/_lib/pfa/render.js");
 const { UI } = await imp("functions/_lib/pfa/strings.js");
 const { parseColor, isForbiddenHue } = await imp("tools/lib/color-math.mjs");
+const { DETECTORS: ES_DETECTORS } = await imp("tools/lib/family-spanish.mjs");
+const { createHash } = await import("node:crypto");
 
 const MAP = json("data/assignments.json");
 const TAX = json("data/misconception-taxonomy.json").taxonomy;
@@ -181,6 +183,23 @@ export function motionErrors(css) {
   return e;
 }
 
+// Translated wrong-answer feedback (data/practice/_feedback-es.json): the Spanish line must keep
+// every number of the English one and add none, must not be the English copied over, and must pass
+// the family Spanish style detectors (register, glossary terms, "60%", no English left in).
+const FEEDBACK_ES_RULES = new Set(["usted", "voseo", "vosotros", "concept-term", "percent-space", "english-left-in"]);
+const numSet = (t) =>
+  [...String(t).matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map((m) => m[0].replace(/,/g, "")).sort().join(" ");
+function feedbackEsErrors(en, es) {
+  const e = [];
+  if (!es || !String(es).trim()) return ["missing Spanish"];
+  if (String(es).trim() === String(en).trim()) e.push("English copied over");
+  if (numSet(en) !== numSet(es)) e.push(`numbers differ (EN ${numSet(en) || "none"} / ES ${numSet(es) || "none"})`);
+  for (const d of ES_DETECTORS) if (FEEDBACK_ES_RULES.has(d.id) && d.test(es)) e.push(d.why);
+  return e;
+}
+const feedbackKey = (lessonId, stem, choice) =>
+  `${lessonId}|${createHash("sha1").update(`${String(stem).trim()}\u0000${String(choice).trim()}`).digest("hex").slice(0, 10)}`;
+
 // ---------- negative controls ------------------------------------------------------------------
 function control(name, ok) {
   if (!ok) {
@@ -236,6 +255,19 @@ control(
     '<svg data-scale="30,610,0,10"><title>t</title><circle class="mv-pt" cx="99" cy="60" r="8" data-v="5"/></svg>',
   ).length > 0,
 );
+control(
+  "feedback-es: dropped number",
+  feedbackEsErrors("4 + 3 = 7, so 4x + 3x = 7x.", "Suma: 4x + 3x = 7x.").some((x) => x.includes("numbers")),
+);
+control(
+  "feedback-es: English copied",
+  feedbackEsErrors("Check the units.", "Check the units.").some((x) => x.includes("copied")),
+);
+control("feedback-es: spaced percent", feedbackEsErrors("It is 60%.", "Es 60 %.").length > 0);
+control(
+  "feedback-es: clean line passes",
+  feedbackEsErrors("4 + 3 = 7, so 4x + 3x = 7x.", "4 + 3 = 7, así que 4x + 3x = 7x.").length === 0,
+);
 // Fixtures are assembled at runtime so this file itself carries no forbidden color (validate:no-purple).
 const SEEDED_HEX = `#${"7c3aed"}`;
 const SEEDED_WORD = ["pur", "ple"].join("");
@@ -286,6 +318,8 @@ for (const [script, label] of [
 
 // ---------- per lesson: 1, 2, 3, 10, 13, 14 -------------------------------------------------------
 const needsReview = {};
+const FEEDBACK_ES = json("data/practice/_feedback-es.json");
+const FEEDBACK_ES_USED = new Set();
 const lessonsWith = { homework: 0, family: 0, assignment: 0, key: 0 };
 for (const L of MAP.lessons) {
   const id = L.id;
@@ -323,12 +357,18 @@ for (const L of MAP.lessons) {
     for (const e of mathErrors(p, cfgItems)) fail(1, `${id} ${p.id}: ${e}`);
     if (p.misconceptionSource === "lesson-default")
       bump("problems tagged with the lesson-default misconception");
+    for (const c of [...(p.choices || []), ...(p.known || [])])
+      if (c.whyEsSource === "translated") {
+        const k = feedbackKey(id, p.prompt.en, c.text?.en ?? c.value);
+        FEEDBACK_ES_USED.add(k);
+        for (const e of feedbackEsErrors(c.why.en, c.why.es)) fail(10, `${id} ${p.id} ${k}: ${e}`);
+      }
     for (const c of p.choices || [])
       if (c.whyEsSource && c.whyEsSource !== "authored")
-        (needsReview[`unit ${d.unit}`] ||= { taxonomy: 0, hint: 0 })[c.whyEsSource]++;
+        (needsReview[`unit ${d.unit}`] ||= { translated: 0, taxonomy: 0, hint: 0 })[c.whyEsSource]++;
     for (const k of p.known || [])
       if (k.whyEsSource && k.whyEsSource !== "authored")
-        (needsReview[`unit ${d.unit}`] ||= { taxonomy: 0, hint: 0 })[k.whyEsSource]++;
+        (needsReview[`unit ${d.unit}`] ||= { translated: 0, taxonomy: 0, hint: 0 })[k.whyEsSource]++;
   }
   if (!hasBi(d.title) || !hasBi(f.title)) fail(10, `${id}: lesson title lacks Spanish`);
   if (!hasBi(d.objective)) fail(10, `${id}: objective lacks Spanish`);
@@ -473,6 +513,11 @@ const missing = core.filter((id) => !MAP.lessons.some((l) => l.id === id));
 if (missing.length)
   fail(14, `core lessons missing from data/assignments.json: ${missing.join(", ")}`);
 if ((counters["problems checked"] || 0) === 0) fail(14, "checked zero problems");
+// A translation no item uses is stale (its English changed or the item left): delete or re-translate.
+for (const k of Object.keys(FEEDBACK_ES))
+  if (!k.startsWith("$") && !FEEDBACK_ES_USED.has(k))
+    fail(10, `data/practice/_feedback-es.json ${k}: no item uses this translation (stale)`);
+bump("translated wrong-answer feedback lines checked", FEEDBACK_ES_USED.size);
 
 const needs = Object.entries(needsReview)
   .map(([u, v]) => `${u}: ${v.taxonomy} taxonomy, ${v.hint} hint`)
@@ -490,5 +535,5 @@ console.log(
     .map(([k, v]) => `${v} ${k}`)
     .join(
       ", ",
-    )}; 11 seeded defects caught.\n  Spanish wrong-answer feedback not authored per choice (shown from the taxonomy or the item's own Spanish hint; needs review): ${needs || "none"}`,
+    )}; 15 seeded defects caught.\n  Spanish wrong-answer feedback not authored per choice (shown from a machine-assisted translation of the English line, the taxonomy, or the item's own Spanish hint; needs review): ${needs || "none"}`,
 );
