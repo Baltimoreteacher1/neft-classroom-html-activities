@@ -96,8 +96,10 @@ ok(
   "family door opens the family start page",
 );
 ok(
-  (await page.locator(".lpa-door.is-teacher").getAttribute("href")) === "/access-teacher/",
-  "teacher door opens the Teacher Hub",
+  (await page.locator(".lpa-door.is-teacher").getAttribute("href")) ===
+    "/access-teacher/?role=classroom" &&
+    (await page.locator(".lpa-door.is-esol").getAttribute("href")) === "/access-teacher/?role=esol",
+  "classroom and ESOL teacher doors open the Teacher Hub in their role's view",
 );
 const topY = await page
   .locator(".lpa-door.is-teacher")

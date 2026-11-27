@@ -55,7 +55,10 @@ function watchAudienceLinks(doc = globalThis.document) {
     "click",
     (e) => {
       const a = e.target?.closest?.("[data-audience-link], [data-audience-door]");
-      if (a) rememberAudience(LINK_AUDIENCE[a.dataset.audienceLink] || a.dataset.audienceDoor);
+      if (!a) return;
+      // A teacher door names its role (Classroom or ESOL): remember both, so the Teacher Hub opens in that view.
+      if (a.dataset.doorRole) rememberTeacherRole(a.dataset.doorRole);
+      else rememberAudience(LINK_AUDIENCE[a.dataset.audienceLink] || a.dataset.audienceDoor);
     },
     true,
   );
@@ -84,29 +87,58 @@ export function hubLink({
   return { audience, href: hub.path, label: hub.label };
 }
 
-// A role changes card order only. Legacy string audience values remain readable.
+// A role changes order and emphasis only: nothing is hidden from any role. `order` is the first three Teacher Hub task
+// cards; `library` is the order of the hub's "Go straight to" resources (access-teacher/hub-role.js), with its heading.
+// Legacy string audience values remain readable.
 export const TEACHER_ROLES = Object.freeze([
   {
     id: "classroom",
     title: ["Classroom teacher", "Docente de aula"],
     order: ["find", "plan", "create"],
+    heading: ["For your classroom", "Para su aula"],
+    lead: [
+      "Language supports for the content you teach, then ready activities.",
+      "Apoyos de lenguaje para el contenido que enseña y actividades listas.",
+    ],
+    library: ["bcpss", "activities", "printables", "content", "class", "forms", "tests", "weekly", "data"],
   },
   {
     id: "esol",
     title: ["EL/ESOL teacher", "Docente de EL/ESOL"],
     order: ["plan", "find", "create"],
+    heading: ["Your ESOL toolkit", "Sus herramientas de ESOL"],
+    lead: [
+      "WIDA data, ACCESS practice and your class come first.",
+      "Primero los datos WIDA, la práctica ACCESS y su clase.",
+    ],
+    library: ["data", "tests", "class", "weekly", "activities", "printables", "forms", "content", "bcpss"],
   },
   {
     id: "support",
     title: ["Support staff", "Personal de apoyo"],
     order: ["find", "create", "plan"],
+    heading: ["For small groups and support", "Para grupos pequeños y apoyo"],
+    lead: ["Ready activities and printables come first.", "Primero las actividades y los impresos listos."],
+    library: ["activities", "printables", "class", "forms", "tests", "weekly", "content", "bcpss", "data"],
   },
   {
     id: "coach",
     title: ["Instructional coach", "Asesor de enseñanza"],
     order: ["create", "plan", "find"],
+    heading: ["For coaching and planning", "Para asesorar y planificar"],
+    lead: [
+      "Class data, curriculum bridges and content coverage come first.",
+      "Primero los datos de clase, los puentes con el currículo y la cobertura.",
+    ],
+    library: ["data", "bcpss", "content", "activities", "printables", "tests", "weekly", "class", "forms"],
   },
 ]);
+
+/** The role a link asks for (`?role=esol` from a home door), or "" when it names none or an unknown one. */
+export function roleFromSearch(search = globalThis.location?.search || "") {
+  const role = new URLSearchParams(search).get("role") || "";
+  return TEACHER_ROLES.some((r) => r.id === role) ? role : "";
+}
 export function audienceRecord(raw) {
   if (AUDIENCE_IDS.includes(raw)) return { audience: raw, role: "" };
   try {

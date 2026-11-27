@@ -215,26 +215,38 @@ export function footerHTML(ctx, I) {
       </p>
     </div>
     <div class="footer-grid">
-      ${col(T("Curriculum Modules", "Módulos del currículo"), S("Curriculum modules", "Módulos del currículo"), [
+      ${col(T("Students", "Estudiantes"), S("For students", "Para estudiantes"), [
+        [`${BASE}/students${q}`, T("Start practicing", "Empezar a practicar")],
         [`${BASE}/explore/practice${q}`, T("Practice by skill", "Práctica por destreza")],
         [`${BASE}/explore/play${q}`, T("Games and worlds", "Juegos y mundos")],
         [`${BASE}/book-studio${q}`, T("Create a Book", "Crear un libro")],
-        [`${BASE}/explore${q}`, T("Everything on the site", "Todo el sitio")],
+        [`${BASE}/ready-plan${q}`, T("My readiness plan", "Mi plan de preparación")],
+        [`${BASE}/passport${q}`, T("My Passport and growth", "Mi pasaporte y progreso")],
       ])}
-      ${col(T("Standards Alignment", "Alineación con estándares"), S("Standards alignment", "Alineación con estándares"), [
-        [`${BASE}/access-prep${q}`, T("WIDA ACCESS preparation", "Preparación para WIDA ACCESS")],
-        [`${BASE}/ready-plan${q}`, T("Readiness plan", "Plan de preparación")],
-        [`${BASE}/passport${q}`, T("Evidence and growth", "Evidencia y progreso")],
+      ${col(T("Families", "Familias"), S("For families", "Para familias"), [
+        [`${BASE}/family-start${q}`, T("Families: start here", "Familias: empiecen aquí")],
+        familyTourHost()
+          ? [`${BASE}/family-tour/`, T("Family Tour", "Recorrido familiar")]
+          : [`${BASE}/practice-together${q}`, T("Practice together", "Practicar juntos")],
+        [`${BASE}/family${q}`, T("Family Corner", "Rincón de la familia")],
       ])}
-      ${col(T("District and Educator Resources", "Recursos para distritos y docentes"), S("District and educator resources", "Recursos para distritos y docentes"), [
-        ["/access-teacher/", T("Teacher Hub", "Centro docente")],
-        ["/bcpss-teachers", T("BCPSS Teachers", "Docentes de BCPSS")],
-        [`${BASE}/launch-studio${q}`, T("Launch Studio", "Estudio de lanzamiento")],
+      ${col(T("Classroom teachers", "Docentes de aula"), S("For classroom teachers", "Para docentes de aula"), [
+        ["/access-teacher/?role=classroom", T("Teacher Hub", "Centro docente")],
+        ["/bcpss-teachers", T("BCPSS curriculum bridges", "Puentes del currículo de BCPSS")],
         [`${BASE}/activity-studio${q}`, T("Activity Studio", "Estudio de actividades")],
-        [`${BASE}/site-guide${q}`, T("Site Guide", "Guía del sitio")],
+        [`${BASE}/launch-studio${q}`, T("Launch Studio", "Estudio de lanzamiento")],
+        [`${BASE}/start${q}`, T("Teacher start page and tour", "Inicio y recorrido para docentes")],
+      ])}
+      ${col(T("ESOL teachers", "Docentes de ESOL"), S("For ESOL teachers", "Para docentes de ESOL"), [
+        ["/access-teacher/?role=esol", T("ESOL Teacher Hub", "Centro docente de ESOL")],
+        [`${BASE}/access-prep${q}`, T("WIDA ACCESS preparation", "Preparación para WIDA ACCESS")],
+        ["/access-teacher/predictive/", T("WIDA Data Studio", "Estudio de datos WIDA")],
+        [`${BASE}/class${q}`, T("My class and class code", "Mi clase y código de clase")],
       ])}
     </div>
     <p class="footer-utility">
+      <a href="${BASE}/site-guide${q}">${T("Site Guide", "Guía del sitio")}</a>
+      <a href="${BASE}/explore${q}">${T("Everything on the site", "Todo el sitio")}</a>
       <a href="${BASE}/tools${q}">${T("Help and device check", "Ayuda y revisión del dispositivo")}</a>
       <a href="${BASE}/move${q}">${T("Move my progress", "Mover mi progreso")}</a>
       <a href="${BASE}/privacy${q}">${T("Privacy", "Privacidad")}</a>

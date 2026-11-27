@@ -49,8 +49,17 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 
 **E4 corrected:** Spanish text is already tagged `lang="es"` (98.2% measured); `<html lang>` stays `en` by design.
 
+**Tranche 4 — audience navigation (WS2 items 1, 2, 4; `docs/language-page/navigation.md`)**
+| Item | Finding | Proof |
+| --- | --- | --- |
+| Home doors: Student, Family, Classroom Teacher, ESOL Teacher; BCPSS becomes a district link beside search | C6 | `tools/access-home-start.test.mjs`, `tools/access-intro-e2e.mjs` |
+| Teacher Hub opens in the door's role (`?role=`); "Go straight to" ordered and titled per role, nothing hidden | E7 (teacher side) | `tools/access-hub-role.test.mjs` |
+| Header one row from 1280px in English and Spanish, 44px tool buttons (wrapped at 1280 and 1366 before) | T2 | browser measurement against the brand-rewritten host |
+| Footers grouped by audience (lab and standalone pages); Teacher Hub, BCPSS crumb and build stamp say The Language Page | C6, T5 | `tools/access-acc-foundation.test.mjs`, host rewrite checked |
+| Language Adventures and Language Studio no longer featured in More; site directory regenerated | D5 decision | `tools/access-intro-guide.test.mjs` |
+
 ## Not started
-WS2 chrome budget · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
+WS2 chrome-budget browser gate and the newcomer door · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
 sustained reading · WS4 recorded audio (H-19), Spanish activity titles and review (the grade 3–8 directions already exist in `es-guide.json`; audit E3 corrected), language packs, SLIFE path · WS5 writing volume and
 audience loop · WS6 meeting the CSS and request budget (held, not met: 124 blocking stylesheets on the shell) · WS7–WS14 as in the prompt.
 

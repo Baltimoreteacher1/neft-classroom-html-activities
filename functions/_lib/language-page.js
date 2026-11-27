@@ -337,6 +337,20 @@ export function brandLabHtml(html, pathname) {
     .replace(
       /<strong>(?:ELL Lab|ACCESS Practice Lab)<\/strong><small>EduWonderLab<\/small>/,
       `<strong>${LAB_BRAND.name}</strong><small>${LAB_BRAND.descriptor}</small>`,
+    )
+    // The Teacher Hub's own masthead and kicker, and the BCPSS Teacher Studio's home crumb: the teacher area of
+    // The Language Page, not a second product (decision lp-site-name-the-language-page).
+    .replace(
+      /<strong>ACCESS Practice Lab<\/strong><small>Teacher Hub<\/small>/,
+      `<strong>${LAB_BRAND.name}</strong><small>Teacher Hub</small>`,
+    )
+    .replace(
+      /<p class="th-kicker">ACCESS Practice Lab · EduWonderLab<\/p>/,
+      `<p class="th-kicker">${LAB_BRAND.name} · for teachers</p>`,
+    )
+    .replace(
+      /(<a href="\/access-practice-lab\/" class="bh-home-link">[\s\S]*?<\/span>\s*)<span>ACCESS Practice Lab<\/span>/,
+      `$1<span>${LAB_BRAND.name}</span>`,
     );
   return titled.replace(
     "</head>",

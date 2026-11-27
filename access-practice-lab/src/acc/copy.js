@@ -6,7 +6,7 @@ export const CHROME = {
     brandSub: "by EduWonderLab",
     navLabel: "ACCESS sections",
     crumbLabel: "Breadcrumb",
-    footerNav: "ACCESS links",
+    footerNav: "Site links",
     skip: "Skip to content",
     disclaimerLead: "Independent practice material.",
     disclaimer:
@@ -18,7 +18,7 @@ export const CHROME = {
     brandSub: "de EduWonderLab",
     navLabel: "Secciones de ACCESS",
     crumbLabel: "Ruta de navegación",
-    footerNav: "Enlaces de ACCESS",
+    footerNav: "Enlaces del sitio",
     skip: "Saltar al contenido",
     disclaimerLead: "Material de práctica independiente.",
     disclaimer:
