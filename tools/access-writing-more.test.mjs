@@ -163,3 +163,19 @@ test("a chosen goal is checked from the draft, never scored", () => {
   assert.ok(!own.includes("topic"), "on my own offers no topic-word goal");
   assert.ok(own.length >= 4);
 });
+
+test("K-3 may open quick write and nothing else in the Writing Studio", async () => {
+  const { earlyCanOpen } = await import("../access-practice-lab/src/early/gate.js");
+  assert.equal(earlyCanOpen({ view: "write", id: "", tab: "quick" }), true);
+  assert.equal(
+    earlyCanOpen({ view: "write", id: "", tab: "" }),
+    false,
+    "the task chooser stays a grades 3-8 room",
+  );
+  assert.equal(
+    earlyCanOpen({ view: "write", id: "wrt-mulch-cer", tab: "quick" }),
+    false,
+    "a task stays closed",
+  );
+  assert.equal(earlyCanOpen({ view: "write", id: "", tab: "portfolio" }), false);
+});

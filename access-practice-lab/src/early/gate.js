@@ -62,6 +62,9 @@ export const EARLY_VIEWS = new Set([
  */
 export const earlyCanOpen = (route) =>
   EARLY_VIEWS.has(route.view) ||
+  // Quick write is pictures and questions read aloud, with no checking and nothing recorded: it suits K-3. The
+  // Writing Studio's source-based tasks stay a grades 3-8 room.
+  (route.view === "write" && !route.id && route.tab === "quick") ||
   (route.view === "science-of-reading" && (route.id === "path" || route.id === "lesson"));
 
 export function earlyGateHTML(ctx, I) {
@@ -84,6 +87,13 @@ export function earlyGateHTML(ctx, I) {
         <a class="btn btn-primary" href="${BASE}/early${q}"
           >${I.T("Go to my practice home", "Ir a mi página de práctica")}</a
         >
+        ${
+          ctx.route?.view === "write"
+            ? html`<a class="btn btn-primary" href="${BASE}/write?tab=quick&grades=${ctx.band}"
+                >${I.T("Try a picture quick write", "Probar una escritura rápida con imágenes")}</a
+              >`
+            : ""
+        }
         <a class="btn" href="${location.pathname}?grades=4-5"
           >${I.T("Open this room for grades 4–5", "Abrir esta sala para los grados 4–5")}</a
         >

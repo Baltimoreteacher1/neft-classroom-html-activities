@@ -593,6 +593,26 @@ ok(
   ),
   "on my own offers no goal that names topic words or connecting words",
 );
+await go(`${BASE}/write/wrt-dust-bowl-cer?sheet=publish`);
+await page.locator(".publish-sheet").waitFor();
+ok(
+  (await page.locator(".publish-text p").count()) >= 1 &&
+    (await page.locator(".publish-sheet").innerText()).includes("The dust storms grew") &&
+    !/feedback|score|level/i.test(await page.locator(".publish-sheet").innerText()),
+  "the clean copy shows the writer's latest version with no feedback, score or level",
+);
+await go(`${BASE}/write?tab=quick&grades=2-3`);
+ok(
+  (await page.locator(".quick-card").count()) >= 12 &&
+    (await page.locator(".early-gate").count()) === 0,
+  "grades 2-3 can open quick write",
+);
+await go(`${BASE}/write/wrt35-lost-map-narrative?grades=2-3`);
+ok(
+  (await page.locator(".early-gate").count()) === 1,
+  "grades 2-3 still see the gate on a Writing Studio task",
+);
+await go(`${BASE}/write?grades=6-8`);
 await go(`${BASE}/write/wrt-mulch-cer?sheet=week`);
 ok(
   (await page.locator(".week-day").count()) === 0,
