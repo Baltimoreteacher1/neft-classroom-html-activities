@@ -45,9 +45,9 @@ function render() {
   const card = (r) =>
     layout === "frayer"
       ? `<article class="panel vc-card"><div class="vc-word"><h3>${escapeHtml(r.word)}</h3><p class="btn-row">${r.tier ? `<span class="chip">Tier ${r.tier}</span>` : ""}${r.es ? `<span class="chip" lang="es">${escapeHtml(r.es)}</span>` : ""}${cognateNote(r)}</p></div>
-        <div class="vc-frayer"><div><p class="label">Definition</p><p>${escapeHtml(r.meaning)}</p></div><div><p class="label">Picture</p><div class="vc-draw" aria-label="Space to draw"></div></div><div><p class="label">Example</p><p>${escapeHtml(r.example) || "&nbsp;"}</p></div><div><p class="label">Non-example</p><div class="vc-draw small"></div></div></div></article>`
+        <div class="vc-frayer"><div><p class="label">Definition</p><p>${escapeHtml(r.meaning)}</p></div><div><p class="label">Picture</p><div class="vc-draw"></div></div><div><p class="label">Example</p><p>${escapeHtml(r.example) || "&nbsp;"}</p></div><div><p class="label">Non-example</p><div class="vc-draw small"></div></div></div></article>`
       : `<article class="panel vc-card"><div class="vc-word"><h3>${escapeHtml(r.word)}</h3><p class="btn-row">${r.tier ? `<span class="chip">Tier ${r.tier}</span>` : ""}${r.es ? `<span class="chip" lang="es">${escapeHtml(r.es)}</span>` : ""}${cognateNote(r)}</p></div>
-        <div class="vc-draw" aria-label="Space to draw a picture"></div><p><strong>It means:</strong> ${escapeHtml(r.meaning)}</p><p><strong>My sentence:</strong> ____________________________</p></article>`;
+        <p class="label">Picture</p><div class="vc-draw"></div><p><strong>It means:</strong> ${escapeHtml(r.meaning)}</p><p><strong>My sentence:</strong> ____________________________</p></article>`;
   out.innerHTML = `<div class="vc-sheet" id="vc-sheet"><div class="print-only print-header"><span>Vocabulary cards</span><span>Name: ________________</span></div><div class="vc-grid">${list.map(card).join("")}</div></div>`;
 }
 async function loadUnits() {

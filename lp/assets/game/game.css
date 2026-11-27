@@ -50,6 +50,18 @@
 .lpg *::after {
   box-sizing: border-box;
 }
+/* Inside a host page (the Game Maker preview), the host's heading and text colors must not leak in. */
+.lpg :where(h1, h2, h3, p, span, label, li) {
+  color: inherit;
+}
+.lpg .lpg-status,
+.lpg .lpg-progress,
+.lpg .lpg-gloss,
+.lpg .lpg-hint,
+.lpg .lpg-empty,
+.lpg .lpg-pts {
+  color: var(--g-muted);
+}
 .lpg-head {
   display: flex;
   flex-wrap: wrap;

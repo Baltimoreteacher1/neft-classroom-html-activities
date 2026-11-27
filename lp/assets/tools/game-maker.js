@@ -215,7 +215,7 @@ $("[data-gm-link]").addEventListener("click", async () => {
     q.addData(url);
     q.make();
     holder.innerHTML = q.createSvgTag({ cellSize: 4, margin: 4, scalable: true, alt: "QR code for the game link" });
-    note.textContent = `Link length: ${url.length} characters. Copied to the clipboard.`;
+    note.textContent = `Link length: ${url.length} characters. Copied to the clipboard.${url.length > 1000 ? " This QR code is dense: project it large, or share the downloaded file instead." : ""}`;
   } catch {
     note.textContent = "The QR code could not be made for this link. The link itself is copied.";
   }
