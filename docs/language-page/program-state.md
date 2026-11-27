@@ -72,6 +72,10 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 | Adventure World files (~113 KB compressed) off every page: `lab/meta.js` reads `src/adventures/worlds/domains.js`; module preloads 136 → 129 | T1 | `tools/access-world-domains.test.mjs` recomputes the table and fails on drift |
 | Lab CSS bundles minified with lightningcss (full 222 → 180 KB brotli, critical 48 → 36 KB) | T1 | `tools/access-critical-styles.test.mjs`; 28 route × width screenshots identical to the unminified bundles |
 
+**Award entry kit (2026-11-27, docs only):** `award-entry-kit.md` lists the programs, what the summaries said about each, what the site can and cannot show,
+and what Joel decides. The official pages could not be read from the cloud container, so every program row is marked "confirm on the official page".
+Nothing is submitted. Tech & Learning "Best of 2026" is the only program with a deadline inside two months (2027-01-08, as summarized).
+
 ## Not started
 WS2 chrome-budget browser gate and the newcomer door · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
 sustained reading · WS4 recorded audio (H-19), Spanish activity titles and review (the grade 3–8 directions already exist in `es-guide.json`; audit E3 corrected), language packs, SLIFE path · WS5 writing volume and

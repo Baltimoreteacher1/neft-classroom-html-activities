@@ -340,7 +340,7 @@ const COVERAGE = [
   // THE LANGUAGE PAGE TRUST GATES: what the host sends over the network, what its copy claims, and what its docs say
   // about the code. The network gate opens a browser; a missing one is a SKIP locally and a FAIL in CI.
   [
-    /^(tools\/(validate-language-page-network|access-lab-claims\.test|language-page-docs-truth\.test|generate-language-page-privacy-doc|language-page-privacy-doc\.test)\.mjs|data\/(language-page-third-parties|language-page-claims-review)\.json|docs\/language-page\/(claims-ledger|decisions-2026-11-24|privacy|acr|logic-model|efficacy-plan|usability-protocol|pilot-kit|program-state|human-required)\.md|docs\/(language-page-migration|wida-data-studio-architecture|wida-data-privacy|class-platform)\.md)$/,
+    /^(tools\/(validate-language-page-network|access-lab-claims\.test|language-page-docs-truth\.test|generate-language-page-privacy-doc|language-page-privacy-doc\.test)\.mjs|data\/(language-page-third-parties|language-page-claims-review)\.json|docs\/language-page\/(claims-ledger|award-entry-kit|decisions-2026-11-24|privacy|acr|logic-model|efficacy-plan|usability-protocol|pilot-kit|program-state|human-required)\.md|docs\/(language-page-migration|wida-data-studio-architecture|wida-data-privacy|class-platform)\.md)$/,
     ["validate:language-page-network", "test", "check"],
   ],
   // ACCESS PRACTICE LAB 2.0 ENGINE (Prompt 3 Wave 3) — pure logic under shared/access-lab2 (items, practice test builder,
@@ -535,7 +535,10 @@ const COVERAGE = [
   [/^learning-studios\/index\.html$/, ["test", "validate:static", "validate:js-syntax", "check"]],
   // The presented live tour (/tour/) and its audience room: its own tests are in `test`
   // (tools/tour-live.test.mjs, functions/api/tour-room/tour-room.test.mjs); the browser run is tools/tour-live-e2e.mjs.
-  [/^(tour\/|shared\/tour-live\/|functions\/api\/tour-room\/|tools\/tour-live)/, ["test", "validate:static", "validate:js-syntax", "validate:save-resume", "check"]],
+  [
+    /^(tour\/|shared\/tour-live\/|functions\/api\/tour-room\/|tools\/tour-live)/,
+    ["test", "validate:static", "validate:js-syntax", "validate:save-resume", "check"],
+  ],
 
   // ACCESS PRACTICE LAB — one content contract (access-practice-lab/CONTENT.md)
   // read by the app, the teacher hub, printables and inventory. The gate pins
