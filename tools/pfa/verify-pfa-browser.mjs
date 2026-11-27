@@ -47,8 +47,18 @@ const { startServer } = await import(pathToFileURL(join(ROOT, "tools/pfa/serve.m
 const { isTeacherSurface } = await import(
   pathToFileURL(join(ROOT, "functions/_lib/teacher-surface.js")).href
 );
-const server = await startServer(4790 + Math.floor(Math.random() * 100));
+// --base <url> runs the same checks against a deployed site (live verification). Teacher-gated pages
+// (the answer key) are then checked for their 401 instead of being rendered.
+const baseArg = args.includes("--base")
+  ? args[args.indexOf("--base") + 1].replace(/\/$/, "")
+  : null;
+const server = baseArg
+  ? { url: baseArg, close: async () => {} }
+  : await startServer(4790 + Math.floor(Math.random() * 100));
 const BASE = server.url;
+const LIVE = !!baseArg;
+const BASE_HOST = new URL(BASE).hostname;
+const observed = new Set();
 const AXE = readFileSync(join(ROOT, "node_modules/axe-core/axe.min.js"), "utf8");
 const MAP = JSON.parse(readFileSync(join(ROOT, "data/assignments.json"), "utf8"));
 
@@ -65,13 +75,19 @@ async function newPage(opts = {}) {
   const page = await ctx.newPage();
   page._errors = [];
   page.on("pageerror", (e) => page._errors.push(e.message));
-  page.on(
-    "console",
-    (m) => m.type() === "error" && page._errors.push(`${m.text()} ${m.location()?.url || ""}`),
-  );
+  page.on("console", (m) => {
+    const msg = `${m.text()} ${m.location()?.url || ""}`;
+    if (m.type() === "error" && !(LIVE && /cloudflareinsights/.test(msg))) page._errors.push(msg);
+  });
   page.on("request", (r) => {
     const u = new URL(r.url());
-    if (!/^(127\.0\.0\.1|localhost)$/.test(u.hostname) && u.protocol.startsWith("http"))
+    // Cloudflare injects its Web Analytics beacon into every production HTML response (a zone setting,
+    // not page code); live mode records it once instead of failing every page on it.
+    if (LIVE && u.hostname === "static.cloudflareinsights.com") {
+      observed.add(u.hostname);
+      return;
+    }
+    if (u.hostname !== BASE_HOST && u.protocol.startsWith("http"))
       page._errors.push(`external request ${r.url()}`);
   });
   return page;
@@ -135,7 +151,7 @@ const TEMPLATES = [
   "/lessons/6-6/practice",
   "/lessons/6-6/family-guide",
   "/lessons/6-6/assignment",
-  "/lessons/6-6/assignment-answer-key",
+  ...(LIVE ? [] : ["/lessons/6-6/assignment-answer-key"]),
   "/practice-hub/",
   "/practice-hub/family/unit-6",
   "/practice-hub/family/unit-6/letter",
@@ -421,7 +437,7 @@ const PRINT = [
   ["/lessons/6-6/practice", "en", 2],
   ["/lessons/6-6/assignment", "en", 2],
   ["/lessons/6-6/assignment", "es", 2],
-  ["/lessons/6-6/assignment-answer-key", "en", 2],
+  ...(LIVE ? [] : [["/lessons/6-6/assignment-answer-key", "en", 2]]),
   ["/lessons/6-6/family-guide", "en", 2],
   ["/lessons/6-6/family-guide", "es", 2],
   ["/practice-hub/family/unit-6/letter", "en", 1],
@@ -447,6 +463,36 @@ for (const [path, lang, max] of PRINT) {
   await page.close();
 }
 
+// ---------------- live: every hub link for one unit, and the curriculum entry points ----------------
+if (LIVE) {
+  const hub = await (await fetch(`${BASE}/practice-hub/`)).text();
+  const unit6 = hub.slice(hub.indexOf('id="u6"'), hub.indexOf('id="u7"'));
+  const links = [...new Set([...unit6.matchAll(/href="(\/[^"]+)"/g)].map((m) => m[1]))];
+  const qrs = [
+    ...new Set([...unit6.matchAll(/src="(\/practice-hub\/qr\/[^"]+)"/g)].map((m) => m[1])),
+  ];
+  let okCount = 0;
+  for (const href of [...links, ...qrs]) {
+    const r = await fetch(`${BASE}${href}`, { redirect: "manual" });
+    const want = href.includes("answer-key") ? 401 : 200;
+    if (r.status !== want) fail("live", `${href} answered ${r.status}, expected ${want}`);
+    else okCount++;
+  }
+  for (const page of ["/curriculum/", "/curriculum/units/"]) {
+    const html = await (await fetch(`${BASE}${page}`)).text();
+    for (const href of [
+      "/practice-hub/",
+      ...(page === "/curriculum/" ? ["/practice-hub/family/"] : []),
+    ]) {
+      if (!html.includes(`href="${href}"`)) fail("live", `${page} does not link ${href}`);
+      else okCount++;
+    }
+  }
+  ok(
+    `live links: ${okCount} checked (unit 6 hub rows incl. QR codes, answer keys 401, curriculum entry points)`,
+  );
+}
+
 // ---------------- teacher gate ----------------
 if (!isTeacherSurface("/lessons/6-6/assignment-answer-key"))
   fail("auth", "answer key path is not a teacher surface");
@@ -469,4 +515,8 @@ if (failures.length) {
   for (const f of failures.slice(0, 50)) console.error(`  ${f}`);
   process.exit(1);
 }
+if (observed.size)
+  passes.push(
+    `observed (not page code): ${[...observed].join(", ")} injected by the Cloudflare zone`,
+  );
 console.log(`PASS validate:pfa-browser\n  ${passes.join("\n  ")}`);
