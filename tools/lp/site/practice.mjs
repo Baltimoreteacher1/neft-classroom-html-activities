@@ -21,10 +21,12 @@ export const onPageDisclaimer = () =>
 const chips = (s) =>
   html`<span class="chip">${cluster(s.cluster).label}</span><span class="chip teal">${domain(s.domain).label}</span><span class="chip" title="${ELD[s.eld]}">${s.eld}</span><span class="chip amber">${s.klu}</span><span class="chip">${s.minutes} min</span>`;
 
-function setCard(s) {
-  return html`<article class="card">
+// The card heading is one level below the heading it sits under: h2 straight after a page h1, h3 under a section h2.
+function setCard(s, level = 3) {
+  const h = `h${level}`;
+  return html`<article class="card" data-set-card="${s.id}">
   <span class="card-icon">${raw(icon(domain(s.domain).icon))}</span>
-  <h3><a class="card-link" href="${setPath(s)}">${s.title}</a></h3>
+  ${raw(`<${h}${level === 2 ? ' class="h3"' : ""}>`)}<a class="card-link" href="${setPath(s)}">${s.title}</a>${raw(`</${h}>`)}
   <p>${s.summary}</p>
   <div class="meta">${chips(s)}</div>
 </article>`;
@@ -63,7 +65,7 @@ export function domainPage(data, c, d) {
   const sets = data.practice.filter((s) => s.cluster === c.slug && s.domain === d.slug);
   return html`<div class="wrap">
 <div class="page-head"><span class="eyebrow">${c.label}</span><h1>${d.label}</h1><p class="lede">${d.verb} Each set has easier and harder parts, so everyone can start.</p></div>
-<div class="grid cols-3">${sets.map(setCard)}</div>
+<div class="grid cols-3">${sets.map((s) => setCard(s, 2))}</div>
 <section class="section note"><p>Want more ${d.label.toLowerCase()} practice? Try the <a href="${LAB_DOMAIN[d.slug]}">${d.label} studio</a> or the <a href="/access-practice-lab/">full Practice Lab</a>.</p></section>
 ${onPageDisclaimer()}
 </div>`;
@@ -113,6 +115,7 @@ function itemCard(item, n, total) {
       html`<li><button type="button" class="choice" data-choice="${i}" aria-pressed="false"><span class="letter" aria-hidden="true">${LETTERS[i]}</span>${c.icon ? raw(icon(c.icon, { cls: "pic" })) : ""}<span>${c.text}</span></button></li>`,
   )}</ul>
   <div class="feedback" aria-live="polite" hidden></div>
+  <p class="muted key-hint no-print" data-i18n="practice.keyHint">Tip: press 1–4 or A–D to choose.</p>
 </li>`;
 }
 
@@ -150,8 +153,9 @@ function readingSet(set) {
   return html`<div class="practice-shell split">
 <section class="source panel passage reading tap-hear" data-content-en aria-labelledby="passage-title">
   <h2 id="passage-title" class="h3">${set.passage.title}</h2>
+  <div class="btn-row no-print passage-tools"><button type="button" class="btn small secondary" data-read-passage>${raw(icon("speaker"))}<span data-i18n="practice.listenPassage">Listen to the passage</span></button><button type="button" class="btn small ghost" data-spanish-help aria-pressed="false"><span data-i18n="practice.spanishHelp">Spanish help</span></button></div>
   ${set.passage.paragraphs.map((p) => raw(`<p>${sentences(glossed(p, g, used))}</p>`))}
-  <details class="accordion no-print"><summary><span>Word help</span></summary><div class="body"><dl class="kv">${g.map((x) => html`<dt>${x.term}</dt><dd>${x.definition} <span class="muted" lang="es" data-es-gloss>(${x.es}: ${x.esDefinition})</span></dd>`)}</dl></div></details>
+  <details class="accordion no-print"><summary><span data-i18n="practice.wordHelp">Word help</span></summary><div class="body"><dl class="kv">${g.map((x) => html`<dt>${x.term}</dt><dd>${x.definition} <span class="muted" lang="es" data-es-gloss>(${x.es}: ${x.esDefinition})</span></dd>`)}</dl></div></details>
 </section>
 <div class="q-col"><ol class="items" data-content-en aria-label="Questions">${set.items.map((it, i) => itemCard(it, i + 1, set.items.length))}</ol></div>
 </div>`;
@@ -237,7 +241,7 @@ ${modeBar(set.domain)}
 ${body}
 ${set.items ? answerKey(set) : ""}
 </div>
-<section class="section no-print"><h2 data-i18n="practice.more">More practice</h2><div class="grid cols-3">${siblings.map(setCard)}</div></section>
+<section class="section no-print"><h2 data-i18n="practice.more">More practice</h2><div class="grid cols-3">${siblings.map((s) => setCard(s))}</div></section>
 ${onPageDisclaimer()}
 </div>`;
 }

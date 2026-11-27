@@ -193,7 +193,8 @@ gate(
     preservation([{ path: "/practice/an-old-page-that-existed/", status: 200, finalStatus: 200 }]),
 );
 
-/* G-03 axe on every page (and dark + high-contrast on a sample): zero serious or critical. */
+/* G-03 axe on every page (and dark + high-contrast on a sample): zero serious or critical, and no heading-order
+   or missing-h1 violation at any impact. */
 async function axeRun(urls, { themes = ["light"] } = {}) {
   const b = await getBrowser();
   if (!b) return { skip: "no browser" };
@@ -212,18 +213,26 @@ async function axeRun(urls, { themes = ["light"] } = {}) {
       await pg.goto(u, { waitUntil: "networkidle" });
       await pg.waitForTimeout(150);
       await pg.addScriptTag({ content: AXE });
-      const v = await pg.evaluate(async () =>
-        (
+      const v = await pg.evaluate(async () => {
+        const wcag = (
           await window.axe.run(document, {
             runOnly: {
               type: "tag",
               values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"],
             },
           })
-        ).violations
-          .filter((x) => x.impact === "serious" || x.impact === "critical")
-          .map((x) => `${x.id} (${x.nodes.length}): ${x.nodes[0]?.target}`),
-      );
+        ).violations.filter((x) => x.impact === "serious" || x.impact === "critical");
+        // Heading structure is how screen-reader users skim a page. axe files it under best practice at moderate
+        // impact, so the tag run above never sees it; it is enforced here at any impact.
+        const headings = (
+          await window.axe.run(document, {
+            runOnly: { type: "rule", values: ["heading-order", "page-has-heading-one"] },
+          })
+        ).violations;
+        return [...wcag, ...headings].map(
+          (x) => `${x.id} (${x.nodes.length}): ${x.nodes[0]?.target}`,
+        );
+      });
       count++;
       for (const x of v) errs.push(`${u.replace(base, "")} [${theme}] ${x}`);
     }
@@ -234,7 +243,7 @@ async function axeRun(urls, { themes = ["light"] } = {}) {
 }
 gate(
   "G-03",
-  "Accessibility: axe, zero serious or critical",
+  "Accessibility: axe, zero serious or critical, headings in order",
   async () => {
     const b = await getBase();
     const all = await axeRun(routes.map((r) => b + r.path));
@@ -261,7 +270,18 @@ gate(
 );
 
 /* G-04 Lighthouse budgets on the home page and every section landing page (mobile). */
-const LH_PATHS = ["/", "/practice/", "/tools/", "/content/", "/access-guide/", "/about/"];
+// Home, every section landing page, and three deep pages (a practice set, the heaviest tool, a unit page).
+const LH_PATHS = [
+  "/",
+  "/practice/",
+  "/tools/",
+  "/content/",
+  "/access-guide/",
+  "/about/",
+  "/practice/grades-6-8/reading/fundraiser-by-numbers/",
+  "/tools/game-maker/",
+  "/content/math/grade-6/ratios/",
+];
 export function budgetCheck(results) {
   const errs = [];
   for (const r of results) {
@@ -706,7 +726,7 @@ for (const g of GATES) {
         detail = `${res.count} checked; control caught ${control.errs.length} seeded defect(s)${res.notes ? `; ${res.notes}` : ""}`;
       }
     }
-  } catch {
+  } catch (e) {
     status = "FAIL";
     detail = `crashed: ${e.stack?.split("\n").slice(0, 3).join(" ")}`;
   }

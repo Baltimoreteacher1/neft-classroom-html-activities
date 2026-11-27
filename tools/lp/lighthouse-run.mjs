@@ -73,7 +73,15 @@ export async function runLighthouse({ base = BASE, paths = PATHS, forms = FORMS 
         const url = `${base}${p}`;
         let row;
         try {
-          const r = await mods.lighthouse(url, flags);
+          let r = await mods.lighthouse(url, flags);
+          // A run that produced no performance score failed to measure (Lighthouse records why in runtimeError or as a
+          // null category). Measure once more; a second null is reported as it is, so the budget still fails.
+          if (r.lhr.categories.performance?.score == null) {
+            console.log(
+              `RETRY ${form.padEnd(7)} ${p}: no performance score (${r.lhr.runtimeError?.code || "null category"})`,
+            );
+            r = await mods.lighthouse(url, flags);
+          }
           const c = r.lhr.categories;
           const score = (k) => (c[k]?.score == null ? null : Math.round(c[k].score * 100));
           row = {

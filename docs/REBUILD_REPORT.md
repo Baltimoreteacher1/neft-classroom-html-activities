@@ -99,6 +99,41 @@ re-run on pure `origin/main` and on `main` + these commits: identical results). 
 pre-existing G-13 (`data-to-ui-coverage`). The pre-commit hook escalates to the full repo gate, whose failures pre-date
 this work, so commits used `--no-verify` after the checks above were run by hand.
 
+## Enhancements after launch (second pass)
+
+**Students, in every practice set**
+- *Listen to the passage*: device voice reads the title and each sentence, highlighting the sentence it is reading; the button stops it.
+- *Spanish help*: an opt-in toggle that adds Spanish to the word-help popover. The choice is remembered on this device.
+- *Keyboard*: 1–4 or A–D picks an answer (the hint is hidden on touch screens and in teacher view).
+- *Resume*: a set reopens on the question the student left, with a short notice ("Picked up where you left off: 3 / 6").
+- *Done chips*: finished sets show "Done ✓" on the set lists, with first-try score for multiple-choice sets only.
+- *Writing*: "Download my writing" saves a plain `.txt`, and the word count follows the interface language.
+- 14 new interface strings in English and Spanish (130 keys in all). The page direction switches to RTL for Arabic, Persian, Dari, Pashto and Urdu.
+
+**Teachers**
+- *Score Interpreter*: upload a CSV roster (header rows are skipped) or download a blank template.
+- *Game Maker*: the 56 KB QR encoder loads only when a share link is asked for. A note appears when the QR code is dense.
+
+**Content review (independent reviewers, all items re-checked by the gates)**
+- *Listening and reading*: 52 of 108 items revised. Fixes covered glossary entries that gave away answers, picture supports that showed the key, scripts that only made sense visually, keys longer than every distractor, and one computed answer (now 6).
+- *Speaking and writing*: 16 prompts revised, including prompts that needed a picture and an Argue frame that stated the position for the student.
+- *Units*: all 17 revised so a substitute can run every activity with no preparation. Coordinate-plane and equation content was corrected. The second sentence of 6.EE.C.9 was added. C3 passages were replaced and kept as [VERIFY]. Three units were raised to 25 minutes.
+- *G-07 gained two detectors*, both seeded in its fixture: an answer much longer than every distractor (a test-wise tell; quoted lines from the text are exempt), and a glossary that defines the word an item asks about.
+
+**Lighthouse** now also runs on three deep pages: a practice set, the Game Maker and a unit page. On its first run it
+found a real defect: on desktop, every practice set shifted when the reading font arrived (CLS 0.327, Performance 84).
+Pages that set reading text now preload that font, read from the stylesheet so a re-hashed file cannot leave a stale
+link (CLS 0.029, Performance 100). A run that produces no score is measured once more instead of being reported as a
+page failure; a second empty run still fails the budget.
+
+**Heading order**: G-03 now also fails on axe `heading-order` and `page-has-heading-one`, which axe files under best
+practice and the WCAG-tag run never checked. It found 21 pages: the 12 practice domain pages and 7 content grade pages put card
+`h3`s straight under the page `h1`, the Vocabulary Card preview did the same from JavaScript, and the style guide's type
+specimen used a second `h1`. Card headings now take their level from where they sit.
+
+**Gates after this pass** (local, `CI=1`, Lighthouse on 9 pages × 2 form factors): **14 pass, 0 fail, 0 skip** (532 s).
+G-03 control now catches 5 seeded defects and G-07 catches 46.
+
 ## Redirects and changed answers (thelanguagepage.com only)
 
 | Path | Before | After |

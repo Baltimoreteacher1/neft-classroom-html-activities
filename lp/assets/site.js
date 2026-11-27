@@ -41,6 +41,8 @@ function applyLang(lang) {
     el.setAttribute("placeholder", lang === "es" && s?.es ? s.es : el.dataset.enPh);
   }
   root.lang = lang;
+  // Right-to-left interface languages (Arabic, Dari, Pashto, Urdu) flip the layout (the design system uses logical properties for it).
+  root.dir = ["ar", "fa", "prs", "ps", "ur"].includes(lang) ? "rtl" : "ltr";
   if (lang === "es") root.setAttribute("data-ui-lang", "es");
   else root.removeAttribute("data-ui-lang");
   const toggle = $("[data-lang-toggle]");
@@ -187,6 +189,16 @@ document.addEventListener("click", (e) => {
   if (!speech.supported) return toast("Read-aloud is not available in this browser.");
   speech.speak(b.getAttribute("data-say"));
 });
+
+/* ---------- progress on this device: a "Done" chip on practice set cards ---------- */
+for (const card of $$("[data-set-card]")) {
+  const done = store.get(`done:${card.dataset.setCard}`);
+  if (!done) continue;
+  const chip = document.createElement("span");
+  chip.className = "chip done-chip";
+  chip.textContent = done.total ? `${tr("practice.doneChip", "Done")} ✓ ${done.right}/${done.total}` : `${tr("practice.doneChip", "Done")} ✓`;
+  card.querySelector(".meta")?.prepend(chip);
+}
 
 /* ---------- print buttons and tabs (shared components) ---------- */
 document.addEventListener("click", (e) => {
