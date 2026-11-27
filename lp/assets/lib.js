@@ -93,11 +93,19 @@ export const speech = {
       if (voice) u.voice = voice;
       u.lang = voice?.lang || "en-US";
       u.rate = rate || this.rate();
-      u.onstart = () => onStart?.();
-      u.onend = u.onerror = () => {
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(watchdog);
         onEnd?.();
         resolve(true);
       };
+      // Some devices never fire onend (no voices installed, a stalled engine). Never leave a button stuck on "Stop".
+      const words = String(text).split(/\s+/).length;
+      const watchdog = setTimeout(finish, ((words / 2.3) * 1000) / (u.rate || 1) + 3000);
+      u.onstart = () => onStart?.();
+      u.onend = u.onerror = finish;
       speechSynthesis.speak(u);
     });
   },
@@ -148,6 +156,33 @@ export async function copyText(text) {
     toast(ok ? tr("tool.copied", "Copied") : "Select the text and copy it.");
     return ok;
   }
+}
+
+/** Print one region of the page: every element outside it is hidden for the print, then restored. */
+export function printOnly(target) {
+  const hidden = [];
+  let node = target;
+  while (node && node !== document.body) {
+    for (const sib of node.parentElement?.children || []) {
+      if (sib !== node && !sib.classList.contains("print-hide-temp")) {
+        sib.classList.add("print-hide-temp");
+        hidden.push(sib);
+      }
+    }
+    node = node.parentElement;
+  }
+  const wasHidden = target.hidden;
+  target.hidden = false;
+  target.classList.add("print-target");
+  const restore = () => {
+    for (const el of hidden) el.classList.remove("print-hide-temp");
+    target.hidden = wasHidden;
+    target.classList.remove("print-target");
+    window.removeEventListener("afterprint", restore);
+  };
+  window.addEventListener("afterprint", restore);
+  window.print();
+  setTimeout(restore, 1500);
 }
 
 /* ---------- share-link encoding: JSON -> deflate -> base64url (falls back to plain base64url) ---------- */

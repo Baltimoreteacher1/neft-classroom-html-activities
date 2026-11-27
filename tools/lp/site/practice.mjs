@@ -153,7 +153,7 @@ function readingSet(set) {
   ${set.passage.paragraphs.map((p) => raw(`<p>${sentences(glossed(p, g, used))}</p>`))}
   <details class="accordion no-print"><summary><span>Word help</span></summary><div class="body"><dl class="kv">${g.map((x) => html`<dt>${x.term}</dt><dd>${x.definition} <span class="muted" lang="es" data-es-gloss>(${x.es}: ${x.esDefinition})</span></dd>`)}</dl></div></details>
 </section>
-<ol class="items" data-content-en aria-label="Questions">${set.items.map((it, i) => itemCard(it, i + 1, set.items.length))}</ol>
+<div class="q-col"><ol class="items" data-content-en aria-label="Questions">${set.items.map((it, i) => itemCard(it, i + 1, set.items.length))}</ol></div>
 </div>`;
 }
 
@@ -172,12 +172,12 @@ function listeningSet(set) {
   ${s.lines.map((l) => html`<p><strong>${l.speaker}:</strong> <span class="line">${l.text}</span></p>`)}
   </div></details>
 </section>
-<ol class="items" data-content-en aria-label="Questions">${set.items.map((it, i) => itemCard(it, i + 1, set.items.length))}</ol>
+<div class="q-col"><ol class="items" data-content-en aria-label="Questions">${set.items.map((it, i) => itemCard(it, i + 1, set.items.length))}</ol></div>
 </div>`;
 }
 
 function speakingSet(set) {
-  return html`<ol class="items tasks" data-content-en aria-label="Speaking tasks">${set.tasks.map(
+  return html`<div class="q-col"><ol class="items tasks" data-content-en aria-label="Speaking tasks">${set.tasks.map(
     (task, i) => html`<li class="q-card task" data-task="${task.id}" id="${task.id}">
   <p class="muted"><span>Task ${i + 1} of ${set.tasks.length}</span> · <span class="chip">${PL_LABEL[task.pl]}</span> · <span class="chip">${task.klu}</span></p>
   ${visual(task.visual)}
@@ -190,11 +190,11 @@ function speakingSet(set) {
   </div></details>
   <fieldset><legend data-i18n="practice.selfCheck">Check yourself</legend>${task.checklist.map((c, j) => html`<label class="check"><input type="checkbox" data-check="${task.id}-${j}"><span>${c}</span></label>`)}</fieldset>
 </li>`,
-  )}</ol>`;
+  )}</ol></div>`;
 }
 
 function writingSet(set) {
-  return html`<ol class="items tasks" data-content-en aria-label="Writing tasks">${set.tasks.map(
+  return html`<div class="q-col"><ol class="items tasks" data-content-en aria-label="Writing tasks">${set.tasks.map(
     (task, i) => {
       const paras = (s) => s.split(/\n\n+/).map((p) => html`<p>${p}</p>`);
       return html`<li class="q-card task" data-task="${task.id}" id="${task.id}" data-min="${task.wordTarget[0]}" data-max="${task.wordTarget[1]}">
@@ -213,7 +213,7 @@ function writingSet(set) {
   </div></details>
 </li>`;
     },
-  )}</ol>`;
+  )}</ol></div>`;
 }
 
 export function setPage(set, data) {

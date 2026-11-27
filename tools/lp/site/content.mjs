@@ -134,7 +134,13 @@ export function unitToolData(u) {
   return {
     id: u.id,
     title: u.title,
-    vocabulary: u.vocabulary.map((v) => ({ term: v.term, definition: v.definition, es: v.es })),
+    vocabulary: u.vocabulary.map((v) => ({
+      term: v.term,
+      definition: v.definition,
+      es: v.es,
+      cognate: !!v.cognate,
+      tier: v.tier,
+    })),
     frames: u.frames,
     activity: u.activity,
     klu: u.klu,

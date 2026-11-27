@@ -493,7 +493,6 @@ export function renderAll(data, assets) {
         crumb(u.title, unitPath(u)),
       ],
       body: unitPage(u),
-      scripts: ["/lp/assets/content.js"],
       jsonld: {
         "@context": "https://schema.org",
         "@type": "LearningResource",

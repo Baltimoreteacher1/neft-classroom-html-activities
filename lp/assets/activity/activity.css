@@ -1,0 +1,205 @@
+/* Activity styles: inlined into every exported activity; scoped under .lpa. No purple anywhere. */
+.lpa {
+  --a-accent: #17324d;
+  --a-ink: #24323f;
+  --a-muted: #4f5b66;
+  --a-line: #d6cfbf;
+  --a-tint: #e3f4f3;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--a-ink);
+  background: #fff;
+  padding: 20px;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+.lpa *,
+.lpa *::before,
+.lpa *::after {
+  box-sizing: border-box;
+}
+.lpa-title {
+  font-size: 1.6em;
+  line-height: 1.2;
+  margin: 0 0 16px;
+}
+.lpa-block {
+  border-top: 1px solid var(--a-line);
+  padding: 16px 0;
+}
+.lpa-block h2 {
+  font-size: 1.25em;
+  margin: 0 0 8px;
+}
+.lpa-read {
+  font-size: 1.05em;
+  max-width: 40rem;
+}
+.lpa-q,
+.lpa-label {
+  display: block;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.lpa-btn,
+.lpa-choice,
+.lpa-chip {
+  font: inherit;
+  min-height: 48px;
+  min-width: 48px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.lpa-btn {
+  padding: 0 18px;
+  border: 2px solid var(--a-accent);
+  background: var(--a-accent);
+  color: #fff;
+  font-weight: 700;
+  margin: 6px 6px 6px 0;
+}
+.lpa-btn.lpa-ghost {
+  background: transparent;
+  color: var(--a-accent);
+}
+.lpa-btn.lpa-small {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 10px;
+}
+.lpa-btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.lpa :focus-visible {
+  outline: 3px solid var(--a-accent);
+  outline-offset: 3px;
+}
+.lpa-choices {
+  display: grid;
+  gap: 8px;
+}
+.lpa-choice {
+  text-align: start;
+  padding: 10px 14px;
+  border: 2px solid var(--a-line);
+  background: #fff;
+  color: var(--a-ink);
+}
+.lpa-choice.is-right,
+.lpa-blank.is-right {
+  border-color: #1b7a4b;
+  background: #e5f4ec;
+}
+.lpa-choice.is-wrong,
+.lpa-blank.is-wrong {
+  border-color: #b42318;
+  background: #fdecea;
+}
+.lpa-fb {
+  min-height: 1.4em;
+  font-weight: 600;
+}
+.lpa-order {
+  padding-left: 1.4em;
+}
+.lpa-order li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin: 6px 0;
+  border: 1px solid var(--a-line);
+  border-radius: 10px;
+}
+.lpa-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lpa-chip {
+  padding: 0 14px;
+  border: 2px solid var(--a-line);
+  background: var(--a-tint);
+  color: var(--a-ink);
+}
+.lpa-blank {
+  font: inherit;
+  min-height: 40px;
+  border: 0;
+  border-bottom: 2px solid var(--a-accent);
+  background: #f7f4ec;
+  margin: 0 4px;
+  padding: 0 6px;
+}
+.lpa-bank {
+  background: var(--a-tint);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+.lpa-text {
+  width: 100%;
+  font: inherit;
+  padding: 10px;
+  border: 1px solid var(--a-line);
+  border-radius: 10px;
+}
+.lpa-figure {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+.lpa-figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+.lpa-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--a-accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.85em;
+  border: 2px solid #fff;
+}
+.lpa-rubric {
+  border: 1px solid var(--a-line);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.lpa-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  min-height: 44px;
+  padding: 6px 0;
+}
+.lpa-check input {
+  width: 22px;
+  height: 22px;
+  margin-top: 3px;
+}
+.lpa-transcript summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 10px 0;
+  font-weight: 600;
+}
+@media print {
+  .lpa-btn,
+  .lpa-chip {
+    display: none;
+  }
+  .lpa-transcript > p {
+    display: block;
+  }
+}
