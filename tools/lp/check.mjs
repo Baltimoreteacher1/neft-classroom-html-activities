@@ -54,7 +54,7 @@ async function getBrowser() {
         (fs.existsSync("/opt/pw-browsers/chromium") ? "/opt/pw-browsers/chromium" : undefined),
     });
     return browser;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -697,7 +697,7 @@ for (const g of GATES) {
         detail = `${res.count} checked; control caught ${control.errs.length} seeded defect(s)${res.notes ? `; ${res.notes}` : ""}`;
       }
     }
-  } catch (e) {
+  } catch {
     status = "FAIL";
     detail = `crashed: ${e.stack?.split("\n").slice(0, 3).join(" ")}`;
   }
