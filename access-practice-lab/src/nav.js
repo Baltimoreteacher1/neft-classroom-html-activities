@@ -79,6 +79,7 @@ export function formerTopLinks(band, T) {
     { id: "access-prep", icon: "tests", label: T("Access Prep", "Preparación ACCESS"), href: `${BASE}/access-prep${q}`, featured: true },
     ...(!isEarlyBand(band) ? [{ id: "ready-plan", icon: "road", label: T("My readiness plan", "Mi plan de preparación"), href: `${BASE}/ready-plan${q}` }] : []),
     ...learner,
+    ...(!isEarlyBand(band) ? [{ id: "audio-practice", icon: "listening", label: T("Audio practice", "Práctica con audio"), href: `${BASE}/audio-practice/${q}` }] : []),
     { id: "book-studio", icon: "writing", label: T("Create a Book", "Crear un libro"), href: `${BASE}/book-studio${q}` },
     { id: "bcpss", icon: "classroom", label: T("BCPSS Teachers", "Docentes de BCPSS"), href: "/bcpss-teachers" },
     { id: "site-guide", icon: "help", label: T("Site Guide", "Guía del sitio"), href: `${BASE}/site-guide${q}` },

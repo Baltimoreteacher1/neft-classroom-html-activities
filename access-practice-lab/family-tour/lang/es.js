@@ -114,6 +114,7 @@ export default {
     adult1: "Lean la pregunta juntos.",
     adult2: "Esperen. Dejen que su hijo o hija piense y responda en inglés.",
     adult3: "Pidan un detalle más.",
+    audioDirections: "Escuchen más instrucciones para practicar en casa",
     doneTitle: "¡Buen trabajo!",
     doneText: "Pregunten, esperen, escuchen y pidan un detalle más. Así funciona la práctica en casa.",
     fb: {
