@@ -973,7 +973,7 @@ export const DESTINATIONS = Object.freeze([
     skill: "Mixed",
     kind: "world",
     for: STF,
-    top: true,
+    // Not featured in the More menu (Joel, lp-sibling-apps-keep-urls-stop-featuring); the URL keeps answering.
     href: "/language-adventures/",
     icon: "worlds",
     match: [],
@@ -989,7 +989,7 @@ export const DESTINATIONS = Object.freeze([
     skill: "Mixed",
     kind: "world",
     for: STF,
-    top: true,
+    // Not featured in the More menu (Joel, lp-sibling-apps-keep-urls-stop-featuring); the URL keeps answering.
     href: "/language-studio/",
     icon: "worlds",
     match: [],

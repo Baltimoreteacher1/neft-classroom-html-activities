@@ -290,7 +290,7 @@ test("home keeps every destination the previous home linked, for both bands", as
   }
 });
 
-test("audience doors: Teacher, Student, Family and search; a role door never opens a tour (Joel, 2026-11-17)", async () => {
+test("audience doors: Student, Family, Classroom and ESOL Teacher, then search and the district; a role door never opens a tour (Joel, 2026-11-17)", async () => {
   // The navigation redesign (2026-11-17) replaced the "I am a…" switch with three large audience doors. The Teacher
   // door opens the Teacher Hub and the Family door the family start page; both offer the tour among other choices,
   // so no door drops anyone straight into a tour, whatever the tour state on this device.
@@ -310,10 +310,20 @@ test("audience doors: Teacher, Student, Family and search; a role door never ope
         const doors = [...doc.querySelectorAll(".lpa-doors .lpa-door")];
         assert.deepEqual(
           doors.map((a) => a.querySelector("strong").textContent.trim()),
-          ["I’m a Teacher", "I’m a Student", "I’m a Family Member", "BCPSS Teachers"],
+          [
+            "I’m a Student",
+            "I’m a Family Member",
+            "I’m a Classroom Teacher",
+            "I’m an ESOL Teacher",
+          ],
         );
         const href = (id) => doc.querySelector(`[data-audience-door="${id}"]`).getAttribute("href");
-        assert.equal(href("teacher"), "/access-teacher/");
+        // Both teacher doors open the one Teacher Hub in their role's view (access-teacher/hub-role.js).
+        assert.equal(href("teacher"), "/access-teacher/?role=classroom");
+        assert.equal(href("esol"), "/access-teacher/?role=esol");
+        assert.equal(doc.querySelector('[data-audience-door="esol"]').dataset.doorRole, "esol");
+        // The district door is a link under the doors, not a fifth audience (award audit C6).
+        assert.equal(doc.querySelector('.lpa-doors [data-audience-door="bcpss"]'), null);
         assert.match(href("student"), /^\/access-practice-lab\/students(\?grades=6-8)?$/);
         assert.equal(href("family"), "/access-practice-lab/family-start");
         assert.equal(href("bcpss"), "/bcpss-teachers");
