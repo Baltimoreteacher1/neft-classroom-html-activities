@@ -8,7 +8,7 @@ const PRINTABLE = new Set(["worksheet", "check"]);
 const JSZIP_SRC = "/card-builder/vendor/jszip.min.js";
 
 /** The site's vendored JSZip, loaded the first time a package is built (never on student pages). */
-function loadJSZip() {
+export function loadJSZip() {
   if (globalThis.JSZip) return Promise.resolve(globalThis.JSZip);
   return new Promise((resolve, reject) => {
     const el = document.createElement("script");

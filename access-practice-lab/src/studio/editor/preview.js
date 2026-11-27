@@ -17,12 +17,12 @@ export async function loadBundle(fetchImpl = fetch) {
   return bundle;
 }
 
-export async function studentHtml(activity, { lang = "en", preview = false } = {}) {
+export async function studentHtml(activity, { lang = "en", preview = false, scorm = false } = {}) {
   const [{ exportActivityHtml }, parts] = await Promise.all([
     import("../export/html.js"),
     loadBundle(),
   ]);
-  return exportActivityHtml(activity, { ...parts, lang, preview });
+  return exportActivityHtml(activity, { ...parts, lang, preview, scorm });
 }
 
 export async function printHtml(activity, { lang = "en", part = "student" } = {}) {

@@ -4,6 +4,7 @@
 
 import { normalizeActivity } from "../studio/core/schema.js";
 import { cleanAdjust, formatById } from "./build.js";
+import { cleanSupports } from "./supports.js";
 
 export const SESSION_KEY = "accessPracticeLab:v1:create";
 export const SESSION_SCHEMA = "lp-create-session/1";
@@ -60,6 +61,7 @@ export function readSession(io) {
           source: cleanSource(raw.last.source),
           format: formatById(raw.last.format)?.id || "",
           adjust: cleanAdjust(raw.last.adjust),
+          supports: cleanSupports(raw.last.supports),
           at: Number(raw.last.at) || 0,
         }
       : null;
@@ -135,7 +137,7 @@ export function setPacketTitle(io, title) {
 }
 
 /** Remember the teacher's last Create choice so reopening the panel resumes it. */
-export function rememberChoice(io, { source, format, adjust }, now = Date.now()) {
+export function rememberChoice(io, { source, format, adjust, supports }, now = Date.now()) {
   const src = cleanSource(source);
   if (!src) return { ok: false };
   const next = {
@@ -144,6 +146,7 @@ export function rememberChoice(io, { source, format, adjust }, now = Date.now())
       source: src,
       format: formatById(format)?.id || "",
       adjust: cleanAdjust(adjust),
+      supports: cleanSupports(supports),
       at: now,
     },
   };

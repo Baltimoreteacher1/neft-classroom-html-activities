@@ -9,6 +9,8 @@ import { assertRigor } from "../studio/core/differentiate-rigor.js";
 import { LIMITS, normalizeActivity, questionsOf } from "../studio/core/schema.js";
 import { runTransform, transformStatus } from "../studio/core/transforms.js";
 import { validateActivity } from "../studio/core/validate.js";
+import { applyRecipe, builtinRecipes } from "../studio/x/recipes.js";
+import { applyCreateSupports, cleanSupports } from "./supports.js";
 
 const pair = (en, es) => Object.freeze({ en, es });
 
@@ -16,7 +18,7 @@ const pair = (en, es) => Object.freeze({ en, es });
  * What a teacher can make. `run` is a transformation id from transforms.js (null = the copied activity as it is).
  * `outputs` lists only exports that really exist for that kind (share.js offers print + Word for worksheet/check).
  */
-export const FORMATS = Object.freeze([
+const CORE_FORMATS = [
   {
     id: "interactive",
     run: "toKind:interactive",
@@ -84,7 +86,54 @@ export const FORMATS = Object.freeze([
     label: pair("Writing task", "Tarea de escritura"),
     hint: pair("A short written response with frames.", "Una respuesta escrita corta con marcos."),
   },
-]);
+];
+
+/**
+ * The Activity Studio's ready-made structure recipes (studio/x/recipes.js, lp-recipe/1) as extra formats: each keeps
+ * a proven ORDER of parts (passage, words, question types) and fills it only from this page's own passage and words.
+ */
+const RECIPE_FORMATS = builtinRecipes().map((r) => ({
+  id: `recipe:${r.id}`,
+  recipe: r.recipe,
+  run: null,
+  kind: r.recipe.kind,
+  group: "recipe",
+  label: r.label,
+  hint: r.about,
+}));
+
+export const FORMATS = Object.freeze([...CORE_FORMATS, ...RECIPE_FORMATS]);
+
+/** What a structure recipe may use from a page: its own title, passages and word list (never its answers). */
+export function recipeSource(base) {
+  const blocks = base?.blocks || [];
+  return {
+    topic: String(base?.title || "").slice(0, 80),
+    sourceText: blocks
+      .filter((b) => b.type === "passage" && b.text)
+      .map((b) => (b.title ? `${b.title}\n\n${b.text}` : b.text))
+      .join("\n\n"),
+    vocab: blocks
+      .filter((b) => b.type === "vocab")
+      .flatMap((b) => b.items)
+      .filter((v) => v.term && v.def)
+      .map((v) => ({ term: v.term, def: v.def })),
+  };
+}
+
+const recipeRuns = new WeakMap();
+/** applyRecipe once per (base, recipe): formatStatus and buildResource share the result. */
+function runRecipe(base, f) {
+  let byId = recipeRuns.get(base);
+  if (!byId) recipeRuns.set(base, (byId = new Map()));
+  if (!byId.has(f.id)) byId.set(f.id, applyRecipe(f.recipe, recipeSource(base)));
+  return byId.get(f.id);
+}
+
+const NO_RECIPE = pair(
+  "This page has no reading passage or word list for this recipe to use.",
+  "Esta página no tiene una lectura ni una lista de palabras para esta receta.",
+);
 
 /** The three simple adjustments. Each value maps to an existing differentiation preset (or none). */
 export const ADJUST = Object.freeze({
@@ -140,6 +189,12 @@ export function cleanAdjust(input) {
 export function formatStatus(base) {
   const status = new Map(transformStatus(base).map((t) => [t.id, t]));
   return FORMATS.map((f) => {
+    if (f.recipe) {
+      // offered only when every step was filled from this page: a half-empty recipe is not what the teacher chose
+      const out = runRecipe(base, f);
+      const ok = Boolean(out.activity) && !out.review.some((r) => r.code === "step-unfilled");
+      return { ...f, can: ok, reason: ok ? null : NO_RECIPE };
+    }
     if (f.kind && f.kind === base.kind) return { ...f, can: true, reason: null };
     const t = status.get(f.run);
     return { ...f, can: Boolean(t?.can), reason: t?.can ? null : t?.reason || null };
@@ -160,7 +215,7 @@ export function defaultFormat(base, preferred = []) {
  * @returns {{ activity, format, adjust, changes: {en,es}[], warnings: {en,es}[], validation }}
  * Never throws for an activity the adapters produced; a format that cannot run returns the base with a warning.
  */
-export function buildResource(base, { format, adjust } = {}) {
+export function buildResource(base, { format, adjust, supports } = {}) {
   const src = normalizeActivity(base);
   const can = availableFormats(src);
   const asked = can.find((x) => x.id === format);
@@ -172,7 +227,12 @@ export function buildResource(base, { format, adjust } = {}) {
   const changes = [];
   const warnings = early;
   let a = src;
-  if (f && !(f.kind && f.kind === src.kind)) {
+  if (f?.recipe) {
+    const out = runRecipe(src, f);
+    if (out.activity)
+      a = normalizeActivity({ ...out.activity, id: src.id, lineage: src.lineage, title: src.title });
+    for (const r of out.review || []) if (r?.en) warnings.push(pair(r.en, r.es || r.en));
+  } else if (f && !(f.kind && f.kind === src.kind)) {
     const out = runTransform(src, f.run);
     if (out.ran === false || out.reason)
       warnings.push(
@@ -205,10 +265,18 @@ export function buildResource(base, { format, adjust } = {}) {
         );
     }
   }
+  const sup = cleanSupports(supports);
+  if (sup.level !== "grade" || sup.on.length) {
+    const out = applyCreateSupports(a, sup);
+    a = out.activity;
+    changes.push(...out.changes);
+    warnings.push(...out.warnings);
+  }
   return {
     activity: a,
     format: f?.id || "",
     adjust: adj,
+    supports: sup,
     changes,
     warnings,
     validation: validateActivity(a),
