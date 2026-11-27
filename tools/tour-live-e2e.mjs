@@ -207,6 +207,42 @@ try {
   });
 
   await t(
+    "a phone switches to Spanish: question, choices and stop in Spanish, kept after a reload",
+    async () => {
+      const p = phones[0];
+      await p.getByRole("button", { name: "Español" }).click();
+      await expectText(p, "#q-text", "¿Dónde necesitan más práctica");
+      assert.equal(
+        await p.getByRole("button", { name: "Hablar" }).getAttribute("aria-pressed"),
+        "true",
+        "the earlier answer is still marked",
+      );
+      assert.equal(await p.evaluate(() => document.documentElement.lang), "es");
+      await expectText(p, "#s-title", "Por qué existe");
+      await p.reload({ waitUntil: "networkidle" });
+      await expectText(p, "#q-text", "¿Dónde necesitan más práctica");
+      await shot(p, "phone-spanish");
+      await p.getByRole("button", { name: "English" }).click();
+      await expectText(p, "#q-text", "Where do your students most need more practice?");
+    },
+  );
+
+  await t("the room summary lists every answered question with counts", async () => {
+    await deck.keyboard.press("s");
+    await deck.locator("#summaryov").waitFor({ state: "visible", timeout: 5000 });
+    await expectText(deck, "#sum-grid", "Where do your students most need more practice?");
+    const rows = await deck.locator("#sum-grid .sum-row").allTextContents();
+    assert.ok(
+      rows.some((r) => /^Writing2 · 67%/.test(r)),
+      `summary rows: ${rows.join(" | ")}`,
+    );
+    await expectText(deck, "#sum-react", "good idea");
+    await shot(deck, "deck-summary");
+    await deck.keyboard.press("Escape");
+    assert.equal(await deck.locator("#summaryov").isVisible(), false);
+  });
+
+  await t(
     "the phone Upgrade Lab checks on the phone and sends only the three results",
     async () => {
       for (let i = 0; i < 5; i++)
@@ -301,6 +337,42 @@ try {
       bad.map((v) => `${v.id}: ${v.nodes.length}`),
       [],
     );
+  });
+
+  await t("the projector passes axe (WCAG 2.x A/AA) on its stops and the join screen", async () => {
+    let AxeBuilder;
+    try {
+      AxeBuilder = (await import("@axe-core/playwright")).default;
+    } catch {
+      console.log("      (axe not installed: skipped this check)");
+      return;
+    }
+    const found = [];
+    for (const stop of [0, 2, 6, 10, 15]) {
+      await deck.keyboard.press("m");
+      await deck.waitForTimeout(1600);
+      await deck.locator(`#s${stop}`).click({ position: { x: 30, y: 30 } });
+      await deck.waitForTimeout(2400);
+      const r = await new AxeBuilder({ page: deck })
+        .include(`#s${stop}`)
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+        .analyze();
+      for (const v of r.violations)
+        if (["serious", "critical"].includes(v.impact))
+          found.push(
+            `stop ${stop + 1} ${v.id}: ${v.nodes.length} (${v.nodes[0]?.target?.join(" ")})`,
+          );
+    }
+    await deck.keyboard.press("j");
+    await deck.locator("#joinov").waitFor({ state: "visible", timeout: 3000 });
+    const j = await new AxeBuilder({ page: deck })
+      .include("#joinov")
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+      .analyze();
+    for (const v of j.violations)
+      if (["serious", "critical"].includes(v.impact)) found.push(`join ${v.id}: ${v.nodes.length}`);
+    await deck.keyboard.press("Escape");
+    assert.deepEqual(found, []);
   });
 
   await t("nothing left the origin, and no page logged an error", () => {
