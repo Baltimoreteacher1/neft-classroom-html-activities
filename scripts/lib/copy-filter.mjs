@@ -147,6 +147,13 @@ const OMITTED_DATA_JSON = new Set([
  */
 // shared/privacy inventory tooling + its fixtures/baselines, the synthetic fixture library, and the flag
 // registry's negative-control fixtures. shared/privacy/pii.mjs and shared/flags/evaluate.js stay publishable.
+// Per-lesson authoring sidecars that the generators copy INTO lessons/<id>-group*/config.json
+// (tools/lib/small-group-build.mjs). No page, engine module or Function fetches them: the engine
+// files that name these folders do so only in comments. 240 files (2026-11-27 file-budget audit).
+// data/small-group-*.json at the top level (not in these folders) is unaffected.
+export const BUILD_ONLY_DATA_DIR_RE =
+  /^data\/(small-group-build|small-group-practice|small-group-investigations)\//;
+
 const DEV_ONLY_SHARED_RE =
   /^shared\/(privacy\/(inventory[^/]*|inventory-annotations\/.*|fixtures\/.*)|fixtures\/.*|flags\/negative\/.*)$/;
 
@@ -167,6 +174,7 @@ export function makeCopyFilter(root) {
     if (normalized.startsWith("data/") && OMITTED_DATA_JSON.has(normalized.slice("data/".length))) {
       return false;
     }
+    if (BUILD_ONLY_DATA_DIR_RE.test(normalized)) return false;
     // The illustrated scenes have WebP originals. Runtime still has the
     // legacy PNG and procedural SVG recovery paths, so publishing duplicate
     // JPEG encodes is unnecessary.

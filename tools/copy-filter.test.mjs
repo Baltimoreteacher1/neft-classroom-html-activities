@@ -73,6 +73,9 @@ for (const rel of [
   "data/auth-baseline.json",
   "data/es-translations/hints-01.json",
   "data/audit/studio-audit/report.json",
+  "data/small-group-build/2-1.json",
+  "data/small-group-practice/2-1.json",
+  "data/small-group-investigations/2-1.json",
   "blood-on-the-river/art/botr/ch01-scene-01.jpg",
 ]) {
   assert.equal(plain(`/Users/x/repo/${rel}`), false, `${rel} is build-only or a duplicate asset`);
@@ -80,6 +83,9 @@ for (const rel of [
 for (const rel of [
   "data/catalog.json",
   "data/curriculum-launch-manifest.json",
+  // Fetched at runtime by assets/family-studio/index.mjs and the practice studios.
+  "data/family-homework-notes/2-1.json",
+  "data/practice-studio/2-1.json",
   "blood-on-the-river/art/botr/ch01-scene-01.webp",
   "blood-on-the-river/images/chapter-1/scene-01.png",
 ]) {

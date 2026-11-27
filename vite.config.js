@@ -1,5 +1,5 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs";
-import { dirname, resolve } from "path";
+import { basename, dirname, resolve } from "path";
 import { defineConfig } from "vite";
 import { makeCopyFilter } from "./scripts/lib/copy-filter.mjs";
 
@@ -322,7 +322,11 @@ function copyStandaloneHtml() {
           if (existsSync(downloads)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name, "downloads");
             mkdirSync(destDir, { recursive: true });
-            cpSync(downloads, destDir, { recursive: true });
+            // .pdf-manifest.json is generate-pdf.mjs's render-hash cache (84 files); nothing serves it.
+            cpSync(downloads, destDir, {
+              recursive: true,
+              filter: (src) => basename(src) !== ".pdf-manifest.json",
+            });
           }
           // Readiness pre-lesson (static index.html + printable practice.docx)
           // lives in lessons/<id>/readiness/ and is linked from the lesson.
