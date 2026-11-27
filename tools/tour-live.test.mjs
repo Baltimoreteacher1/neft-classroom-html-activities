@@ -19,22 +19,22 @@ import { STOPS } from "../tour/stops.js";
 import { checkUpgrade, ITEM, resultBits } from "../tour/upgrade-check.js";
 
 let passed = 0;
-const t = (name, fn) => {
-  fn();
+const t = async (name, fn) => {
+  await fn();
   passed++;
   console.log(`  ok  ${name}`);
 };
 const root = new URL("../", import.meta.url);
 const read = (p) => readFileSync(new URL(p, root), "utf8");
 
-t("the tour's Upgrade item is the lab's lu68-argue-phones item", () => {
+await t("the tour's Upgrade item is the lab's lu68-argue-phones item", () => {
   const src = UPGRADE_ITEMS.find((i) => i.id === "lu68-argue-phones");
   assert.ok(src, "the lab item is gone");
   for (const k of ["informal", "avoid", "precision", "connectors", "minAdded", "hint"])
     assert.deepEqual(ITEM[k], src[k], k);
 });
 
-t("the tour's checker gives the lab checker's answer on every sentence", () => {
+await t("the tour's checker gives the lab checker's answer on every sentence", () => {
   const src = UPGRADE_ITEMS.find((i) => i.id === "lu68-argue-phones");
   const sentences = [
     "",
@@ -58,22 +58,25 @@ t("the tour's checker gives the lab checker's answer on every sentence", () => {
   assert.equal(resultBits({ detail: true, precision: false, connector: true }), "101");
 });
 
-t("every question sits on a real stop, and every stop links to a Language Page address", () => {
-  assert.equal(STOPS.length, STOP_COUNT);
-  for (const [id, p] of Object.entries(PROMPTS))
-    assert.ok(STOPS[p.stop], `${id} sits on stop ${p.stop}`);
-  for (const [i, s] of STOPS.entries()) {
-    assert.ok(s.t && s.s && s.n?.length, `stop ${i} needs a title, a phone summary and notes`);
-    assert.match(
-      s.u,
-      /^https:\/\/thelanguagepage\.com\/access-(practice-lab|teacher)\//,
-      `stop ${i} link`,
-    );
-    assert.ok(Number.isInteger(s.b) && s.b >= 0, `stop ${i} builds`);
-  }
-});
+await t(
+  "every question sits on a real stop, and every stop links to a Language Page address",
+  () => {
+    assert.equal(STOPS.length, STOP_COUNT);
+    for (const [id, p] of Object.entries(PROMPTS))
+      assert.ok(STOPS[p.stop], `${id} sits on stop ${p.stop}`);
+    for (const [i, s] of STOPS.entries()) {
+      assert.ok(s.t && s.s && s.n?.length, `stop ${i} needs a title, a phone summary and notes`);
+      assert.match(
+        s.u,
+        /^https:\/\/thelanguagepage\.com\/access-(practice-lab|teacher)\//,
+        `stop ${i} link`,
+      );
+      assert.ok(Number.isInteger(s.b) && s.b >= 0, `stop ${i} builds`);
+    }
+  },
+);
 
-t("both pages import modules that exist and load nothing from another host", () => {
+await t("both pages import modules that exist and load nothing from another host", () => {
   for (const page of ["tour/index.html", "tour/join/index.html"]) {
     const html = read(page);
     const dir = new URL(page.replace(/[^/]+$/, ""), root);
@@ -107,6 +110,45 @@ t("both pages import modules that exist and load nothing from another host", () 
   );
   for (const name of new Set([...deck.matchAll(/shots\/([a-z-]+\.jpg)/g)].map((m) => m[1])))
     assert.ok(existsSync(new URL(`tour/shots/${name}`, root)), `tour/shots/${name} is missing`);
+});
+
+await t(
+  "the doors stop shows the live home page's doors, and every door's picture exists",
+  async () => {
+    const deck = read("tour/index.html");
+    const block = /const D2 = \[([\s\S]*?)\];/.exec(deck)?.[1];
+    assert.ok(block, "the doors list is gone");
+    const rows = [...block.matchAll(/\["([^"]+)", "([^"]+)", "([a-z-]+)", "([^"]+)"\]/g)];
+    const { AUDIENCE_DOORS, DISTRICT_DOOR } = await import(
+      "../access-practice-lab/src/views/home-audience.js"
+    );
+    assert.deepEqual(
+      rows.slice(0, 4).map((r) => [r[1], r[2]]),
+      AUDIENCE_DOORS.map((d) => [d.title[0], d.text[0]]),
+      "the tour's doors no longer match the live home page (access-practice-lab/src/views/home-audience.js)",
+    );
+    assert.deepEqual([rows[4][1], rows[4][2]], [DISTRICT_DOOR.title[0], DISTRICT_DOOR.text[0]]);
+    for (const r of rows)
+      assert.ok(existsSync(new URL(`tour/shots/${r[3]}.jpg`, root)), `door picture ${r[3]}.jpg`);
+    assert.equal(rows.length - 1, STOPS[2].b, "one build per audience door");
+  },
+);
+
+await t("every question, choice and stop the audience reads has Spanish", () => {
+  for (const [id, p] of Object.entries(PROMPTS)) {
+    assert.ok(p.qEs && p.qEs !== p.q, `${id} has no Spanish question`);
+    if (id === "upgrade" || id === "place") continue; // result bits; product names
+    for (const c of p.choices)
+      assert.ok(
+        (c[2] && c[2] !== c[1]) || c[1] === "WIDA Data Studio",
+        `${id}:${c[0]} has no Spanish label`,
+      );
+  }
+  for (const [i, s] of STOPS.entries())
+    assert.ok(s.tEs && s.sEs, `stop ${i} has no Spanish title and summary`);
+  const page = read("tour/join/index.html");
+  for (const [, key] of page.matchAll(/data-t="([a-zA-Z0-9]+)"/g))
+    assert.match(page, new RegExp(`\\b${key}: \\[`), `data-t="${key}" has no entry in TX`);
 });
 
 console.log(`tour-live: ${passed} checks passed`);

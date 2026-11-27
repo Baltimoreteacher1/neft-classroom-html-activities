@@ -102,14 +102,18 @@ a{color:inherit}
 /* S2 doors */
 #s2 .row{gap:52px}
 #s2 .browser{flex:1.45}
-.doors{flex:1;display:flex;flex-direction:column;gap:16px}
-.door{position:relative;display:flex;gap:20px;align-items:center;text-align:left;background:#fff;border:3px solid var(--line);border-radius:22px;padding:16px 20px 16px 16px;perspective:600px}
-.door .leaf{flex:none;width:78px;height:98px;border-radius:10px 10px 4px 4px;background:var(--paper2);position:relative;transform-style:preserve-3d}
+.doors{flex:1;display:flex;flex-direction:column;gap:12px}
+.door{position:relative;display:flex;gap:18px;align-items:center;text-align:left;background:#fff;border:3px solid var(--line);border-radius:20px;padding:12px 18px 12px 14px;perspective:600px}
+.door .leaf{flex:none;width:60px;height:76px;border-radius:10px 10px 4px 4px;background:var(--paper2);position:relative;transform-style:preserve-3d}
 .door .leaf::before{content:"";position:absolute;inset:0;border-radius:10px 10px 4px 4px;background:var(--navy);transform-origin:left center;transition:transform .7s cubic-bezier(.3,.7,.2,1);box-shadow:inset -10px 0 0 rgba(255,255,255,.08)}
-.door .leaf::after{content:"";position:absolute;right:14px;top:48px;width:9px;height:9px;border-radius:50%;background:var(--amber)}
+.door .leaf::after{content:"";position:absolute;right:11px;top:37px;width:9px;height:9px;border-radius:50%;background:var(--amber)}
 .door.on .leaf::before,.door:hover .leaf::before{transform:rotateY(-72deg)}
-.door b{display:block;font:600 30px/1.1 Fraunces,serif;color:var(--navy)}
-.door span{display:block;font-size:21px;color:var(--muted);margin-top:4px}
+.door b{display:block;font:600 28px/1.1 Fraunces,serif;color:var(--navy)}
+.door.district{padding:10px 18px;border-style:dashed}
+.door.district .leaf{width:44px;height:52px}
+.door.district .leaf::after{top:24px;right:8px}
+.door.district b{font-size:22px}
+.door span{display:block;font-size:20px;color:var(--muted);margin-top:3px}
 .door.on{border-color:var(--teal);background:var(--teal-soft)}
 
 /* S3 domains */
@@ -443,6 +447,30 @@ body.reader{overflow:auto}
 .rfloat svg{width:30px;height:30px}
 #toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%);z-index:9;background:var(--navy3);color:#fff;border-radius:14px;padding:12px 20px;font-size:17px;max-width:min(640px,calc(100vw - 32px));box-shadow:0 14px 40px rgba(0,0,0,.35)}
 .reader #livepanel,.reader #reactlayer,.reader #b-live,.reader #live-badge{display:none}
+/* room summary: every question's results on one page, printable */
+.sumbox{background:var(--card);border-radius:28px;padding:30px 36px;max-width:1100px;width:100%;max-height:calc(100vh - 48px);overflow:auto;display:flex;flex-direction:column;gap:16px}
+.sumbox h3{font:600 36px/1.1 Fraunces,serif;color:var(--navy);margin:0}
+.sumbox .sum-meta{font-size:18px;color:var(--muted)}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr));gap:16px}
+.sum-q{background:var(--paper);border-radius:18px;padding:16px 18px;break-inside:avoid}
+.sum-q h4{font:600 20px/1.25 Fraunces,serif;color:var(--navy);margin:0 0 4px}
+.sum-q .n{font-size:15px;color:var(--muted);margin-bottom:8px}
+.sum-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;font-size:16px;margin-top:6px}
+.sum-row .tr{grid-column:1/-1;height:10px;border-radius:5px;background:#E9E2D2;overflow:hidden}
+.sum-row .tr i{display:block;height:100%;background:var(--teal);border-radius:5px}
+.sum-row b{font-variant-numeric:tabular-nums}
+.sum-empty{color:var(--muted);font-size:18px}
+.sum-btns{display:flex;flex-wrap:wrap;gap:12px}
+@media print{
+  body{overflow:visible;background:#fff}
+  #app{position:static}
+  #app > :not(#summaryov){display:none!important}
+  #summaryov{position:static;display:block!important;background:none;padding:0}
+  .sumbox{max-height:none;overflow:visible;box-shadow:none;padding:0}
+  .sum-btns{display:none}
+  .sum-q{background:#fff;border:1px solid #ccc}
+  .sum-row .tr{border:1px solid #999}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 
@@ -496,7 +524,7 @@ body.reader{overflow:auto}
   <div class="lbl">The front page</div>
   <h2>One page, with a door for each person.</h2>
   <div class="row">
-    <div class="browser"><div class="bar"><i></i><i></i><i></i><span id="door-url">thelanguagepage.com/access-practice-lab/</span></div><div class="shot"><img id="door-a" src="shots/home.jpg" alt="The Language Page front page: Practice English for school, one step at a time, with doors for teachers, students, families and BCPSS teachers."><img id="door-b" src="shots/home.jpg" alt="" style="opacity:0"></div></div>
+    <div class="browser"><div class="bar"><i></i><i></i><i></i><span id="door-url">thelanguagepage.com/access-practice-lab/</span></div><div class="shot"><img id="door-a" src="shots/home.jpg" alt="The Language Page front page: Practice English for school, one step at a time, with doors for students, family members, classroom teachers and ESOL teachers, and a link for Baltimore City teachers."><img id="door-b" src="shots/home.jpg" alt="" style="opacity:0"></div></div>
     <div class="doors" id="doors"></div>
   </div>
 </section>
@@ -624,15 +652,16 @@ body.reader{overflow:auto}
 <section class="st" id="s10" aria-label="For teachers">
   <a class="live-link" href="https://thelanguagepage.com/access-teacher/" target="_blank" rel="noopener">Open live ↗</a>
   <div class="lbl">For teachers</div>
-  <h2>Find it, teach it, then read the evidence.</h2>
+  <h2>Teachers start from what they teach.</h2>
   <div class="row">
     <div class="stack">
-      <div class="browser b1"><div class="bar"><i></i><i></i><i></i><span>thelanguagepage.com/access-teacher/</span></div><div class="shot"><img src="shots/hub.jpg" alt="Teacher Hub: find an activity, plan a lesson, run your class and review student work."></div></div>
-      <div class="browser b2"><div class="bar"><i></i><i></i><i></i><span>thelanguagepage.com/access-teacher/predictive/?demo=1</span></div><div class="shot"><img src="shots/data.jpg" alt="WIDA Data Studio in sample mode, with a class at a glance."></div></div>
+      <div class="browser b1"><div class="bar"><i></i><i></i><i></i><span>thelanguagepage.com/access-teacher/</span></div><div class="shot"><img src="shots/hub.jpg" alt="Teacher Hub with three ways in: BCPSS Teachers, Classroom Teachers and ESOL Teachers, above WIDA materials by domain."></div></div>
+      <div class="browser b2"><div class="bar"><i></i><i></i><i></i><span>thelanguagepage.com/access-teacher/classroom/?grade=6&amp;subject=Math</span></div><div class="shot"><img src="shots/classroom.jpg" alt="Find activities for your unit: grade 6 and Math chosen, the six Reveal Math units listed, each with See activities."></div></div>
     </div>
     <div class="tlist">
-      <p><b>Teacher Hub.</b> Find an activity, plan a lesson, run a class and review student work. No password on this site.</p>
-      <p data-b="1"><b>WIDA Data Studio.</b> Teachers type in official results; the analysis runs in the browser. Sample mode uses 12 fictional students.</p>
+      <p><b>Teacher Hub.</b> Three ways in: BCPSS teachers, classroom teachers and ESOL teachers. No password on this site.</p>
+      <p data-b="1"><b>Classroom teachers</b> pick a grade, a subject and a unit, then open that unit’s ready language activities.</p>
+      <p data-b="2"><b>ESOL teachers</b> get WIDA materials by domain and the WIDA Data Studio, which reads typed-in results in the browser.</p>
       <div class="reset" data-b="2">
         <svg viewBox="0 0 640 190" aria-label="A growth line stops at the 2025–26 ACCESS scale reset; the studio gives no growth number across it.">
           <line x1="20" y1="160" x2="620" y2="160" stroke="#D9CFBD" stroke-width="3"/>
@@ -754,6 +783,7 @@ body.reader{overflow:auto}
   <dt><kbd>G</kbd></dt><dd>Go live: the room joins from their phones</dd>
   <dt><kbd>J</kbd></dt><dd>Show the join code again</dd>
   <dt><kbd>R</kbd></dt><dd>Show or hide the room’s answers</dd>
+  <dt><kbd>S</kbd></dt><dd>Room summary: every answer, to print or copy</dd>
   <dt><kbd>N</kbd></dt><dd>Speaker notes and timer</dd>
   <dt><kbd>F</kbd></dt><dd>Full screen</dd>
   <dt><kbd>B</kbd></dt><dd>Black screen</dd>
@@ -766,7 +796,7 @@ body.reader{overflow:auto}
   <div class="jurl" id="j-url">thelanguagepage.com/tour/join</div>
   <div class="jcode" id="j-code" aria-label="Room code">-----</div>
   <div class="jpeople"><b id="j-people">0</b>people here. No name, no account; answers are counted, never named.</div>
-  <div class="jbtns"><button class="btn amber" id="j-close">Start the tour</button><button class="btn ghost" id="j-remote">Use my phone as a remote</button><button class="btn ghost" id="j-end">End the room</button></div>
+  <div class="jbtns"><button class="btn amber" id="j-close">Start the tour</button><button class="btn ghost" id="j-remote">Use my phone as a remote</button><button class="btn ghost" id="j-summary">Room summary</button><button class="btn ghost" id="j-end">End the room</button></div>
 </div></div>
 <div id="remoteov" class="ov" hidden><div class="rbox" role="dialog" aria-modal="true" aria-labelledby="r-title">
   <h3 id="r-title">Your phone as a remote</h3>
@@ -774,6 +804,14 @@ body.reader{overflow:auto}
   <div class="rqr" id="r-qr" aria-label="Remote code, press and hold to show"></div>
   <p style="font-size:16px;color:var(--muted)">On the remote: next and back, your speaker notes, the timer and live answer counts.</p>
   <button class="btn" id="r-close">Done</button>
+</div></div>
+<div id="summaryov" class="ov" hidden><div class="sumbox" role="dialog" aria-modal="true" aria-labelledby="sum-title">
+  <h3 id="sum-title">What the room said</h3>
+  <p class="sum-meta" id="sum-meta"></p>
+  <div class="sum-grid" id="sum-grid"></div>
+  <p class="sum-meta" id="sum-react"></p>
+  <p class="sum-meta">Answers are counted, never named. The room and its answers are deleted 6 hours after it opened.</p>
+  <div class="sum-btns"><button class="btn amber" id="sum-print">Print or save as PDF</button><button class="btn ghost" id="sum-copy">Copy as text</button><button class="btn" id="sum-close">Close</button></div>
 </div></div>
 <aside id="livepanel" hidden aria-live="polite" title="Show or hide results (R)"><div class="lp-top"><span>Live from the room</span><b id="lp-n">0 answers</b></div><h3 id="lp-q"></h3><div class="lp-hint">Press R or click to show the room’s answers.</div><div id="lp-bars"></div><div class="lp-foot">Answer on your phone: <span id="lp-host">thelanguagepage.com/tour/join</span> · <b id="lp-code"></b></div></aside>
 <div id="reactlayer" aria-hidden="true"></div>
@@ -972,7 +1010,8 @@ addEventListener("keydown", e => {
   else if (k === "g" || k === "G") goLive();
   else if (k === "j" || k === "J") { if (LIVE.code) showJoin($("#joinov").hidden); }
   else if (k === "r" || k === "R") { if (LIVE.code) { LIVE.open = !LIVE.open; renderPanel(); } }
-  else if (k === "Escape") { $("#help").hidden = true; $("#joinov").hidden = true; $("#remoteov").hidden = true; $("#black").classList.remove("on"); if (overview) go(cur); }
+  else if (k === "s" || k === "S") { if (LIVE.code) ($("#summaryov").hidden ? showSummary() : ($("#summaryov").hidden = true)); }
+  else if (k === "Escape") { $("#help").hidden = true; $("#joinov").hidden = true; $("#remoteov").hidden = true; $("#summaryov").hidden = true; $("#black").classList.remove("on"); if (overview) go(cur); }
 });
 $("#b-next").onclick = next; $("#b-prev").onclick = prev;
 $("#b-over").onclick = () => setOverview(!overview);
@@ -1017,18 +1056,20 @@ const HOOKS = [];
 { const f = fountain($("#t-right"), 380, 520, 2.4); HOOKS[0] = { enter: () => f.start(), leave: () => f.stop() }; }
 // 2 doors
 {
-  const D2 = [["I’m a Teacher", "Find resources, plan practice, and support your students.", "start", "thelanguagepage.com/access-practice-lab/start"],
-              ["I’m a Student", "Play, practice, create, and keep learning.", "journey", "thelanguagepage.com/access-practice-lab/journey"],
-              ["I’m a Family Member", "Help your child practice English at home.", "family-en", "thelanguagepage.com/access-practice-lab/family-tour/"],
-              ["BCPSS Teachers", "K–8 Wit & Wisdom, Reveal Math, SABES and iQWST language bridges.", "home", "thelanguagepage.com/bcpss-teachers/"]];
+  // The live home page's doors (access-practice-lab/src/views/home-audience.js), then its district link.
+  const D2 = [["I’m a Student", "Play, practice, create, and keep learning.", "students", "thelanguagepage.com/access-practice-lab/students"],
+              ["I’m a Family Member", "Help your child practice English at home.", "family-start", "thelanguagepage.com/access-practice-lab/family-start"],
+              ["I’m a Classroom Teacher", "Pick your grade, subject, and unit to open ready activities.", "classroom", "thelanguagepage.com/access-teacher/classroom/"],
+              ["I’m an ESOL Teacher", "WIDA materials by domain, ready activities, and ACCESS prep.", "esol", "thelanguagepage.com/access-teacher/?role=esol"],
+              ["Baltimore City teacher?", "BCPSS curriculum language bridges", "bcpss", "thelanguagepage.com/bcpss-teachers/"]];
   const box = $("#doors");
-  box.innerHTML = D2.map((d, i) => `<button class="door" data-i="${i}"><span class="leaf"></span><span><b>${d[0]}</b><span>${d[1]}</span></span></button>`).join("");
+  box.innerHTML = D2.map((d, i) => `<button class="door${i === 4 ? " district" : ""}" data-i="${i}"><span class="leaf"></span><span><b>${d[0]}</b><span>${d[1]}</span></span></button>`).join("");
   let front = $("#door-a"), back = $("#door-b");
   const pick = i => {
     $$(".door", box).forEach((b, j) => b.classList.toggle("on", j === i));
     const d = D2[i] || ["", "", "home", "thelanguagepage.com/access-practice-lab/"];
     if (!front.src.endsWith(d[2] + ".jpg")) {
-      back.src = `shots/${d[2]}.jpg`; back.alt = i >= 0 ? `Where the ${d[0].replace("I’m a ", "")} door leads.` : front.alt;
+      back.src = `shots/${d[2]}.jpg`; back.alt = i >= 0 ? `Where the ${d[0].replace(/^I’m an? /, "").replace("?", "")} door leads.` : front.alt;
       back.style.opacity = 1; front.style.opacity = 0; [front, back] = [back, front];
     }
     $("#door-url").textContent = d[3];
@@ -1372,7 +1413,7 @@ function endLive(msg) {
   Object.assign(LIVE, { code: "", token: "", version: 0, results: null, last: null, open: false });
   remember();
   app.classList.remove("is-live"); $("#live-badge").hidden = true; $("#livepanel").hidden = true;
-  $("#joinov").hidden = true; $("#remoteov").hidden = true; $("#b-live").textContent = "Go live";
+  $("#joinov").hidden = true; $("#remoteov").hidden = true; $("#summaryov").hidden = true; $("#b-live").textContent = "Go live";
   if (msg) toast(msg);
 }
 function schedulePush() { if (!LIVE.code) return; clearTimeout(LIVE.pushT); LIVE.pushT = setTimeout(pushNow, 150); }
@@ -1466,6 +1507,45 @@ $("#r-close").onclick = () => { $("#remoteov").hidden = true; $("#r-qr").classLi
   q.tabIndex = 0; q.addEventListener("keydown", (e) => { if (e.key === " " || e.key === "Enter") on(e); }); q.addEventListener("keyup", off);
 }
 $("#livepanel").onclick = () => { LIVE.open = !LIVE.open; renderPanel(); };
+/* room summary: every question the room answered, in stop order, to print or copy */
+let summaryText = "";
+async function showSummary() {
+  if (!LIVE.code) return;
+  const res = await live.getResults(LIVE.code);
+  if (res.ok) LIVE.results = res;
+  const r = LIVE.results || { prompts: {}, reactions: {}, people: LIVE.people };
+  const ids = Object.keys(PROMPTS).sort((a, b) => PROMPTS[a].stop - PROMPTS[b].stop);
+  const answered = ids.filter((id) => (r.prompts?.[id]?.total || 0) > 0);
+  const when = new Date().toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+  $("#sum-meta").textContent = `Room ${LIVE.code} · ${when} · ${r.people || 0} here now · ${answered.length} of ${ids.length} questions answered`;
+  const lines = [`What the room said: The Language Page tour, room ${LIVE.code}, ${when}`, ""];
+  $("#sum-grid").innerHTML = answered.length ? answered.map((id) => {
+    const cell = r.prompts[id];
+    const rows = rowsFor(id, cell);
+    lines.push(`${PROMPTS[id].q} (${cell.total} ${cell.total === 1 ? "answer" : "answers"})`);
+    const body = rows.map(([label, n, tot]) => {
+      const pct = tot ? Math.round((n / tot) * 100) : 0;
+      lines.push(`  ${label}: ${n} (${pct}%)`);
+      return `<div class="sum-row"><span>${esc(label)}</span><b>${n} · ${pct}%</b><div class="tr"><i style="width:${pct}%"></i></div></div>`;
+    }).join("");
+    lines.push("");
+    return `<section class="sum-q"><h4>${esc(PROMPTS[id].q)}</h4><div class="n">${cell.total} ${cell.total === 1 ? "answer" : "answers"} · stop ${PROMPTS[id].stop + 1}, ${esc(STOPS[PROMPTS[id].stop].t)}</div>${body}</section>`;
+  }).join("") : `<p class="sum-empty">No answers yet. Questions appear on phones at the stops that ask one.</p>`;
+  const rx = r.reactions || {};
+  const rxText = Object.entries(rx).filter(([, n]) => n > 0).map(([k, n]) => `${n} ${k === "agree" ? "agree" : k === "idea" ? "good idea" : k === "question" ? "question" : "love this"}`).join(", ");
+  $("#sum-react").textContent = rxText ? `Reactions: ${rxText}.` : "No reactions yet.";
+  if (rxText) lines.push(`Reactions: ${rxText}.`);
+  summaryText = lines.join("\n");
+  $("#joinov").hidden = true; $("#summaryov").hidden = false; $("#sum-close").focus();
+}
+$("#j-summary").onclick = showSummary;
+$("#sum-close").onclick = () => { $("#summaryov").hidden = true; };
+$("#sum-print").onclick = () => { try { window.print(); } catch (e) {} };
+$("#sum-copy").onclick = async () => {
+  try { await navigator.clipboard.writeText(summaryText); toast("Copied. Paste it into an email or a doc."); }
+  catch (e) { toast("Copy is blocked here. Use Print or save as PDF instead."); }
+};
+
 document.addEventListener("visibilitychange", () => { if (!document.hidden && LIVE.code) poll(); });
 try {
   const saved = JSON.parse(sessionStorage.getItem("tourLive:v1:room") || "null");

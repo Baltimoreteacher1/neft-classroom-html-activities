@@ -27,7 +27,10 @@ header{background:var(--navy);color:#fff;padding:calc(12px + env(safe-area-inset
 header .mark{flex:none;width:38px;height:38px;border-radius:10px;background:var(--amber);color:var(--navy);display:grid;place-items:center;font:800 18px Fraunces,Georgia,serif}
 header b{font:600 18px Fraunces,Georgia,serif;display:block;line-height:1.1}
 header span{font-size:14px;color:#C9D4DE}
-header .code{margin-left:auto;font-weight:700;letter-spacing:.1em;background:rgba(255,255,255,.12);border-radius:999px;padding:6px 12px;font-size:15px;color:var(--amber)}
+header .lang{margin-left:auto;display:inline-flex;background:rgba(255,255,255,.12);border-radius:999px;padding:3px}
+header .lang button{border:0;background:none;color:#fff;font-weight:700;font-size:15px;min-height:40px;min-width:44px;padding:0 12px;border-radius:999px}
+header .lang button[aria-pressed=true]{background:#fff;color:var(--navy)}
+header .code{font-weight:700;letter-spacing:.1em;background:rgba(255,255,255,.12);border-radius:999px;padding:6px 12px;font-size:15px;color:var(--amber)}
 main{max-width:640px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
 .card{background:var(--card);border-radius:22px;padding:20px;box-shadow:0 1px 0 var(--line),0 14px 30px -22px rgba(23,50,77,.5)}
 h1,h2{font-family:Fraunces,Georgia,serif;color:var(--navy);letter-spacing:-.01em;margin:0}
@@ -86,36 +89,36 @@ select{width:100%;min-height:52px;border:2px solid var(--line);border-radius:14p
 </style>
 </head>
 <body>
-<header><span class="mark" aria-hidden="true">Aa</span><div><b>The Language Page</b><span id="h-sub">Live tour</span></div><span class="code" id="h-code" hidden></span></header>
+<header><span class="mark" aria-hidden="true">Aa</span><div><b>The Language Page</b><span id="h-sub" data-t="sub">Live tour</span></div><div class="lang" id="lang" role="group" aria-label="Language · Idioma"><button type="button" data-lang="en" aria-pressed="true">English</button><button type="button" data-lang="es" lang="es" aria-pressed="false">Español</button></div><span class="code" id="h-code" hidden></span></header>
 <main id="main">
   <section class="card" id="v-join" hidden>
-    <div class="lbl">Live tour</div>
-    <h1>Join the tour</h1>
-    <p style="margin:8px 0 14px">Type the 5-letter code on the screen.</p>
+    <div class="lbl" data-t="sub">Live tour</div>
+    <h1 data-t="joinTitle">Join the tour</h1>
+    <p style="margin:8px 0 14px" data-t="joinHelp">Type the 5-letter code on the screen.</p>
     <form id="join-form" class="row" novalidate>
-      <label for="code" class="muted" style="width:100%">Room code</label>
+      <label for="code" class="muted" style="width:100%" data-t="roomCode">Room code</label>
       <input id="code" class="codein" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="5" placeholder="ABCDE" aria-describedby="join-msg">
-      <button class="btn amber" type="submit">Join</button>
+      <button class="btn amber" type="submit" data-t="join">Join</button>
     </form>
     <p id="join-msg" class="muted" role="status" style="margin-top:10px"></p>
   </section>
 
   <div id="v-room" hidden>
-    <p class="status" id="status" role="status"><span class="dot"></span><span id="status-text">Connected</span></p>
+    <p class="status" id="status" role="status"><span class="dot"></span><span id="status-text" data-t="connected">Connected</span></p>
     <section class="card" id="c-stop" style="margin-top:10px">
-      <div class="lbl" id="s-num">On screen now</div>
-      <h2 id="s-title">Waiting for the tour to start</h2>
+      <div class="lbl" id="s-num" data-t="onScreen">On screen now</div>
+      <h2 id="s-title" data-t="waiting">Waiting for the tour to start</h2>
       <p id="s-sum" style="margin-top:6px"></p>
-      <a class="try" id="s-try" href="#" target="_blank" rel="noopener" hidden>Try it on this phone ↗</a>
+      <a class="try" id="s-try" href="#" target="_blank" rel="noopener" hidden data-t="tryIt">Try it on this phone ↗</a>
     </section>
     <section class="card" id="c-q" hidden aria-labelledby="q-text">
-      <div class="lbl">Your answer</div>
+      <div class="lbl" data-t="yourAnswer">Your answer</div>
       <h2 id="q-text"></h2>
       <div id="q-body"></div>
       <p class="sent" id="q-sent" role="status"></p>
       <div class="bars" id="q-bars" hidden></div>
     </section>
-    <p class="muted" style="padding:0 4px">No name and no account. Answers are counted with everyone else’s and never shown with a name. The room closes after 6 hours.</p>
+    <p class="muted" style="padding:0 4px" data-t="privacy">No name and no account. Answers are counted with everyone else’s and never shown with a name. The room closes after 6 hours.</p>
   </div>
 
   <div id="v-remote" class="remote" hidden>
@@ -137,7 +140,7 @@ select{width:100%;min-height:52px;border:2px solid var(--line);border-radius:14p
 import * as live from "../live.js";
 import { STOPS } from "../stops.js";
 import { ITEM, checkUpgrade, resultBits } from "../upgrade-check.js";
-import { PROMPTS, REACTIONS } from "/shared/tour-live/prompts.js";
+import { PROMPTS, REACTIONS, choiceLabel } from "/shared/tour-live/prompts.js";
 {
 const $ = (s) => document.querySelector(s);
 const params = new URLSearchParams(location.search);
@@ -154,6 +157,65 @@ try { Object.assign(mine, JSON.parse(localStorage.getItem(`tourLive:v1:answers:$
 const keepMine = () => { try { localStorage.setItem(`tourLive:v1:answers:${code}`, JSON.stringify(mine)); } catch (e) {} };
 let state = null, results = null, shownPrompt = null, timers = [];
 
+
+/* ---------- language: English or Spanish for everything the audience reads (the remote stays English) ---------- */
+const TX = {
+  sub: ["Live tour", "Recorrido en vivo"],
+  joinTitle: ["Join the tour", "Unirse al recorrido"],
+  joinHelp: ["Type the 5-letter code on the screen.", "Escriban el código de 5 caracteres que aparece en la pantalla."],
+  roomCode: ["Room code", "Código de la sala"],
+  join: ["Join", "Entrar"],
+  connected: ["Connected", "Conectado"],
+  onScreen: ["On screen now", "En pantalla ahora"],
+  waiting: ["Waiting for the tour to start", "Esperando que empiece el recorrido"],
+  tryIt: ["Try it on this phone ↗", "Probarlo en este teléfono ↗"],
+  yourAnswer: ["Your answer", "Su respuesta"],
+  privacy: ["No name and no account. Answers are counted with everyone else’s and never shown with a name. The room closes after 6 hours.",
+    "Sin nombre y sin cuenta. Las respuestas se cuentan junto con las de todos y nunca aparecen con un nombre. La sala se cierra a las 6 horas."],
+  badCode: ["A code is 5 letters and numbers, as shown on the screen.", "El código tiene 5 letras y números, como aparece en la pantalla."],
+  notOpen: ["That room is not open. Check the code on the screen.", "Esa sala no está abierta. Revisen el código en la pantalla."],
+  noReach: ["Could not reach the room. Check your connection and try again.", "No se pudo conectar con la sala. Revisen la conexión e intenten de nuevo."],
+  closed: ["The room has closed. Thank you for joining.", "La sala se cerró. Gracias por participar."],
+  reconnecting: ["Reconnecting…", "Reconectando…"],
+  here: ["here", "presentes"],
+  stopOf: ["On screen now · stop {n} of {t}", "En pantalla · parada {n} de {t}"],
+  sent: ["Sent. You can change your answer.", "Enviada. Pueden cambiar la respuesta."],
+  sending: ["Sending…", "Enviando…"],
+  wait: ["One moment, then try again.", "Un momento y vuelvan a intentarlo."],
+  notSent: ["Not sent. Check your connection and tap again.", "No se envió. Revisen la conexión y toquen otra vez."],
+  soFar: ["The room so far:", "La sala hasta ahora:"],
+  answer1: ["answer", "respuesta"], answerN: ["answers", "respuestas"],
+  result1: ["result", "resultado"], resultN: ["results", "resultados"],
+  you: ["(you)", "(su respuesta)"],
+  all3: ["All three checks", "Las tres revisiones"], info: ["New information", "Información nueva"],
+  precise: ["A precise word", "Una palabra precisa"], joined: ["Two ideas joined", "Dos ideas unidas"],
+  upFor: ["For an opinion essay to the school board. Frame:", "Para un ensayo de opinión dirigido a la junta escolar. Marco:"],
+  upLabel: ["Your revision. It stays on this phone.", "Su versión mejorada. Se queda en este teléfono. La práctica es en inglés."],
+  check: ["Check my work", "Revisar mi trabajo"], send: ["Send my result", "Enviar mi resultado"],
+  lDetail: ["New information added", "Se agregó información nueva"],
+  lPrecision: ["A precise word, the general one gone", "Una palabra precisa, sin la palabra general"],
+  lConnector: ["Two ideas joined by a connector", "Dos ideas unidas por un conector"],
+  typeFirst: ["Type a revision first.", "Primero escriban una versión."],
+  sentUp: ["Sent: only which checks passed, not your sentence.", "Enviado: solo qué revisiones se cumplieron, no su oración."],
+  dock: ["Send a reaction to the screen", "Enviar una reacción a la pantalla"],
+};
+let LANG = "en";
+try { LANG = localStorage.getItem("tourLive:v1:lang") || ((navigator.language || "").toLowerCase().startsWith("es") ? "es" : "en"); } catch (e) {}
+if (LANG !== "es") LANG = "en";
+const es = () => LANG === "es";
+const t = (key, vars = {}) => (TX[key]?.[es() ? 1 : 0] || key).replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
+function applyLang() {
+  document.documentElement.lang = LANG;
+  for (const el of document.querySelectorAll("[data-t]")) el.textContent = t(el.dataset.t);
+  for (const b of document.querySelectorAll("#lang [data-lang]")) b.setAttribute("aria-pressed", String(b.dataset.lang === LANG));
+  $("#dock").setAttribute("aria-label", t("dock"));
+}
+for (const b of document.querySelectorAll("#lang [data-lang]")) b.addEventListener("click", () => {
+  LANG = b.dataset.lang;
+  try { localStorage.setItem("tourLive:v1:lang", LANG); } catch (e) {}
+  applyLang();
+  if (!$("#v-room").hidden) { buildDock(); if (state) { shownPrompt = undefined; apply(state); } }
+});
 function status(ok, text, el = "#status", txt = "#status-text") {
   $(el).classList.toggle("off", !ok); $(txt).textContent = text;
 }
@@ -168,15 +230,15 @@ $("#code").addEventListener("input", (e) => { e.target.value = live.cleanCode(e.
 $("#join-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const c = live.cleanCode($("#code").value);
-  if (!live.CODE_RE.test(c)) { $("#join-msg").textContent = "A code is 5 letters and numbers, as shown on the screen."; return; }
+  if (!live.CODE_RE.test(c)) { $("#join-msg").textContent = t("badCode"); return; }
   code = c; history.replaceState(null, "", `?r=${code}`); start();
 });
 
 async function start() {
   if (!live.CODE_RE.test(code)) return showJoinForm();
   const s = await live.getState(code);
-  if (s.status === 404) return showJoinForm("That room is not open. Check the code on the screen.");
-  if (!s.ok) return showJoinForm("Could not reach the room. Check your connection and try again.");
+  if (s.status === 404) return showJoinForm(t("notOpen"));
+  if (!s.ok) return showJoinForm(t("noReach"));
   $("#h-code").hidden = false; $("#h-code").textContent = code;
   if (token) return startRemote(s);
   $("#v-join").hidden = true; $("#v-room").hidden = false;
@@ -189,9 +251,9 @@ async function start() {
 async function refresh() {
   if (document.hidden) return;
   const s = await live.getState(code);
-  if (s.status === 404) { timers.forEach(clearInterval); return showJoinForm("The room has closed. Thank you for joining."); }
-  if (!s.ok) { status(false, "Reconnecting…"); return; }
-  status(true, `Connected · ${s.people || 0} here`);
+  if (s.status === 404) { timers.forEach(clearInterval); return showJoinForm(t("closed")); }
+  if (!s.ok) { status(false, t("reconnecting")); return; }
+  status(true, `${t("connected")} · ${s.people || 0} ${t("here")}`);
   apply(s);
   if (shownPrompt && mine[shownPrompt] !== undefined) loadResults();
 }
@@ -201,9 +263,9 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && !$
 function apply(s) {
   state = s;
   const stop = STOPS[s.stop] || STOPS[0];
-  $("#s-num").textContent = `On screen now · stop ${s.stop + 1} of ${STOPS.length}`;
-  $("#s-title").textContent = stop.t;
-  $("#s-sum").textContent = stop.s || "";
+  $("#s-num").textContent = t("stopOf", { n: s.stop + 1, t: STOPS.length });
+  $("#s-title").textContent = (es() && stop.tEs) || stop.t;
+  $("#s-sum").textContent = (es() && stop.sEs) || stop.s || "";
   const tr = $("#s-try");
   if (stop.u) { tr.href = stop.u; tr.hidden = false; } else tr.hidden = true;
   if (s.prompt !== shownPrompt) showPrompt(s.prompt);
@@ -214,22 +276,22 @@ function showPrompt(id) {
   if (!id || !PROMPTS[id]) { card.hidden = true; return; }
   card.hidden = false;
   const p = PROMPTS[id];
-  $("#q-text").textContent = p.q;
-  $("#q-sent").textContent = mine[id] !== undefined ? "Sent. You can change your answer." : "";
+  $("#q-text").textContent = (es() && p.qEs) || p.q;
+  $("#q-sent").textContent = mine[id] !== undefined ? t("sent") : "";
   $("#q-bars").hidden = true;
   if (p.kind === "upgrade") return showUpgrade();
   $("#q-body").innerHTML = `<div class="choices" role="group" aria-label="Choices">${p.choices
-    .map(([v, label]) => `<button class="choice" type="button" data-v="${esc(v)}" aria-pressed="${mine[id] === v}"><i aria-hidden="true"></i>${esc(label)}</button>`)
+    .map((c) => `<button class="choice" type="button" data-v="${esc(c[0])}" aria-pressed="${mine[id] === c[0]}"><i aria-hidden="true"></i>${esc(choiceLabel(c, es()))}</button>`)
     .join("")}</div>`;
   for (const b of document.querySelectorAll(".choice")) b.addEventListener("click", () => send(id, b.dataset.v));
   if (mine[id] !== undefined) loadResults();
 }
 async function send(id, value) {
   for (const b of document.querySelectorAll(".choice")) b.setAttribute("aria-pressed", b.dataset.v === value);
-  $("#q-sent").textContent = "Sending…";
+  $("#q-sent").textContent = t("sending");
   const r = await live.answer(code, id, value);
-  if (r.ok) { mine[id] = value; keepMine(); $("#q-sent").textContent = "Sent. You can change your answer."; loadResults(); }
-  else $("#q-sent").textContent = r.status === 429 ? "One moment, then try again." : "Not sent. Check your connection and tap again.";
+  if (r.ok) { mine[id] = value; keepMine(); $("#q-sent").textContent = t("sent"); loadResults(); }
+  else $("#q-sent").textContent = r.status === 429 ? t("wait") : t("notSent");
 }
 async function loadResults() {
   const id = shownPrompt;
@@ -241,31 +303,32 @@ async function loadResults() {
   box.hidden = false;
   if (PROMPTS[id].kind === "upgrade") {
     const pass = (i) => Object.entries(cell.counts).reduce((a, [b, n]) => a + (b[i] === "1" ? n : 0), 0);
-    const rows = [["All three checks", cell.counts["111"] || 0], ["New information", pass(0)], ["A precise word", pass(1)], ["Two ideas joined", pass(2)]];
-    box.innerHTML = `<div class="muted">The room so far: ${cell.total} ${cell.total === 1 ? "result" : "results"}</div>` + rows.map(([l, n]) => `<div class="bar"><span>${esc(l)}</span><b>${n}</b><div class="tr"><i style="width:${cell.total ? (n / cell.total) * 100 : 0}%"></i></div></div>`).join("");
+    const rows = [[t("all3"), cell.counts["111"] || 0], [t("info"), pass(0)], [t("precise"), pass(1)], [t("joined"), pass(2)]];
+    box.innerHTML = `<div class="muted">${t("soFar")} ${cell.total} ${t(cell.total === 1 ? "result1" : "resultN")}</div>` + rows.map(([l, n]) => `<div class="bar"><span>${esc(l)}</span><b>${n}</b><div class="tr"><i style="width:${cell.total ? (n / cell.total) * 100 : 0}%"></i></div></div>`).join("");
     return;
   }
   const max = Math.max(1, ...Object.values(cell.counts));
-  box.innerHTML = `<div class="muted">The room so far: ${cell.total} ${cell.total === 1 ? "answer" : "answers"}</div>` + PROMPTS[id].choices.map(([v, l]) => {
+  box.innerHTML = `<div class="muted">${t("soFar")} ${cell.total} ${t(cell.total === 1 ? "answer1" : "answerN")}</div>` + PROMPTS[id].choices.map((c) => {
+    const [v] = c, l = choiceLabel(c, es());
     const n = cell.counts[v] || 0;
-    return `<div class="bar${mine[id] === v ? " mine" : ""}"><span>${esc(l)}${mine[id] === v ? " (you)" : ""}</span><b>${n}</b><div class="tr"><i style="width:${(n / max) * 100}%"></i></div></div>`;
+    return `<div class="bar${mine[id] === v ? " mine" : ""}"><span>${esc(l)}${mine[id] === v ? ` ${t("you")}` : ""}</span><b>${n}</b><div class="tr"><i style="width:${(n / max) * 100}%"></i></div></div>`;
   }).join("");
 }
 
 /* ---------- the Upgrade Lab on the phone: checked here, only the three results are sent ---------- */
 function showUpgrade() {
   $("#q-body").innerHTML = `<div class="plain">Phones in class are <s>bad</s>.</div>
-    <p class="muted" style="margin-top:8px">For an opinion essay to the school board. Frame: <i>Phones in class can be ___ because ___.</i></p>
-    <label for="up" class="muted" style="display:block;margin-top:10px">Your revision. It stays on this phone.</label>
-    <textarea id="up" spellcheck="true" autocomplete="off" placeholder="Phones in class can be …"></textarea>
-    <div class="row" style="margin-top:10px"><button class="btn" type="button" id="up-check">Check my work</button><button class="btn amber" type="button" id="up-send" disabled>Send my result</button></div>
-    <div class="lamps"><div class="lamp" id="l-detail"><i>·</i>New information added</div><div class="lamp" id="l-precision"><i>·</i>A precise word, the general one gone</div><div class="lamp" id="l-connector"><i>·</i>Two ideas joined by a connector</div></div>
-    <div class="msgs" id="up-msgs" aria-live="polite"></div>`;
+    <p class="muted" style="margin-top:8px">${esc(t("upFor"))} <i lang="en">Phones in class can be ___ because ___.</i></p>
+    <label for="up" class="muted" style="display:block;margin-top:10px">${esc(t("upLabel"))}</label>
+    <textarea id="up" lang="en" spellcheck="true" autocomplete="off" placeholder="Phones in class can be …"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn" type="button" id="up-check">${esc(t("check"))}</button><button class="btn amber" type="button" id="up-send" disabled>${esc(t("send"))}</button></div>
+    <div class="lamps"><div class="lamp" id="l-detail"><i>·</i>${esc(t("lDetail"))}</div><div class="lamp" id="l-precision"><i>·</i>${esc(t("lPrecision"))}</div><div class="lamp" id="l-connector"><i>·</i>${esc(t("lConnector"))}</div></div>
+    <div class="msgs" id="up-msgs" aria-live="polite" lang="en"></div>`;
   let last = null;
   try { $("#up").value = sessionStorage.getItem("tourLive:v1:upgrade") || ""; } catch (e) {}
   $("#up").addEventListener("input", () => { try { sessionStorage.setItem("tourLive:v1:upgrade", $("#up").value); } catch (e) {} $("#up-send").disabled = true; });
   $("#up-check").onclick = () => {
-    if (!$("#up").value.trim()) { $("#up-msgs").innerHTML = "<p>Type a revision first.</p>"; return; }
+    if (!$("#up").value.trim()) { $("#up-msgs").innerHTML = `<p lang="${LANG}">${esc(t("typeFirst"))}</p>`; return; }
     const r = checkUpgrade(ITEM, $("#up").value);
     last = resultBits(r.checks);
     for (const k of ["detail", "precision", "connector"]) {
@@ -278,8 +341,8 @@ function showUpgrade() {
     if (!last) return;
     $("#up-send").disabled = true;
     const r = await live.answer(code, "upgrade", last);
-    if (r.ok) { mine.upgrade = last; keepMine(); $("#q-sent").textContent = "Sent: only which checks passed, not your sentence."; loadResults(); }
-    else { $("#q-sent").textContent = "Not sent. Check your connection and tap again."; $("#up-send").disabled = false; }
+    if (r.ok) { mine.upgrade = last; keepMine(); $("#q-sent").textContent = t("sentUp"); loadResults(); }
+    else { $("#q-sent").textContent = t("notSent"); $("#up-send").disabled = false; }
   };
   if (mine.upgrade !== undefined) loadResults();
 }
@@ -289,7 +352,7 @@ let lastReact = 0;
 function buildDock() {
   const dock = $("#dock");
   dock.hidden = false;
-  dock.innerHTML = REACTIONS.map(([k, label]) => `<button class="react" type="button" data-k="${k}" style="background:${live.REACTION_COLORS[k]}">${live.REACTION_ICONS[k]}<span>${esc(label)}</span></button>`).join("");
+  dock.innerHTML = REACTIONS.map((r) => `<button class="react" type="button" data-k="${r[0]}" style="background:${live.REACTION_COLORS[r[0]]}">${live.REACTION_ICONS[r[0]]}<span>${esc(choiceLabel(r, es()))}</span></button>`).join("");
   for (const b of dock.querySelectorAll(".react")) b.addEventListener("click", () => {
     const now = Date.now();
     if (now - lastReact < 1200) return;
@@ -304,7 +367,7 @@ function buildDock() {
 let rs = { stop: 0, build: 0 }, t0 = Date.now(), pending = false;
 function startRemote(s) {
   $("#v-join").hidden = true; $("#v-room").hidden = true; $("#v-remote").hidden = false; $("#dock").hidden = true;
-  $("#h-sub").textContent = "Presenter remote";
+  $("#h-sub").textContent = "Presenter remote"; $("#h-sub").removeAttribute("data-t"); $("#lang").hidden = true;
   $("#rm-code").textContent = code;
   $("#rm-jump").innerHTML = STOPS.map((st, i) => `<option value="${i}">${i + 1}. ${esc(st.t)}</option>`).join("");
   rs = { stop: s.stop || 0, build: s.build || 0 }; drawRemote(s.people || 0);
@@ -352,6 +415,7 @@ async function pollRemote() {
   drawRemote(s.people || 0);
 }
 
+applyLang();
 start();
 }
 </script>
