@@ -76,6 +76,14 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 and what Joel decides. The official pages could not be read from the cloud container, so every program row is marked "confirm on the official page".
 Nothing is submitted. Tech & Learning "Best of 2026" is the only program with a deadline inside two months (2027-01-08, as summarized).
 
+**Lab CSS weight, measured (2026-11-27, nothing changed).** Of the 120 distinct stylesheets the shell links, none is dead: every one has class
+names the lab's code references. Attributing a sheet to the views that use it by class name is too coarse to prove anything, because generic names
+(card, button, row) appear in code that loads on every page: only 2 sheets (`demand.css` 3.8 KB, `vocab-curriculum.css` 2.3 KB, of about 1,600 KB raw)
+were provably used by three views or fewer. So the weight cannot be cut safely by analysis alone. The real fix is to load each view's sheet when
+that view opens (`ensureStylesheet`, as `city.css` already does) and check every one of the 113 views against screenshots; that needs a performance
+owner and a visual-regression harness, and a mistake shows students an unstyled page. Bundling the files into one would cut requests, not the
+385 KB of blocking CSS. The ratchet in `data/language-page-perf-budget.json` still holds the line.
+
 ## Not started
 WS2 chrome-budget browser gate and the newcomer door · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
 sustained reading · WS4 recorded audio (H-19), Spanish activity titles and review (the grade 3–8 directions already exist in `es-guide.json`; audit E3 corrected), language packs, SLIFE path · WS5 writing volume and
