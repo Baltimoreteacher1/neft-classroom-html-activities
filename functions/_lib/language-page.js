@@ -29,6 +29,9 @@ export const LEARNING_STUDIOS_BASE = "/learning-studios";
 /** The Learning Studios app, proxied from its own Worker (functions/_lib/studios-proxy.js). */
 export const STUDIOS_APP_BASE = "/studios";
 
+/** The live, presentable tour of The Language Page: the projector at /tour/, audience phones at /tour/join/. */
+export const TOUR_BASE = "/tour";
+
 /** Paths the lab itself loads, measured against the live lab (shell, fonts, Save/Resume, ping, Cloudflare). */
 const LAB_PREFIXES = [
   `${LAB_BASE}/`,
@@ -50,9 +53,14 @@ const LAB_PREFIXES = [
   "/api/bcpss/",
   "/family/bcpss/",
   "/api/public/",
+  // The presented tour of the site (/tour/, generated nowhere: hand-built) and its live audience room. The room
+  // must answer on this origin, next to the page whose phones call it.
+  `${TOUR_BASE}/`,
+  "/api/tour-room/",
 ];
 const LAB_EXACT = new Set([
   LAB_BASE,
+  TOUR_BASE,
   "/bcpss-teachers",
   "/family/bcpss",
   "/family-app/home-link.js",

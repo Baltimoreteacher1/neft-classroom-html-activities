@@ -839,6 +839,7 @@ const TOP_SKIP = new Set([
   "test",
   "tests",
   "tools",
+  "tour", // the presented live tour of The Language Page and its audience page: a presenter tool, not a catalog item
   "types",
   "workbench-live",
   "workers",
