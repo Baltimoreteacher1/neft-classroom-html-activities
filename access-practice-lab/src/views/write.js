@@ -33,6 +33,7 @@ import {
 } from "../studio-ui.js";
 import { ART, BASE, announce, esc, formatDate, html, icon, raw, storage, toHtml, todayISO, wordCount } from "../util.js";
 import { readAudience } from "../audience.js";
+import { isEarlyBand } from "../bands.js";
 import { revealFoldsFor } from "../fold.js";
 import { cancelDictation, dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
 
@@ -41,7 +42,7 @@ import { cancelDictation, dictationControlsHTML, toggleDictation } from "../dict
  * the first 12 hex of the file's sha256 (tools/access-writing-plus.test.mjs fails when it is stale), so a returning
  * learner never gets new markup with an old cached sheet.
  */
-export const WRITE_STYLES_VERSION = "fada9e8400e6";
+export const WRITE_STYLES_VERSION = "38be61ca998c";
 let sheet = null;
 function ensureStyles() {
   if (typeof document === "undefined") return Promise.resolve();
@@ -408,7 +409,9 @@ export async function render(ctx) {
     const prompt = QUICK.find((x) => x.id === q.get("p"));
     const crumbs = crumbsHTML([
       [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`],
-      [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`],
+      isEarlyBand(ctx.band)
+        ? [I.S("My practice", "Mi práctica"), `${BASE}/early?grades=${ctx.band}`]
+        : [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`],
       [I.S("Quick write", "Escritura rápida"), prompt ? `${BASE}/write?tab=quick&grades=${ctx.band}` : null],
     ]);
     return {
@@ -430,6 +433,10 @@ export async function render(ctx) {
   if (q.get("sheet") === "conference") {
     S.task = null;
     return { title: task.title, html: conferenceSheetHTML(I, ctx, task) };
+  }
+  if (q.get("sheet") === "publish") {
+    S.task = null;
+    return { title: task.title, html: publishHTML(I, ctx, task, S.studio.writing[task.id]) };
   }
   if (q.get("sheet") === "week") {
     S.task = null;
@@ -570,7 +577,7 @@ ${text}</textarea></label>
                   ${reflectStartersHTML(I)}
                   <div class="row-actions"><button type="button" class="btn btn-primary" data-finish ${wordCount(S.state.reflection) >= 5 ? "" : raw("disabled")}>${icon("bookmark")} ${I.T("Save to my portfolio", "Guardar en mi portafolio")}</button></div>
                   ${S.state.finishedAt ? html`<p class="saved-note">${icon("check")} <span>${I.T("Saved to your portfolio.", "Guardado en tu portafolio.")} <a href="${BASE}/write?tab=portfolio&grades=${ctx.band}">${I.T("See my portfolio", "Ver mi portafolio")}</a></span></p>` : ""}
-                  ${S.state.finishedAt ? journeyHTML(I, S.state) : ""}
+                  ${S.state.finishedAt ? journeyHTML(I, S.state, task.id, ctx.band) : ""}
                   ${S.state.finishedAt ? html`<p class="row-actions"><button type="button" class="btn small" data-add-to-book>${icon("bookmark")} ${I.T("Add to my book", "Agregar a mi libro")}</button> <span class="fine">${I.T("Opens Book Studio with your writing on a page, ready for pictures and your voice.", "Abre Book Studio con tu escritura en una página, lista para imágenes y tu voz.")}</span></p>` : ""}
                   ${S.state.finishedAt && storage.get(CLASS_LINK_KEY) ? html`<p><button type="button" class="btn small" data-send-writing>${I.T("Send to my teacher", "Enviar a mi docente")}</button></p>` : ""}
                   ${S.state.finishedAt && S.state.versions.length < 2 ? html`<p class="fine">${I.T("Next, change one part of your draft and request feedback again. Compare your versions before trying a new topic.", "Después, cambia una parte de tu borrador y pide comentarios otra vez. Compara tus versiones antes de probar un tema nuevo.")}</p>` : ""}
@@ -1529,6 +1536,40 @@ export function helpToolsHTML(I, task, state, stage, text, analyzed) {
 }
 
 const DICT_ID = "wrt-draft";
+const QUICK_DICT = "wrt-quick";
+
+/** Speech to text into a draft box: words show as they are heard and go in on stop, a new sentence capitalized. */
+function dictateInto(id, boxSelector, I, onUsed = () => {}) {
+  const preview = document.querySelector(`[data-say-preview="${id}"]`) || document.querySelector("[data-say-preview]");
+  const controls = document.querySelector(`[data-say-controls="${id}"]`) || document.querySelector("[data-say-controls]");
+  const redraw = () => {
+    if (controls) controls.innerHTML = toHtml(dictationControlsHTML(id, I, { label: I.T("Start talking", "Empezar a hablar") }));
+  };
+  toggleDictation(id, {
+    I,
+    onText: (words) => {
+      if (preview) preview.textContent = words;
+    },
+    onDone: (words) => {
+      let said = String(words || "").trim();
+      const box = document.querySelector(boxSelector);
+      const before = box?.value.trim() || "";
+      // Recognizers return lowercase without a final mark; start a new sentence with a capital.
+      if (said && (!before || /[.!?]["”']?$/.test(before))) said = said[0].toUpperCase() + said.slice(1);
+      if (said && box) {
+        onUsed();
+        const r = insertion(box.value, box.value.length, box.value.length, said);
+        box.value = r.value;
+        box.focus();
+        box.setSelectionRange(r.selStart, r.selEnd);
+        box.dispatchEvent(new Event("input", { bubbles: true }));
+        announce(I.S("Added to your writing.", "Agregado a tu escritura."), { toast: false });
+      }
+      if (preview) preview.textContent = "";
+      redraw();
+    },
+  }).then(redraw);
+}
 let listenAt = 0;
 function showSentence(I, ctx, move) {
   const box = document.querySelector("[data-draft]");
@@ -1576,32 +1617,11 @@ export function onHelpClick(e, ctx, I, task, state) {
     else announce(I.S("Your plan is empty. Write a note in a plan box first.", "Tu plan está vacío. Primero escribe una nota en una casilla del plan."));
     return true;
   }
-  const dict = t.closest(`[data-dictate="${DICT_ID}"]`);
-  if (dict) {
-    const preview = document.querySelector("[data-say-preview]");
-    const controls = document.querySelector("[data-say-controls]");
-    const redraw = () => {
-      if (controls) controls.innerHTML = toHtml(dictationControlsHTML(DICT_ID, I, { label: I.T("Start talking", "Empezar a hablar") }));
-    };
-    toggleDictation(DICT_ID, {
-      I,
-      onText: (words) => {
-        if (preview) preview.textContent = words;
-      },
-      onDone: (words) => {
-        let said = String(words || "").trim();
-        const before = document.querySelector("[data-draft]")?.value.trim() || "";
-        // Recognizers return lowercase without a final mark; start a new sentence with a capital.
-        if (said && (!before || /[.!?]["”']?$/.test(before))) said = said[0].toUpperCase() + said.slice(1);
-        if (said) {
-          state.used ||= {};
-          state.used.dictation = true;
-          insertIntoDraft(said, I);
-        }
-        if (preview) preview.textContent = "";
-        redraw();
-      },
-    }).then(redraw);
+  if (t.closest(`[data-dictate="${DICT_ID}"]`)) {
+    dictateInto(DICT_ID, "[data-draft]", I, () => {
+      state.used ||= {};
+      state.used.dictation = true;
+    });
     return true;
   }
   const listen = t.closest("[data-listen]");
@@ -1613,7 +1633,7 @@ export function onHelpClick(e, ctx, I, task, state) {
 }
 
 /** After "Save to my portfolio": how the piece changed, in counts. */
-export function journeyHTML(I, state) {
+export function journeyHTML(I, state, taskId = "", band = "") {
   const first = state.versions[0];
   const last = state.versions.at(-1);
   if (!first || !last) return "";
@@ -1638,7 +1658,7 @@ export function journeyHTML(I, state) {
       ${item(revs, revs === 1 ? "revision" : "revisions", revs === 1 ? "revisión" : "revisiones")}
       ${item((state.evidence || []).length, "evidence notes", "notas de evidencia")}
     </ul>
-    <p class="row-actions no-print"><button type="button" class="btn small" data-copy-writing>${icon("copy")} ${I.T("Copy my writing", "Copiar mi escritura")}</button></p>
+    <p class="row-actions no-print"><a class="btn small" href="${BASE}/write/${taskId}?grades=${band}&sheet=publish" data-publish-link>${icon("print")} ${I.T("Print a clean copy to share", "Imprimir una copia limpia para compartir")}</a><button type="button" class="btn small" data-copy-writing>${icon("copy")} ${I.T("Copy my writing", "Copiar mi escritura")}</button></p>
   </div>`;
 }
 
@@ -1828,7 +1848,11 @@ export function quickChooserHTML(I, ctx, studio) {
           </section>`
         : ""
     }
-    <p><a class="btn" href="${BASE}/write?grades=${ctx.band}">${icon("arrow-left")} ${I.T("Back to Writing Studio", "Volver al Estudio de escritura")}</a></p>
+    <p>${
+      isEarlyBand(ctx.band)
+        ? html`<a class="btn" href="${BASE}/early?grades=${ctx.band}">${icon("arrow-left")} ${I.T("Back to my practice home", "Volver a mi página de práctica")}</a>`
+        : html`<a class="btn" href="${BASE}/write?grades=${ctx.band}">${icon("arrow-left")} ${I.T("Back to Writing Studio", "Volver al Estudio de escritura")}</a>`
+    }</p>
   </div>`;
 }
 
@@ -1840,17 +1864,23 @@ export function quickWriteHTML(I, ctx, studio, prompt) {
     <header class="quick-head">
       <p class="eyebrow">${icon("sparkle")} ${I.T("Quick write", "Escritura rápida")} · ${I.T(...KIND[prompt.kind])}</p>
       <h1 tabindex="-1">${I.T(prompt.en, prompt.es)}</h1>
-      <p><button type="button" class="ghost small" data-say="${I.S(prompt.en, prompt.es)}">${icon("volume")} ${I.T("Hear the question", "Escuchar la pregunta")}</button></p>
+      <p><button type="button" class="${isEarlyBand(ctx.band) ? "btn" : "ghost small"}" data-say="${I.S(prompt.en, prompt.es)}">${icon("volume")} ${I.T("Hear the question", "Escuchar la pregunta")}</button></p>
+      ${isEarlyBand(ctx.band) ? html`<p class="quick-early fine">${icon("bulb")} ${I.T("You can draw your idea on paper first. Then say it or write it here.", "Puedes dibujar tu idea en papel primero. Después dila o escríbela aquí.")}</p>` : ""}
     </header>
     <div class="quick-cols ${prompt.pic ? "" : "is-text"}">
       ${prompt.pic ? html`<figure class="quick-pic"><img src="${PIC}/${prompt.pic}" alt="${I.S(prompt.alt, prompt.altEs)}" width="640" height="400" decoding="async" /></figure>` : ""}
       <section class="panel editor-panel">
         <label class="field paper"><span class="paper-head">${I.T("Your writing", "Tu escritura")} <span class="fine">${I.T("Saved on this device as you type", "Se guarda en este dispositivo mientras escribes")}</span></span>
-          <textarea rows="9" spellcheck="false" placeholder="${I.S("Write here. Any length is fine.", "Escribe aquí. Cualquier extensión está bien.")}" data-quick-draft ${IGN}>
+          <textarea rows="9" spellcheck="false" placeholder="${isEarlyBand(ctx.band) ? I.S("Say it or write it here. A few words is fine.", "Dilo o escríbelo aquí. Unas pocas palabras está bien.") : I.S("Write here. Any length is fine.", "Escribe aquí. Cualquier extensión está bien.")}" data-quick-draft ${IGN}>
 ${text}</textarea></label>
         <p class="meter-line"><span data-quick-count>${I.S(`${wordCount(text)} words`, `${wordCount(text)} palabras`)}</span></p>
         <p class="reflect-starters"><span class="fine">${I.T("Need a way to start? Tap one:", "¿Necesitas cómo empezar? Toca una:")}</span>
           ${starters.map(([en, es]) => html`<button type="button" class="insert-chip" data-quick-start="${I.S(en, es)}">${I.T(`${en.trim()}…`, `${es.trim()}…`)}</button>`)}</p>
+        <div class="quick-say">
+          <p class="help-title">${icon("speaking")} ${I.T("Say it, see it", "Dilo y míralo")}</p>
+          <div data-say-controls="${QUICK_DICT}">${dictationControlsHTML(QUICK_DICT, I, { label: I.T("Start talking", "Empezar a hablar") })}</div>
+          <p class="listen-sentence" data-say-preview="${QUICK_DICT}" aria-live="polite"></p>
+        </div>
         <div class="row-actions">
           <button type="button" class="btn btn-primary" data-quick-save ${wordCount(text) ? "" : raw("disabled")}>${icon("bookmark")} ${I.T("Save my quick write", "Guardar mi escritura rápida")}</button>
           <a class="btn" href="${BASE}/write?tab=quick&grades=${ctx.band}">${I.T("Pick another one", "Elegir otra")}</a>
@@ -2119,6 +2149,10 @@ export function onMoreInput(e, I, studio, state, save) {
 /** Clicks on the quick-write page. Returns "rerender" when the page should be drawn again, true when handled. */
 export function onMoreClick(e, I, studio, save, tasks = []) {
   const t = e.target;
+  if (t.closest(`[data-dictate="${QUICK_DICT}"]`)) {
+    dictateInto(QUICK_DICT, "[data-quick-draft]", I);
+    return true;
+  }
   const start = t.closest("[data-quick-start]");
   if (start) {
     const box = document.querySelector("[data-quick-draft]");
@@ -2315,5 +2349,30 @@ export function weekPlanHTML(I, ctx, task) {
         <p class="week-tools no-print"><strong>${I.T("Open:", "Abrir:")}</strong> ${d.tools.map((x, j) => html`${j ? " · " : ""}${x}`)}</p>
         <p class="week-look"><strong>${I.T("Look for:", "Observe:")}</strong> ${I.T(d.look[0], d.look[1])}</p></li>`)}
     </ol>
+  </article>`;
+}
+
+// ── a clean copy to publish ───────────────────────────────────────────────────────────────────
+/**
+ * The writer's latest version as a page to print and share: the title, a line for their name, the writing, what they
+ * improved, and a box to draw in. Read from this device only; nothing is sent. No feedback, counts or scores.
+ */
+export function publishHTML(I, ctx, task, w) {
+  const back = html`<p class="row-actions no-print"><a class="btn" href="${BASE}/write/${task.id}?grades=${ctx.band}">${icon("arrow-left")} ${I.T("Back to my writing", "Volver a mi escritura")}</a>${w?.versions?.length ? html`<button type="button" class="btn btn-primary" data-print>${icon("print")} ${I.T("Print my clean copy", "Imprimir mi copia limpia")}</button>` : ""}</p>`;
+  const last = w?.versions?.at(-1)?.text?.trim();
+  if (!last)
+    return html`<article class="publish-page d-writing" data-no-studio-video>${back}<h1 tabindex="-1">${task.title}</h1><p>${I.T("Write and save a draft first. Then come back to print a clean copy.", "Primero escribe y guarda un borrador. Después vuelve para imprimir una copia limpia.")}</p></article>`;
+  const paras = last.split(/\n\s*\n|\n/).map((x) => x.trim()).filter(Boolean);
+  return html`<article class="publish-page d-writing" data-no-studio-video>
+    ${back}
+    <div class="publish-sheet">
+      <p class="publish-kind">${formName(task.form)} · ${task.contentArea}</p>
+      <h1 tabindex="-1">${task.title}</h1>
+      <p class="publish-by">${I.T("Written by", "Escrito por")} <span class="sheet-line" aria-hidden="true"></span></p>
+      <div class="publish-text">${paras.map((x) => html`<p>${x}</p>`)}</div>
+      ${String(w.reflection || "").trim() ? html`<section class="publish-note"><h2>${I.T("What I improved", "Lo que mejoré")}</h2><p>${w.reflection}</p></section>` : ""}
+      <section class="publish-draw"><h2>${I.T("A picture for my writing", "Un dibujo para mi escritura")}</h2><div class="draw-box" aria-hidden="true"></div></section>
+    </div>
+    ${w.finishedAt ? "" : html`<p class="fine no-print">${I.T("This is your latest saved version. Finish it in the Writing Studio when you are ready.", "Esta es tu última versión guardada. Termínala en el Estudio de escritura cuando estés listo.")}</p>`}
   </article>`;
 }
