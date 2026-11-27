@@ -58,6 +58,13 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 | Footers grouped by audience (lab and standalone pages); Teacher Hub, BCPSS crumb and build stamp say The Language Page | C6, T5 | `tools/access-acc-foundation.test.mjs`, host rewrite checked |
 | Language Adventures and Language Studio no longer featured in More; site directory regenerated | D5 decision | `tools/access-intro-guide.test.mjs` |
 
+**Tranche 5 — classroom teachers and student engagement (`docs/language-page/navigation.md`)**
+| Item | Finding | Proof |
+| --- | --- | --- |
+| Classroom Teacher door opens one page for today's lesson: teaching moves, three-level sentence-frame card, word cards, student practice link (Joel: the Hub was "overwhelming, disjointed" for classroom teachers) | C6, usability | `tools/access-classroom-kit.test.mjs`; axe 0 serious at 1366 and 390; print 1 Letter page each |
+| Student Hub "My week": practice days against the learner's own goal, skills this week, one next skill | E6 (engagement) | `tools/access-my-week.test.mjs`; axe 0 serious |
+| Hub links the lesson kit from its hero and "Go straight to" (all four roles) | — | `tools/access-hub-role.test.mjs` |
+
 ## Not started
 WS2 chrome-budget browser gate and the newcomer door · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
 sustained reading · WS4 recorded audio (H-19), Spanish activity titles and review (the grade 3–8 directions already exist in `es-guide.json`; audit E3 corrected), language packs, SLIFE path · WS5 writing volume and

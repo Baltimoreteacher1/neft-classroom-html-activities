@@ -63,7 +63,7 @@ export const FOOTER_GROUPS = Object.freeze([
     en: "Teachers",
     es: "Docentes",
     links: [
-      ["/access-teacher/?role=classroom", "Classroom teachers", "Docentes de aula"],
+      ["/access-teacher/classroom/", "Classroom teachers", "Docentes de aula"],
       ["/access-teacher/?role=esol", "ESOL teachers", "Docentes de ESOL"],
       ["/access-teacher/predictive/", "WIDA Data Studio", "Estudio de datos WIDA"],
       ["/bcpss-teachers", "BCPSS curriculum bridges", "Puentes del currículo de BCPSS"],

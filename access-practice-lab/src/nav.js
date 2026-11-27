@@ -231,8 +231,9 @@ export function footerHTML(ctx, I) {
         [`${BASE}/family${q}`, T("Family Corner", "Rincón de la familia")],
       ])}
       ${col(T("Classroom teachers", "Docentes de aula"), S("For classroom teachers", "Para docentes de aula"), [
-        ["/access-teacher/?role=classroom", T("Teacher Hub", "Centro docente")],
+        ["/access-teacher/classroom/", T("Today's lesson kit", "Kit para la lección de hoy")],
         ["/bcpss-teachers", T("BCPSS curriculum bridges", "Puentes del currículo de BCPSS")],
+        ["/access-teacher/?role=classroom", T("Teacher Hub", "Centro docente")],
         [`${BASE}/activity-studio${q}`, T("Activity Studio", "Estudio de actividades")],
         [`${BASE}/launch-studio${q}`, T("Launch Studio", "Estudio de lanzamiento")],
         [`${BASE}/start${q}`, T("Teacher start page and tour", "Inicio y recorrido para docentes")],
