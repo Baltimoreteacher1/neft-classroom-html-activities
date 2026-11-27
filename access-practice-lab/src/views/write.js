@@ -42,7 +42,7 @@ import { cancelDictation, dictationControlsHTML, toggleDictation } from "../dict
  * the first 12 hex of the file's sha256 (tools/access-writing-plus.test.mjs fails when it is stale), so a returning
  * learner never gets new markup with an old cached sheet.
  */
-export const WRITE_STYLES_VERSION = "38be61ca998c";
+export const WRITE_STYLES_VERSION = "48c31782efe5";
 let sheet = null;
 function ensureStyles() {
   if (typeof document === "undefined") return Promise.resolve();
@@ -511,9 +511,9 @@ export async function render(ctx) {
           ${downloadMenuHTML(ctx, "writing-task", task)}
           ${purposeBadgeHTML(S.stage)}
           <div class="task-brief">
-            <div><span class="brief-label">${icon("info")} ${I.T("Situation", "Situación")}</span><p>${task.scenario}</p></div>
-            <div class="brief-task"><span class="brief-label">${icon("flag")} ${I.T("Your task", "Tu tarea")}</span><p>${task.prompt}${S.fx.promptAdd.map((x) => html` <span class="path-add">${x}</span>`)}</p>
-              <button type="button" class="ghost small" data-say="${task.prompt}">${icon("volume")} ${I.T("Hear the task", "Escuchar la tarea")}</button></div>
+            <div><span class="brief-label">${icon("info")} ${I.T("Situation", "Situación")}</span>${briefText(I, task.scenario, task.scenarioEs)}</div>
+            <div class="brief-task"><span class="brief-label">${icon("flag")} ${I.T("Your task", "Tu tarea")}</span>${briefText(I, task.prompt, task.promptEs, S.fx.promptAdd)}
+              <p class="brief-listen"><button type="button" class="ghost small" data-say="${task.prompt}">${icon("volume")} ${I.T("Hear the task", task.promptEs ? "Escuchar en inglés" : "Escuchar la tarea")}</button>${task.promptEs ? html`<button type="button" class="ghost small" data-say-es="${task.promptEs}" lang="es">${icon("volume")} Escuchar en español</button>` : ""}</p></div>
           </div>
         </header>
         ${teacherTaskHTML(I, ctx, task, teacherAssignHTML(I, ctx, task))}
@@ -1723,6 +1723,8 @@ export function teacherTaskHTML(I, ctx, task, extra = "") {
           ${extra}
         </div>
         <div>
+          ${task.teacher?.lookFor?.length ? html`<h4>${I.T("Look for", "Observe")}</h4><ul>${task.teacher.lookFor.map((x) => html`<li>${x}</li>`)}</ul>` : ""}
+          ${task.teacher?.commonIssues?.length ? html`<h4>${I.T("Common language issues with this task", "Errores de lenguaje frecuentes en esta tarea")}</h4><ul>${task.teacher.commonIssues.map((x) => html`<li>${x}</li>`)}</ul>` : ""}
           ${
             task.revisionPrompts?.length
               ? html`<h4>${I.T("Conference questions", "Preguntas para la conferencia")}</h4>
@@ -2098,7 +2100,8 @@ export function conferenceSheetHTML(I, ctx, task) {
       <p class="sheet-task"><strong>${I.T("Task", "Tarea")}:</strong> ${task.prompt}</p>
     </header>
     <section><h2>${I.T("Look for", "Observe")}</h2>
-      <ul class="sheet-checks">${(task.organizer || []).map((o) => html`<li><span class="sheet-box"></span><span><strong>${o.label}.</strong> ${o.hint}</span></li>`)}</ul></section>
+      <ul class="sheet-checks">${(task.teacher?.lookFor?.length ? task.teacher.lookFor.map((x) => html`<li><span class="sheet-box"></span><span>${x}</span></li>`) : (task.organizer || []).map((o) => html`<li><span class="sheet-box"></span><span><strong>${o.label}.</strong> ${o.hint}</span></li>`))}</ul></section>
+    ${task.teacher?.commonIssues?.length ? html`<section><h2>${I.T("Listen for these language issues", "Escuche estos errores de lenguaje")}</h2><ul class="sheet-checks">${task.teacher.commonIssues.map((x) => html`<li><span class="sheet-box"></span><span>${x}</span></li>`)}</ul></section>` : ""}
     ${task.revisionPrompts?.length ? html`<section><h2>${I.T("Questions to ask", "Preguntas para hacer")}</h2><ul>${task.revisionPrompts.map((p) => html`<li><em>${FOCUS[p.focus] ? I.T(FOCUS[p.focus][0], FOCUS[p.focus][1]) : p.focus}:</em> ${p.prompt}</li>`)}</ul></section>` : ""}
     <section class="sheet-notes">
       <div><h2>${I.T("Working well", "Va bien")}</h2>${lines(3)}</div>
@@ -2375,4 +2378,18 @@ export function publishHTML(I, ctx, task, w) {
     </div>
     ${w.finishedAt ? "" : html`<p class="fine no-print">${I.T("This is your latest saved version. Finish it in the Writing Studio when you are ready.", "Esta es tu última versión guardada. Termínala en el Estudio de escritura cuando estés listo.")}</p>`}
   </article>`;
+}
+
+// ── the task in Spanish ───────────────────────────────────────────────────────────────────────
+/**
+ * A task's situation or prompt in the reader's language mode. The writing itself is in English, so the English text
+ * always stays on the page: Spanish first in Español, both in EN+ES, and a "See it in Spanish" disclosure in English.
+ */
+function briefText(I, en, es, adds = []) {
+  const extra = adds.map((x) => html` <span class="path-add">${x}</span>`);
+  if (!es) return html`<p>${en}${extra}</p>`;
+  if (I.mode === "es")
+    return html`<p lang="es">${es}</p><p class="brief-en" lang="en"><span class="fine">En inglés:</span> ${en}${extra}</p>`;
+  if (I.mode === "bi") return html`<p>${en}${extra}</p><p class="brief-es" lang="es">${es}</p>`;
+  return html`<p>${en}${extra}</p><details class="brief-es-more"><summary>${icon("language")} See it in Spanish</summary><p lang="es">${es}</p></details>`;
 }

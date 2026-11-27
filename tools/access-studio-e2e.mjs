@@ -612,6 +612,25 @@ ok(
   (await page.locator(".early-gate").count()) === 1,
   "grades 2-3 still see the gate on a Writing Studio task",
 );
+{
+  const esContext = await browser.newContext({ viewport: { width: 1200, height: 900 } });
+  await esContext.addInitScript(() =>
+    localStorage.setItem(
+      "accessPracticeLab:v1:prefs",
+      JSON.stringify({ band: "6-8", lang: "es", langChosen: true }),
+    ),
+  );
+  const ep = await esContext.newPage();
+  await ep.goto(`${origin}${BASE}/write/wrt-mulch-cer?grades=6-8`, { waitUntil: "networkidle" });
+  await ep.locator(".task-brief").waitFor();
+  const brief = await ep.locator(".task-brief").innerText();
+  ok(
+    brief.includes("¿El mantillo reduce la erosión") &&
+      brief.includes("Does mulch reduce soil erosion"),
+    "in Español the task shows in Spanish first, with the English kept on the page",
+  );
+  await esContext.close();
+}
 await go(`${BASE}/write?grades=6-8`);
 await go(`${BASE}/write/wrt-mulch-cer?sheet=week`);
 ok(
