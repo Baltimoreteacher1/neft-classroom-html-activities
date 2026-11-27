@@ -294,6 +294,91 @@ async function answers(page) {
   await page.close();
 }
 
+// ---------------- keyboard on the table and number-line items (3-3, 7-1) ----------------
+for (const [lesson, kind] of [
+  ["3-3", "table"],
+  ["7-1", "line"],
+]) {
+  const page = await newPage({ width: 390 });
+  await page.goto(`${BASE}/lessons/${lesson}/practice?lang=en`, { waitUntil: "load" });
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: "load" });
+  const key = await answers(page);
+  const entry = Object.entries(key).find(([, v]) => v.kind === kind);
+  if (!entry) {
+    fail("inputs", `${lesson}: no ${kind} item on the page`);
+    await page.close();
+    continue;
+  }
+  const [pid, d] = entry;
+  const scope = `#p-${pid}`;
+  const focusIs = (sel) => page.evaluate((x) => !!document.activeElement?.matches(x), sel);
+  const tabTo = async (sel) => {
+    for (let i = 0; i < 400; i++) {
+      if (await focusIs(sel)) return true;
+      await page.keyboard.press("Tab");
+    }
+    return false;
+  };
+  if (kind === "table") {
+    // wrong first: every cell off by one -> per-cell red outline, nothing solved
+    for (let i = 0; i < d.blanks.length; i++) {
+      if (!(await tabTo(`${scope} input[data-blank="${i}"]`)))
+        fail("inputs", `${lesson}: cannot Tab to table cell ${i}`);
+      await page.keyboard.type(String(Number(d.blanks[i]) + 1));
+    }
+    await page.keyboard.press("Enter");
+    const invalid = await page.$$eval(
+      `${scope} input[data-blank]`,
+      (els) => els.filter((e) => e.getAttribute("aria-invalid") === "true").length,
+    );
+    if (invalid !== d.blanks.length)
+      fail("inputs", `${lesson}: wrong table cells not marked (${invalid}/${d.blanks.length})`);
+    for (let i = 0; i < d.blanks.length; i++) {
+      await page.fill(`${scope} input[data-blank="${i}"]`, "");
+      await tabTo(`${scope} input[data-blank="${i}"]`);
+      await page.keyboard.type(String(d.blanks[i]));
+    }
+    await page.keyboard.press("Enter");
+  } else {
+    if (!(await tabTo(`${scope} .nl-range`)))
+      fail("inputs", `${lesson}: cannot Tab to the number line`);
+    const target = d.accept.eq != null ? d.accept.eq : d.accept.gt + 1;
+    const min = Number(await page.$eval(`${scope} .nl-range`, (e) => e.min));
+    // a known wrong placement first (the misconception value), then the right one
+    const wrongV = Number(d.known?.[0]?.value);
+    if (Number.isFinite(wrongV)) {
+      await page.keyboard.press("Home");
+      for (let k = min; k < wrongV; k++) await page.keyboard.press("ArrowRight");
+      await tabTo(`${scope} [data-act=check]`);
+      await page.keyboard.press("Enter");
+      const fb = await page.$eval(`${scope} .feedback`, (e) => e.innerText);
+      if (!fb.includes(d.known[0].why.en.slice(0, 20)))
+        fail("inputs", `${lesson}: wrong point ${wrongV} got no misconception feedback`);
+      await tabTo(`${scope} .nl-range`);
+    }
+    await page.keyboard.press("Home");
+    for (let k = min; k < target; k++) await page.keyboard.press("ArrowRight");
+    const shown = await page.$eval(`${scope} .nl-value`, (e) => e.textContent.replace("−", "-"));
+    if (Number(shown) !== target)
+      fail("inputs", `${lesson}: readout shows ${shown}, slider at ${target}`);
+    await tabTo(`${scope} [data-act=check]`);
+    await page.keyboard.press("Enter");
+  }
+  const solved = await page.$eval(scope, (e) => !!e.querySelector(".feedback.ok"));
+  if (!solved) fail("inputs", `${lesson}: ${kind} item not marked correct after keyboard entry`);
+  await page.reload({ waitUntil: "load" });
+  const kept = await page.$eval(scope, (e) => e.classList.contains("is-correct"));
+  if (!kept) fail("inputs", `${lesson}: ${kind} item not restored after reload`);
+  if (page._errors.length)
+    fail("inputs", `${lesson}: errors ${page._errors.slice(0, 2).join(" | ")}`);
+  if (solved && kept)
+    ok(
+      `${kind} item on ${lesson}: wrong answer flagged, solved by keyboard, restored after reload`,
+    );
+  await page.close();
+}
+
 // ---------------- hint ladder, misconception feedback, similar problem, Spanish ----------------
 {
   const page = await newPage({ width: 390 });
@@ -438,16 +523,26 @@ const PRINT = [
   ["/lessons/6-6/assignment", "en", 2],
   ["/lessons/6-6/assignment", "es", 2],
   ...(LIVE ? [] : [["/lessons/6-6/assignment-answer-key", "en", 2]]),
-  ["/lessons/6-6/family-guide", "en", 2],
-  ["/lessons/6-6/family-guide", "es", 2],
+  ["/lessons/6-6/family-guide", "en", 1],
+  ["/lessons/6-6/family-guide", "es", 1],
   ["/practice-hub/family/unit-6/letter", "en", 1],
   ["/practice-hub/family/unit-6/letter", "es", 1],
 ];
+// Default: one lesson per unit. --all: every lesson's homework, assignment, key (not live: gated)
+// and both family guides — the sweep that found 13 coordinate-plane/net pages at 3 pages.
 for (const u of MAP.units)
-  PRINT.push(
-    [`/lessons/${u.lessons[0]}/assignment`, "en", 2],
-    [`/lessons/${u.lessons[0]}/family-guide`, "es", 2],
-  );
+  for (const id of ALL ? u.lessons : [u.lessons[0]])
+    PRINT.push(
+      [`/lessons/${id}/assignment`, "en", 2],
+      [`/lessons/${id}/family-guide`, "es", 1],
+      ...(ALL
+        ? [
+            [`/lessons/${id}/practice`, "en", 2],
+            [`/lessons/${id}/family-guide`, "en", 1],
+            ...(LIVE ? [] : [[`/lessons/${id}/assignment-answer-key`, "en", 2]]),
+          ]
+        : []),
+    );
 for (const [path, lang, max] of PRINT) {
   const page = await newPage({ width: 816 });
   await page.goto(`${BASE}${path}?lang=${lang}`, { waitUntil: "load" });

@@ -233,17 +233,48 @@ All of these reproduce on a clean `origin/main`.
 - `validate:no-purple` ignored `PW_CHROMIUM_PATH`, so it could not run where Playwright's pinned
   browser is absent. Fixed here, since it was needed to verify this work.
 
+## 10a. Enhancements after the first deploy (2026-11-27)
+
+- **Two new interactive input types**:
+  - **Complete the table:** blank cells are real text inputs labelled by their column and row. A
+    wrong answer marks each wrong cell and says how many are right. Used in ratio, rate,
+    unit-conversion, pattern and two-variable lessons: 17 lessons, in both the homework and the
+    assignment.
+  - **Place it on the number line:** a native range control sits under the SVG line, so tap, drag,
+    arrow keys and screen readers all work. Tapping the drawn line also moves the point. A known
+    wrong placement gets its misconception message. Used in 7-1 to 7-4, in both the homework and
+    the assignment.
+  - Both are built from the lesson's own generator (`tableTask` and `lineTask` in
+    `functions/_lib/pfa/generators.js`). `tools/pfa/generators.test.mjs` recomputes every blank
+    and every accepted point independently over 300 seeds each (2,700 tasks), with 2 more negative
+    controls.
+  - Saved progress moved to version 2, so a save made before problem ids were renumbered is
+    discarded rather than applied to the wrong problem.
+- **Answers on the printed family guide:** a compact "Answers for the grown-up" line, print only.
+  The guides were tightened so **all 168 (84 × EN/ES) still print on one page**.
+- **Print fix found by a full sweep:** printing all 420 printables showed 13 at 3 pages
+  (coordinate-plane, net and composite-shape lessons). The print size cap for visuals was being
+  overridden by the screen rule. Fixed; **all 420 now fit** (homework, assignment and key ≤ 2,
+  family guide 1). `validate:pfa-browser --all` now runs that full sweep, and family guides are
+  held to 1 page.
+- **Number lines:** wide lines tick every 5 and label every 10, ending on a multiple of 10, so they
+  stay readable on a phone. Display text shows a true minus sign (−9); typed answers are unchanged.
+- **`/curriculum/units/` lesson rows** now offer Homework practice, Family guide and Assignment
+  for every core lesson; group and catch-up rows share their lesson's set. The answer key is
+  deliberately not on this student-facing row; it stays in the `/practice-hub/` teacher view.
+- **PR CI:** none of the red checks on Baltimoreteacher1/neft-classroom-html-activities#234
+  trace to this work. The "Claude pre-deploy verification" run hit an API usage limit (429), and
+  the rest reproduce on `main` or are base drift; details are in the PR comment.
+
 ## 11. Next 10
 
 1. Decide whether `/lessons/<id>/homework` should become the new template (section 1).
 2. Native-speaker review of the 17 objectives and of the per-choice Spanish feedback fallbacks.
 3. Author per-choice Spanish feedback (`choiceFeedbackEs`) in the lesson configs. The compiler
    picks it up automatically.
-4. Add number-line, tape-diagram and table-completion input items. The renderer already draws
-   them.
+4. Add a tape-diagram input item (number-line and table-completion inputs shipped in 10a).
 5. Replace lesson-default misconception tags with item-level tags in the configs (488 problems).
-6. Put the four PFA links in each `/curriculum/units/` lesson row. Today they are in the
-   `/practice-hub/` teacher view, which has one row per lesson.
+6. Done in 10a for the three student-facing links. The answer key stays teacher-only.
 7. Bring `validate:pfa-browser` into a scheduled CI job.
 8. Run Lighthouse in CI against a preview deploy (section 9 has the local numbers).
 9. Hand-author a richer 6-6 set (`"authored": true`) as the publisher showcase.

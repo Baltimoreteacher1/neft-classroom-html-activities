@@ -161,6 +161,22 @@ textarea { width: 100%; min-height: 110px; font: inherit; padding: 12px; border:
 .burst i { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--amber); animation: burst .7s ease-out forwards; }
 .streak { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: var(--amber-soft); color: #66501f; font-weight: 700; font-size: .85rem; }
 
+/* table to complete */
+.ptable-wrap { overflow-x: auto; margin: 0 0 var(--s2); }
+.ptable { border-collapse: collapse; min-width: 260px; background: #fff; }
+.ptable th, .ptable td { border: 2px solid var(--line); padding: 8px 14px; text-align: center; font-variant-numeric: tabular-nums; }
+.ptable th { background: var(--navy); color: #fff; border-color: var(--navy); }
+.ptable td.is-blank { background: var(--amber-soft); padding: 4px; }
+.ptable td.is-key { background: var(--ok-soft); font-weight: 700; }
+.ptable input { font: inherit; width: 8ch; min-height: 44px; text-align: center; border: 2px solid var(--muted); border-radius: 10px; background: #fff; color: var(--ink); }
+.ptable input[aria-invalid="true"] { border-color: var(--err); }
+.ptable input[aria-invalid="false"] { border-color: var(--ok); }
+/* number line to place a point on: the range input sits exactly under the SVG line (30..610 of 640) */
+.nl-track { padding-inline: 4.6875%; }
+.nl-range { width: 100%; height: 48px; margin: 0; accent-color: var(--navy); cursor: pointer; }
+.nl-readout { margin: 4px 0 0; font-weight: 700; }
+.mv .mv-handle { fill: var(--amber); stroke: var(--navy); stroke-width: 3; transition: transform .2s ease; }
+
 /* vocabulary strip */
 .vocab { display: grid; gap: var(--s2); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 .word { background: var(--paper); border-radius: 12px; padding: var(--s2); border-top: 6px solid var(--teal); }
@@ -269,7 +285,7 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   .p-num { width: 16pt; height: 16pt; font-size: 8.5pt; }
   .p-prompt { font-size: 10pt; margin-bottom: 3pt; }
   .p-visual, .player-figure { background: none; padding: 0; margin: 2pt 0; }
-  .mv { max-height: 1.15in; width: auto; max-width: 100%; }
+  html .mv { max-height: 1.15in; width: auto; max-width: 100%; }
   .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 1pt 6pt; margin: 0 0 2pt; }
   .choice { min-height: 0; padding: 1pt 2pt; border: 0; gap: 4pt; background: none; }
   .choice input { width: 9pt; height: 9pt; }
@@ -300,12 +316,19 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   details.reveal > .reveal-body { display: block; }
   a { color: inherit; text-decoration: none; }
   .print-only { display: block !important; }
+  .fam-answers { font-size: 8.5pt; border-top: 0.75pt dashed #999; padding-top: 3pt; margin-top: 4pt; }
+  .nl-track, .nl-readout, .mv .mv-handle { display: none !important; }
+  .ptable th, .ptable td { padding: 2pt 8pt; border-width: 1pt; }
+  .ptable th { background: none; color: #000; border-color: #666; }
+  .ptable td.is-blank { background: none; min-width: 0.6in; height: 0.3in; }
   /* homework: problems only; the refresher and word list stay on screen */
   html[data-page="pfa-homework"] .print-hide { display: none !important; }
   /* family guide: two columns of short sections; answers print under each try-it problem */
   html[data-page="pfa-family"] main { columns: 2; column-gap: 0.3in; }
   html[data-page="pfa-family"] .hero { column-span: all; }
-  html[data-page="pfa-family"] .section { break-inside: avoid; }
+  html[data-page="pfa-family"] .section { break-inside: avoid; margin-bottom: 4pt; }
+  html[data-page="pfa-family"] { --fs: 9.5pt; }
+  html[data-page="pfa-family"] h2 { font-size: 10.5pt; margin-bottom: 2pt; }
   html[data-page="pfa-family"] .player-figure { display: none; }
   html[data-page="pfa-family-letter"] ol { columns: 2; column-gap: 0.3in; padding-left: 1.2em; }
   html[data-page="pfa-family-letter"] li { break-inside: avoid; margin-bottom: 2pt; }

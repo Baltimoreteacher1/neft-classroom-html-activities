@@ -21,10 +21,10 @@ import {
   MAP,
   PRACTICE,
 } from "./generated/bundle.generated.js";
-import { generate } from "./generators.js";
+import { generate, lineTask, tableTask } from "./generators.js";
 import { guide, icon, scene, sceneFor, unitArt } from "./illustrations.js";
 import { renderVisual } from "./math-visuals.js";
-import { bi, biMath, genBody, genCheck, h, mathText } from "./problem-view.js";
+import { bi, biMath, genBody, genCheck, h, lineBody, mathText, tableBody } from "./problem-view.js";
 import { t, UI } from "./strings.js";
 
 const ORIGIN = "https://eduwonderlab.com";
@@ -53,6 +53,8 @@ const TYPE_ICON = {
   explain: "explain",
   gen: "numeric",
   fixit: "error",
+  table: "table",
+  line: "visual",
 };
 const TYPE_LABEL = {
   mc: { en: "Multiple choice", es: "Opción múltiple" },
@@ -63,6 +65,8 @@ const TYPE_LABEL = {
   explain: { en: "Explain", es: "Explica" },
   gen: { en: "Solve", es: "Resuelve" },
   fixit: { en: "Fix the mistake", es: "Corrige el error" },
+  table: { en: "Complete the table", es: "Completa la tabla" },
+  line: { en: "Place it on the number line", es: "Ubícalo en la recta numérica" },
 };
 
 function shell({
@@ -174,6 +178,29 @@ function problemCard(p, n, lessonId) {
   } else if (p.type === "explain") {
     body = `<p class="p-prompt" id="${pid}-q">${biMath(p.prompt)}</p><p class="frame"><span class="sr">${bi("frameLabel")}: </span>${bi(p.frame)}</p><label for="${pid}-t">${bi("writeHere")}</label><textarea id="${pid}-t" aria-describedby="${pid}-q ${pid}-fb"></textarea>`;
     check = { ...check, kind: "explain", model: p.model };
+  } else if (p.type === "table") {
+    const tk = tableTask(p.gen, p.seed);
+    body = tableBody(tk, pid);
+    check = {
+      ...check,
+      kind: "table",
+      answerType: "number",
+      blanks: tk.blanks.map((b) => b.answer),
+      solution: tk.steps,
+      hints: p.hints || lessonHints(lessonId),
+    };
+  } else if (p.type === "line") {
+    const tk = lineTask(p.gen, p.seed);
+    body = lineBody(tk, pid);
+    check = {
+      ...check,
+      kind: "line",
+      answerType: "number",
+      accept: tk.accept,
+      known: (tk.distractors || []).map((d) => ({ value: d.value, why: d.why, tag: d.tag })),
+      solution: tk.steps,
+      hints: p.hints || lessonHints(lessonId),
+    };
   } else if (p.type === "gen" || p.type === "fixit") {
     const g = generate(p.gen, p.seed);
     const sc = !g.visual ? art(g.stem.en) : "";
@@ -306,7 +333,7 @@ export function renderFamily(id) {
 <section class="section" aria-labelledby="learn-h"><h2 id="learn-h">${icon("book")}${bi("famLearning")}</h2><p>${biMath(f.learning)}</p><h3>${bi("famWhy")}</h3><p>${biMath(f.whyItMatters)}</p></section>
 <section class="section" aria-labelledby="how-h"><h2 id="how-h">${icon("play")}${bi("famHow")}</h2>${player(d.refresher, "family-example")}${doDont}</section>
 <section class="section" aria-labelledby="words-h"><h2 id="words-h">${icon("lang")}${bi("famWords")}</h2>${words}</section>
-<section class="section" aria-labelledby="try-h"><h2 id="try-h">${icon("family")}${bi("famTry")}</h2>${tryIt}</section>
+<section class="section" aria-labelledby="try-h"><h2 id="try-h">${icon("family")}${bi("famTry")}</h2>${tryIt}<p class="print-only fam-answers"><strong>${bi({ en: "Answers for the grown-up:", es: "Respuestas para el adulto:" })}</strong> ${f.tryIt.map((q, i) => `${i + 1}) ${biMath(q.answer)}`).join(" · ")}</p></section>
 <section class="section" aria-labelledby="talk-h"><h2 id="talk-h">${icon("explain")}${bi("famTalk")}</h2><p class="tier-note">${bi("famTalkNote")}</p><ul class="talk">${f.conversation.map((c) => `<li>${icon("explain")}<span>${biMath(c)}</span></li>`).join("")}</ul></section>
 <section class="section" aria-labelledby="stuck-h"><h2 id="stuck-h">${icon("hint")}${bi("famStuck")}</h2><ol>${f.stuck.map((s) => `<li>${biMath(s)}</li>`).join("")}</ol>
 <div class="row no-print"><a class="btn primary" href="/lessons/${id}/practice">${icon("pencil")}<span>${bi("famPractice")}</span></a><button class="btn quiet" type="button" data-act="print">${icon("print")}<span>${bi("famPrint")}</span></button><a class="btn quiet" href="/practice-hub/family/unit-${f.unit}">${icon("family")}<span>${bi("familyHub")}</span></a></div></section>
@@ -326,6 +353,28 @@ export function renderFamily(id) {
 function assignmentItems(d) {
   const out = d.assignment
     .map((p) => {
+      if (p.type === "table") {
+        const tk = tableTask(p.gen, p.seed);
+        const ans = tk.blanks.map((b) => b.answer).join(", ");
+        return {
+          p,
+          block: tableBody(tk, p.id, { print: true }),
+          keyBlock: tableBody(tk, p.id, { key: true }),
+          answer: { en: ans, es: ans },
+          steps: tk.steps,
+          tag: p.misconception,
+        };
+      }
+      if (p.type === "line") {
+        const tk = lineTask(p.gen, p.seed);
+        return {
+          p,
+          block: lineBody(tk, p.id, { print: true }),
+          answer: { en: tk.answerText, es: tk.answerTextEs || tk.answerText },
+          steps: tk.steps,
+          tag: p.misconception,
+        };
+      }
       if (p.type === "gen") {
         const g = generate(p.gen, p.seed);
         return {
@@ -409,7 +458,7 @@ function assignmentItems(d) {
       return null;
     })
     .filter(Boolean);
-  const anchor = out.find((x) => x.p.type === "gen") || out[0];
+  const anchor = out.find((x) => x.p.type === "gen") || out.find((x) => !x.block) || out[0];
   const k = out.indexOf(anchor) + 1;
   out.push({
     p: { type: "explain", misconception: anchor.tag },
@@ -460,10 +509,12 @@ function renderAssignmentPage(id, key) {
       const vis = it.visual ? `<div class="p-visual">${renderVisual(it.visual)}</div>` : "";
       const keyBox = key
         ? `<div class="key-answer"><strong>${bi("asAnswer")}:</strong> ${biMath(it.answer)}${it.steps ? `<ol class="lang-en" lang="en">${(it.steps.en || []).map((s) => `<li>${mathText(s)}</li>`).join("")}</ol><ol class="lang-es" lang="es">${(it.steps.es || []).map((s) => `<li>${mathText(s)}</li>`).join("")}</ol>` : ""}${it.tag && TAXONOMY_LABELS[it.tag] ? `<p><strong>${bi("keyMisconception")}:</strong> ${bi(TAXONOMY_LABELS[it.tag])}</p>` : ""}</div>`
-        : `<p class="tier-note">${bi("asWork")}</p><div class="workspace"></div><p>${bi("asAnswer")}: </p><div class="answer-line"></div>`;
+        : it.block
+          ? ""
+          : `<p class="tier-note">${bi("asWork")}</p><div class="workspace"></div><p>${bi("asAnswer")}: </p><div class="answer-line"></div>`;
       const frame =
         it.explain && !key ? `<div class="answer-line"></div><div class="answer-line"></div>` : "";
-      return `<div class="aitem" id="a${i + 1}"><h2 style="font-size:1.05rem"><span class="p-num" aria-hidden="true">${i + 1}</span><span class="sr">${bi("problem")} ${i + 1}</span></h2><p>${biMath(it.prompt)}</p>${vis}${choices}${options}${pairs}${work}${frame}${keyBox}</div>`;
+      return `<div class="aitem" id="a${i + 1}"><h2 style="font-size:1.05rem"><span class="p-num" aria-hidden="true">${i + 1}</span><span class="sr">${bi("problem")} ${i + 1}</span></h2>${it.block ? (key && it.keyBlock ? it.keyBlock : it.block) : `<p>${biMath(it.prompt)}</p>`}${vis}${choices}${options}${pairs}${work}${frame}${keyBox}</div>`;
     })
     .join("");
   const directions = key

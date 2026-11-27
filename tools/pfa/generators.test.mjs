@@ -13,9 +13,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const { generate, matches, parseNumber, sameExpr, gcd } = await import(
-  pathToFileURL(join(ROOT, "functions/_lib/pfa/generators.js")).href
-);
+const { generate, matches, parseNumber, sameExpr, gcd, tableTask, lineTask, lineAccepts } =
+  await import(pathToFileURL(join(ROOT, "functions/_lib/pfa/generators.js")).href);
 const { renderVisual } = await import(
   pathToFileURL(join(ROOT, "functions/_lib/pfa/math-visuals.js")).href
 );
@@ -224,6 +223,59 @@ export function sweep(specs = SPECS, seeds = 300) {
   return { n, failures };
 }
 
+// Table and number-line tasks: every blank and every accepted value recomputed from params.
+export const TABLE_EXPECT = {
+  ratioTable: (p) => [2 * p.b, p.b * p.k],
+  twoVar: (p) => [2 * p.k, p.k * p.x],
+  patternRule: (p) => [p.start + 2 * p.step, p.start + (p.n - 1) * p.step],
+  convertUnits: (p) => [2 * p.f, p.q * p.f],
+  unitRate: (p) => [p.total / p.n, (3 * p.total) / p.n],
+};
+export function checkTask(t) {
+  const errs = [];
+  if (!t.stem?.en || !t.stem?.es || t.stem.en === t.stem.es) errs.push("task stem EN/ES");
+  for (const d of t.distractors || []) if (!TAXONOMY.has(d.tag)) errs.push(`orphan tag ${d.tag}`);
+  if (t.kind === "table") {
+    const want = TABLE_EXPECT[t.gen](t.params);
+    if (t.blanks.length !== want.length) errs.push("blank count");
+    t.blanks.forEach((b, i) => {
+      if (Math.abs(parseNumber(b.answer) - want[i]) > 0.005)
+        errs.push(`blank ${i} ${b.answer} != ${want[i]}`);
+      if (t.rows[b.r][b.c] !== "?") errs.push(`blank ${i} is not a ? cell`);
+    });
+    if (t.rows.flat().filter((c) => c === "?").length !== t.blanks.length)
+      errs.push("a ? cell has no blank");
+    if (t.headers.some((h) => !h.en || !h.es)) errs.push("header EN/ES");
+  } else {
+    const inRange = (v) => v >= t.min && v <= t.max;
+    if (t.gen === "signedValue") {
+      const want = t.mode === "abs" ? -Math.abs(t.params.v) : -t.params.v;
+      if (t.accept.eq !== want) errs.push(`accept ${t.accept.eq} != ${want}`);
+      if (!inRange(want)) errs.push("answer off the line");
+      if (lineAccepts(t, -want) && want !== 0) errs.push("the opposite side is accepted");
+    } else {
+      const hi = Math.max(t.params.a, t.params.b);
+      for (let v = t.min; v <= t.max; v++)
+        if (lineAccepts(t, v) !== (v > hi && v < 0)) errs.push(`value ${v} judged wrongly`);
+      if (![...Array(t.max - t.min + 1)].some((_, i) => lineAccepts(t, t.min + i)))
+        errs.push("no point on the line is accepted");
+    }
+    if (lineAccepts(t, 0) && !(t.accept.eq === 0)) errs.push("the start position 0 is accepted");
+  }
+  return errs;
+}
+export const TASK_SPECS = [
+  ["table", "ratioTable:table"],
+  ["table", "ratioTable:graph"],
+  ["table", "twoVar:table"],
+  ["table", "patternRule"],
+  ["table", "convertUnits"],
+  ["table", "unitRate"],
+  ["line", "signedValue:opposite"],
+  ["line", "signedValue:abs"],
+  ["line", "compareRational"],
+];
+
 const isMain = import.meta.url === pathToFileURL(process.argv[1] || "").href;
 if (isMain) {
   // Negative controls: a corrupted key, a distractor equal to the key, an orphan tag.
@@ -264,7 +316,26 @@ if (isMain) {
     "a visual that prints the answer must be caught",
   );
 
+  const badT = tableTask("ratioTable:table", 5);
+  badT.blanks[0].answer = String(Number(badT.blanks[0].answer) + 1);
+  assert.ok(
+    checkTask(badT).some((e) => e.startsWith("blank")),
+    "a wrong table blank must be caught",
+  );
+  const badL = lineTask("signedValue:opposite", 6);
+  badL.accept = { eq: badL.params.v };
+  assert.ok(checkTask(badL).length > 0, "a number line that accepts the wrong side must be caught");
+
   const { n, failures } = sweep();
+  let tasks = 0;
+  for (const [kind, spec] of TASK_SPECS) {
+    for (let seed = 1; seed <= 300; seed++) {
+      const t = kind === "table" ? tableTask(spec, seed) : lineTask(spec, seed);
+      tasks++;
+      const errs = t ? checkTask(t) : ["task not built"];
+      if (errs.length) failures.push(`${kind}:${spec} seed ${seed}: ${errs.join("; ")}`);
+    }
+  }
   if (n === 0) {
     console.error("FAIL pfa-generators: swept zero problems");
     process.exit(1);
@@ -275,6 +346,6 @@ if (isMain) {
     process.exit(1);
   }
   console.log(
-    `PASS pfa-generators: ${SPECS.length} generator modes × 300 seeds = ${n} problems recomputed independently; 5 negative controls caught`,
+    `PASS pfa-generators: ${SPECS.length} generator modes × 300 seeds = ${n} problems recomputed independently; ${tasks} table/number-line tasks recomputed; 7 negative controls caught`,
   );
 }

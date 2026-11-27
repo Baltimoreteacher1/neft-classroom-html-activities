@@ -60,7 +60,7 @@ export function schemaErrors(p) {
   if (![1, 2, 3].includes(p.dok)) e.push("dok");
   if (!p.misconception || !TAX[p.misconception])
     e.push(`misconception tag ${p.misconception} not in taxonomy`);
-  if (p.type === "gen" || p.type === "fixit") {
+  if (["gen", "fixit", "table", "line"].includes(p.type)) {
     if (!p.gen || !Number.isInteger(p.seed)) e.push("generator spec");
     return e;
   }
@@ -106,7 +106,7 @@ export function mathErrors(p, cfgItems) {
     if (ans != null && !nums.some((n) => n != null && Math.abs(n - ans) < 1e-9))
       e.push(`solution never states ${p.answer}`);
   }
-  if (p.type === "gen" || p.type === "fixit") {
+  if (["gen", "fixit", "table", "line"].includes(p.type)) {
     const g = generate(p.gen, p.seed);
     if (!g.answer) e.push("generator returned no answer");
   }

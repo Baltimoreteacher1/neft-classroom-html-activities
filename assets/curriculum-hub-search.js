@@ -3720,6 +3720,18 @@
       if (familyHw) {
         activities.push(familyHw);
       }
+      // Practice / Family / Assignments pages (rendered by functions/_lib/pfa; one set per core
+      // lesson, shared by its group and catch-up rows). The answer key is teacher-gated and lives in
+      // the /practice-hub/ teacher view, so it is not offered on this student-facing row.
+      if (/^\d{1,2}-\d{1,2}$/.test(baseLessonId)) {
+        [
+          ["🏠 Homework practice (EN/ES)", "practice"],
+          ["👪 Family guide (EN/ES)", "family-guide"],
+          ["🗒️ Assignment (printable)", "assignment"],
+        ].forEach(function (pair) {
+          activities.push({ text: pair[0], href: "/lessons/" + baseLessonId + "/" + pair[1] });
+        });
+      }
       // A lesson taught over more than one session sends a night of practice
       // home for each, keyed on its own `-part2` / `-part3` id. There is no
       // separate hub row for those sessions — the row already links

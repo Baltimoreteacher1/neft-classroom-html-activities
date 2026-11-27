@@ -107,7 +107,14 @@ R.numberLine = (s) => {
   const W = 640;
   const sx = linear(min, max, 30, W - 30);
   const count = (max - min) / step;
-  let body = axisTicks(sx, 60, min, max, step, count > 16 ? Math.ceil(count / 12) : 1);
+  let body = axisTicks(
+    sx,
+    60,
+    min,
+    max,
+    step,
+    s.labelEvery || (count > 16 ? Math.ceil(count / 12) : 1),
+  );
   if (s.center != null)
     body += `<line class="mv-center" x1="${sx(s.center)}" y1="30" x2="${sx(s.center)}" y2="90"/>`;
   if (s.ray && !s.hideRay) {
