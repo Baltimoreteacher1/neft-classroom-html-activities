@@ -6,6 +6,7 @@ import { test } from "node:test";
 import { buildCatalog, GROUPS, PURPOSES } from "../bcpss-teachers/companion/companion-data.js";
 import { conceptCard, conceptDoc } from "../bcpss-teachers/companion/concept-cards.js";
 import { buildDayPlan, dayPlanDoc } from "../bcpss-teachers/companion/day-plan.js";
+import { matchDeck } from "../bcpss-teachers/companion/engage.js";
 import { cluesFor } from "../bcpss-teachers/companion/guess-game.js";
 import {
   causeOptions,
@@ -19,6 +20,7 @@ import {
 import { buildPracticePack, practiceDoc } from "../bcpss-teachers/companion/practice.js";
 import { buildProject, projectDoc } from "../bcpss-teachers/companion/projects.js";
 import { buildStations, stationsDoc, warmupDoc } from "../bcpss-teachers/companion/reserve.js";
+import { tallyAdvice, weekDoc, weekPlan } from "../bcpss-teachers/companion/teach-week.js";
 import {
   evidenceIndex,
   readingDoc,
@@ -63,7 +65,7 @@ test("registry: unique ids, known groups, every view renders for every unit at e
     assert.equal(typeof v.act, "function");
     assert.ok(v.label && v.hint);
   }
-  assert.equal(NEW_VIEWS.length, 10);
+  assert.equal(NEW_VIEWS.length, 15);
   for (const detail of all)
     for (const level of LEVELS)
       for (const v of NEW_VIEWS) {
@@ -320,4 +322,56 @@ test("today's lesson: steps add up to the class length and open real views", () 
       }
       clean(dayPlanDoc(plan), detail.unit.id);
     }
+});
+
+test("word match: six pairs, each word with its own meaning, shuffled by round", () => {
+  for (const detail of all) {
+    const deck = matchDeck(detail, 0);
+    assert.equal(deck.length, 12);
+    for (let p = 0; p < 6; p++) {
+      const pair = deck.filter((c) => c.pair === p);
+      const v = detail.studio.vocab[p];
+      assert.deepEqual(pair.map((c) => c.kind).sort(), ["meaning", "word"]);
+      assert.ok(
+        pair.some((c) => c.text === v.term) && pair.some((c) => c.text === v.def),
+        detail.unit.id,
+      );
+    }
+    assert.notDeepEqual(matchDeck(detail, 0), matchDeck(detail, 1));
+  }
+});
+
+test("week plan, four corners, routines: authored for every unit, every section links somewhere real", () => {
+  const tabs = new Set(["studio", "plan", "overview", "vocab", "reading", "create", "family"]);
+  const views = new Set([...NEW_VIEWS.map((v) => v.id), "map", "build", "check", "reteach"]);
+  for (const detail of all) {
+    const days = weekPlan(detail);
+    assert.equal(days.length, 5, detail.unit.id);
+    for (const d of days)
+      for (const sec of d.sections) {
+        assert.ok(sec.to, `${detail.unit.id}: unmapped section ${sec.key}`);
+        assert.ok(
+          sec.to.view ? views.has(sec.to.view) : tabs.has(sec.to.tab),
+          `${detail.unit.id} ${sec.key}`,
+        );
+      }
+    clean(weekDoc(detail), detail.unit.id);
+    const tl = detail.esol_pack.talk_line;
+    assert.ok(
+      tl?.statements?.length >= 1 && tl.corners?.length >= 2 && tl.stems?.["3_4"],
+      `${detail.unit.id}: talk line`,
+    );
+    assert.ok(
+      detail.esol_pack.routines?.length >= 1 && detail.esol_pack.routines[0].steps.length >= 2,
+      `${detail.unit.id}: routine`,
+    );
+  }
+});
+
+test("exit ticket tally: advice follows the counts and never names a student", () => {
+  assert.equal(tallyAdvice({}).go, null);
+  assert.equal(tallyAdvice({ got: 5, partly: 2, notyet: 4 }).go.view, "reteach");
+  assert.equal(tallyAdvice({ got: 5, partly: 4, notyet: 1 }).go.view, "build");
+  assert.equal(tallyAdvice({ got: 20, partly: 2, notyet: 1 }).go.view, "quick");
+  assert.equal(tallyAdvice({ got: 1, partly: 1, notyet: 1 }).total, 3);
 });

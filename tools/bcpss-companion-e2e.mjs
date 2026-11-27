@@ -451,6 +451,50 @@ async function run(width, label) {
       (await page.evaluate(() => document.activeElement?.dataset.cpPresent)) === "on",
   );
 
+  // Word match, four corners, routine, week, tally
+  await page.click('[data-cp-view="match"]');
+  const deck = await page.$$eval(".cp-mcard", (e) => e.map((b) => b.getAttribute("aria-label")));
+  check(
+    T("word match: twelve face-down cards"),
+    deck.length === 12 && deck.every((l) => /face down/.test(l)),
+  );
+  await page.click('[data-cp-act="match:flip"][data-cp-arg="0"]');
+  await page.click('[data-cp-act="match:flip"][data-cp-arg="1"]');
+  check(
+    T("word match: two cards turn over and the result is announced"),
+    (await page.$$eval(".cp-mcard--up", (e) => e.length)) >= 2 &&
+      /pair|match/i.test(await page.textContent(".cp-match [role=status]")),
+  );
+  await page.click('[data-cp-view="corners"]');
+  const s1 = await page.textContent(".cp-corners .cp-question");
+  await page.click('[data-cp-act="corners:next"]');
+  check(
+    T("four corners: next statement and four corners shown"),
+    s1 !== (await page.textContent(".cp-corners .cp-question")) &&
+      (await page.$$eval(".cp-corner", (e) => e.length)) === 4,
+  );
+  await page.click('[data-cp-view="routine"]');
+  await page.click('[data-cp-act="routine:next"]');
+  check(
+    T("language routine: steps advance"),
+    (await page.textContent(".cp-routine .cp-dot--now")).trim() === "2",
+  );
+  await page.click('[data-cp-view="week"]');
+  check(T("this week: five days"), (await page.$$eval(".cp-week .cp-card", (e) => e.length)) === 5);
+  await page.click('.cp-week [data-cp-view="corners"]');
+  check(
+    T("this week: a day's section opens its view"),
+    (await page.getAttribute('[data-cp-view="corners"].cp-view', "aria-pressed")) === "true",
+  );
+  await page.click('[data-cp-view="tally"]');
+  for (let k = 0; k < 3; k++) await page.click('[data-cp-act="tally:inc"][data-cp-arg="notyet"]');
+  await page.click('[data-cp-act="tally:inc"][data-cp-arg="got"]');
+  check(
+    T("tally: counts drive the suggested next step"),
+    /reteach/i.test(await page.textContent(".cp-tally")) &&
+      (await page.$$eval(".cp-tallybar span", (e) => e.length)) === 2,
+  );
+
   // Diagrams
   await page.click('[data-cp-view="map"]');
   check(
@@ -539,12 +583,27 @@ async function run(width, label) {
     "projects",
     "guess",
     "day",
+    "match",
+    "corners",
+    "routine",
+    "week",
+    "tally",
   ]) {
     await page.click(`[data-cp-view="${view}"]`);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
     check(T(`${view}: no horizontal scroll`), overflow <= 0, `${overflow}px`);
+    const clipped = await page.$$eval(
+      ".cp-view, .cp-chip",
+      (els) =>
+        els.filter(
+          (e) =>
+            e.offsetParent &&
+            e.getBoundingClientRect().right > document.documentElement.clientWidth + 1,
+        ).length,
+    );
+    check(T(`${view}: no control sits off the right edge`), clipped === 0, `${clipped} clipped`);
     const small = await page.$$eval(".cp button, .cp a.cp-btn, .cp select, .cp .cp-check", (els) =>
       els
         .filter(
