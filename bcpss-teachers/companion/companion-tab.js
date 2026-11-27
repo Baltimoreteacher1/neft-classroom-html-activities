@@ -220,12 +220,34 @@ const recall = () => {
   }
 };
 
+const groupOf = (viewId) => VIEWS.find((v) => v.id === viewId)?.group || "teach";
+
+function navHtml(st) {
+  const groups = GROUPS.map((g) => ({ ...g, views: VIEWS.filter((v) => v.group === g.id) })).filter(
+    (g) => g.views.length,
+  );
+  const active = groups.find((g) => g.id === st.group) || groups[0];
+  const tabs = groups
+    .map(
+      (g) =>
+        `<button type="button" class="cp-gtab" data-cp-group="${g.id}" aria-pressed="${g.id === active.id}">${esc(g.label)}<span class="cp-gcount" aria-label="${g.views.length} tools">${g.views.length}</span></button>`,
+    )
+    .join("");
+  const views = active.views
+    .map(
+      (v) =>
+        `<button type="button" class="cp-view" data-cp-view="${v.id}" aria-pressed="${v.id === st.view}"><b>${esc(v.label)}</b><small>${esc(v.hint)}</small></button>`,
+    )
+    .join("");
+  return `<div class="cp-gtabs" role="group" aria-label="Sections">${tabs}</div><div class="cp-views" role="group" aria-label="${esc(active.label)}">${views}</div>`;
+}
+
 function shell(st, inner) {
   if (st.present) {
     const v = VIEWS.find((x) => x.id === st.view);
     return `
     <div class="cp cp--present" data-cp-root>
-      <div class="cp-present-bar"><b>${esc(v?.label || "")}</b><button type="button" class="cp-btn" data-cp-present="off">Exit present mode</button></div>
+      <div class="cp-present-bar"><b>${esc(v?.label || "")}</b><span class="cp-muted cp-keyhint">Use ← and → or a clicker to step through.</span><button type="button" class="cp-btn" data-cp-present="off">Exit present mode</button></div>
       <div class="cp-body" data-cp-body>${inner}</div>
     </div>`;
   }
@@ -233,13 +255,7 @@ function shell(st, inner) {
     <div class="cp" data-cp-root>
       <div class="cp-top">
         <div class="cp-set-head"><div><h3 class="cp-title">Plan &amp; Respond</h3><p class="cp-muted">Built from this unit's own words, goals and activities. Nothing you type here leaves this device.</p></div><button type="button" class="cp-btn cp-btn--solid" data-cp-present="on">Present to class</button></div>
-        <nav class="cp-vgroups" aria-label="Plan and respond">${GROUPS.map((g) => ({ g, views: VIEWS.filter((v) => v.group === g.id) }))
-          .filter((x) => x.views.length)
-          .map(
-            ({ g, views }) =>
-              `<div class="cp-vgroup" role="group" aria-labelledby="cpvg-${g.id}"><h4 class="cp-vgroup-h" id="cpvg-${g.id}">${esc(g.label)}</h4><div class="cp-views">${views.map((v) => `<button type="button" class="cp-view" data-cp-view="${v.id}" aria-pressed="${v.id === st.view}"><b>${esc(v.label)}</b><small>${esc(v.hint)}</small></button>`).join("")}</div></div>`,
-          )
-          .join("")}</nav>
+        <nav class="cp-nav" aria-label="Plan and respond">${navHtml(st)}</nav>
       </div>
       <div class="cp-body" data-cp-body>${inner}</div>
     </div>`;
@@ -273,6 +289,7 @@ export function renderCompanionTab(panel, ctx) {
     st.unitId = detail.unit.id;
   }
   st.level = ctx.wida || st.level || "3_4";
+  st.group ??= groupOf(st.view);
   panelState.set(panel, st);
   st.ctx = ctx;
   let course = [];
@@ -307,6 +324,21 @@ export function renderCompanionTab(panel, ctx) {
   panel.addEventListener("input", (e) => onInput(panel, e));
   panel.addEventListener("keydown", (e) => {
     const st = panelState.get(panel);
+    if (st?.present && !e.target.closest("input, textarea, select")) {
+      const fwd = ["ArrowRight", "PageDown"].includes(e.key);
+      const back = ["ArrowLeft", "PageUp"].includes(e.key);
+      if (fwd || back) {
+        const sels = fwd ? ['[data-cp-act$=":next"]', '[data-cp-act$=":clue"]'] : ['[data-cp-act$=":prev"]'];
+        const btn = sels
+          .flatMap((sel) => [...panel.querySelectorAll(`[data-cp-body] ${sel}`)])
+          .find((b) => !b.disabled);
+        if (btn) {
+          e.preventDefault();
+          btn.click();
+        }
+        return;
+      }
+    }
     if (e.key === "Escape" && st?.present) {
       st.present = false;
       st.draw();
@@ -338,8 +370,15 @@ function onClick(panel, e) {
     panel.querySelector(`[data-cp-present="${st.present ? "off" : "on"}"]`)?.focus();
     return;
   }
+  if (d.cpGroup) {
+    st.group = d.cpGroup;
+    st.draw();
+    panel.querySelector(`[data-cp-group="${CSS.escape(st.group)}"]`)?.focus();
+    return;
+  }
   if (d.cpView) {
     st.view = d.cpView;
+    st.group = groupOf(st.view);
     remember(st.view);
     st.draw();
     panel.querySelector(`[data-cp-view="${st.view}"]`)?.focus();

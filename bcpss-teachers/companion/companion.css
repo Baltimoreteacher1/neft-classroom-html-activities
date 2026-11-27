@@ -1108,3 +1108,80 @@ mark.cp-ev {
 .cp-body > * {
   min-width: 0;
 }
+
+/* ── Two-level navigation ────────────────────────────────────────────────── */
+.cp-nav {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.cp-gtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.cp-gtab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  font: 650 0.92rem/1.2 var(--font);
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.cp-gtab:hover {
+  background: var(--bg-interactive-hover);
+}
+.cp-gtab[aria-pressed="true"] {
+  background: var(--surface-2);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.cp-gtab:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.cp-gcount {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 0.75rem;
+}
+.cp-gtab[aria-pressed="true"] .cp-gcount {
+  background: var(--brand);
+  color: #fff;
+}
+.cp-keyhint {
+  font-size: 0.85rem;
+  margin-right: auto;
+}
+@media (max-width: 640px) {
+  .cp-keyhint {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .cp-gtabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .cp-gtab {
+    justify-content: space-between;
+    text-align: left;
+    padding: 0 0.7rem;
+    border-color: var(--border-subtle);
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+  }
+}
