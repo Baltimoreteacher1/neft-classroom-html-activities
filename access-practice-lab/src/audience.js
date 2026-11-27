@@ -100,7 +100,7 @@ export const TEACHER_ROLES = Object.freeze([
       "Language supports for the content you teach, then ready activities.",
       "Apoyos de lenguaje para el contenido que enseña y actividades listas.",
     ],
-    library: ["bcpss", "activities", "printables", "content", "class", "forms", "tests", "weekly", "data"],
+    library: ["bcpss", "card", "activities", "printables", "content", "class", "forms", "tests", "weekly", "data"],
   },
   {
     id: "esol",
@@ -111,7 +111,7 @@ export const TEACHER_ROLES = Object.freeze([
       "WIDA data, ACCESS practice and your class come first.",
       "Primero los datos WIDA, la práctica ACCESS y su clase.",
     ],
-    library: ["data", "tests", "class", "weekly", "activities", "printables", "forms", "content", "bcpss"],
+    library: ["data", "tests", "class", "weekly", "card", "activities", "printables", "forms", "content", "bcpss"],
   },
   {
     id: "support",
@@ -119,7 +119,7 @@ export const TEACHER_ROLES = Object.freeze([
     order: ["find", "create", "plan"],
     heading: ["For small groups and support", "Para grupos pequeños y apoyo"],
     lead: ["Ready activities and printables come first.", "Primero las actividades y los impresos listos."],
-    library: ["activities", "printables", "class", "forms", "tests", "weekly", "content", "bcpss", "data"],
+    library: ["activities", "card", "printables", "class", "forms", "tests", "weekly", "content", "bcpss", "data"],
   },
   {
     id: "coach",
@@ -130,7 +130,7 @@ export const TEACHER_ROLES = Object.freeze([
       "Class data, curriculum bridges and content coverage come first.",
       "Primero los datos de clase, los puentes con el currículo y la cobertura.",
     ],
-    library: ["data", "bcpss", "content", "activities", "printables", "tests", "weekly", "class", "forms"],
+    library: ["data", "bcpss", "content", "card", "activities", "printables", "tests", "weekly", "class", "forms"],
   },
 ]);
 

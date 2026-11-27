@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>Classroom teachers — Teacher Hub</title>
+    <meta
+      name="description"
+      content="For classroom teachers: say what you are teaching today and get sentence frames at three levels, word cards, a practice link for students and teaching moves for English learners."
+    />
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="/access-practice-lab/ds.css" />
+    <link rel="stylesheet" href="/access-teacher/teacher.css?v=d416a1d96498" />
+    <link rel="stylesheet" href="/access-practice-lab/acc.css" />
+    <link rel="stylesheet" href="/access-teacher/hub.css?v=2026.11.27" />
+    <link rel="stylesheet" href="/access-teacher/classroom/card.css?v=2026.11.27b" />
+    <script type="module" src="/access-practice-lab/src/acc/shell.js"></script>
+  </head>
+  <body class="th-body" data-acc-section="teacher">
+    <a class="th-skip" href="#lcMain">Skip to today's lesson</a>
+    <header class="lab-top no-print">
+      <a class="lab-brand" href="/access-practice-lab/"
+        ><span class="lab-logo" aria-hidden="true"
+          ><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+            <rect x="2" y="2" width="17" height="17" rx="5.5" fill="#075568" />
+            <rect x="21" y="2" width="17" height="17" rx="5.5" fill="#2E4A94" />
+            <rect x="2" y="21" width="17" height="17" rx="5.5" fill="#8A3A5C" />
+            <rect x="21" y="21" width="17" height="17" rx="5.5" fill="#9A4A26" /></svg></span
+        ><span class="lab-wordmark"><strong>The Language Page</strong><small>For classroom teachers</small></span></a
+      >
+      <nav class="th-sitenav" aria-label="Site">
+        <a href="/access-practice-lab/">Home</a>
+        <a href="/access-teacher/classroom/" aria-current="page">Classroom</a>
+        <a href="/access-teacher/">Teacher Hub</a>
+        <a href="/access-practice-lab/search?for=teacher">Find Resources</a>
+        <a href="/access-practice-lab/site-guide">Help</a>
+      </nav>
+    </header>
+
+    <main id="lcMain" class="lc-wrap" tabindex="-1">
+      <section class="lc-intro no-print" aria-labelledby="lcTitle">
+        <h1 id="lcTitle">Today's lesson, with language support</h1>
+        <p class="lead">
+          Tell us what you are teaching. You get everything English learners need for this lesson on one page:
+          teaching moves, sentence frames at three levels, word cards and a practice link for students.
+        </p>
+      </section>
+
+      <form class="lc-form no-print" id="lcForm" aria-labelledby="lcFormTitle" novalidate>
+        <h2 id="lcFormTitle"><span class="lc-step" aria-hidden="true">1</span> Your lesson</h2>
+        <div class="lc-form-row">
+          <label class="lc-field lc-grade" for="lcGrade"
+            ><span>Grade</span><select id="lcGrade" name="grade"></select
+          ></label>
+          <label class="lc-field" for="lcTopic"
+            ><span>Topic</span
+            ><input id="lcTopic" name="topic" type="text" maxlength="80" autocomplete="off" placeholder="e.g. the water cycle"
+          /></label>
+          <label class="lc-field" for="lcWords"
+            ><span>Key words <small>(up to 10, commas between)</small></span
+            ><input id="lcWords" name="words" type="text" autocomplete="off" placeholder="e.g. evaporation, condensation, precipitation"
+          /></label>
+        </div>
+        <fieldset class="lc-field lc-uses">
+          <legend>What will students do with language?</legend>
+          <div class="lc-use-row" id="lcUses"></div>
+        </fieldset>
+      </form>
+
+      <div class="lc-kit" aria-labelledby="lcKitTitle">
+        <h2 id="lcKitTitle" class="no-print"><span class="lc-step" aria-hidden="true">2</span> Your lesson kit</h2>
+        <nav class="lc-jump no-print" aria-label="Lesson kit">
+          <a href="#kitMoves">Teaching moves</a><a href="#kitFrames">Sentence frames</a><a href="#kitWords">Word cards</a
+          ><a href="#kitPractice">Student practice</a>
+        </nav>
+
+        <section class="lc-sec no-print" id="kitMoves" aria-labelledby="kitMovesTitle">
+          <div class="lc-sec-head">
+            <h3 id="kitMovesTitle">Teaching moves</h3>
+            <p class="fine">Small things to do while you teach. No extra prep.</p>
+          </div>
+          <div class="lc-moves" id="lcMoves"></div>
+        </section>
+
+        <section class="lc-sec" id="kitFrames" aria-labelledby="kitFramesTitle">
+          <div class="lc-sec-head no-print">
+            <h3 id="kitFramesTitle">Sentence frames</h3>
+            <p class="fine">One card, three levels. Students pick the level that helps them; everyone does the same thinking.</p>
+            <div class="lc-sec-actions">
+              <button type="button" class="btn btn-primary" data-lc-print="frames">Print card</button>
+              <button type="button" class="btn" data-lc-copy>Copy as text</button>
+              <label class="lc-check"><input type="checkbox" id="lcSpanish" name="spanish" form="lcForm" /> Spanish directions</label>
+            </div>
+            <p class="fine" id="lcSpanishNote" hidden>
+              Spanish directions are drafts a native speaker has not reviewed yet. The frames stay in English: they are the
+              language students are learning.
+            </p>
+          </div>
+          <article class="lc-card" id="lcCard"></article>
+        </section>
+
+        <section class="lc-sec" id="kitWords" aria-labelledby="kitWordsTitle">
+          <div class="lc-sec-head no-print">
+            <h3 id="kitWordsTitle">Word cards</h3>
+            <p class="fine">One card per key word: students draw it, say what it means and use it in a sentence.</p>
+            <div class="lc-sec-actions">
+              <button type="button" class="btn btn-primary" data-lc-print="words">Print word cards</button>
+            </div>
+          </div>
+          <div class="lc-words" id="lcWordCards"></div>
+        </section>
+
+        <section class="lc-sec no-print" id="kitPractice" aria-labelledby="kitPracticeTitle">
+          <div class="lc-sec-head">
+            <h3 id="kitPracticeTitle">Student practice</h3>
+            <p class="fine" id="lcPracticeLine"></p>
+          </div>
+          <div class="lc-practice">
+            <code class="lc-link" id="lcLink"></code>
+            <div class="lc-sec-actions">
+              <button type="button" class="btn btn-primary" data-lc-copy-link>Copy link for students</button>
+              <a class="btn" id="lcOpen" href="/access-practice-lab/students" target="_blank" rel="noopener">Preview</a>
+            </div>
+          </div>
+          <p class="fine">No accounts and no timers. Work saves on each student's device.</p>
+        </section>
+
+        <p class="fine no-print" id="lcStatus" role="status" aria-live="polite"></p>
+      </div>
+
+      <aside class="lc-more no-print" aria-labelledby="lcMoreTitle">
+        <h2 id="lcMoreTitle">More when you need it</h2>
+        <ul role="list">
+          <li>
+            <a href="/bcpss-teachers"><strong>Teach in Baltimore City?</strong> Your curriculum's units already have language supports.</a>
+          </li>
+          <li>
+            <a href="/access-teacher/?role=classroom"><strong>Teacher Hub</strong> Activities, printables, class codes and student work.</a>
+          </li>
+        </ul>
+        <p class="fine">Nothing you type here leaves this browser. Your last lesson is kept on this device.</p>
+      </aside>
+    </main>
+    <noscript><p class="lc-wrap">This page needs JavaScript.</p></noscript>
+    <script type="module" src="/access-teacher/classroom/card.js?v=2026.11.27b"></script>
+  </body>
+</html>

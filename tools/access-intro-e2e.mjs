@@ -97,9 +97,9 @@ ok(
 );
 ok(
   (await page.locator(".lpa-door.is-teacher").getAttribute("href")) ===
-    "/access-teacher/?role=classroom" &&
+    "/access-teacher/classroom/" &&
     (await page.locator(".lpa-door.is-esol").getAttribute("href")) === "/access-teacher/?role=esol",
-  "classroom and ESOL teacher doors open the Teacher Hub in their role's view",
+  "the classroom door opens the lesson kit and the ESOL door the Teacher Hub in its view",
 );
 const topY = await page
   .locator(".lpa-door.is-teacher")

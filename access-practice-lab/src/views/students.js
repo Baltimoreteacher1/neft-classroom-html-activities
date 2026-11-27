@@ -9,7 +9,7 @@ import { keepInView } from "../keep-in-view.js";
 import { rememberAudience } from "../audience.js";
 import { isEarlyBand } from "../bands.js";
 import { bandDomains, findActivity, loadStudioIndex } from "../content.js";
-import { getEngagement } from "../engagement.js";
+import { getEngagement, myWeek, saveEngagement } from "../engagement.js";
 import { activeGradeFocus } from "../grade-focus.js";
 import { GRADE_PICKS, currentPick, resolvePick } from "../grade-bands.js";
 import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
@@ -19,7 +19,7 @@ import { loadStudio } from "../lang/studio.js";
 import { jumpSetAttrs, pickSet, practicePool } from "../quick-start.js";
 import { loadRecord, needsReview } from "../store.js";
 import { DEST_BY_ID, SECTION_BY_ID } from "../sitemap.js";
-import { BASE, CORE_DOMAINS, DOMAIN_META, TIERS, html, icon } from "../util.js";
+import { BASE, CORE_DOMAINS, DOMAIN_META, TIERS, ensureStylesheet, html, icon, raw } from "../util.js";
 import { continueTarget, recentRoom } from "./home-start.js";
 
 const SKILLS = [...CORE_DOMAINS, "mix"];
@@ -186,6 +186,59 @@ async function resumeTarget(I, ctx, band) {
   return target && target.kind !== "start" && target.href?.startsWith(BASE) ? target : null;
 }
 
+/** "My week": practice days against the learner's own goal, the skills touched, and one next skill (src/engagement.js myWeek). */
+function weekHTML(I, w, { pick, band }) {
+  const goalLine = w.reached
+    ? I.T(`Goal reached: ${w.done} of ${w.goal} practice days. Nice steady work!`, `Meta alcanzada: ${w.done} de ${w.goal} días de práctica. ¡Buen trabajo constante!`)
+    : w.any
+      ? I.T(`${w.done} of ${w.goal} practice days this week`, `${w.done} de ${w.goal} días de práctica esta semana`)
+      : I.T(`Your week starts with one activity. Goal: ${w.goal} days.`, `Tu semana empieza con una actividad. Meta: ${w.goal} días.`);
+  const dayLabel = (d) =>
+    `${I.S(d.name[0], d.name[1])}: ${d.done ? I.S("practiced", "practicaste") : d.future ? I.S("not yet", "todavía no") : I.S("no practice", "sin práctica")}`;
+  return html`<section class="stu-week" aria-labelledby="stuWeekTitle">
+    <div class="stu-week-head">
+      <h2 id="stuWeekTitle">${I.T("My week", "Mi semana")}</h2>
+      <p class="stu-week-goal" data-week-line>${goalLine}</p>
+    </div>
+    <ol class="stu-week-days" aria-label="${I.S("Practice days this week", "Días de práctica esta semana")}">
+      ${w.week.map(
+        (d) => html`<li class="stu-day${d.done ? " is-done" : ""}${d.today ? " is-today" : ""}" title="${dayLabel(d)}"
+          ><span aria-hidden="true">${I.S(d.letter[0], d.letter[1])}</span
+          ><span class="visually-hidden">${dayLabel(d)}</span></li
+        >`,
+      )}
+    </ol>
+    <ul class="stu-week-skills" role="list" aria-label="${I.S("Skills practiced this week", "Destrezas practicadas esta semana")}">
+      ${CORE_DOMAINS.map((d) => {
+        const n = w.skills[d];
+        return html`<li class="stu-week-skill is-${d.toLowerCase()}${n ? " is-done" : ""}"
+          >${icon(DOMAIN_META[d].icon)}<span
+            ><strong>${I.T(DOMAIN_META[d].name, DOMAIN_META[d].es)}</strong
+            ><span>${n ? I.T(`${n} this week`, `${n} esta semana`) : I.T("not yet", "todavía no")}</span></span
+          ></li
+        >`;
+      })}
+    </ul>
+    <div class="stu-week-foot">
+      ${
+        w.next
+          ? html`<a class="btn btn-primary stu-week-next" href="${hubUrl(pick, band, { skill: w.next })}" data-week-next="${w.next}"
+              >${I.T(`Next: try ${DOMAIN_META[w.next].name}`, `Siguiente: prueba ${DOMAIN_META[w.next].es}`)} ${icon("arrow-right")}</a
+            >`
+          : w.any
+            ? html`<p class="fine">${I.T("All four skills this week. Pick any one to keep going.", "Las cuatro destrezas esta semana. Elige una para seguir.")}</p>`
+            : ""
+      }
+      <label class="stu-week-pick"
+        ><span>${I.T("My goal", "Mi meta")}</span
+        ><select data-week-goal>
+          ${[3, 4, 5, 7].map((n) => html`<option value="${n}" ${n === w.goal ? raw("selected") : ""}>${I.T(`${n} days a week`, `${n} días por semana`)}</option>`)}
+        </select></label
+      >
+    </div>
+  </section>`;
+}
+
 const chip = (href, on, label, attrs = "") =>
   html`<a class="stu-chip" href="${href}" aria-current="${on ? "true" : "false"}" ${attrs}
     >${label}</a
@@ -289,6 +342,7 @@ export async function render(ctx) {
       </article>`,
     };
   const skill = SKILLS.includes(route.skill) ? route.skill : "";
+  const weekStyles = ensureStylesheet("my-week.css");
   const pool = await practicePool({ band, prefs: ctx.prefs }, { level: route.support });
   const support = pool.levels.includes(route.support) ? route.support : "";
   const quick = pickSet(pool.atLevel, pool.isDone);
@@ -302,6 +356,7 @@ export async function render(ctx) {
     return result?.date && Date.parse(result.date) >= Date.parse(last.started) && !needsReview(result);
   });
   const gradeName = GRADE_PICKS.find((p) => p.id === pick)?.name || ["", ""];
+  await weekStyles;
   return {
     title,
     html: html`<article class="stu-page" aria-labelledby="stuTitle">
@@ -328,6 +383,7 @@ export async function render(ctx) {
               </section>`
             : ""
       }
+      ${weekHTML(I, myWeek({ bands: [band], prefs: ctx.prefs }), { pick, band })}
       ${lastItem ? transferHTML(I, lastItem.domain, lastItem.activity.title) : ""}
       ${pool.rows.length ? smartHTML(I, { pick, band, skill, support, pool }) : ""}
       <section class="stu-library" aria-labelledby="stuLibraryTitle">
@@ -361,4 +417,16 @@ export function mount(root, ctx) {
     root.querySelector("#stuSmart");
   keepInView(next);
   if (r.support) root.querySelector("[data-student-start]")?.focus({ preventScroll: true });
+}
+
+/** The weekly goal is the learner's own: changing it here is the same setting as on the band home. */
+export function onChange(e, ctx) {
+  if (!e.target.matches("[data-week-goal]")) return false;
+  const n = Number(e.target.value);
+  if (![3, 4, 5, 7].includes(n)) return false;
+  saveEngagement(ctx, { weeklyGoal: n });
+  Promise.resolve(ctx.rerender?.()).then(() =>
+    document.querySelector("[data-week-goal]")?.focus({ preventScroll: true }),
+  );
+  return true;
 }

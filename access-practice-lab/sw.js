@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "206cd3e17cd1";
+const BUILD_HASH = "21a0f4824cea";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=2c8320b3",
@@ -46,7 +46,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/i18n.js?v=b9b2ae1e",
   "/access-practice-lab/src/strings.js?v=b2c3430b",
   "/access-practice-lab/src/learning.js?v=8a99a6d8",
-  "/access-practice-lab/src/audience.js?v=91af5888",
+  "/access-practice-lab/src/audience.js?v=1aeeb59e",
   "/access-practice-lab/src/present-mode.js?v=38a817f6",
   "/access-practice-lab/src/early/gate.js?v=1d5f6e05",
   "/access-practice-lab/src/wayfinding.js?v=3c802bab",
@@ -91,7 +91,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb",
   "/access-practice-lab/src/shell.js?v=5dbccd6d",
   "/access-practice-lab/src/comfort.js?v=78469d68",
-  "/access-practice-lab/src/nav.js?v=1f0641da",
+  "/access-practice-lab/src/nav.js?v=8c521f19",
   "/access-practice-lab/src/acc/copy.js?v=04ebeb4f",
   "/access-practice-lab/src/register.js?v=45107820",
   "/access-practice-lab/src/family-tour-host.js?v=5c22b1e0",
@@ -132,7 +132,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/download/menu.js?v=99151c3f",
   "/access-practice-lab/src/road-offline.js?v=1c183707",
   "/access-practice-lab/src/offline-pack.js?v=f9e0a4e7",
-  "/access-practice-lab/src/engagement.js?v=6b7a0c43",
+  "/access-practice-lab/src/engagement.js?v=ee8bc374",
   "/access-practice-lab/src/lang/unlocks.js?v=dbfd2837",
   "/access-practice-lab/src/family/plan.js?v=fe5c5c16",
   "/access-practice-lab/src/home-registry.js?v=1724081d",
@@ -149,7 +149,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/acc/storage/access-db.js?v=da7c395d",
   "/access-practice-lab/src/home-resume.js?v=513157aa",
   "/access-practice-lab/src/vocab-academy/integrations/home.js?v=567090f3",
-  "/access-practice-lab/src/views/home-audience.js?v=f595c089",
+  "/access-practice-lab/src/views/home-audience.js?v=19cb572c",
   "/access-practice-lab/src/sitemap-ui.js?v=08f6b58f",
   "/access-practice-lab/src/platform/views/resourceHub.js?v=c0763729",
   "/access-practice-lab/src/create/gate.js?v=ffb3854d",
@@ -275,6 +275,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/lab-writing.css?v=3acd352f",
   "/access-practice-lab/city.css",
   "/access-practice-lab/lens.css",
+  "/access-practice-lab/my-week.css",
   "/access-practice-lab/src/acc/adapt/assign.js?v=f2685971",
   "/access-practice-lab/src/acc/adapt/mastery.js?v=6f68f26c",
   "/access-practice-lab/src/acc/analytics/evidence.js?v=f7255a9c",
@@ -303,7 +304,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/acc/review/feedback-ui.js?v=fa8f1bd2",
   "/access-practice-lab/src/acc/review/review.js?v=f2cc8cea",
   "/access-practice-lab/src/acc/routes.js?v=1b70b148",
-  "/access-practice-lab/src/acc/shell.js?v=908b5353",
+  "/access-practice-lab/src/acc/shell.js?v=e84090e0",
   "/access-practice-lab/src/acc/storage/storage-ui.js?v=226bfcfe",
   "/access-practice-lab/src/activity-kit.js?v=1837b7ee",
   "/access-practice-lab/src/adventures/art.js?v=4cf5cd69",
@@ -1420,7 +1421,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/simulations.js?v=f55d25c1",
   "/access-practice-lab/src/views/speak.js?v=61f165ee",
   "/access-practice-lab/src/views/stories.js?v=fe89bdea",
-  "/access-practice-lab/src/views/students.js?v=941ac771",
+  "/access-practice-lab/src/views/students.js?v=7aaa4cc4",
   "/access-practice-lab/src/views/studio-art.js?v=1ec6526a",
   "/access-practice-lab/src/views/studio-kit.js?v=88dcdb16",
   "/access-practice-lab/src/views/styleguide.js?v=e807d671",
