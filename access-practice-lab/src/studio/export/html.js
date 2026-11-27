@@ -88,16 +88,58 @@ const PREVIEW_BOOT = `(function () {
   }
 })();`;
 
+// Only emitted for SCORM 1.2 packages (Create's "SCORM package"): the page finds the LMS API in a parent or opener
+// frame, marks the attempt incomplete on launch (never downgrading completed/passed), completed when the student
+// reaches the finish screen, and reports session time on exit. The player keeps no score by design, so none is sent.
+// Without an LMS (opened from a folder) it behaves exactly like the plain export.
+const SCORM_BOOT = `(function () {
+  var data = JSON.parse(document.getElementById("studio-activity").textContent);
+  function find(w) {
+    for (var n = 0; w && n < 10; n++) {
+      try { if (w.API) return w.API; } catch (e) { return null; }
+      if (w.parent === w) break;
+      w = w.parent;
+    }
+    return null;
+  }
+  var api = find(window.parent) || (window.opener ? find(window.opener) : null);
+  var on = false, ended = false, t0 = Date.now();
+  function call(fn, a, b) { try { return String(api[fn](a, b)); } catch (e) { return ""; } }
+  if (api) on = call("LMSInitialize", "") === "true";
+  if (on) {
+    var s = call("LMSGetValue", "cmi.core.lesson_status");
+    if (s !== "completed" && s !== "passed") call("LMSSetValue", "cmi.core.lesson_status", "incomplete");
+    call("LMSCommit", "");
+  }
+  function pad(n, w) { n = String(n); while (n.length < w) n = "0" + n; return n; }
+  function end() {
+    if (!on || ended) return;
+    ended = true;
+    var t = Math.round((Date.now() - t0) / 1000);
+    call("LMSSetValue", "cmi.core.session_time", pad(Math.floor(t / 3600), 4) + ":" + pad(Math.floor(t / 60) % 60, 2) + ":" + pad(t % 60, 2));
+    call("LMSCommit", "");
+    call("LMSFinish", "");
+  }
+  StudioPlayer.mountPlayer(document.getElementById("app"), data, {
+    lang: __LANG__,
+    onEvent: function (e) {
+      if (on && e && e.type === "finish") { call("LMSSetValue", "cmi.core.lesson_status", "completed"); call("LMSCommit", ""); }
+    }
+  });
+  addEventListener("pagehide", end);
+  addEventListener("beforeunload", end);
+})();`;
+
 /**
  * @param {object} activity any activity (it is normalized and stripped of teacher-only data here)
- * @param {{js: string, css: string, lang?: "en"|"es"|"bi", preview?: boolean}} opts the built player bundle and styles
+ * @param {{js: string, css: string, lang?: "en"|"es"|"bi", preview?: boolean, scorm?: boolean}} opts the built player bundle and styles
  * @returns {string} one complete HTML document
  */
-export function exportActivityHtml(activity, { js, css, lang = "bi", preview = false } = {}) {
+export function exportActivityHtml(activity, { js, css, lang = "bi", preview = false, scorm = false } = {}) {
   if (!js || !css) throw new Error("exportActivityHtml needs the built player js and css");
   const a = selfContained(studentCopy(activity));
   const ui = ["en", "es", "bi"].includes(lang) ? lang : "bi";
-  const boot = (preview ? PREVIEW_BOOT : BOOT).replace("__LANG__", JSON.stringify(ui));
+  const boot = (preview ? PREVIEW_BOOT : scorm ? SCORM_BOOT : BOOT).replace("__LANG__", JSON.stringify(ui));
   return `<!doctype html>
 <html lang="${ui === "es" ? "es" : "en"}">
 <head>

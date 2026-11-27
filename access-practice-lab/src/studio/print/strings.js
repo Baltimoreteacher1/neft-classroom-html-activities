@@ -29,6 +29,22 @@ export const PRINT_STRINGS = Object.freeze({
     es: "Tu maestro o maestra lo leerá en voz alta.",
   },
   picturePlaceholder: { en: "Picture not included", es: "Imagen no incluida" },
+  diagramMissing: {
+    en: "Diagram could not be drawn",
+    es: "No se pudo dibujar el diagrama",
+  },
+  animationMissing: {
+    en: "Animation could not be built",
+    es: "No se pudo crear la animación",
+  },
+  animationInWord: {
+    en: "Animation (the steps are listed below; the pictures are in the printable version)",
+    es: "Animación (los pasos están en la lista; los dibujos están en la versión para imprimir)",
+  },
+  diagramInWord: {
+    en: "Diagram (drawn in the printable version; the data is in the table below)",
+    es: "Diagrama (se dibuja en la versión para imprimir; los datos están en la tabla)",
+  },
   page: { en: "Page", es: "Página" },
   of: { en: "of", es: "de" },
   teacherCopy: { en: "TEACHER COPY", es: "COPIA DEL MAESTRO" },

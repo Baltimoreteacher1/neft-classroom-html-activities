@@ -8,7 +8,7 @@
 // wrote it; only directions and labels are translated.
 
 import { normalizeActivity } from "../core/schema.js";
-import { renderBlock } from "./blocks.js";
+import { ANIMATION_CSS, DIAGRAM_CSS, renderBlock } from "./blocks.js";
 import { printCss } from "./css.js";
 import { chrome, renderQuestionBody } from "./formats.js";
 import { esc, mathHtml, safeBase } from "./html.js";
@@ -109,7 +109,7 @@ export function renderWorksheetParts(input, opts = {}) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 ${base ? `<base href="${esc(base)}">\n` : ""}<title>${esc(title)}</title>
-<style>${css}</style>
+<style>${css}${DIAGRAM_CSS}${ANIMATION_CSS}</style>
 </head>
 <body class="part-${part}">
 <main>${sections}</main>

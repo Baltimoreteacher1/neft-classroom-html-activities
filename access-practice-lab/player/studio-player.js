@@ -10,6 +10,10 @@
 //   { schema, id, rev, title, description, kind, template, context, supports, look, options, blocks, notes }
 // Text fields are plain strings. No HTML is ever accepted: renderers escape everything and apply only the math
 // markup in math.js ({3/4}, x^2) plus **bold**. Images are data: URLs (raster only) or same-site paths.
+// A `diagram` block stores the STRUCTURED SPEC of a generated figure (kind + numbers + labels), never SVG: every
+// renderer redraws it (x/diagram-render.js), so the figure stays accurate when a value changes.
+// An `animation` block stores only a PRESET name and its plain values (x/animations.js expands them into frames),
+// never markup, script or a timeline.
 
 const SCHEMA_ID = "lp-activity/1";
 
@@ -75,6 +79,8 @@ const BLOCK_TYPES = Object.freeze([
   "organizer",
   "note",
   "audio",
+  "diagram",
+  "animation",
 ]);
 
 const LIMITS = Object.freeze({
@@ -236,6 +242,229 @@ function cleanQuestion(b) {
   };
 }
 
+// ── diagram specs ────────────────────────────────────────────────────────────
+
+/** Figure kinds a `diagram` block may hold. `id` is stored; the generators are in x/diagrams-*.js. */
+const DIAGRAM_KINDS = Object.freeze([
+  "fraction",
+  "prism",
+  "tape",
+  "plane",
+  "bar",
+  "dot",
+  "histogram",
+  "timeline",
+  "foodweb",
+]);
+/** Size caps (the same numbers as CAPS in x/diagram-kit.js; the tests assert they agree). */
+const DIAGRAM_LIMITS = Object.freeze({
+  categories: 40,
+  points: 60,
+  events: 24,
+  dotValues: 60,
+  histogramValues: 500,
+  parts: 12,
+  relationships: 60,
+  title: 60,
+  label: 40,
+});
+
+const FRACTION_LIKE = /^-?\d+(?:\.\d+)?(?:\s+\d+\/\d+|\/\d+)?$/;
+/** One line of plain text: control characters become spaces, runs of space collapse. */
+const dtext = (v, max) =>
+  String(v ?? "")
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);
+/** A finite number within +-1e9, or null (a blank cell stays blank; it never becomes 0). */
+const dnum = (v) => {
+  if (typeof v !== "number" && typeof v !== "string") return null;
+  if (typeof v === "string" && !v.trim()) return null;
+  const n = Number(v);
+  return Number.isFinite(n) && Math.abs(n) <= 1e9 ? n + 0 : null;
+};
+/** Like dnum, but a short fraction or mixed number ("3/4", "2 1/2") is kept as typed. */
+const dquant = (v) => {
+  const n = dnum(v);
+  if (n !== null || typeof v !== "string") return n;
+  const s = v.trim().replace(/\s+/g, " ");
+  return s.length <= 16 && FRACTION_LIKE.test(s) ? s : null;
+};
+const dlist = (v, max, fn) => (Array.isArray(v) ? v.slice(0, max).map(fn) : []);
+const dpair = (v) => (Array.isArray(v) ? [dnum(v[0]), dnum(v[1])] : [null, null]);
+const dtitled = (s, titleMax = DIAGRAM_LIMITS.title) => ({
+  title: dtext(s.title, titleMax),
+  unit: dtext(s.unit, 40),
+});
+
+const DIAGRAM_SPEC = {
+  fraction: (s) => ({
+    numerator: dnum(s.numerator),
+    denominator: dnum(s.denominator),
+    style: s.style === "circle" ? "circle" : "bar",
+  }),
+  prism: (s) => ({ l: dquant(s.l), w: dquant(s.w), h: dquant(s.h), unit: dtext(s.unit, 12) }),
+  tape: (s) => ({
+    parts: dlist(s.parts, DIAGRAM_LIMITS.parts, (p) => ({
+      label: dtext(p?.label, 24),
+      value: dquant(p?.value),
+    })),
+    total: dquant(s.total),
+  }),
+  plane: (s) => ({
+    xRange: dpair(s.xRange),
+    yRange: dpair(s.yRange),
+    points: dlist(s.points, DIAGRAM_LIMITS.points, (p) => ({
+      x: dnum(p?.x),
+      y: dnum(p?.y),
+      label: dtext(p?.label, 20),
+    })),
+  }),
+  bar: (s) => ({
+    ...dtitled(s),
+    categories: dlist(s.categories, DIAGRAM_LIMITS.categories, (c) => ({
+      label: dtext(c?.label, DIAGRAM_LIMITS.label),
+      value: dnum(c?.value),
+    })),
+  }),
+  dot: (s) => ({ ...dtitled(s), values: dlist(s.values, DIAGRAM_LIMITS.dotValues, dnum) }),
+  histogram: (s) => ({
+    ...dtitled(s),
+    values: dlist(s.values, DIAGRAM_LIMITS.histogramValues, dnum),
+    binWidth: dnum(s.binWidth),
+  }),
+  timeline: (s) => ({
+    events: dlist(s.events, DIAGRAM_LIMITS.events, (e) => ({
+      year: dnum(e?.year),
+      label: dtext(e?.label, 60),
+    })),
+  }),
+  foodweb: (s) => ({
+    relationships: dlist(s.relationships, DIAGRAM_LIMITS.relationships, (r) => ({
+      eats: dtext(r?.eats, 28),
+      eaten: dtext(r?.eaten, 28),
+    })),
+  }),
+};
+
+/**
+ * The cleaned spec of a diagram, or null for an unknown kind (the block is then dropped). Only the fields of the
+ * kind survive; sizes are capped, numbers are finite or null, text is one plain line. Whether the figure can
+ * actually be DRAWN is decided by the generators (validate.js reports it in plain words).
+ */
+function cleanDiagramSpec(spec) {
+  if (!spec || typeof spec !== "object" || !DIAGRAM_KINDS.includes(spec.kind)) return null;
+  return { kind: spec.kind, ...DIAGRAM_SPEC[spec.kind](spec) };
+}
+// ── animation specs ──────────────────────────────────────────────────────────
+
+/** Presets an `animation` block may hold. The frames each one expands to are built in x/animations*.js. */
+const ANIMATION_PRESETS = Object.freeze([
+  "process",
+  "timeline",
+  "word-build",
+  "sentence-expand",
+  "cause-effect",
+  "ratio-change",
+  "geometry-dims",
+]);
+/** Size caps: small on purpose, so every animation stays a few calm steps. */
+const ANIMATION_LIMITS = Object.freeze({
+  stages: 8,
+  events: 8,
+  parts: 5,
+  additions: 6,
+  pairs: 6,
+  scales: 6,
+  dims: 6,
+  title: 60,
+  label: 40,
+  explanation: 400,
+  alt: 300,
+});
+const WORD_PART_KINDS = Object.freeze(["prefix", "root", "suffix"]);
+const SENTENCE_ADDS = Object.freeze(["because", "but", "so", "when", "where", "detail"]);
+const GEOMETRY_SHAPES = Object.freeze(["prism", "fraction"]);
+
+const oneOf = (list, v, fallback) => (list.includes(v) ? v : fallback);
+const quantity = (q) => ({ label: dtext(q?.label, 24), value: dquant(q?.value) });
+
+const ANIMATION_PARAMS = {
+  process: (p) => ({
+    stages: dlist(p.stages, ANIMATION_LIMITS.stages, (s) => ({
+      label: dtext(s?.label, ANIMATION_LIMITS.label),
+      text: dtext(s?.text, 120),
+    })),
+  }),
+  timeline: (p) => ({
+    events: dlist(p.events, ANIMATION_LIMITS.events, (e) => ({
+      year: dnum(e?.year),
+      label: dtext(e?.label, 60),
+    })),
+  }),
+  "word-build": (p) => ({
+    word: dtext(p.word, 40),
+    meaning: dtext(p.meaning, 120),
+    parts: dlist(p.parts, ANIMATION_LIMITS.parts, (x) => ({
+      kind: oneOf(WORD_PART_KINDS, x?.kind, "root"),
+      text: dtext(x?.text, 12),
+      meaning: dtext(x?.meaning, 80),
+    })),
+  }),
+  "sentence-expand": (p) => ({
+    base: dtext(p.base, 120),
+    additions: dlist(p.additions, ANIMATION_LIMITS.additions, (a) => ({
+      adds: oneOf(SENTENCE_ADDS, a?.adds, "detail"),
+      text: dtext(a?.text, 100),
+    })),
+  }),
+  "cause-effect": (p) => ({
+    pairs: dlist(p.pairs, ANIMATION_LIMITS.pairs, (x) => ({
+      cause: dtext(x?.cause, 60),
+      effect: dtext(x?.effect, 60),
+    })),
+  }),
+  "ratio-change": (p) => ({
+    a: quantity(p.a),
+    b: quantity(p.b),
+    scales: dlist(p.scales, ANIMATION_LIMITS.scales, dquant),
+  }),
+  "geometry-dims": (p) =>
+    p.shape === "fraction"
+      ? {
+          shape: "fraction",
+          denominator: dnum(p.denominator),
+          numerators: dlist(p.numerators, ANIMATION_LIMITS.dims, dnum),
+        }
+      : {
+          shape: "prism",
+          unit: dtext(p.unit, 12),
+          dims: dlist(p.dims, ANIMATION_LIMITS.dims, (d) => ({
+            l: dquant(d?.l),
+            w: dquant(d?.w),
+            h: dquant(d?.h),
+          })),
+        },
+};
+
+/**
+ * The cleaned params of an animation preset, or null for an unknown preset (the block is then dropped). Only the
+ * fields of the preset survive; sizes are capped, numbers are finite or null, text is one plain line. Whether the
+ * frames can actually be BUILT (positive numbers, enough steps...) is decided by x/animations.js and reported by
+ * validate.js in plain words.
+ */
+function cleanAnimationParams(preset, params) {
+  if (!ANIMATION_PRESETS.includes(preset)) return null;
+  return ANIMATION_PARAMS[preset](params && typeof params === "object" ? params : {});
+}
+
+/** `{en, es}` plain text; a bare string is the English half. */
+const bilingual = (v, max) => {
+  const o = typeof v === "string" ? { en: v } : v && typeof v === "object" ? v : {};
+  return { en: dtext(o.en, max), es: dtext(o.es, max) };
+};
+
 const BLOCKS = {
   text: (b) => ({
     text: str(b.text),
@@ -268,6 +497,18 @@ const BLOCKS = {
   }),
   note: (b) => ({ text: str(b.text, 1200) }),
   audio: (b) => ({ say: str(b.say, 600), label: str(b.label, 80) }),
+  diagram: (b) => ({
+    spec: cleanDiagramSpec(b.spec),
+    alt: bilingual(b.alt, 300),
+    caption: bilingual(b.caption, 200),
+  }),
+  animation: (b) => ({
+    preset: ANIMATION_PRESETS.includes(b.preset) ? b.preset : "",
+    params: cleanAnimationParams(b.preset, b.params),
+    title: dtext(b.title, ANIMATION_LIMITS.title),
+    explanation: bilingual(b.explanation, ANIMATION_LIMITS.explanation),
+    alt: bilingual(b.alt, ANIMATION_LIMITS.alt),
+  }),
 };
 
 /** Two blocks may never share an id (responses and edits address blocks by id): later duplicates get a fresh one. */
@@ -284,7 +525,10 @@ function uniqueIds(blocks) {
 function cleanBlock(b) {
   if (!b || typeof b !== "object" || BAD_KEYS.has(b.type) || !BLOCK_TYPES.includes(b.type))
     return null;
-  return { id: isId(b.id) ? b.id : uid("b"), type: b.type, ...BLOCKS[b.type](b) };
+  const fields = BLOCKS[b.type](b);
+  if (b.type === "diagram" && !fields.spec) return null; // an unknown figure kind is never kept
+  if (b.type === "animation" && !fields.params) return null; // so is an unknown animation preset
+  return { id: isId(b.id) ? b.id : uid("b"), type: b.type, ...fields };
 }
 
 const WIDA = [0, 1, 2, 3, 4, 5, 6];
@@ -953,6 +1197,2894 @@ function renderFinish(stage, ctx, { onAgain, onBack, reported }) {
   ctx.focus(title);
 }
 
+// ── isolated scope: print/html.js, x/diagram-kit.js, x/diagrams-charts.js, x/diagrams-graphs.js, x/diagrams-models.js, x/diagram-render.js, x/diagram-words.js, x/animations-kit.js, x/animations-math.js, x/animations-text.js, x/animations.js
+const { expandAnimation, renderDiagram } = (() => {
+// ── print/html.js
+// Escaping and math typesetting for the printed worksheet. Everything a teacher typed goes through esc() or
+// mathHtml(); nothing is ever inserted as raw HTML.
+
+const ENT = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ENT[c]);
+
+/** Text with the studio's math markup as HTML: stacked fractions, superscripts, subscripts and **bold**. */
+function mathHtml(text) {
+  const html = mathRuns(text)
+    .map((r) => {
+      if (r.t === "text") return esc(r.v);
+      if (r.t === "frac")
+        return `<span class="frac" role="math" aria-label="${esc(spokenMath(`{${r.n}/${r.d}}`))}"><span class="fn">${esc(r.n)}</span><span class="fd">${esc(r.d)}</span></span>`;
+      if (r.t === "sup") return `<sup>${esc(r.v)}</sup>`;
+      return `<sub>${esc(r.v)}</sub>`;
+    })
+    .join("");
+  return html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
+
+/** Paragraphs from text: blank line = new paragraph, single newline = line break. */
+function paragraphsHtml(text, cls = "") {
+  return String(text ?? "")
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p${cls ? ` class="${cls}"` : ""}>${mathHtml(p).replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
+
+/** A string safe inside a CSS "..." literal (for the running header). */
+const cssString = (s) =>
+  String(s ?? "")
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
+    .replace(/[\\"]/g, (c) => `\\${c}`)
+    .replace(/[<>&]/g, (c) => `\\${c.charCodeAt(0).toString(16)} `);
+
+/** A same-origin base for relative image paths. Only plain http(s) origins are accepted. */
+function safeBase(baseUrl) {
+  try {
+    const u = new URL(String(baseUrl || ""));
+    return u.protocol === "https:" || u.protocol === "http:" ? u.origin + "/" : "";
+  } catch {
+    return "";
+  }
+}
+
+// ── x/diagram-kit.js
+// Shared plumbing for the procedural diagrams: validation helpers, the SVG frame, accessible colors and patterns,
+// number formatting, text measurement. Pure functions, no DOM. Every diagram module builds on this file.
+
+/** Thrown for every input a diagram refuses. `code` is stable for tests and callers; `message` is for a teacher. */
+class DiagramError extends Error {
+  constructor(code, message, extra = {}) {
+    super(message);
+    this.name = "DiagramError";
+    this.code = code;
+    Object.assign(this, extra);
+  }
+}
+const fail = (code, message, extra) => {
+  throw new DiagramError(code, message, extra);
+};
+
+/** Size caps. Past these a figure stops being legible on a Letter page or a phone. */
+const CAPS = Object.freeze({
+  categories: 40,
+  points: 60,
+  events: 24,
+  dotValues: 60,
+  histogramValues: 500,
+  bins: 40,
+  nodes: 24,
+  edges: 60,
+  parts: 12,
+  denominator: 16,
+  wholes: 4,
+  title: 60,
+  label: 40,
+  axisSpan: 100,
+});
+
+// Every color below is at least 4.5:1 on white (checked in the tests). Light tints are only ever backgrounds for
+// INK text and are listed in LIGHT so the tests can check them against ink instead.
+const COLOR = Object.freeze({
+  ink: "#111827",
+  muted: "#4b5563",
+  grid: "#6b7280",
+  blue: "#1d4ed8",
+  orange: "#b45309",
+  green: "#047857",
+  red: "#b91c1c",
+  teal: "#0f766e",
+  white: "#ffffff",
+});
+const LIGHT = Object.freeze({ faceTop: "#e5e7eb", faceSide: "#d1d5db" });
+const SERIES = Object.freeze([
+  COLOR.blue,
+  COLOR.orange,
+  COLOR.green,
+  COLOR.red,
+  COLOR.teal,
+  COLOR.ink,
+]);
+
+// ── contrast (WCAG 2.x) ──────────────────────────────────────────────────────
+
+const channel = (v) => {
+  const s = v / 255;
+  return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+};
+const luminance = (hex) => {
+  const n = Number.parseInt(hex.slice(1), 16);
+  return (
+    0.2126 * channel((n >> 16) & 255) + 0.7152 * channel((n >> 8) & 255) + 0.0722 * channel(n & 255)
+  );
+};
+function contrastRatio(a, b) {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+// ── language ─────────────────────────────────────────────────────────────────
+
+const langOf = (opts) => (opts?.lang === "es" ? "es" : "en");
+/** `{en, es}` from one function of the language. */
+const both = (fn) => ({ en: fn("en"), es: fn("es") });
+
+const MINUS = "−";
+/** A number for a label: at most 6 decimals, a real minus sign, a decimal comma in Spanish. */
+function fmt(n, lang = "en") {
+  const s = String(Number(Number(n).toFixed(6))).replace("-", MINUS);
+  return lang === "es" ? s.replace(".", ",") : s;
+}
+const round = (n, d = 2) => Number(Number(n).toFixed(d));
+const f1 = (n) => round(n, 1);
+
+// ── validation helpers ───────────────────────────────────────────────────────
+
+const CONTROL = /[\u0000-\u001f\u007f]/g;
+/** Plain text: control characters removed, whitespace collapsed, trimmed. Escaped later by the renderer. */
+const cleanText = (v) =>
+  String(v ?? "")
+    .replace(CONTROL, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+function textIn(v, name, { max = CAPS.label, required = true } = {}) {
+  const s = cleanText(v);
+  if (!s && required) fail("empty-text", `${name} is required.`);
+  if (s.length > max)
+    fail("text-too-long", `${name} is ${s.length} characters; the limit is ${max}.`);
+  return s;
+}
+function numberIn(v, name, { min = -1e9, max = 1e9 } = {}) {
+  const n = typeof v === "string" && v.trim() === "" ? Number.NaN : Number(v);
+  if (!Number.isFinite(n)) fail("not-a-number", `${name} must be a number.`);
+  if (n < min || n > max) fail("out-of-range", `${name} must be between ${min} and ${max}.`);
+  return n;
+}
+function intIn(v, name, { min, max }) {
+  const n = numberIn(v, name, { min, max });
+  if (!Number.isInteger(n)) fail("not-an-integer", `${name} must be a whole number.`);
+  return n;
+}
+function listIn(v, name, { min = 1, max }) {
+  if (!Array.isArray(v)) fail("not-a-list", `${name} must be a list.`);
+  if (v.length < min) fail("too-few", `${name} needs at least ${min} item${min === 1 ? "" : "s"}.`);
+  if (v.length > max) fail("too-many", `${name} has ${v.length} items; the limit is ${max}.`);
+  return v;
+}
+function rangeIn(v, name) {
+  if (!Array.isArray(v) || v.length !== 2) fail("bad-range", `${name} must be [min, max].`);
+  const [lo, hi] = v.map((x, i) => numberIn(x, `${name}[${i}]`, { min: -1e6, max: 1e6 }));
+  if (hi <= lo) fail("bad-range", `${name} must have min below max.`);
+  if (hi - lo > CAPS.axisSpan)
+    fail("range-too-wide", `${name} spans ${hi - lo}; the limit is ${CAPS.axisSpan}.`);
+  return [lo, hi];
+}
+
+// ── axis ticks derived from data ─────────────────────────────────────────────
+
+/** A 1-2-5 step so that about `target` ticks cover `span`. */
+function niceStep(span, target = 6) {
+  const raw = span / Math.max(1, target);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const norm = raw / mag;
+  return (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+}
+/** Ticks at multiples of a nice step that cover [min, max]. Nothing is invented: only the scale is rounded out. */
+function axisTicks(min, max, { target = 6, integer = false } = {}) {
+  let step = niceStep(max - min || 1, target);
+  if (integer) step = Math.max(1, Math.round(step));
+  const start = round(Math.floor(min / step + 1e-9) * step, 9);
+  const end = round(Math.ceil(max / step - 1e-9) * step, 9);
+  const ticks = [];
+  for (let i = 0; start + i * step <= end + step * 1e-9; i++)
+    ticks.push(round(start + i * step, 9));
+  return { step, start, end, ticks };
+}
+
+// ── text measurement and wrapping (an estimate that errs wide) ───────────────
+
+const textWidth = (s, size = 14, bold = false) =>
+  String(s).length * size * (bold ? 0.62 : 0.58);
+
+/** Greedy word wrap by character count; words longer than `max` are split. */
+function wrap(text, max) {
+  const lines = [];
+  let line = "";
+  for (let word of text.split(" ")) {
+    while (word.length > max) {
+      if (line) lines.push(line);
+      lines.push(word.slice(0, max));
+      line = "";
+      word = word.slice(max);
+    }
+    if (!line) line = word;
+    else if (line.length + 1 + word.length <= max) line += ` ${word}`;
+    else {
+      lines.push(line);
+      line = word;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+// ── SVG pieces ───────────────────────────────────────────────────────────────
+
+const FONT = "Helvetica, Arial, sans-serif";
+
+function text(
+  x,
+  y,
+  s,
+  { size = 14, anchor = "start", weight = "400", fill = COLOR.ink, halo = false, extra = "" } = {},
+) {
+  const h = halo ? ` stroke="${COLOR.white}" stroke-width="4" paint-order="stroke"` : "";
+  return `<text x="${f1(x)}" y="${f1(y)}" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" fill="${fill}"${h}${extra}>${esc(s)}</text>`;
+}
+const line = (
+  x1,
+  y1,
+  x2,
+  y2,
+  { stroke = COLOR.ink, width = 1.5, dash = "", extra = "" } = {},
+) =>
+  `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" stroke="${stroke}" stroke-width="${width}"${dash ? ` stroke-dasharray="${dash}"` : ""}${extra}/>`;
+
+/**
+ * Fill patterns that stay distinguishable in grayscale. Index 0 is a solid dark fill; the rest are different
+ * textures on white. `p` is a per-diagram id prefix so two figures on one page cannot collide.
+ */
+function patternDefs(p) {
+  const hatch = (id, color, body) =>
+    `<pattern id="${p}-${id}" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="${COLOR.white}"/>${body(color)}</pattern>`;
+  return [
+    `<pattern id="${p}-solid" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="${COLOR.blue}"/><line x1="0" y1="4" x2="8" y2="4" stroke="${COLOR.white}" stroke-width="1.2"/></pattern>`,
+    hatch(
+      "hatch",
+      COLOR.orange,
+      (c) => `<line x1="0" y1="0" x2="0" y2="8" stroke="${c}" stroke-width="3"/>`,
+    ),
+    `<pattern id="${p}-dots" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="${COLOR.white}"/><circle cx="4" cy="4" r="2.4" fill="${COLOR.green}"/></pattern>`,
+    `<pattern id="${p}-cross" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="${COLOR.white}"/><path d="M0 0H8M0 0V8" stroke="${COLOR.red}" stroke-width="2"/></pattern>`,
+    `<pattern id="${p}-vert" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="${COLOR.white}"/><line x1="3" y1="0" x2="3" y2="6" stroke="${COLOR.teal}" stroke-width="2.4"/></pattern>`,
+    `<pattern id="${p}-horiz" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="${COLOR.white}"/><line x1="0" y1="3" x2="6" y2="3" stroke="${COLOR.ink}" stroke-width="2.4"/></pattern>`,
+  ].join("");
+}
+const PATTERNS = ["solid", "hatch", "dots", "cross", "vert", "horiz"];
+const patternFill = (p, i) => `url(#${p}-${PATTERNS[i % PATTERNS.length]})`;
+
+/**
+ * The standalone SVG: viewBox, role="img", <title> and <desc> from the alt text, white background. No scripts, no
+ * external references, no foreignObject. (The xmlns attribute is the XML namespace, not a request.)
+ */
+function frame({ p, w, h, title, desc, lang, defs = "", body }) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${f1(w)} ${f1(h)}" width="${f1(w)}" height="${f1(h)}" role="img" aria-labelledby="${p}-t ${p}-d" lang="${lang}" font-family="${FONT}"><title id="${p}-t">${esc(title)}</title><desc id="${p}-d">${esc(desc)}</desc><defs>${defs}</defs><rect width="${f1(w)}" height="${f1(h)}" fill="${COLOR.white}"/>${body}</svg>`;
+}
+
+/** The result every diagram returns. `table` is the same information as plain rows, for a screen reader or paper. */
+const result = ({ svg, alt, caption, data, table }) => ({ svg, alt, caption, data, table });
+
+const isPositive = (n) => Number.isFinite(n) && n > 0;
+
+// ── x/diagrams-charts.js
+// Data charts: horizontal bar chart, dot plot, histogram. Axis ticks are derived from the data (a 1-2-5 step that
+// covers it); no value, label or tick is ever invented. Every bar carries its own value label.
+
+const W = 640;
+
+const axisTitle = (x, y, s) =>
+  s ? text(x, y, s, { size: 14, anchor: "middle", fill: COLOR.muted }) : "";
+
+// ── bar chart ────────────────────────────────────────────────────────────────
+
+/** @param {{categories:Array<{label:string,value:number}>, title:string, unit?:string, lang?:string}} spec */
+function barChartSvg(spec = {}) {
+  const lang = langOf(spec);
+  const title = textIn(spec.title, "title", { max: CAPS.title });
+  const unit = textIn(spec.unit ?? "", "unit", { max: 40, required: false });
+  const raw = listIn(spec.categories, "categories", { min: 1, max: CAPS.categories });
+  const cats = raw.map((c, i) => ({
+    label: textIn(c?.label, `categories[${i}].label`),
+    value: numberIn(c?.value, `categories[${i}].value`, { min: 0, max: 1e9 }),
+  }));
+  const max = Math.max(...cats.map((c) => c.value));
+  const axis = axisTicks(0, max > 0 ? max : 1, { target: 5 });
+  const labelW = Math.min(
+    300,
+    Math.max(60, Math.max(...cats.map((c) => textWidth(c.label, 14))) + 14),
+  );
+  const left = labelW + 12;
+  const plotW = W - left - 64;
+  const top = 50;
+  const row = 28;
+  const plotH = cats.length * row;
+  const axisY = top + plotH + 6;
+  const h = axisY + 52;
+  const px = (v) => (v / axis.end) * plotW;
+  const g = [text(W / 2, 26, title, { size: 17, anchor: "middle", weight: "700" })];
+  for (const t of axis.ticks) {
+    g.push(
+      line(left + px(t), top, left + px(t), axisY, { stroke: COLOR.grid, width: 0.6, dash: "2 3" }),
+    );
+    g.push(line(left + px(t), axisY, left + px(t), axisY + 5, { width: 1.5 }));
+    g.push(text(left + px(t), axisY + 21, fmt(t, lang), { size: 13, anchor: "middle" }));
+  }
+  g.push(
+    line(left, top, left, axisY, { width: 2 }),
+    line(left, axisY, left + plotW, axisY, { width: 2 }),
+  );
+  g.push(axisTitle(left + plotW / 2, axisY + 42, unit));
+  const bars = cats.map((c, i) => {
+    const y = top + i * row + 4;
+    const len = px(c.value);
+    g.push(text(left - 8, y + 15, c.label, { size: 14, anchor: "end" }));
+    g.push(
+      `<rect data-value="${c.value}" data-length="${f1(len)}" x="${f1(left)}" y="${y}" width="${f1(len)}" height="20" fill="${COLOR.blue}"/>`,
+    );
+    g.push(text(left + len + 6, y + 15, fmt(c.value, lang), { size: 14, weight: "700" }));
+    return { label: c.label, value: c.value, length: len };
+  });
+  const top1 = cats.reduce((a, c) => (c.value > a.value ? c : a), cats[0]);
+  const alt = both((l) =>
+    l === "es"
+      ? `Gráfica de barras «${title}» con ${cats.length} categoría${cats.length === 1 ? "" : "s"}. El valor más alto es ${fmt(top1.value, l)} (${top1.label}).`
+      : `Bar chart "${title}" with ${cats.length} categor${cats.length === 1 ? "y" : "ies"}. The highest value is ${fmt(top1.value)} (${top1.label}).`,
+  );
+  return result({
+    svg: frame({
+      p: "bc",
+      w: W,
+      h,
+      title: alt[lang],
+      desc: `${alt[lang]} ${lang === "es" ? "Cada barra tiene su valor escrito. La escala empieza en 0." : "Each bar has its value written beside it. The scale starts at 0."}`,
+      lang,
+      body: g.join(""),
+    }),
+    alt,
+    caption: both(() => title),
+    data: {
+      title,
+      unit,
+      categories: bars,
+      axis: { min: 0, max: axis.end, step: axis.step, ticks: axis.ticks },
+      plot: { left, width: plotW },
+    },
+    table: {
+      headers: [
+        lang === "es" ? "Categoría" : "Category",
+        unit || (lang === "es" ? "Valor" : "Value"),
+      ],
+      rows: cats.map((c) => [c.label, fmt(c.value, lang)]),
+    },
+  });
+}
+
+// ── shared numeric helpers ───────────────────────────────────────────────────
+
+function dataset(values, name, cap) {
+  const list = listIn(values, name, { min: 1, max: cap });
+  return list.map((v, i) => numberIn(v, `${name}[${i}]`, { min: -1e9, max: 1e9 }));
+}
+const sum = (a) => a.reduce((s, v) => s + v, 0);
+function median(sorted) {
+  const m = sorted.length >> 1;
+  return sorted.length % 2 ? sorted[m] : (sorted[m - 1] + sorted[m]) / 2;
+}
+const stats = (v) => {
+  const s = [...v].sort((a, b) => a - b);
+  return {
+    n: v.length,
+    min: s[0],
+    max: s[s.length - 1],
+    mean: round(sum(v) / v.length, 6),
+    median: median(s),
+  };
+};
+const tableOfCounts = (lang, rows, first) => ({
+  headers: [first, lang === "es" ? "Cantidad" : "Count"],
+  rows: rows,
+});
+
+// ── dot plot ─────────────────────────────────────────────────────────────────
+
+/** @param {{values:number[], title?:string, unit?:string, lang?:string}} spec */
+function dotPlotSvg(spec = {}) {
+  const lang = langOf(spec);
+  const values = dataset(spec.values, "values", CAPS.dotValues);
+  const title = textIn(spec.title ?? "", "title", { max: CAPS.title, required: false });
+  const unit = textIn(spec.unit ?? "", "unit", { max: 40, required: false });
+  const st = stats(values);
+  const key = (v) => round(v, 6);
+  const counts = new Map();
+  for (const v of values) counts.set(key(v), (counts.get(key(v)) ?? 0) + 1);
+  const distinct = [...counts.keys()].sort((a, b) => a - b);
+  const integers = values.every(Number.isInteger) && st.max - st.min <= 30;
+  const axis =
+    st.min === st.max
+      ? { start: st.min - 1, end: st.max + 1, ticks: [st.min - 1, st.min, st.min + 1], step: 1 }
+      : integers
+        ? {
+            start: st.min,
+            end: st.max,
+            step: 1,
+            ticks: Array.from({ length: st.max - st.min + 1 }, (_, i) => st.min + i),
+          }
+        : axisTicks(st.min, st.max, { target: 8 });
+  const left = 40;
+  const plotW = W - 2 * left;
+  const px = (v) => left + ((v - axis.start) / (axis.end - axis.start)) * plotW;
+  const stack = Math.max(...counts.values());
+  if (stack > 30)
+    fail(
+      "too-many-equal",
+      "More than 30 identical values would not fit in one stack; use a histogram.",
+    );
+  let gap = Number.POSITIVE_INFINITY;
+  for (let i = 1; i < distinct.length; i++)
+    gap = Math.min(gap, px(distinct[i]) - px(distinct[i - 1]));
+  const r = Math.min(9, 220 / (2.2 * stack), (gap - 1) / 2);
+  if (r < 3) fail("too-dense", "Values are too close together for a dot plot; use a histogram.");
+  const top = title ? 44 : 20;
+  const plotH = Math.max(60, stack * (2 * r + 2) + 12);
+  const axisY = top + plotH;
+  const h = axisY + 56;
+  const g = [];
+  if (title) g.push(text(W / 2, 26, title, { size: 17, anchor: "middle", weight: "700" }));
+  g.push(line(left - 14, axisY, W - left + 14, axisY, { width: 2.5 }));
+  const every = axis.ticks.length > 16 ? Math.ceil(axis.ticks.length / 12) : 1;
+  axis.ticks.forEach((t, i) => {
+    g.push(line(px(t), axisY, px(t), axisY + 7, { width: 2 }));
+    if (i % every === 0)
+      g.push(text(px(t), axisY + 25, fmt(t, lang), { size: 14, anchor: "middle" }));
+  });
+  g.push(axisTitle(W / 2, axisY + 48, unit));
+  const dots = [];
+  for (const v of distinct)
+    for (let i = 0; i < counts.get(v); i++) {
+      const cy = axisY - r - 2 - i * (2 * r + 2);
+      dots.push({ value: v, x: px(v), y: cy });
+      g.push(
+        `<circle data-value="${v}" cx="${f1(px(v))}" cy="${f1(cy)}" r="${f1(r)}" fill="${COLOR.blue}" stroke="${COLOR.white}" stroke-width="1"/>`,
+      );
+    }
+  const alt = both((l) =>
+    l === "es"
+      ? `Diagrama de puntos${title ? ` «${title}»` : ""} con ${st.n} valores, de ${fmt(st.min, l)} a ${fmt(st.max, l)}. Mediana ${fmt(st.median, l)}.`
+      : `Dot plot${title ? ` "${title}"` : ""} of ${st.n} values from ${fmt(st.min)} to ${fmt(st.max)}. Median ${fmt(st.median)}.`,
+  );
+  return result({
+    svg: frame({
+      p: "dp",
+      w: W,
+      h,
+      title: alt[lang],
+      desc: `${alt[lang]} ${lang === "es" ? "Cada punto es un valor; los valores iguales se apilan." : "Each dot is one value; equal values stack."}`,
+      lang,
+      body: g.join(""),
+    }),
+    alt,
+    caption: both((l) => title || (l === "es" ? "Diagrama de puntos" : "Dot plot")),
+    data: {
+      ...st,
+      unit,
+      counts: distinct.map((v) => ({ value: v, count: counts.get(v) })),
+      axis: { min: axis.start, max: axis.end, step: axis.step, ticks: axis.ticks },
+      dots,
+    },
+    table: tableOfCounts(
+      lang,
+      distinct.map((v) => [fmt(v, lang), String(counts.get(v))]),
+      lang === "es" ? "Valor" : "Value",
+    ),
+  });
+}
+
+// ── histogram ────────────────────────────────────────────────────────────────
+
+/**
+ * Bins are [from, to), except the last, which also includes its upper edge. Without `binWidth` the width is a
+ * 1-2-5 step near range / (log2(n) + 1) (Sturges).
+ * @param {{values:number[], binWidth?:number, title?:string, unit?:string, lang?:string}} spec
+ */
+function histogramSvg(spec = {}) {
+  const lang = langOf(spec);
+  const values = dataset(spec.values, "values", CAPS.histogramValues);
+  const title = textIn(spec.title ?? "", "title", { max: CAPS.title, required: false });
+  const unit = textIn(spec.unit ?? "", "unit", { max: 40, required: false });
+  const st = stats(values);
+  let bw;
+  if (spec.binWidth !== undefined)
+    bw = numberIn(spec.binWidth, "binWidth", { min: 1e-6, max: 1e9 });
+  else {
+    const k = Math.ceil(Math.log2(values.length)) + 1;
+    bw = axisTicks(0, (st.max - st.min || 1) / k, { target: 1 }).step;
+  }
+  const start = round(Math.floor(st.min / bw + 1e-9) * bw, 9);
+  const nBins = Math.max(1, Math.ceil((st.max - start) / bw - 1e-9));
+  if (nBins > CAPS.bins)
+    fail(
+      "too-many-bins",
+      `That would make ${nBins} bins; the limit is ${CAPS.bins}. Use a wider binWidth.`,
+    );
+  const bins = Array.from({ length: nBins }, (_, i) => ({
+    from: round(start + i * bw, 9),
+    to: round(start + (i + 1) * bw, 9),
+    count: 0,
+  }));
+  for (const v of values)
+    bins[Math.min(nBins - 1, Math.max(0, Math.floor((v - start) / bw + 1e-9)))].count++;
+  const maxCount = Math.max(...bins.map((b) => b.count));
+  const yAxis = axisTicks(0, maxCount, { target: 5, integer: true });
+  const left = 62;
+  const plotW = W - left - 24;
+  const top = title ? 52 : 28;
+  const plotH = 230;
+  const axisY = top + plotH;
+  const h = axisY + 62;
+  const bwPx = plotW / nBins;
+  const py = (c) => axisY - (c / yAxis.end) * plotH;
+  const g = [];
+  if (title) g.push(text(W / 2, 26, title, { size: 17, anchor: "middle", weight: "700" }));
+  for (const t of yAxis.ticks) {
+    g.push(line(left, py(t), left + plotW, py(t), { stroke: COLOR.grid, width: 0.6, dash: "2 3" }));
+    g.push(text(left - 8, py(t) + 5, fmt(t, lang), { size: 13, anchor: "end" }));
+  }
+  bins.forEach((b, i) => {
+    const x = left + i * bwPx;
+    g.push(
+      `<rect data-bin="${i + 1}" data-count="${b.count}" data-from="${b.from}" data-to="${b.to}" x="${f1(x)}" y="${f1(py(b.count))}" width="${f1(bwPx)}" height="${f1(axisY - py(b.count))}" fill="${COLOR.blue}" stroke="${COLOR.white}" stroke-width="1.5"/>`,
+    );
+    if (b.count)
+      g.push(
+        text(x + bwPx / 2, py(b.count) - 5, String(b.count), {
+          size: 13,
+          anchor: "middle",
+          weight: "700",
+        }),
+      );
+  });
+  g.push(
+    line(left, top, left, axisY, { width: 2 }),
+    line(left, axisY, left + plotW, axisY, { width: 2 }),
+  );
+  const every = nBins > 12 ? Math.ceil(nBins / 10) : 1;
+  const edges = [...bins.map((b) => b.from), bins[nBins - 1].to];
+  const widest = Math.max(...edges.map((e) => textWidth(fmt(e, lang), 13)));
+  const step = Math.max(every, Math.ceil((widest + 6) / bwPx));
+  edges.forEach((e, i) => {
+    g.push(line(left + i * bwPx, axisY, left + i * bwPx, axisY + 6, { width: 1.5 }));
+    if (i % step === 0)
+      g.push(text(left + i * bwPx, axisY + 22, fmt(e, lang), { size: 13, anchor: "middle" }));
+  });
+  g.push(axisTitle(left + plotW / 2, axisY + 46, unit));
+  const alt = both((l) =>
+    l === "es"
+      ? `Histograma${title ? ` «${title}»` : ""} de ${st.n} valores en ${nBins} intervalo${nBins === 1 ? "" : "s"} de ancho ${fmt(bw, l)}. El intervalo más alto tiene ${maxCount}.`
+      : `Histogram${title ? ` "${title}"` : ""} of ${st.n} values in ${nBins} bin${nBins === 1 ? "" : "s"} of width ${fmt(bw)}. The tallest bin holds ${maxCount}.`,
+  );
+  const range = (b, i) =>
+    `${fmt(b.from, lang)}–${fmt(b.to, lang)}${i === nBins - 1 ? "" : lang === "es" ? " (sin incluir el final)" : " (not including the end)"}`;
+  return result({
+    svg: frame({
+      p: "hg",
+      w: W,
+      h,
+      title: alt[lang],
+      desc: `${alt[lang]} ${lang === "es" ? "Un valor en el borde va al intervalo que empieza ahí. Cada barra tiene su cantidad escrita." : "A value on a boundary goes in the bin that starts there. Each bar has its count written above it."}`,
+      lang,
+     
+      body: g.join(""),
+    }),
+    alt,
+    caption: both((l) => title || (l === "es" ? "Histograma" : "Histogram")),
+    data: {
+      ...st,
+      unit,
+      binWidth: bw,
+      bins,
+      counts: bins.map((b) => b.count),
+      axis: { yMax: yAxis.end, yStep: yAxis.step },
+    },
+    table: tableOfCounts(
+      lang,
+      bins.map((b, i) => [range(b, i), String(b.count)]),
+      lang === "es" ? "Intervalo" : "Bin",
+    ),
+  });
+}
+
+// ── x/diagrams-graphs.js
+// Graph diagrams: a to-scale timeline and a food web. Positions are computed from the data (years, or the
+// relationship graph), never typed in.
+
+// ── timeline ─────────────────────────────────────────────────────────────────
+
+const TW = 960;
+const TMARGIN = 70;
+const LINE_H = 17;
+const MAX_LEVELS = 6;
+
+const yearText = (y, lang) => (y < 0 ? `${-y} ${lang === "es" ? "a. C." : "BCE"}` : String(y));
+const hit = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+
+/**
+ * Events sit at x proportional to their year. Labels are staggered over up to six levels above and below the axis;
+ * a label is only placed where neither its box nor its leader line touches another label or leader line.
+ * Negative years are BCE.
+ * @param {{events:Array<{year:number,label:string}>, lang?:string}} spec
+ */
+function timelineSvg(spec = {}) {
+  const lang = langOf(spec);
+  const raw = listIn(spec.events, "events", { min: 2, max: CAPS.events });
+  const events = raw.map((e, i) => ({
+    year: intIn(e?.year, `events[${i}].year`, { min: -100000, max: 100000 }),
+    label: textIn(e?.label, `events[${i}].label`, { max: 60 }),
+    order: i,
+  }));
+  const years = events.map((e) => e.year);
+  const lo = Math.min(...years);
+  const hi = Math.max(...years);
+  if (lo === hi) fail("one-year", "A timeline needs at least two different years.");
+  const px = (y) => TMARGIN + ((y - lo) / (hi - lo)) * (TW - 2 * TMARGIN);
+  const sorted = [...events].sort((a, b) => a.year - b.year || a.order - b.order);
+  const items = sorted.map((e) => {
+    const lines = [yearText(e.year, lang), ...wrap(e.label, 18)];
+    if (lines.length > 5)
+      fail("label-too-long", `The label "${e.label}" is too long for a timeline.`);
+    return {
+      ...e,
+      x: px(e.year),
+      lines,
+      w: Math.max(...lines.map((s, i) => textWidth(s, 14, i === 0))) + 14,
+    };
+  });
+  const maxLines = Math.max(...items.map((i) => i.lines.length));
+  const boxH = maxLines * LINE_H + 8;
+  const band = boxH + 16;
+  const GAP = 20;
+  const placed = [];
+  const slots = [];
+  for (let lv = 0; lv < MAX_LEVELS; lv++) slots.push({ side: -1, lv }, { side: 1, lv });
+  // Depth-first search with backtracking: an early label may have to slide away so a later event's leader line
+  // can reach the axis. The step cap keeps the worst case bounded; hitting it is reported as "crowded".
+  let steps = 0;
+  const options = items.map((it) => {
+    const xs = [it.x - it.w / 2, it.x - 12, it.x - it.w + 12].map((x) => Math.min(TW - 6 - it.w, Math.max(6, x)));
+    const list = [];
+    for (const s of slots)
+      for (const bx of xs) {
+        if (it.x < bx + 6 || it.x > bx + it.w - 6) continue;
+        const reach = GAP + s.lv * band; // distance from the axis to the nearest edge of the box
+        list.push({
+          it,
+          side: s.side,
+          lv: s.lv,
+          box: { x: bx, y: s.side < 0 ? -(reach + boxH) : reach, w: it.w, h: boxH },
+          leader: { x: it.x - 3, w: 6, y: s.side < 0 ? -reach : 0, h: reach },
+        });
+      }
+    return list;
+  });
+  const search = (i) => {
+    if (i === items.length) return true;
+    for (const c of options[i]) {
+      if (++steps > 60000) return false;
+      if (placed.every((p) => !hit(c.box, p.box) && !hit(c.box, p.leader) && !hit(c.leader, p.box) && !hit(c.leader, p.leader))) {
+        placed.push(c);
+        if (search(i + 1)) return true;
+        placed.pop();
+      }
+    }
+    return false;
+  };
+  if (!search(0)) fail("timeline-crowded", "Too many events share nearly the same years to label without overlap. Remove or merge some events.");
+  const above = Math.max(0, ...placed.filter((p) => p.side < 0).map((p) => p.lv + 1));
+  const below = Math.max(0, ...placed.filter((p) => p.side > 0).map((p) => p.lv + 1));
+  const axisY = 14 + (above ? GAP + above * band : 0);
+  const h = axisY + (below ? GAP + below * band : 0) + 24;
+  const tick = axisTicks(lo, hi, { target: 12 });
+  const g = [line(TMARGIN - 30, axisY, TW - TMARGIN + 30, axisY, { width: 3 })];
+  for (const t of tick.ticks)
+    if (t >= lo - 1e-9 && t <= hi + 1e-9)
+      g.push(line(px(t), axisY - 5, px(t), axisY + 5, { stroke: COLOR.muted, width: 1.5 }));
+  const out = placed.map((p) => {
+    const box = { ...p.box, y: p.box.y + axisY };
+    const leaderEnd = p.side < 0 ? box.y + box.h : box.y;
+    g.push(line(p.it.x, axisY, p.it.x, leaderEnd, { stroke: COLOR.muted, width: 1.5 }));
+    g.push(
+      `<rect data-event="${p.it.order + 1}" x="${f1(box.x)}" y="${f1(box.y)}" width="${f1(box.w)}" height="${f1(box.h)}" rx="4" fill="${COLOR.white}" stroke="${COLOR.ink}" stroke-width="1.5"/>`,
+    );
+    p.it.lines.forEach((s, i) =>
+      g.push(
+        text(box.x + 7, box.y + 5 + (i + 1) * LINE_H - 4, s, {
+          size: 14,
+          weight: i === 0 ? "700" : "400",
+        }),
+      ),
+    );
+    g.push(
+      `<circle cx="${f1(p.it.x)}" cy="${axisY}" r="6.5" fill="${COLOR.ink}" stroke="${COLOR.white}" stroke-width="2"/>`,
+    );
+    return { year: p.it.year, label: p.it.label, x: p.it.x, box, level: p.side * (p.lv + 1) };
+  });
+  const byInput = [...out].sort(
+    (a, b) =>
+      events.findIndex((e) => e.year === a.year && e.label === a.label) -
+      events.findIndex((e) => e.year === b.year && e.label === b.label),
+  );
+  const span = hi - lo;
+  const alt = both((l) =>
+    l === "es"
+      ? `Línea de tiempo a escala con ${events.length} sucesos, de ${yearText(lo, l)} a ${yearText(hi, l)}. Primero: ${sorted[0].label}. Último: ${sorted[sorted.length - 1].label}.`
+      : `To-scale timeline of ${events.length} events from ${yearText(lo, l)} to ${yearText(hi, l)}. First: ${sorted[0].label}. Last: ${sorted[sorted.length - 1].label}.`,
+  );
+  return result({
+    svg: frame({
+      p: "tl",
+      w: TW,
+      h,
+      title: alt[lang],
+      desc: `${alt[lang]} ${lang === "es" ? `Las marcas están cada ${fmt(tick.step, lang)} años.` : `Tick marks are ${fmt(tick.step)} years apart.`}`,
+      lang,
+      body: g.join(""),
+    }),
+    alt,
+    caption: both((l) =>
+      l === "es"
+        ? `Línea de tiempo a escala (${fmt(span, l)} años)`
+        : `Timeline drawn to scale (${fmt(span)} years)`,
+    ),
+    data: {
+      events: out.sort((a, b) => a.year - b.year),
+      inputOrder: byInput,
+      minYear: lo,
+      maxYear: hi,
+      tickStep: tick.step,
+      axis: { x0: px(lo), x1: px(hi), y: axisY, pxPerYear: (TW - 2 * TMARGIN) / span },
+    },
+    table: {
+      headers: [lang === "es" ? "Año" : "Year", lang === "es" ? "Suceso" : "Event"],
+      rows: sorted.map((e) => [yearText(e.year, lang), e.label]),
+    },
+  });
+}
+
+// ── food web ─────────────────────────────────────────────────────────────────
+
+const CONSUMERS = {
+  en: ["", "", "primary consumers", "secondary consumers", "tertiary consumers"],
+  es: ["", "", "consumidores primarios", "consumidores secundarios", "consumidores terciarios"],
+};
+/** The two small lines written beside a trophic layer. */
+const levelName = (n, lang) =>
+  n === 1
+    ? { head: lang === "es" ? "Productores" : "Producers", sub: lang === "es" ? "no comen a otros" : "eat nothing here" }
+    : {
+        head: lang === "es" ? `Nivel ${n}` : `Level ${n}`,
+        sub: CONSUMERS[lang][n] ?? (lang === "es" ? "consumidores" : "consumers"),
+      };
+
+/** Finds a cycle in `eats` (name -> Set of foods) or returns null. */
+function findCycle(eats) {
+  const state = new Map();
+  const stack = [];
+  const visit = (n) => {
+    state.set(n, 1);
+    stack.push(n);
+    for (const f of eats.get(n) ?? []) {
+      if (state.get(f) === 1) return [...stack.slice(stack.indexOf(f)), f];
+      if (!state.get(f)) {
+        const c = visit(f);
+        if (c) return c;
+      }
+    }
+    stack.pop();
+    state.set(n, 2);
+    return null;
+  };
+  for (const n of eats.keys())
+    if (!state.get(n)) {
+      const c = visit(n);
+      if (c) return c;
+    }
+  return null;
+}
+
+const segHitsRect = (pts, r) =>
+  pts.some(([x, y]) => x > r.x && x < r.x + r.w && y > r.y && y < r.y + r.h);
+
+/**
+ * Nodes sit in trophic layers: producers (animals and plants that eat nothing) are layer 1, and any other
+ * organism is one layer above the highest layer of anything it eats (the longest food chain beneath it).
+ * Arrows point from the eaten organism to the one that eats it. A cycle is an error and is reported by name.
+ * @param {{relationships:Array<{eats:string,eaten:string}>, lang?:string}} spec
+ */
+function foodWebSvg(spec = {}) {
+  const lang = langOf(spec);
+  const raw = listIn(spec.relationships, "relationships", { min: 1, max: CAPS.edges });
+  const names = new Map(); // lowercase key -> display name (first spelling wins)
+  const norm = (v, label) => {
+    const s = textIn(v, label, { max: 28 });
+    const k = s.toLowerCase();
+    if (!names.has(k)) names.set(k, s);
+    return k;
+  };
+  const edgeKeys = new Set();
+  const edges = [];
+  let duplicates = 0;
+  raw.forEach((r, i) => {
+    const eater = norm(r?.eats, `relationships[${i}].eats`);
+    const food = norm(r?.eaten, `relationships[${i}].eaten`);
+    if (eater === food)
+      fail("cycle", `${names.get(eater)} cannot eat itself.`, {
+        cycle: [names.get(eater), names.get(eater)],
+      });
+    const id = `${food}>${eater}`;
+    if (edgeKeys.has(id)) return void duplicates++;
+    edgeKeys.add(id);
+    edges.push({ food, eater });
+  });
+  if (names.size > CAPS.nodes)
+    fail("too-many", `The web has ${names.size} organisms; the limit is ${CAPS.nodes}.`);
+  const eats = new Map([...names.keys()].map((k) => [k, new Set()]));
+  for (const e of edges) eats.get(e.eater).add(e.food);
+  const cyc = findCycle(eats);
+  if (cyc) {
+    const shown = cyc.map((k) => names.get(k));
+    throw new DiagramError(
+      "cycle",
+      `A food web cannot have a loop: ${shown
+        .map((n, i) => (i < shown.length - 1 ? `${n} eats ${shown[i + 1]}` : ""))
+        .filter(Boolean)
+        .join(", ")}.`,
+      { cycle: shown },
+    );
+  }
+  const layerOf = new Map();
+  const layer = (k) => {
+    if (layerOf.has(k)) return layerOf.get(k);
+    const foods = [...eats.get(k)];
+    const v = foods.length ? 1 + Math.max(...foods.map(layer)) : 1;
+    layerOf.set(k, v);
+    return v;
+  };
+  for (const k of names.keys()) layer(k);
+  const top = Math.max(...layerOf.values());
+  const rows = Array.from({ length: top }, (_, i) =>
+    [...names.keys()].filter((k) => layerOf.get(k) === i + 1),
+  );
+
+  // order within layers: barycenter sweeps against neighbouring layers (deterministic, stable)
+  const neighbours = (k) => [
+    ...edges.filter((e) => e.eater === k).map((e) => e.food),
+    ...edges.filter((e) => e.food === k).map((e) => e.eater),
+  ];
+  const idx = new Map();
+  const reindex = () =>
+    rows.forEach((r) => r.forEach((k, i) => idx.set(k, i / Math.max(1, r.length - 1))));
+  reindex();
+  for (let pass = 0; pass < 6; pass++) {
+    for (const r of pass % 2 ? [...rows].reverse() : rows) {
+      const score = (k) => {
+        const ns = neighbours(k).filter((n) => layerOf.get(n) !== layerOf.get(k));
+        return ns.length ? ns.reduce((s, n) => s + idx.get(n), 0) / ns.length : idx.get(k);
+      };
+      const before = [...r];
+      r.sort((a, b) => score(a) - score(b) || before.indexOf(a) - before.indexOf(b));
+      reindex();
+    }
+  }
+
+  const NH = 34;
+  const GAPY = 110;
+  const left = 150;
+  const nodeW = (k) => textWidth(names.get(k), 15, true) + 26;
+  const rowW = rows.map(
+    (r) => r.reduce((s, k) => s + nodeW(k), 0) + Math.max(0, r.length - 1) * 28,
+  );
+  const W = Math.max(640, left + Math.max(...rowW) + 30);
+  const H = 40 + (top - 1) * GAPY + NH + 40;
+  const pos = new Map();
+  rows.forEach((r, i) => {
+    const y = H - 40 - NH - i * GAPY;
+    const avail = W - left - 20;
+    const sumW = rowW[i] - Math.max(0, r.length - 1) * 28;
+    const gap = r.length > 1 ? Math.min(120, Math.max(28, (avail - sumW) / (r.length - 1))) : 0;
+    let x = left + (avail - (sumW + gap * Math.max(0, r.length - 1))) / 2;
+    for (const k of r) {
+      pos.set(k, { x, y, w: nodeW(k), h: NH });
+      x += nodeW(k) + gap;
+    }
+  });
+  const g = [];
+  const warnings = [];
+  const rects = [...pos.entries()];
+  const defs = `<marker id="fw-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${COLOR.ink}"/></marker>`;
+  const drawn = edges.map((e) => {
+    const a = pos.get(e.food);
+    const b = pos.get(e.eater);
+    const x1 = a.x + a.w / 2;
+    const y1 = a.y;
+    const x2 = b.x + b.w / 2;
+    const y2 = b.y + b.h + 2;
+    const others = rects.filter(([k]) => k !== e.food && k !== e.eater).map(([, r]) => r);
+    let pathD = `M${f1(x1)} ${f1(y1)} L${f1(x2)} ${f1(y2)}`;
+    let clean = false;
+    for (const off of [0, 60, -60, 120, -120, 200, -200, 300, -300]) {
+      const cx = (x1 + x2) / 2 + off;
+      const cy = (y1 + y2) / 2;
+      const pts = Array.from({ length: 25 }, (_, i) => {
+        const t = i / 24;
+        return [
+          (1 - t) ** 2 * x1 + 2 * (1 - t) * t * cx + t * t * x2,
+          (1 - t) ** 2 * y1 + 2 * (1 - t) * t * cy + t * t * y2,
+        ];
+      });
+      if (!others.some((r) => segHitsRect(pts, r))) {
+        pathD = off === 0 ? pathD : `M${f1(x1)} ${f1(y1)} Q${f1(cx)} ${f1(cy)} ${f1(x2)} ${f1(y2)}`;
+        clean = true;
+        break;
+      }
+    }
+    if (!clean)
+      warnings.push({
+        en: `The arrow from ${names.get(e.food)} to ${names.get(e.eater)} passes behind another organism.`,
+        es: `La flecha de ${names.get(e.food)} a ${names.get(e.eater)} pasa por detrás de otro organismo.`,
+      });
+    g.push(
+      `<path data-eaten="${esc(names.get(e.food))}" data-eater="${esc(names.get(e.eater))}" d="${pathD}" fill="none" stroke="${COLOR.ink}" stroke-width="1.8" marker-end="url(#fw-arrow)"/>`,
+    );
+    return { eaten: names.get(e.food), eater: names.get(e.eater) };
+  });
+  rows.forEach((_, i) => {
+    const y = H - 40 - NH - i * GAPY;
+    const name = levelName(i + 1, lang);
+    g.push(text(10, y + NH / 2 + 5, name.head, { size: 14, weight: "700", fill: COLOR.muted }));
+    g.push(text(10, y + NH / 2 + 22, name.sub, { size: 12, fill: COLOR.muted }));
+  });
+  for (const [k, r] of pos) {
+    const producer = layerOf.get(k) === 1;
+    g.push(
+      `<rect data-node="${esc(names.get(k))}" data-layer="${layerOf.get(k)}" x="${f1(r.x)}" y="${f1(r.y)}" width="${f1(r.w)}" height="${r.h}" rx="${producer ? 3 : 17}" fill="${COLOR.white}" stroke="${COLOR.ink}" stroke-width="${producer ? 3 : 1.8}"/>`,
+    );
+    g.push(
+      text(r.x + r.w / 2, r.y + 22, names.get(k), { size: 15, anchor: "middle", weight: "700" }),
+    );
+  }
+  const nodes = [...pos].map(([k, r]) => ({
+    name: names.get(k),
+    layer: layerOf.get(k),
+    x: r.x,
+    y: r.y,
+    w: r.w,
+    h: r.h,
+  }));
+  const eatenBy = new Set(edges.map((e) => e.food));
+  const alt = both((l) =>
+    l === "es"
+      ? `Red alimentaria con ${nodes.length} organismos en ${top} nivel${top === 1 ? "" : "es"}. Las flechas van del organismo que es comido al que lo come.`
+      : `Food web of ${nodes.length} organisms in ${top} level${top === 1 ? "" : "s"}. Arrows point from the organism that is eaten to the one that eats it.`,
+  );
+  return result({
+    svg: frame({
+      p: "fw",
+      w: W,
+      h: H,
+      title: alt[lang],
+      desc: `${alt[lang]} ${lang === "es" ? "Los productores tienen borde grueso y esquinas cuadradas; los consumidores, esquinas redondeadas." : "Producers have a thick border and square corners; consumers have rounded corners."}`,
+      lang,
+      defs,
+      body: g.join(""),
+    }),
+    alt,
+    caption: both((l) =>
+      l === "es"
+        ? "Red alimentaria (las flechas muestran a dónde va la energía)"
+        : "Food web (arrows show where energy goes)",
+    ),
+    data: {
+      nodes,
+      layers: rows.map((r) => r.map((k) => names.get(k))),
+      edges: drawn,
+      producers: nodes.filter((n) => n.layer === 1).map((n) => n.name),
+      topConsumers: nodes
+        .filter((n) => !eatenBy.has([...names].find(([, v]) => v === n.name)[0]))
+        .map((n) => n.name),
+      duplicatesIgnored: duplicates,
+      review: warnings,
+    },
+    table: {
+      headers: [lang === "es" ? "Organismo" : "Organism", lang === "es" ? "Nivel" : "Level"],
+      rows: nodes.map((n) => [n.name, String(n.layer)]),
+    },
+  });
+}
+
+// ── x/diagrams-models.js
+// Model diagrams drawn from structured data: fraction bar/circle, rectangular prism, tape diagram, coordinate plane.
+// Every shape's size comes from the numbers, so the picture stays true when a value changes.
+
+// ── fraction model ───────────────────────────────────────────────────────────
+
+const sectorPath = (cx, cy, r, a0, a1) => {
+  const pt = (a) => `${f1(cx + r * Math.cos(a))} ${f1(cy + r * Math.sin(a))}`;
+  return `M${f1(cx)} ${f1(cy)} L${pt(a0)} A${r} ${r} 0 ${a1 - a0 > Math.PI + 1e-9 ? 1 : 0} 1 ${pt(a1)} Z`;
+};
+
+/** @param {{numerator:number, denominator:number, style?:"bar"|"circle", lang?:string}} spec */
+function fractionModelSvg(spec = {}) {
+  const lang = langOf(spec);
+  const d = intIn(spec.denominator, "denominator", { min: 1, max: CAPS.denominator });
+  const n = intIn(spec.numerator, "numerator", { min: 0, max: d * CAPS.wholes });
+  const style = spec.style ?? "bar";
+  if (style !== "bar" && style !== "circle") fail("bad-style", 'style must be "bar" or "circle".');
+  const wholes = Math.max(1, Math.ceil(n / d));
+  const p = "fm";
+  const shadedIn = (k) => Math.max(0, Math.min(d, n - k * d));
+  let body = "";
+  let w;
+  let h;
+  if (style === "bar") {
+    const cw = 480 / d;
+    w = 520;
+    h = 24 + wholes * 58 + 56;
+    for (let k = 0; k < wholes; k++)
+      for (let i = 0; i < d; i++) {
+        const on = i < shadedIn(k);
+        body += `<rect data-cell="${on ? "shaded" : "empty"}" data-whole="${k + 1}" x="${f1(20 + i * cw)}" y="${24 + k * 58}" width="${f1(cw)}" height="44" fill="${on ? `url(#${p}-solid)` : COLOR.white}" stroke="${COLOR.ink}" stroke-width="2"/>`;
+      }
+  } else {
+    const r = 66;
+    w = Math.max(240, wholes * 160 + 40);
+    h = 2 * r + 24 + 56 + 24;
+    for (let k = 0; k < wholes; k++) {
+      const cx = w / 2 + (k - (wholes - 1) / 2) * 160;
+      const cy = 24 + r;
+      if (d === 1) {
+        const on = shadedIn(k) === 1;
+        body += `<circle data-cell="${on ? "shaded" : "empty"}" data-whole="${k + 1}" cx="${f1(cx)}" cy="${cy}" r="${r}" fill="${on ? `url(#${p}-solid)` : COLOR.white}" stroke="${COLOR.ink}" stroke-width="2"/>`;
+        continue;
+      }
+      for (let i = 0; i < d; i++) {
+        const on = i < shadedIn(k);
+        const a0 = -Math.PI / 2 + (i * 2 * Math.PI) / d;
+        const a1 = -Math.PI / 2 + ((i + 1) * 2 * Math.PI) / d;
+        body += `<path data-cell="${on ? "shaded" : "empty"}" data-whole="${k + 1}" d="${sectorPath(cx, cy, r, a0, a1)}" fill="${on ? `url(#${p}-solid)` : COLOR.white}" stroke="${COLOR.ink}" stroke-width="2"/>`;
+      }
+    }
+  }
+  body += text(w / 2, h - 30, `${n}/${d}`, { size: 22, anchor: "middle", weight: "700" });
+  body += text(w / 2, h - 8, lang === "es" ? `${n} de ${d} partes iguales sombreadas` : `${n} of ${d} equal parts shaded`, { size: 14, anchor: "middle", fill: COLOR.muted });
+  const mixed = n >= d && n % d !== 0 ? { whole: Math.floor(n / d), numerator: n % d, denominator: d } : null;
+  const alt = both((l) =>
+    l === "es"
+      ? `Modelo de fracción: ${n} de ${d} partes iguales sombreadas en ${wholes === 1 ? "un " : `${wholes} `}${style === "bar" ? (wholes === 1 ? "rectángulo" : "rectángulos") : wholes === 1 ? "círculo" : "círculos"}.`
+      : `Fraction model: ${n} of ${d} equal parts shaded in ${wholes === 1 ? "one" : wholes} ${style === "bar" ? "bar" : "circle"}${wholes === 1 ? "" : "s"}.`,
+  );
+  return result({
+    svg: frame({ p, w, h, title: alt[lang], desc: `${alt[lang]} ${lang === "es" ? "Las partes sombreadas tienen un patrón de líneas." : "Shaded parts have a line pattern."}`, lang, defs: patternDefs(p), body }),
+    alt,
+    caption: both((l) => (l === "es" ? `Fracción ${n}/${d}` : `Fraction ${n}/${d}`)),
+    data: { numerator: n, denominator: d, style, wholes, shadedParts: n, totalParts: wholes * d, decimal: round(n / d, 6), mixed },
+    table: {
+      headers: lang === "es" ? ["Dato", "Valor"] : ["Item", "Value"],
+      rows: [
+        [lang === "es" ? "Partes sombreadas" : "Shaded parts", String(n)],
+        [lang === "es" ? "Partes iguales por entero" : "Equal parts in each whole", String(d)],
+      ],
+    },
+  });
+}
+
+// ── rectangular prism (cabinet oblique projection) ───────────────────────────
+
+const DEPTH = 0.5; // cabinet projection: depth edges are drawn at half length, at 45 degrees
+const C45 = Math.SQRT1_2;
+
+function dimension(v, name) {
+  const typed = typeof v === "string" ? cleanText(v) : null;
+  const r = parseNumber(typed ?? String(v));
+  if (!r || ratCmp(r, rat(0n)) <= 0) fail("bad-dimension", `${name} must be a number greater than 0.`);
+  const x = ratToNumber(r);
+  if (x > 1e6) fail("out-of-range", `${name} is too large.`);
+  return { r, x, label: typed || ratToString(r, "decimal") };
+}
+function unitOf(v) {
+  const u = cleanText(v);
+  if (u.length > 12) fail("text-too-long", "unit is longer than 12 characters.");
+  if (!/^[\p{L}\p{N} ./'"-]*$/u.test(u)) fail("bad-unit", "unit may only contain letters, digits and . / ' \" -.");
+  return u;
+}
+
+/** @param {{l:number|string, w:number|string, h:number|string, unit?:string, lang?:string}} spec */
+function prismSvg(spec = {}) {
+  const lang = langOf(spec);
+  const L = dimension(spec.l, "l");
+  const W = dimension(spec.w, "w");
+  const H = dimension(spec.h, "h");
+  const unit = unitOf(spec.unit);
+  const biggest = Math.max(L.x, W.x, H.x);
+  const smallest = Math.min(L.x, W.x, H.x);
+  if (biggest / smallest > 25) fail("too-uneven", "The longest edge is more than 25 times the shortest; the prism cannot be drawn legibly.");
+
+  const scale = Math.min(360 / (L.x + DEPTH * W.x * C45), 230 / (H.x + DEPTH * W.x * C45));
+  const sl = L.x * scale;
+  const sh = H.x * scale;
+  const sw = DEPTH * W.x * scale; // drawn length of the depth edge
+  const dx = sw * C45;
+  const x0 = 84;
+  const top = 34;
+  const y0 = top + dx + sh;
+  const w = x0 + sl + dx + 110;
+  const hh = y0 + 58;
+  const P = {
+    fbl: [x0, y0],
+    fbr: [x0 + sl, y0],
+    ftl: [x0, y0 - sh],
+    ftr: [x0 + sl, y0 - sh],
+    bbl: [x0 + dx, y0 - dx],
+    bbr: [x0 + sl + dx, y0 - dx],
+    btl: [x0 + dx, y0 - sh - dx],
+    btr: [x0 + sl + dx, y0 - sh - dx],
+  };
+  const pts = (...k) => k.map((n) => `${f1(P[n][0])},${f1(P[n][1])}`).join(" ");
+  const edge = (a, b, dash = "") => line(P[a][0], P[a][1], P[b][0], P[b][1], { width: 2.5, dash });
+  const u = unit ? ` ${unit}` : "";
+  const label = (v) => `${v.label}${u}`;
+  const midW = [(P.fbr[0] + P.bbr[0]) / 2, (P.fbr[1] + P.bbr[1]) / 2];
+  const body = [
+    `<polygon data-face="front" points="${pts("fbl", "fbr", "ftr", "ftl")}" fill="${COLOR.white}" stroke="none"/>`,
+    `<polygon data-face="top" points="${pts("ftl", "ftr", "btr", "btl")}" fill="${LIGHT.faceTop}" stroke="none"/>`,
+    `<polygon data-face="right" points="${pts("fbr", "bbr", "btr", "ftr")}" fill="${LIGHT.faceSide}" stroke="none"/>`,
+    edge("bbl", "fbl", "6 5"),
+    edge("bbl", "btl", "6 5"),
+    edge("bbl", "bbr", "6 5"),
+    `<polygon points="${pts("fbl", "fbr", "ftr", "ftl")}" fill="none" stroke="${COLOR.ink}" stroke-width="2.5"/>`,
+    `<polygon points="${pts("ftl", "ftr", "btr", "btl")}" fill="none" stroke="${COLOR.ink}" stroke-width="2.5"/>`,
+    `<polygon points="${pts("fbr", "bbr", "btr", "ftr")}" fill="none" stroke="${COLOR.ink}" stroke-width="2.5"/>`,
+    text((P.fbl[0] + P.fbr[0]) / 2, y0 + 26, label(L), { size: 16, anchor: "middle", weight: "700", extra: ' data-edge="l"' }),
+    text(x0 - 10, y0 - sh / 2 + 5, label(H), { size: 16, anchor: "end", weight: "700", extra: ' data-edge="h"' }),
+    text(midW[0] + 10, midW[1] + 18, label(W), { size: 16, anchor: "start", weight: "700", extra: ' data-edge="w"' }),
+  ].join("");
+
+  const V = ratMul(ratMul(L.r, W.r), H.r);
+  const S = ratMul(rat(2n), ratAdd(ratAdd(ratMul(L.r, W.r), ratMul(L.r, H.r)), ratMul(W.r, H.r)));
+  const unitName = (power) => (unit ? `${unit}${power === 3 ? "³" : "²"}` : power === 3 ? (lang === "es" ? "unidades cúbicas" : "cubic units") : lang === "es" ? "unidades cuadradas" : "square units");
+  const alt = both((l) =>
+    l === "es"
+      ? `Prisma rectangular de ${label(L)} de largo, ${label(W)} de ancho y ${label(H)} de alto.`
+      : `Rectangular prism ${label(L)} long, ${label(W)} wide and ${label(H)} high.`,
+  );
+  return result({
+    svg: frame({ p: "pr", w, h: hh, title: alt[lang], desc: `${alt[lang]} ${lang === "es" ? "Las aristas ocultas están punteadas. El fondo se dibuja a la mitad de su longitud (proyección oblicua)." : "Hidden edges are dashed. Depth is drawn at half length (oblique projection)."}`, lang, body }),
+    alt,
+    caption: both((l) => (l === "es" ? "Prisma rectangular (dibujo oblicuo, la profundidad está a media escala)" : "Rectangular prism (oblique drawing, depth drawn at half scale)")),
+    data: {
+      l: ratToNumber(L.r),
+      w: ratToNumber(W.r),
+      h: ratToNumber(H.r),
+      unit,
+      volume: { exact: ratToString(V, "decimal"), value: ratToNumber(V), unit: unitName(3) },
+      surfaceArea: { exact: ratToString(S, "decimal"), value: ratToNumber(S), unit: unitName(2) },
+      projection: { kind: "cabinet", angleDeg: 45, depthScale: DEPTH, scale: round(scale, 6), screen: { l: sl, w: sw, h: sh } },
+    },
+    table: {
+      headers: lang === "es" ? ["Medida", "Valor"] : ["Measure", "Value"],
+      rows: [
+        [lang === "es" ? "Largo" : "Length", label(L)],
+        [lang === "es" ? "Ancho" : "Width", label(W)],
+        [lang === "es" ? "Alto" : "Height", label(H)],
+      ],
+    },
+  });
+}
+
+// ── tape diagram ─────────────────────────────────────────────────────────────
+
+/** @param {{parts:Array<number|string|{label?:string, value:number|string|null}>, total?:number|string, lang?:string}} spec */
+function tapeDiagramSvg(spec = {}) {
+  const lang = langOf(spec);
+  const raw = listIn(spec.parts, "parts", { min: 1, max: CAPS.parts });
+  const parts = raw.map((it, i) => {
+    const o = it !== null && typeof it === "object" ? it : { value: it };
+    const label = textIn(o.label ?? (lang === "es" ? `Parte ${i + 1}` : `Part ${i + 1}`), `parts[${i}].label`, { max: 24 });
+    if (o.value === null || o.value === undefined) return { label, unknown: true, r: null };
+    const r = parseNumber(String(o.value));
+    if (!r || ratCmp(r, rat(0n)) <= 0) fail("bad-part", `parts[${i}] must be a number greater than 0 (or null for the unknown part).`);
+    return { label, unknown: false, r };
+  });
+  const unknowns = parts.filter((x) => x.unknown);
+  if (unknowns.length > 1) fail("too-many-unknowns", "Only one part may be unknown.");
+  let total = null;
+  if (spec.total !== undefined && spec.total !== null) {
+    total = parseNumber(String(spec.total));
+    if (!total || ratCmp(total, rat(0n)) <= 0) fail("bad-total", "total must be a number greater than 0.");
+  }
+  const known = parts.filter((x) => !x.unknown).reduce((s, x) => ratAdd(s, x.r), rat(0n));
+  if (unknowns.length === 1) {
+    if (!total) fail("total-required", "A tape diagram with an unknown part needs the total.");
+    const rest = ratSub(total, known);
+    if (ratCmp(rest, rat(0n)) <= 0) fail("total-too-small", "The total must be larger than the known parts.");
+    unknowns[0].r = rest;
+  } else if (total && ratCmp(total, known) !== 0) {
+    fail("total-mismatch", `The parts add to ${ratToString(known, "decimal")}, not ${ratToString(total, "decimal")}.`);
+  }
+  const sum = total ?? known;
+  const BAR = 560;
+  const x0 = 20;
+  let cursor = 0;
+  const cells = parts.map((pt) => {
+    const share = ratToNumber(pt.r) / ratToNumber(sum);
+    const width = share * BAR;
+    const shown = pt.unknown ? "?" : ratToString(pt.r, "decimal");
+    if (width < 30 || textWidth(shown, 15, true) > width)
+      fail("too-uneven", `"${pt.label}" is too small to label. Parts differ too much in size for one tape.`);
+    const cell = { ...pt, shown, x: x0 + cursor, width };
+    cursor += width;
+    return cell;
+  });
+  const barY = 56;
+  const body = [
+    line(x0, 30, x0 + BAR, 30, { width: 2 }),
+    line(x0, 24, x0, 36, { width: 2 }),
+    line(x0 + BAR, 24, x0 + BAR, 36, { width: 2 }),
+    text(x0 + BAR / 2, 18, `${lang === "es" ? "Total" : "Total"} = ${ratToString(sum, "decimal")}`, { size: 16, anchor: "middle", weight: "700" }),
+    ...cells.map((c, i) => `<rect data-part="${i + 1}" data-width="${f1(c.width)}" x="${f1(c.x)}" y="${barY}" width="${f1(c.width)}" height="46" fill="${patternFill("tp", i)}" stroke="${COLOR.ink}" stroke-width="2.5"/>${text(c.x + c.width / 2, barY + 66, c.shown, { size: 15, anchor: "middle", weight: "700" })}`),
+    ...cells.map((c, i) => {
+      const y = barY + 92 + i * 26;
+      return `<rect x="${x0}" y="${y - 13}" width="26" height="16" fill="${patternFill("tp", i)}" stroke="${COLOR.ink}" stroke-width="1.5"/>${text(x0 + 36, y, `${c.label} = ${c.shown}`, { size: 14 })}`;
+    }),
+  ].join("");
+  const w = BAR + 2 * x0;
+  const h = barY + 92 + cells.length * 26 + 6;
+  const alt = both((l) => {
+    const list = cells.map((c) => `${c.label} ${c.unknown ? "?" : c.shown}`).join(", ");
+    return l === "es" ? `Diagrama de cinta con ${cells.length} partes (${list}) y un total de ${ratToString(sum, "decimal")}.` : `Tape diagram with ${cells.length} part${cells.length === 1 ? "" : "s"} (${list}) and a total of ${ratToString(sum, "decimal")}.`;
+  });
+  return result({
+    svg: frame({ p: "tp", w, h, title: alt[lang], desc: `${alt[lang]} ${lang === "es" ? "El ancho de cada parte es proporcional a su valor." : "Each part's width is proportional to its value."}`, lang, defs: patternDefs("tp"), body }),
+    alt,
+    caption: both((l) => (l === "es" ? "Diagrama de cinta (anchos proporcionales)" : "Tape diagram (widths to scale)")),
+    data: {
+      parts: cells.map((c) => ({ label: c.label, value: ratToString(c.r, "decimal"), valueNumber: ratToNumber(c.r), unknown: c.unknown, x: c.x, width: c.width })),
+      total: ratToString(sum, "decimal"),
+      totalNumber: ratToNumber(sum),
+      barWidth: BAR,
+    },
+    table: {
+      headers: lang === "es" ? ["Parte", "Valor"] : ["Part", "Value"],
+      rows: [...cells.map((c) => [c.label, c.unknown ? "?" : c.shown]), ["Total", ratToString(sum, "decimal")]],
+    },
+  });
+}
+
+// ── coordinate plane ─────────────────────────────────────────────────────────
+
+const STEPS = [1, 2, 5, 10, 20, 50];
+
+/**
+ * A coordinate plane with equal units on both axes (a 1-by-1 square is square). gridSvg in print/svg.js is a
+ * square whole-number lattice with no points, so it cannot show separate x and y ranges or plotted points.
+ * @param {{points?:Array<{x:number,y:number,label?:string}>, xRange:[number,number], yRange:[number,number], lang?:string}} spec
+ */
+function coordinatePlaneSvg(spec = {}) {
+  const lang = langOf(spec);
+  const [xmin, xmax] = rangeIn(spec.xRange, "xRange");
+  const [ymin, ymax] = rangeIn(spec.yRange, "yRange");
+  const raw = listIn(spec.points ?? [], "points", { min: 0, max: CAPS.points });
+  const points = raw.map((pt, i) => {
+    const x = numberIn(pt?.x, `points[${i}].x`);
+    const y = numberIn(pt?.y, `points[${i}].y`);
+    if (x < xmin || x > xmax || y < ymin || y > ymax) fail("point-off-plane", `points[${i}] (${x}, ${y}) is outside the plane.`);
+    return { x, y, label: textIn(pt?.label ?? "", `points[${i}].label`, { max: 20, required: false }) };
+  });
+  const unit = Math.min(44, 520 / (xmax - xmin), 520 / (ymax - ymin));
+  const padL = 46;
+  const padT = 30;
+  const padR = 34;
+  const padB = 44;
+  const pw = (xmax - xmin) * unit;
+  const ph = (ymax - ymin) * unit;
+  const w = padL + pw + padR;
+  const h = padT + ph + padB;
+  const px = (x) => padL + (x - xmin) * unit;
+  const py = (y) => padT + ph - (y - ymin) * unit;
+  const step = STEPS.find((s) => s * unit >= 28) ?? 50;
+  const tick = (min, max) => {
+    const out = [];
+    for (let v = Math.ceil(min / step) * step; v <= max + 1e-9; v += step) out.push(round(v, 9));
+    return out;
+  };
+  const xs = tick(xmin, xmax);
+  const ys = tick(ymin, ymax);
+  const ax = xmin <= 0 && xmax >= 0 ? px(0) : px(xmin);
+  const ay = ymin <= 0 && ymax >= 0 ? py(0) : py(ymin);
+  const parts = [];
+  for (const v of xs) parts.push(line(px(v), padT, px(v), padT + ph, { stroke: COLOR.grid, width: 0.6, dash: "2 3" }));
+  for (const v of ys) parts.push(line(padL, py(v), padL + pw, py(v), { stroke: COLOR.grid, width: 0.6, dash: "2 3" }));
+  parts.push(line(padL, ay, padL + pw, ay, { width: 2.5 }), line(ax, padT, ax, padT + ph, { width: 2.5 }));
+  parts.push(`<polygon points="${f1(padL + pw + 8)},${f1(ay)} ${f1(padL + pw)},${f1(ay - 5)} ${f1(padL + pw)},${f1(ay + 5)}" fill="${COLOR.ink}"/>`);
+  parts.push(`<polygon points="${f1(ax)},${f1(padT - 8)} ${f1(ax - 5)},${f1(padT)} ${f1(ax + 5)},${f1(padT)}" fill="${COLOR.ink}"/>`);
+  const both0 = xmin <= 0 && xmax >= 0 && ymin <= 0 && ymax >= 0;
+  for (const v of xs) if (!(both0 && v === 0)) parts.push(text(px(v), ay === py(ymin) ? ay + 20 : ay + 19, fmt(v, lang), { size: 13, anchor: "middle", halo: true }));
+  for (const v of ys) if (!(both0 && v === 0)) parts.push(text(ax - 7, py(v) + 5, fmt(v, lang), { size: 13, anchor: "end", halo: true }));
+  if (both0) parts.push(text(ax - 7, ay + 19, "0", { size: 13, anchor: "end", halo: true }));
+  parts.push(text(padL + pw + 10, ay + 20, "x", { size: 15, weight: "700", extra: ' font-style="italic"' }), text(ax + 10, padT - 8, "y", { size: 15, weight: "700", extra: ' font-style="italic"' }));
+  const placed = [];
+  const out = points.map((pt, i) => {
+    const X = px(pt.x);
+    const Y = py(pt.y);
+    let label = "";
+    if (pt.label) {
+      const lw = textWidth(pt.label, 14, true);
+      const tries = [[8, -8, "start"], [8, 18, "start"], [-8, -8, "end"], [-8, 18, "end"]];
+      const fit = (t) => {
+        const bx = t[2] === "start" ? X + t[0] : X + t[0] - lw;
+        const box = { x: bx, y: Y + t[1] - 13, w: lw, h: 16 };
+        const clash = placed.some((b) => box.x < b.x + b.w && b.x < box.x + box.w && box.y < b.y + b.h && b.y < box.y + box.h);
+        return !clash && box.x >= 0 && box.x + box.w <= w ? box : null;
+      };
+      const t = tries.find((c) => fit(c)) ?? tries[0];
+      const box = fit(t) ?? { x: t[2] === "start" ? X + t[0] : X + t[0] - lw, y: Y + t[1] - 13, w: lw, h: 16 };
+      placed.push(box);
+      label = text(X + t[0], Y + t[1], pt.label, { size: 14, anchor: t[2], weight: "700", halo: true });
+    }
+    const shape = i % 2 === 0 ? `<circle cx="${f1(X)}" cy="${f1(Y)}" r="6" fill="${COLOR.blue}" stroke="${COLOR.white}" stroke-width="2"` : `<rect x="${f1(X - 5.5)}" y="${f1(Y - 5.5)}" width="11" height="11" fill="${COLOR.orange}" stroke="${COLOR.white}" stroke-width="2"`;
+    parts.push(`${shape} data-point="${i + 1}" data-x="${pt.x}" data-y="${pt.y}"/>${label}`);
+    return { x: pt.x, y: pt.y, label: pt.label, px: f1(X), py: f1(Y), quadrant: pt.x === 0 || pt.y === 0 ? "axis" : pt.x > 0 ? (pt.y > 0 ? "I" : "IV") : pt.y > 0 ? "II" : "III" };
+  });
+  const list = out.map((o) => `${o.label ? `${o.label} ` : ""}(${fmt(o.x, lang)}, ${fmt(o.y, lang)})`).join("; ");
+  const alt = both((l) =>
+    l === "es"
+      ? `Plano de coordenadas de x = ${fmt(xmin, l)} a ${fmt(xmax, l)} y de y = ${fmt(ymin, l)} a ${fmt(ymax, l)}${out.length ? `, con ${out.length} punto${out.length === 1 ? "" : "s"}: ${list}` : ""}.`
+      : `Coordinate plane, x from ${fmt(xmin)} to ${fmt(xmax)} and y from ${fmt(ymin)} to ${fmt(ymax)}${out.length ? `, with ${out.length} point${out.length === 1 ? "" : "s"}: ${list}` : ""}.`,
+  );
+  return result({
+    svg: frame({ p: "cp", w, h, title: alt[lang], desc: `${alt[lang]} ${lang === "es" ? "Cada unidad mide lo mismo en ambos ejes. Los puntos alternan círculo y cuadrado." : "Units are the same length on both axes. Points alternate circle and square."}`, lang, body: parts.join("") }),
+    alt,
+    caption: both((l) => (l === "es" ? "Plano de coordenadas" : "Coordinate plane")),
+    data: { xRange: [xmin, xmax], yRange: [ymin, ymax], unit: round(unit, 4), tickStep: step, points: out },
+    table: { headers: ["x", "y", lang === "es" ? "Nombre" : "Name"], rows: out.map((o) => [fmt(o.x, lang), fmt(o.y, lang), o.label]) },
+  });
+}
+
+// ── x/diagram-render.js
+// One entry point for drawing a `diagram` block (see core/schema.js): the block's STRUCTURED SPEC goes through the
+// wave-1 generators, so the picture is recomputed from the numbers every time and never stored. The player, the
+// printed worksheet, the Word export, the validator and the editor preview all call this file.
+//
+//   renderDiagram(block, { lang, suffix }) -> { ok: true, svg, alt, caption, table: {headers, rows} }
+//                                           | { ok: false, code, message }       (never throws)
+//   checkDiagram(block)                    -> null | { code, message }           (message is English)
+//
+// `suffix` makes the SVG's element ids unique so two figures on one page cannot collide.
+
+const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+const escText = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
+
+// A blank cell is null in the stored spec. The generators must see it as "not a number", never as 0.
+const blank = (v) => (v === null ? "" : v);
+
+// kind -> (spec) => [generator, its input]; `generate` adds the language.
+const GENERATE = {
+  fraction: (s) => [
+    fractionModelSvg,
+    { numerator: blank(s.numerator), denominator: blank(s.denominator), style: s.style },
+  ],
+  prism: (s) => [prismSvg, { l: blank(s.l), w: blank(s.w), h: blank(s.h), unit: s.unit }],
+  tape: (s) => [
+    tapeDiagramSvg,
+    {
+      parts: s.parts.map((p) => ({ label: p.label || undefined, value: p.value })),
+      total: s.total ?? undefined,
+    },
+  ],
+  plane: (s) => [
+    coordinatePlaneSvg,
+    {
+      xRange: s.xRange.map(blank),
+      yRange: s.yRange.map(blank),
+      points: s.points.map((p) => ({ x: blank(p.x), y: blank(p.y), label: p.label })),
+    },
+  ],
+  bar: (s) => [
+    barChartSvg,
+    {
+      title: s.title,
+      unit: s.unit,
+      categories: s.categories.map((c) => ({ label: c.label, value: blank(c.value) })),
+    },
+  ],
+  dot: (s) => [dotPlotSvg, { values: s.values.map(blank), title: s.title, unit: s.unit }],
+  histogram: (s) => [
+    histogramSvg,
+    {
+      values: s.values.map(blank),
+      title: s.title,
+      unit: s.unit,
+      binWidth: s.binWidth ?? undefined,
+    },
+  ],
+  timeline: (s) => [
+    timelineSvg,
+    { events: s.events.map((e) => ({ year: blank(e.year), label: e.label })) },
+  ],
+  foodweb: (s) => [foodWebSvg, { relationships: s.relationships }],
+};
+
+/** The generator's own result for a spec, in `lang`. Throws DiagramError when the figure cannot be drawn. */
+function generate(spec, lang) {
+  const make = GENERATE[spec?.kind];
+  if (!make) throw new DiagramError("unknown-kind", "That kind of diagram is not available.");
+  try {
+    const [draw, input] = make(spec);
+    return draw({ ...input, lang });
+  } catch (error) {
+    if (error instanceof DiagramError) throw error;
+    throw new DiagramError("cannot-draw", "This diagram could not be drawn from its values.");
+  }
+}
+
+/** A teacher's own alt text replaces the generated title and description inside the SVG. */
+function withAlt(svg, alt) {
+  const safe = escText(alt);
+  return svg
+    .replace(/(<title id="[^"]*">)[^<]*(<\/title>)/, (_, a, b) => `${a}${safe}${b}`)
+    .replace(/(<desc id="[^"]*">)[^<]*(<\/desc>)/, (_, a, b) => `${a}${safe}${b}`);
+}
+
+/** Make every id in the SVG unique by appending `-suffix` (ids, url(#id) references and aria-labelledby). */
+function scoped(svg, suffix) {
+  const tail = String(suffix ?? "").replace(/[^A-Za-z0-9_-]/g, "");
+  if (!tail) return svg;
+  const ids = new Set([...svg.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
+  const swap = (id) => (ids.has(id) ? `${id}-${tail}` : id);
+  return svg
+    .replace(/\bid="([^"]+)"/g, (_, id) => `id="${swap(id)}"`)
+    .replace(
+      /\baria-labelledby="([^"]+)"/g,
+      (_, v) => `aria-labelledby="${v.split(" ").map(swap).join(" ")}"`,
+    )
+    .replace(/url\(#([^)]+)\)/g, (_, id) => `url(#${swap(id)})`);
+}
+
+function renderDiagram(block, { lang = "en", suffix = "" } = {}) {
+  const l = lang === "es" ? "es" : "en";
+  try {
+    const r = generate(block?.spec, l);
+    const custom = block.alt?.[l] || "";
+    return {
+      ok: true,
+      svg: scoped(custom ? withAlt(r.svg, custom) : r.svg, suffix),
+      alt: custom || r.alt[l],
+      caption: block.caption?.[l] || r.caption[l],
+      table: r.table,
+    };
+  } catch (error) {
+    return { ok: false, code: error.code || "cannot-draw", message: error.message };
+  }
+}
+
+function checkDiagram(block) {
+  const r = renderDiagram(block);
+  return r.ok ? null : { code: r.code, message: r.message };
+}
+
+// ── x/diagram-words.js
+// Plain-language, bilingual wording for a diagram a teacher cannot yet draw. The generators throw DiagramError with
+// a stable `code` and an English message that names fields like "categories[2].value"; a teacher should read
+// "Row 3: the value must be a number." instead. Spanish here has NOT had a native-speaker review.
+
+const LIST = {
+  categories: ["Row", "Fila"],
+  points: ["Point", "Punto"],
+  events: ["Event", "Evento"],
+  parts: ["Part", "Parte"],
+  values: ["Value", "Valor"],
+  relationships: ["Link", "Enlace"],
+  xRange: ["The x-axis", "El eje x"],
+  yRange: ["The y-axis", "El eje y"],
+};
+const SUB = {
+  label: ["name", "nombre"],
+  value: ["number", "número"],
+  x: ["x", "x"],
+  y: ["y", "y"],
+  year: ["year", "año"],
+  eats: ["eater", "quien come"],
+  eaten: ["food", "alimento"],
+};
+const TOP = {
+  title: ["The title", "El título"],
+  unit: ["The unit", "La unidad"],
+  denominator: ["The denominator", "El denominador"],
+  numerator: ["The numerator", "El numerador"],
+  total: ["The total", "El total"],
+  l: ["The length", "El largo"],
+  w: ["The width", "El ancho"],
+  h: ["The height", "La altura"],
+  binWidth: ["The interval width", "El ancho del intervalo"],
+};
+
+/** "Row 3, number" / "The title" for the field a generator message starts with, as [en, es]. */
+function where(message) {
+  const m = /^(\w+)(?:\[(\d+)\])?(?:\.(\w+))?/.exec(String(message));
+  if (!m) return ["This figure", "Esta figura"];
+  const [, name, index, sub] = m;
+  if (TOP[name]) return TOP[name];
+  if (!LIST[name]) return ["This figure", "Esta figura"];
+  const n = index === undefined ? "" : ` ${Number(index) + 1}`;
+  const part = sub && SUB[sub] ? SUB[sub] : null;
+  return [
+    `${LIST[name][0]}${n}${part ? `, ${part[0]}` : ""}`,
+    `${LIST[name][1]}${n}${part ? `, ${part[1]}` : ""}`,
+  ];
+}
+const num = (message, re) => re.exec(String(message))?.[1] ?? "";
+
+/** [en, es] sentence builders keyed by DiagramError.code; `w` is where(), `m` the generator's message. */
+const SAY = {
+  "empty-text": (w) => [`${w[0]} is empty. Type a name.`, `${w[1]} está vacío. Escriba un nombre.`],
+  "text-too-long": (w) => [
+    `${w[0]} is too long. Shorten it.`,
+    `${w[1]} es demasiado largo. Acórtelo.`,
+  ],
+  "not-a-number": (w) => [`${w[0]} must be a number.`, `${w[1]} debe ser un número.`],
+  "not-an-integer": (w) => [
+    `${w[0]} must be a whole number.`,
+    `${w[1]} debe ser un número entero.`,
+  ],
+  "out-of-range": (w) => [
+    `${w[0]} is outside the allowed range.`,
+    `${w[1]} está fuera del rango permitido.`,
+  ],
+  "not-a-list": () => ["Add at least one row.", "Agregue al menos una fila."],
+  "too-few": (_w, m) => {
+    const n = num(m, /at least (\d+)/) || "1";
+    return [
+      `Add more rows: this figure needs at least ${n}.`,
+      `Agregue más filas: esta figura necesita al menos ${n}.`,
+    ];
+  },
+  "too-many": (_w, m) => {
+    const n = num(m, /limit is (\d+)/);
+    return [
+      `There are too many rows for one figure${n ? ` (the limit is ${n})` : ""}. Remove some.`,
+      `Hay demasiadas filas para una figura${n ? ` (el límite es ${n})` : ""}. Quite algunas.`,
+    ];
+  },
+  "bad-range": () => [
+    "Each axis needs a smallest number that is below its largest.",
+    "Cada eje necesita un número menor que sea inferior al mayor.",
+  ],
+  "range-too-wide": () => [
+    "An axis covers too many numbers. Use a smaller range.",
+    "Un eje abarca demasiados números. Use un rango menor.",
+  ],
+  "bad-style": () => ["Choose a bar or a circle.", "Elija una barra o un círculo."],
+  "bad-dimension": (w) => [
+    `${w[0]} must be a number greater than 0.`,
+    `${w[1]} debe ser un número mayor que 0.`,
+  ],
+  "bad-unit": () => [
+    "The unit may only use letters, numbers and . / ' \" -.",
+    "La unidad solo puede usar letras, números y . / ' \" -.",
+  ],
+  "bad-part": (w) => [
+    `${w[0]} must be a number greater than 0, or left blank for the unknown part.`,
+    `${w[1]} debe ser un número mayor que 0, o quedar en blanco para la parte desconocida.`,
+  ],
+  "bad-total": () => [
+    "The total must be a number greater than 0.",
+    "El total debe ser un número mayor que 0.",
+  ],
+  "total-required": () => [
+    "A tape diagram with an unknown part needs the total.",
+    "Un diagrama de cinta con una parte desconocida necesita el total.",
+  ],
+  "total-too-small": () => [
+    "The total must be larger than the known parts added together.",
+    "El total debe ser mayor que la suma de las partes conocidas.",
+  ],
+  "total-mismatch": () => [
+    "The parts do not add up to the total. Fix a part or the total.",
+    "Las partes no suman el total. Corrija una parte o el total.",
+  ],
+  "too-many-unknowns": () => [
+    "Only one part may be unknown. Fill in the others.",
+    "Solo una parte puede ser desconocida. Complete las demás.",
+  ],
+  "too-uneven": () => [
+    "The longest edge is more than 25 times the shortest, so the box cannot be drawn clearly.",
+    "La arista más larga es más de 25 veces la más corta; la caja no se puede dibujar con claridad.",
+  ],
+  "point-off-plane": (w) => [
+    `${w[0]} is outside the grid. Widen the axes or change the point.`,
+    `${w[1]} está fuera de la cuadrícula. Amplíe los ejes o cambie el punto.`,
+  ],
+  "one-year": () => [
+    "A timeline needs at least two different years.",
+    "Una línea de tiempo necesita al menos dos años distintos.",
+  ],
+  "label-too-long": (w) => [
+    `${w[0]} is too long for a timeline. Shorten it.`,
+    `${w[1]} es demasiado largo para una línea de tiempo. Acórtelo.`,
+  ],
+  "timeline-crowded": () => [
+    "Too many events are close together to label clearly. Remove or merge some.",
+    "Hay demasiados eventos juntos para rotularlos con claridad. Quite o combine algunos.",
+  ],
+  "too-dense": () => [
+    "Too many values are too close together to draw. Remove some or use a histogram.",
+    "Hay demasiados valores muy juntos para dibujar. Quite algunos o use un histograma.",
+  ],
+  "too-many-bins": () => [
+    "That would make too many intervals. Use a wider interval width.",
+    "Eso crearía demasiados intervalos. Use un ancho de intervalo mayor.",
+  ],
+  "too-many-equal": () => [
+    "More than 30 identical values would not fit in one stack. Use a histogram.",
+    "Más de 30 valores iguales no caben en una pila. Use un histograma.",
+  ],
+  cycle: (_w, m) => [
+    String(m),
+    "Una red alimentaria no puede tener un ciclo: algo no puede comerse a sí mismo, ni siquiera por una cadena de otros.",
+  ],
+  "unknown-kind": () => [
+    "That kind of diagram is not available.",
+    "Ese tipo de diagrama no está disponible.",
+  ],
+  "cannot-draw": () => [
+    "This diagram could not be drawn from its values. Check each number.",
+    "Este diagrama no se pudo dibujar con sus valores. Revise cada número.",
+  ],
+};
+
+/**
+ * @param {{code?: string, message?: string}} error  what renderDiagram / checkDiagram returned
+ * @returns {{en: string, es: string}}
+ */
+function explainDiagram(error) {
+  const make = SAY[error?.code];
+  const w = where(error?.message);
+  const [en, es] = make
+    ? make(w, error.message)
+    : [
+        "This diagram could not be drawn. Check each value.",
+        "Este diagrama no se pudo dibujar. Revise cada valor.",
+      ];
+  return { en: en || SAY["cannot-draw"]()[0], es: es || SAY["cannot-draw"]()[1] };
+}
+
+// ── x/animations-kit.js
+// Shared plumbing for the animation presets (x/animations.js): the error type, plain-text helpers, number words and
+// the small SVG scenes the text presets draw. Pure functions, no DOM. Every name here starts with "an" because the
+// player bundle puts all of x/ in one scope (tools/build-studio-player.mjs).
+//
+// A SCENE is one still picture of an animation: the player cross-fades from one scene to the next, so nothing in a
+// scene moves by itself. All scenes of one animation share the same width and height, so the page never jumps.
+
+const AN_W = 480;
+const AN_TINT = "#dbeafe"; // a light blue that INK text sits on (contrast checked in the tests)
+const AN_GREY = "#6b7280";
+
+/** Thrown for every input an animation refuses. `say` is the plain-word message in both languages. */
+class AnimationError extends Error {
+  constructor(code, en, es) {
+    super(en);
+    this.name = "AnimationError";
+    this.code = code;
+    this.say = { en, es };
+  }
+}
+const anFail = (code, en, es) => {
+  throw new AnimationError(code, en, es);
+};
+
+/** Teacher text as one plain line: math markup and **bold** markers become plain characters. */
+const anPlain = (s) =>
+  plainMath(String(s ?? "").replace(/\*\*/g, ""))
+    .replace(/\s+/g, " ")
+    .trim();
+
+/** `{en, es}` from one function of the language. */
+const anBoth = (fn) => ({ en: fn("en"), es: fn("es") });
+const anPick = (lang, en, es) => (lang === "es" ? es : en);
+/** The text a screen reader hears for the step an image belongs to. */
+const anStep = (lang, i, n) => anPick(lang, `Step ${i} of ${n}`, `Paso ${i} de ${n}`);
+/** A curly-quoted phrase. */
+const anQuote = (s) => `“${s}”`;
+
+/** A number the way a student reads it: whole, decimal when it ends, otherwise a fraction; comma in Spanish. */
+function anNum(r, lang) {
+  const s = ratToString(r, "decimal");
+  return lang === "es" ? s.replace(".", ",") : s;
+}
+
+/** A year for a label (negative = BCE). */
+const anYear = (y, lang) => (y < 0 ? `${-y} ${lang === "es" ? "a. C." : "BCE"}` : String(y));
+
+/** The ids inside one scene must be unique on a page: `id` is the prefix. */
+const anSafe = (id) => `an${String(id ?? "").replace(/[^A-Za-z0-9_-]/g, "")}`;
+
+/** The standalone scene SVG (title = what a screen reader hears, desc = the step it belongs to). */
+function anScene({ id, h, alt, desc, lang, body, defs = "" }) {
+  return frame({ p: anSafe(id), w: AN_W, h, title: alt, desc, lang, defs, body });
+}
+
+const anRect = (
+  x,
+  y,
+  w,
+  h,
+  { fill = COLOR.white, stroke = COLOR.ink, sw = 1.5, rx = 8, dash = "" } = {},
+) =>
+  `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="${rx}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"${dash ? ` stroke-dasharray="${dash}"` : ""}/>`;
+
+/** Lines of text one under the other. Returns the SVG and the height used. */
+function anLines(x, y, lines, { size = 16, lh = size * 1.3, ...opts } = {}) {
+  const svg = lines.map((s, i) => text(x, y + size + i * lh, s, { size, ...opts })).join("");
+  return { svg, h: lines.length * lh };
+}
+
+const anWrap = (s, max) => (s ? wrap(s, max) : []);
+
+/** A round numbered (or ticked) badge. */
+function anBadge(cx, cy, n, state) {
+  const on = state !== "todo";
+  const mark =
+    state === "done"
+      ? `<path d="M${f1(cx - 7)} ${f1(cy)} l5 6 l9 -12" fill="none" stroke="${COLOR.white}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`
+      : text(cx, cy + 6, String(n), {
+          size: 16,
+          anchor: "middle",
+          weight: "700",
+          fill: on ? COLOR.white : COLOR.muted,
+        });
+  return `<circle cx="${f1(cx)}" cy="${f1(cy)}" r="15" fill="${on ? COLOR.blue : COLOR.white}" stroke="${on ? COLOR.blue : AN_GREY}" stroke-width="2"/>${mark}`;
+}
+
+/** A right-pointing arrow between two boxes. */
+const anArrow = (x1, x2, y) =>
+  `${line(x1, y, x2 - 8, y, { width: 3 })}<polygon points="${f1(x2)},${f1(y)} ${f1(x2 - 12)},${f1(y - 7)} ${f1(x2 - 12)},${f1(y + 7)}" fill="${COLOR.ink}"/>`;
+
+/** One wave-1 figure (a diagram spec) drawn for a frame: `{ svg, alt }`, or an AnimationError in plain words. */
+function anDiagram(spec, lang, id) {
+  const shown = renderDiagram({ spec }, { lang, suffix: id });
+  if (!shown.ok) {
+    const say = explainDiagram(shown);
+    throw new AnimationError(shown.code, say.en, say.es);
+  }
+  return { svg: shown.svg, alt: shown.alt };
+}
+
+// ── plain-word messages ──────────────────────────────────────────────────────
+
+/** The error message for a stage/row number ("Stage 3"). */
+const anWhich = (word, i) => ({ en: `${word.en} ${i + 1}`, es: `${word.es} ${i + 1}` });
+
+/**
+ * @param {{code?: string, message?: string, say?: {en: string, es: string}}} error  what expandAnimation returned
+ * @returns {{en: string, es: string}}
+ */
+function anExplain(error) {
+  if (error?.say?.en) return error.say;
+  return {
+    en: "This animation could not be built. Check each value.",
+    es: "Esta animación no se pudo crear. Revise cada valor.",
+  };
+}
+
+// ── x/animations-math.js
+// The two number presets: ratio-change and geometry-dims. Every quantity is exact rational arithmetic (core/math.js),
+// so a frame is recomputed from the teacher's numbers and can never drift from them. Input that is not a positive
+// number is refused in plain words; nothing is rounded to make a figure fit.
+
+const AN_ZERO = rat(0n);
+const AN_BIG = 1e9;
+
+/** A positive number typed as 2, 0.5, 3/4 or 2 1/2, as an exact rational. `en`/`es` name it in the message. */
+function anPositive(v, en, es) {
+  const r = v === null || v === undefined ? null : parseNumber(String(v));
+  if (!r || ratCmp(r, AN_ZERO) <= 0)
+    anFail(
+      "not-positive",
+      `${en} must be a number greater than 0.`,
+      `${es} debe ser un número mayor que 0.`,
+    );
+  return r;
+}
+
+// ── ratio-change: a ratio table and two bars that scale together ─────────────
+
+const AN_TOP = 150;
+const AN_HEAD = 46;
+const AN_ROW = 28;
+const AN_COLS = [16, 116, 290, 464];
+
+function anRatioSvg(steps, k, names, scale, { lang, id, alt, desc }) {
+  const p = anSafe(id);
+  const now = steps[k];
+  const bar = (r) => Math.max(3, (ratToNumber(r) / scale) * 300);
+  const body = [];
+  [
+    [now.a, names[0], 38, 0],
+    [now.b, names[1], 102, 1],
+  ].forEach(([value, name, y, i]) => {
+    const len = bar(value);
+    body.push(
+      text(20, y - 8, name, { size: 17, weight: "700" }),
+      `<rect x="20" y="${y}" width="${f1(len)}" height="26" fill="${patternFill(p, i === 0 ? 0 : 1)}" stroke="${COLOR.ink}" stroke-width="2"/>`,
+      text(20 + len + 8, y + 19, anNum(value, lang), { size: 17, weight: "700" }),
+    );
+  });
+  const head = [anPick(lang, "Multiplier", "Multiplicador"), names[0], names[1]];
+  body.push(
+    anRect(AN_COLS[0], AN_TOP, AN_COLS[3] - AN_COLS[0], AN_HEAD, { fill: "#e5e7eb", rx: 0 }),
+  );
+  head.forEach((t, c) =>
+    body.push(
+      anLines(AN_COLS[c] + 8, AN_TOP + 5, anWrap(t, c ? 18 : 12), {
+        size: 15,
+        lh: 18,
+        weight: "700",
+      }).svg,
+    ),
+  );
+  steps.slice(0, k + 1).forEach((s, i) => {
+    const y = AN_TOP + AN_HEAD + i * AN_ROW;
+    const on = i === k;
+    body.push(
+      anRect(AN_COLS[0], y, AN_COLS[3] - AN_COLS[0], AN_ROW, {
+        fill: on ? AN_TINT : COLOR.white,
+        stroke: on ? COLOR.blue : COLOR.ink,
+        sw: on ? 3 : 1.5,
+        rx: 0,
+      }),
+    );
+    [
+      anPick(
+        lang,
+        i === 0 ? "Start" : `× ${anNum(s.k, lang)}`,
+        i === 0 ? "Inicio" : `× ${anNum(s.k, lang)}`,
+      ),
+      anNum(s.a, lang),
+      anNum(s.b, lang),
+    ].forEach((t, c) =>
+      body.push(text(AN_COLS[c] + 8, y + 20, t, { size: 16, weight: on ? "700" : "400" })),
+    );
+  });
+  for (const x of AN_COLS.slice(1, 3))
+    body.push(line(x, AN_TOP, x, AN_TOP + AN_HEAD + (k + 1) * AN_ROW, { width: 1.5 }));
+  return anScene({
+    id,
+    h: AN_TOP + AN_HEAD + steps.length * AN_ROW + 14,
+    alt,
+    desc,
+    lang,
+    body: body.join(""),
+    defs: patternDefs(p),
+  });
+}
+
+function anRatio(p) {
+  const names = [anPlain(p.a?.label), anPlain(p.b?.label)];
+  if (!names[0] || !names[1])
+    anFail(
+      "empty-text",
+      "Name both quantities (for example cups of flour).",
+      "Nombre las dos cantidades (por ejemplo, tazas de harina).",
+    );
+  const a0 = anPositive(
+    p.a?.value,
+    `The first number (${names[0]})`,
+    `El primer número (${names[0]})`,
+  );
+  const b0 = anPositive(
+    p.b?.value,
+    `The second number (${names[1]})`,
+    `El segundo número (${names[1]})`,
+  );
+  if (!Array.isArray(p.scales) || p.scales.length < 1)
+    anFail("too-few", "Add at least one multiplier.", "Agregue al menos un multiplicador.");
+  const steps = [{ k: rat(1n), a: a0, b: b0 }];
+  p.scales.forEach((v, i) => {
+    const k = anPositive(v, `Multiplier ${i + 1}`, `El multiplicador ${i + 1}`);
+    steps.push({ k, a: ratMul(a0, k), b: ratMul(b0, k) });
+  });
+  const values = steps.flatMap((s) => [ratToNumber(s.a), ratToNumber(s.b)]);
+  if (Math.max(...values) > AN_BIG)
+    anFail(
+      "too-big",
+      "A number gets too large. Use smaller multipliers.",
+      "Un número se hace demasiado grande. Use multiplicadores menores.",
+    );
+  if (Math.max(...values) / Math.min(...values) > 1000)
+    anFail(
+      "too-uneven",
+      "The numbers are too far apart to draw as bars. Use closer numbers.",
+      "Los números están demasiado separados para dibujarlos como barras. Use números más cercanos.",
+    );
+  const scale = Math.max(...values);
+  const n = steps.length;
+  return {
+    frames: steps.map((s, k) => {
+      const caption = anBoth((l) => {
+        const pair = `${names[0]} = ${anNum(s.a, l)} ${anPick(l, "and", "y")} ${names[1]} = ${anNum(s.b, l)}`;
+        return k === 0
+          ? `${anPick(l, "Start with", "Empieza con")} ${pair}.`
+          : `${anPick(l, "Multiply both quantities by", "Multiplica las dos cantidades por")} ${anNum(s.k, l)}: ${pair}.`;
+      });
+      return {
+        caption,
+        draw: (lang, id) => ({
+          svg: anRatioSvg(steps, k, names, scale, {
+            lang,
+            id,
+            alt: caption[lang],
+            desc: anStep(lang, k + 1, n),
+          }),
+          alt: caption[lang],
+        }),
+      };
+    }),
+    table: (lang) => ({
+      headers: [anPick(lang, "Multiplier", "Multiplicador"), names[0], names[1]],
+      rows: steps.map((s, i) => [
+        i === 0 ? "× 1" : `× ${anNum(s.k, lang)}`,
+        anNum(s.a, lang),
+        anNum(s.b, lang),
+      ]),
+    }),
+  };
+}
+
+// ── geometry-dims: a prism or a fraction model through chosen values ─────────
+
+const AN_DIM = [
+  ["l", "length", "largo"],
+  ["w", "width", "ancho"],
+  ["h", "height", "alto"],
+];
+
+function anPrism(p) {
+  if (!Array.isArray(p.dims) || p.dims.length < 2)
+    anFail(
+      "too-few",
+      "Add at least two sets of measurements.",
+      "Agregue al menos dos juegos de medidas.",
+    );
+  const unit = anPlain(p.unit);
+  const sets = p.dims.map((d, i) => {
+    const r = {};
+    for (const [key, en, es] of AN_DIM)
+      r[key] = anPositive(d?.[key], `Set ${i + 1}: the ${en}`, `Juego ${i + 1}: el ${es}`);
+    const volume = ratMul(ratMul(r.l, r.w), r.h);
+    if (ratToNumber(volume) > 1e12)
+      anFail(
+        "too-big",
+        "A volume gets too large. Use smaller measurements.",
+        "Un volumen se hace demasiado grande. Use medidas menores.",
+      );
+    return { ...r, volume, raw: d };
+  });
+  const cubic = (l) => (unit ? `${unit}³` : anPick(l, "cubic units", "unidades cúbicas"));
+  return {
+    frames: sets.map((s, i) => {
+      const caption = anBoth((l) => {
+        const u = unit ? ` ${unit}` : "";
+        const was = i
+          ? AN_DIM.filter(([k]) => ratCmp(s[k], sets[i - 1][k]) !== 0).map(
+              ([k, en, es]) =>
+                `${anPick(l, en, es)} ${anNum(sets[i - 1][k], l)} → ${anNum(s[k], l)}`,
+            )
+          : [];
+        const said = AN_DIM.map(([k, en, es]) => `${anPick(l, en, es)} ${anNum(s[k], l)}${u}`).join(", ");
+        const dims = said.charAt(0).toUpperCase() + said.slice(1);
+        const sum = `${anNum(s.l, l)} × ${anNum(s.w, l)} × ${anNum(s.h, l)} = ${anNum(s.volume, l)} ${cubic(l)}`;
+        return `${was.length ? `${anPick(l, "Changed", "Cambió")}: ${was.join(", ")}. ` : ""}${dims}. ${anPick(l, "Volume", "Volumen")} = ${sum}.`;
+      });
+      return {
+        caption,
+        draw: (lang, id) => {
+          const d = anDiagram(
+            { kind: "prism", l: s.raw.l, w: s.raw.w, h: s.raw.h, unit },
+            lang,
+            id,
+          );
+          return { svg: d.svg, alt: caption[lang] };
+        },
+      };
+    }),
+    table: (lang) => ({
+      headers: [
+        anPick(lang, "Step", "Paso"),
+        ...AN_DIM.map(([, en, es]) =>
+          anPick(lang, en[0].toUpperCase() + en.slice(1), es[0].toUpperCase() + es.slice(1)),
+        ),
+        anPick(lang, "Volume", "Volumen"),
+      ],
+      rows: sets.map((s, i) => [
+        String(i + 1),
+        ...AN_DIM.map(([k]) => `${anNum(s[k], lang)}${unit ? ` ${unit}` : ""}`),
+        `${anNum(s.volume, lang)} ${cubic(lang)}`,
+      ]),
+    }),
+  };
+}
+
+function anFractions(p) {
+  const d = p.denominator;
+  if (!Number.isInteger(d) || d < 1 || d > 16)
+    anFail(
+      "bad-denominator",
+      "The denominator must be a whole number from 1 to 16.",
+      "El denominador debe ser un número entero del 1 al 16.",
+    );
+  if (!Array.isArray(p.numerators) || p.numerators.length < 2)
+    anFail("too-few", "Add at least two numerators.", "Agregue al menos dos numeradores.");
+  p.numerators.forEach((x, i) => {
+    if (!Number.isInteger(x) || x < 0 || x > d * 4)
+      anFail(
+        "bad-numerator",
+        `Numerator ${i + 1} must be a whole number from 0 to ${d * 4}.`,
+        `El numerador ${i + 1} debe ser un número entero del 0 al ${d * 4}.`,
+      );
+  });
+  const whole = (x, l) => {
+    if (x <= d) return "";
+    const w = Math.floor(x / d);
+    const rest = x % d;
+    return ` ${anPick(l, "That is", "Eso es")} ${rest ? `${w} ${rest}/${d}` : w} ${anPick(l, "wholes", "enteros")}.`;
+  };
+  return {
+    frames: p.numerators.map((x) => {
+      const caption = anBoth(
+        (l) =>
+          `${x}/${d} ${anPick(l, "of a whole", "de un entero")}: ${x} ${anPick(l, "of", "de")} ${d} ${anPick(l, "equal parts are shaded", "partes iguales están sombreadas")}.${whole(x, l)}`,
+      );
+      return {
+        caption,
+        draw: (lang, id) => {
+          const g = anDiagram(
+            { kind: "fraction", numerator: x, denominator: d, style: "bar" },
+            lang,
+            id,
+          );
+          return { svg: g.svg, alt: caption[lang] };
+        },
+      };
+    }),
+    table: (lang) => ({
+      headers: anPick(
+        lang,
+        ["Step", "Shaded parts", "Equal parts", "Fraction of a whole"],
+        ["Paso", "Partes sombreadas", "Partes iguales", "Fracción de un entero"],
+      ),
+      rows: p.numerators.map((x, i) => [String(i + 1), String(x), String(d), `${x}/${d}`]),
+    }),
+  };
+}
+
+function anGeometry(p) {
+  return p.shape === "fraction" ? anFractions(p) : anPrism(p);
+}
+
+// ── x/animations-text.js
+// The five word presets: process, timeline, word-build, sentence-expand, cause-effect. Each builder takes the cleaned
+// params of the block and returns { frames, table? }; a frame is { caption: {en, es}, draw(lang, id) -> {svg, alt} }.
+// Nothing is generated from the teacher's words: every frame only reveals text the teacher typed, in the order
+// they typed it, plus a few fixed labels in both languages.
+
+const anTrim = (s) => anPlain(s).replace(/[.!?]+$/, "");
+const anNeed = (list, min, max, en, es) => {
+  if (!Array.isArray(list) || list.length < min)
+    anFail("too-few", `Add at least ${min} ${en}.`, `Agregue al menos ${min} ${es}.`);
+  if (list.length > max)
+    anFail("too-many", `Use at most ${max} ${en}.`, `Use como máximo ${max} ${es}.`);
+};
+
+// ── process: stages, highlight advances ──────────────────────────────────────
+
+function anStageLayout(items, active) {
+  let y = 12;
+  const rows = items.map((it, i) => {
+    const lines = anWrap(it.label, 30);
+    const open = i === active ? anWrap(it.text, 40) : [];
+    const h = Math.max(40, lines.length * 22 + 16) + (open.length ? open.length * 21 + 8 : 0);
+    const row = { y, h, lines, open };
+    y += h + 10;
+    return row;
+  });
+  return { rows, h: y + 2 };
+}
+
+/** A column of labelled stages; `active` is highlighted, the ones before it are ticked. */
+function anStagesSvg(items, active, { lang, id, alt, desc, height }) {
+  const { rows, h } = anStageLayout(items, active);
+  const body = [];
+  if (rows.length > 1)
+    body.push(
+      `<line x1="34" y1="${f1(rows[0].y + 20)}" x2="34" y2="${f1(rows.at(-1).y + 20)}" stroke="${COLOR.grid}" stroke-width="3"/>`,
+    );
+  rows.forEach((r, i) => {
+    const on = i === active;
+    body.push(
+      anRect(60, r.y, AN_W - 72, r.h, {
+        fill: on ? AN_TINT : COLOR.white,
+        stroke: on ? COLOR.blue : i < active ? COLOR.ink : COLOR.grid,
+        sw: on ? 3.5 : 1.5,
+        dash: i > active ? "6 5" : "",
+      }),
+      anBadge(34, r.y + 20, i + 1, on ? "on" : i < active ? "done" : "todo"),
+      anLines(76, r.y + 8, r.lines, {
+        size: 17,
+        lh: 22,
+        weight: "700",
+        fill: i > active ? COLOR.muted : COLOR.ink,
+      }).svg,
+      anLines(76, r.y + 8 + r.lines.length * 22 + 2, r.open, { size: 16, lh: 21 }).svg,
+    );
+  });
+  return anScene({ id, h: height ?? h, alt, desc, lang, body: body.join("") });
+}
+
+function anProcess(p) {
+  anNeed(p.stages, 2, 8, "stages", "etapas");
+  const items = p.stages.map((s, i) => {
+    const label = anPlain(s.label);
+    if (!label)
+      anFail("empty-text", `Stage ${i + 1} needs a name.`, `La etapa ${i + 1} necesita un nombre.`);
+    return { label, text: anPlain(s.text) };
+  });
+  const height = Math.max(...items.map((_, i) => anStageLayout(items, i).h));
+  const n = items.length;
+  return {
+    frames: items.map((it, i) => {
+      const caption = anBoth(
+        (l) =>
+          `${anPick(l, "Stage", "Etapa")} ${i + 1} ${anPick(l, "of", "de")} ${n}: ${it.label}.${it.text ? ` ${it.text}` : ""}`,
+      );
+      return {
+        caption,
+        draw: (lang, id) => ({
+          svg: anStagesSvg(items, i, {
+            lang,
+            id,
+            alt: caption[lang],
+            desc: anStep(lang, i + 1, n),
+            height,
+          }),
+          alt: caption[lang],
+        }),
+      };
+    }),
+  };
+}
+
+// ── timeline: events revealed in order ───────────────────────────────────────
+
+function anTimeline(p) {
+  anNeed(p.events, 2, 8, "events", "eventos");
+  const events = p.events
+    .map((e, i) => {
+      if (!Number.isInteger(e.year))
+        anFail(
+          "bad-year",
+          `Event ${i + 1} needs a whole-number year (use a negative year for BCE).`,
+          `El evento ${i + 1} necesita un año entero (use un año negativo para a. C.).`,
+        );
+      const label = anPlain(e.label);
+      if (!label)
+        anFail(
+          "empty-text",
+          `Event ${i + 1} needs a name.`,
+          `El evento ${i + 1} necesita un nombre.`,
+        );
+      return { year: e.year, label, order: i };
+    })
+    .sort((a, b) => a.year - b.year || a.order - b.order);
+  if (new Set(events.map((e) => e.year)).size < 2)
+    anFail(
+      "one-year",
+      "A timeline needs at least two different years.",
+      "Una línea de tiempo necesita al menos dos años distintos.",
+    );
+  const n = events.length;
+  const frames = events.map((e, k) => {
+    const so_far = events.slice(0, k + 1);
+    const caption = anBoth(
+      (l) =>
+        `${anPick(l, "Event", "Evento")} ${k + 1} ${anPick(l, "of", "de")} ${n}: ${anYear(e.year, l)}. ${e.label}`,
+    );
+    const scale = new Set(so_far.map((x) => x.year)).size >= 2;
+    return {
+      caption,
+      draw: (lang, id) => {
+        if (scale)
+          return anDiagram(
+            { kind: "timeline", events: so_far.map(({ year, label }) => ({ year, label })) },
+            lang,
+            id,
+          );
+        const items = so_far.map((x) => ({
+          label: `${anYear(x.year, lang)}: ${x.label}`,
+          text: "",
+        }));
+        return {
+          svg: anStagesSvg(items, k, {
+            lang,
+            id,
+            alt: caption[lang],
+            desc: anStep(lang, k + 1, n),
+          }),
+          alt: caption[lang],
+        };
+      },
+    };
+  });
+  return {
+    frames,
+    table: (lang) => ({
+      headers: anPick(lang, ["Year", "Event"], ["Año", "Evento"]),
+      rows: events.map((e) => [anYear(e.year, lang), e.label]),
+    }),
+  };
+}
+
+// ── word-build: prefix + root + suffix ───────────────────────────────────────
+
+const AN_KIND = {
+  prefix: ["Prefix", "Prefijo"],
+  root: ["Root", "Raíz"],
+  suffix: ["Suffix", "Sufijo"],
+};
+const anShown = (part) => {
+  const t = part.text.replace(/^-+|-+$/g, "");
+  return part.kind === "prefix" ? `${t}-` : part.kind === "suffix" ? `-${t}` : t;
+};
+
+/** Where the tiles go: they flow left to right and wrap, so five parts still fit a narrow screen. */
+function anTiles(parts, joined) {
+  let x = 20;
+  let row = 0;
+  const tiles = [];
+  parts.forEach((part, i) => {
+    const label = anShown(part);
+    const w = textWidth(label, 28, true) + 28;
+    const gap = joined ? 4 : 30;
+    if (x + w > AN_W - 20 && x > 20) {
+      x = 20;
+      row++;
+    }
+    tiles.push({ part, label, x, w, row });
+    x += w + gap;
+    if (i === parts.length - 1) x = 20;
+  });
+  return { tiles, rows: Math.max(...tiles.map((t) => t.row)) + 1 };
+}
+
+function anWordSvg(parts, k, final, word, meaningLines, { lang, id, alt, desc, height }) {
+  const shown = final ? parts : parts.slice(0, k + 1);
+  const { tiles, rows } = anTiles(shown, final);
+  const body = [];
+  tiles.forEach((t, i) => {
+    const y = 14 + t.row * 80;
+    const newest = !final && i === k;
+    body.push(
+      anRect(t.x, y, t.w, 46, {
+        fill: newest || final ? AN_TINT : COLOR.white,
+        stroke: newest ? COLOR.blue : COLOR.ink,
+        sw: newest ? 3.5 : 2,
+      }),
+      text(t.x + t.w / 2, y + 34, t.label, { size: 28, anchor: "middle", weight: "700" }),
+      text(t.x + t.w / 2, y + 66, anPick(lang, ...AN_KIND[t.part.kind]), {
+        size: 14,
+        anchor: "middle",
+        fill: COLOR.muted,
+      }),
+    );
+    const next = tiles[i + 1];
+    if (!final && next && next.row === t.row)
+      body.push(text(t.x + t.w + 15, y + 34, "+", { size: 26, anchor: "middle", weight: "700" }));
+  });
+  let y = 14 + rows * 80;
+  if (final) {
+    body.push(text(20, y + 34, `= ${word}`, { size: 34, weight: "700", fill: COLOR.blue }));
+    y += 50;
+  }
+  body.push(anLines(20, y, meaningLines, { size: 17, lh: 22 }).svg);
+  return anScene({ id, h: height, alt, desc, lang, body: body.join("") });
+}
+
+function anWordBuild(p) {
+  anNeed(p.parts, 2, 5, "word parts", "partes de la palabra");
+  const word = anPlain(p.word);
+  if (!word) anFail("empty-text", "Type the whole word.", "Escriba la palabra completa.");
+  const parts = p.parts.map((x, i) => {
+    const t = anPlain(x.text);
+    if (!t.replace(/-/g, ""))
+      anFail(
+        "empty-text",
+        `Word part ${i + 1} needs its letters.`,
+        `La parte ${i + 1} necesita sus letras.`,
+      );
+    return { kind: x.kind, text: t, meaning: anPlain(x.meaning) };
+  });
+  const whole = anPlain(p.meaning);
+  const n = parts.length + 1;
+  const lines = (s) => (s ? anWrap(anQuote(s), 38) : []);
+  const rows = Math.max(
+    anTiles(parts, true).rows,
+    ...parts.map((_, i) => anTiles(parts.slice(0, i + 1), false).rows),
+  );
+  const tail = Math.max(...parts.map((x) => lines(x.meaning).length), lines(whole).length);
+  const height = 14 + rows * 80 + 50 + tail * 22 + 16;
+  const frames = parts.map((part, i) => {
+    const caption = anBoth((l) => {
+      const kind = anPick(l, ...AN_KIND[part.kind]);
+      return `${kind}: ${anQuote(anShown(part))}.${part.meaning ? ` ${anPick(l, "Meaning", "Significado")}: ${part.meaning}.` : ""}`;
+    });
+    return {
+      caption,
+      draw: (lang, id) => ({
+        svg: anWordSvg(parts, i, false, word, lines(part.meaning), {
+          lang,
+          id,
+          alt: caption[lang],
+          desc: anStep(lang, i + 1, n),
+          height,
+        }),
+        alt: caption[lang],
+      }),
+    };
+  });
+  const joined = parts.map(anShown).join(" + ");
+  const caption = anBoth(
+    (l) =>
+      `${anPick(l, "Put the parts together", "Une las partes")}: ${joined} = ${word}.${whole ? ` ${anPick(l, "Meaning", "Significado")}: ${whole}.` : ""}`,
+  );
+  frames.push({
+    caption,
+    draw: (lang, id) => ({
+      svg: anWordSvg(parts, parts.length - 1, true, word, lines(whole), {
+        lang,
+        id,
+        alt: caption[lang],
+        desc: anStep(lang, n, n),
+        height,
+      }),
+      alt: caption[lang],
+    }),
+  });
+  return { frames };
+}
+
+// ── sentence-expand: a base sentence that grows ──────────────────────────────
+
+const AN_ADDS = {
+  because: ["a reason (because)", "una razón (porque)"],
+  but: ["a contrast (but)", "un contraste (pero)"],
+  so: ["a result (so)", "un resultado (así que)"],
+  when: ["a time (when)", "un tiempo (cuando)"],
+  where: ["a place (where)", "un lugar (donde)"],
+  detail: ["a detail", "un detalle"],
+};
+
+/** Lines of words (each flagged new or old) no longer than `max` characters. */
+function anSentenceLines(words, max) {
+  const lines = [[]];
+  let size = 0;
+  for (const w of words) {
+    if (size && size + 1 + w.t.length > max) {
+      lines.push([]);
+      size = 0;
+    }
+    lines.at(-1).push(w);
+    size += (size ? 1 : 0) + w.t.length;
+  }
+  return lines;
+}
+
+function anSentenceSvg(words, chip, maxLines, { lang, id, alt, desc }) {
+  const lines = anSentenceLines(words, 34);
+  const chipW = textWidth(chip, 15, true) + 28;
+  const body = [
+    anRect(16, 14, chipW, 30, { fill: AN_TINT, stroke: COLOR.blue, sw: 2, rx: 15 }),
+    text(30, 35, chip, { size: 15, weight: "700" }),
+  ];
+  lines.forEach((ln, i) => {
+    let runs = "";
+    ln.forEach((w, j) => {
+      const t = esc(j < ln.length - 1 ? `${w.t} ` : w.t);
+      runs += w.hl
+        ? `<tspan font-weight="700" fill="${COLOR.blue}" text-decoration="underline">${t}</tspan>`
+        : `<tspan>${t}</tspan>`;
+    });
+    body.push(
+      `<text x="20" y="${f1(84 + i * 30)}" font-size="20" fill="${COLOR.ink}" xml:space="preserve">${runs}</text>`,
+    );
+  });
+  return anScene({
+    id,
+    h: 64 + Math.max(maxLines, lines.length) * 30 + 20,
+    alt,
+    desc,
+    lang,
+    body: body.join(""),
+  });
+}
+
+function anSentence(p) {
+  anNeed(p.additions, 1, 6, "added phrases", "frases agregadas");
+  const base = anTrim(p.base);
+  if (!base) anFail("empty-text", "Type the base sentence.", "Escriba la oración base.");
+  const end = /[.!?]$/.exec(anPlain(p.base))?.[0] ?? ".";
+  const adds = p.additions.map((a, i) => {
+    const t = anTrim(a.text);
+    if (!t)
+      anFail(
+        "empty-text",
+        `Added phrase ${i + 1} needs words.`,
+        `La frase agregada ${i + 1} necesita palabras.`,
+      );
+    return { adds: a.adds, text: t };
+  });
+  const wordsAt = (k) => {
+    const all = [base, ...adds.slice(0, k).map((a) => a.text)];
+    const flagged = all.flatMap((chunk, ci) =>
+      chunk.split(" ").map((t) => ({ t, hl: k > 0 && ci === k })),
+    );
+    flagged.at(-1).t += end;
+    return flagged;
+  };
+  const sentenceAt = (k) =>
+    wordsAt(k)
+      .map((w) => w.t)
+      .join(" ");
+  const n = adds.length + 1;
+  const maxLines = anSentenceLines(wordsAt(adds.length), 34).length;
+  return {
+    frames: Array.from({ length: n }, (_, k) => {
+      const caption = anBoth((l) =>
+        k === 0
+          ? `${anPick(l, "Start with the base sentence", "Empieza con la oración base")}: ${anQuote(sentenceAt(0))}`
+          : `${anPick(l, "Add", "Agrega")} ${anPick(l, ...AN_ADDS[adds[k - 1].adds])}: ${anQuote(adds[k - 1].text)}. ${anPick(l, "Now the sentence says", "Ahora la oración dice")}: ${anQuote(sentenceAt(k))}`,
+      );
+      return {
+        caption,
+        draw: (lang, id) => ({
+          svg: anSentenceSvg(
+            wordsAt(k),
+            k === 0
+              ? anPick(lang, "Base sentence", "Oración base")
+              : `${anPick(lang, "Adds", "Agrega")} ${anPick(lang, ...AN_ADDS[adds[k - 1].adds])}`,
+            maxLines,
+            { lang, id, alt: caption[lang], desc: anStep(lang, k + 1, n) },
+          ),
+          alt: caption[lang],
+        }),
+      };
+    }),
+  };
+}
+
+// ── cause-effect: linked pairs ───────────────────────────────────────────────
+
+function anCauseRows(pairs) {
+  let y = 48;
+  return pairs.map((p) => {
+    const c = anWrap(p.cause, 20);
+    const e = anWrap(p.effect, 20);
+    const h = Math.max(48, Math.max(c.length, e.length) * 20 + 22);
+    const row = { y, h, c, e };
+    y += h + 14;
+    return row;
+  });
+}
+
+function anCauseSvg(pairs, k, { lang, id, alt, desc }) {
+  const rows = anCauseRows(pairs);
+  const total = rows.at(-1).y + rows.at(-1).h + 10;
+  const body = [
+    text(116, 28, anPick(lang, "Cause", "Causa"), {
+      size: 16,
+      anchor: "middle",
+      weight: "700",
+      fill: COLOR.muted,
+    }),
+    text(364, 28, anPick(lang, "Effect", "Efecto"), {
+      size: 16,
+      anchor: "middle",
+      weight: "700",
+      fill: COLOR.muted,
+    }),
+  ];
+  rows.slice(0, k + 1).forEach((r, i) => {
+    const on = i === k;
+    const style = {
+      fill: on ? AN_TINT : COLOR.white,
+      stroke: on ? COLOR.blue : COLOR.ink,
+      sw: on ? 3.5 : 1.5,
+    };
+    body.push(
+      anRect(16, r.y, 200, r.h, style),
+      anRect(264, r.y, 200, r.h, style),
+      anLines(28, r.y + 8, r.c, { size: 16, lh: 20 }).svg,
+      anLines(276, r.y + 8, r.e, { size: 16, lh: 20 }).svg,
+      anArrow(224, 256, r.y + r.h / 2),
+    );
+  });
+  return anScene({ id, h: total, alt, desc, lang, body: body.join("") });
+}
+
+function anCause(p) {
+  anNeed(p.pairs, 2, 6, "cause and effect pairs", "pares de causa y efecto");
+  const pairs = p.pairs.map((x, i) => {
+    const cause = anPlain(x.cause);
+    const effect = anPlain(x.effect);
+    if (!cause || !effect)
+      anFail(
+        "empty-text",
+        `Pair ${i + 1} needs a cause and an effect.`,
+        `El par ${i + 1} necesita una causa y un efecto.`,
+      );
+    return { cause, effect };
+  });
+  const n = pairs.length;
+  return {
+    frames: pairs.map((x, k) => {
+      const caption = anBoth(
+        (l) =>
+          `${anPick(l, "Cause", "Causa")}: ${x.cause}. ${anPick(l, "Effect", "Efecto")}: ${x.effect}.`,
+      );
+      return {
+        caption,
+        draw: (lang, id) => ({
+          svg: anCauseSvg(pairs, k, { lang, id, alt: caption[lang], desc: anStep(lang, k + 1, n) }),
+          alt: caption[lang],
+        }),
+      };
+    }),
+  };
+}
+
+// ── x/animations.js
+// One entry point for an `animation` block (see core/schema.js): the block's PRESET and plain values are expanded
+// into an ordered list of FRAMES, each a still scene plus a plain caption. The player, the printed filmstrip, the Word
+// file, the validator and the editor preview all call this file, so they can never disagree.
+//
+//   expandAnimation(block, { lang, suffix }) -> { ok: true, title, alt, explanation, frames, table }
+//                                             | { ok: false, code, message, say: {en, es} }      (never throws)
+//     frames[i] = { caption: {en, es}, alt, svg }    svg is drawn for `lang`; ids are unique through `suffix`
+//     table     = { headers, rows } | null            the same facts as plain rows (Word, screen readers)
+//   checkAnimation(block)   -> null | { code, message, say }
+//   explainAnimation(error) -> { en, es }
+//
+// Everything is deterministic: the same values always give the same frames, and a value is only ever shown, never
+// guessed. A preset that cannot be built (too few steps, a number that is not positive...) is refused in plain words.
+
+const AN_BUILD = {
+  process: anProcess,
+  timeline: anTimeline,
+  "word-build": anWordBuild,
+  "sentence-expand": anSentence,
+  "cause-effect": anCause,
+  "ratio-change": anRatio,
+  "geometry-dims": anGeometry,
+};
+
+/** What an untitled animation is called, in both languages. */
+const AN_TITLE = {
+  process: ["Step-by-step process", "Proceso paso a paso"],
+  timeline: ["Timeline", "Línea de tiempo"],
+  "word-build": ["Building a word", "Cómo se forma la palabra"],
+  "sentence-expand": ["Building a longer sentence", "Cómo crece una oración"],
+  "cause-effect": ["Cause and effect", "Causa y efecto"],
+  "ratio-change": ["A ratio that changes", "Una razón que cambia"],
+  "geometry-dims": ["Changing the measurements", "Cambiando las medidas"],
+};
+
+const anSafeId = (s) => String(s ?? "a").replace(/[^A-Za-z0-9_-]/g, "") || "a";
+
+function expandAnimation(block, { lang = "en", suffix = "" } = {}) {
+  const l = lang === "es" ? "es" : "en";
+  try {
+    const build = AN_BUILD[block?.preset];
+    if (!build) anFail("unknown-preset", "That kind of animation is not available.", "Ese tipo de animación no está disponible.");
+    const made = build(block.params ?? {});
+    const base = anSafeId(suffix || block.id);
+    const frames = made.frames.map((f, i) => {
+      const drawn = f.draw(l, `${base}-f${i + 1}`);
+      return { caption: f.caption, alt: drawn.alt, svg: drawn.svg };
+    });
+    const [titleEn, titleEs] = AN_TITLE[block.preset];
+    const title = block.title || (l === "es" ? titleEs : titleEn);
+    const n = frames.length;
+    return {
+      ok: true,
+      title,
+      alt: block.alt?.[l] || (l === "es" ? `Animación de ${n} pasos: ${title}.` : `Animation in ${n} steps: ${title}.`),
+      explanation: block.explanation?.[l] || "",
+      frames,
+      table: made.table ? made.table(l) : null,
+    };
+  } catch (error) {
+    if (error?.say) return { ok: false, code: error.code, message: error.message, say: error.say };
+    return { ok: false, code: "cannot-build", message: "This animation could not be built.", say: anExplain(null) };
+  }
+}
+
+function checkAnimation(block) {
+  const r = expandAnimation(block, { lang: "en", suffix: "check" });
+  return r.ok ? null : { code: r.code, message: r.message, say: r.say };
+}
+
+/** The plain-word message of a refused animation, in both languages. */
+function explainAnimation(error) {
+  return anExplain(error);
+}
+
+return { expandAnimation, renderDiagram };
+})();
+
+// ── player/block-animation.js
+// The `animation` block: an explanation played as a few calm still frames. x/animations.js expands the block's preset
+// and values into frames (a figure and a plain caption each); this file only plays them. Nothing moves on its own:
+// the student presses Play, Pause, Step or Replay, and a played animation stops at the last frame (no loop).
+// Frames change with a CSS cross-fade (animation.css); `prefers-reduced-motion` and Calm mode remove the fade AND
+// the Play button, leaving step-by-step. Every frame's words are also a plain numbered list under the figure.
+// The SVG is parsed as XML and imported, never assigned with innerHTML, and anything that is not plain drawing
+// (script, foreignObject, event attributes) is refused.
+
+const ANIM_PACE_MS = 3500;
+const ANIM_SVG_MIME = "image/svg+xml";
+const ANIM_UNSAFE = /^(script|foreignobject|iframe|object|embed|a)$/i;
+
+/** An SVG element for generated markup, or null when it does not parse or holds anything but drawing. */
+function animSvg(markup) {
+  const doc = new DOMParser().parseFromString(markup, ANIM_SVG_MIME);
+  const root = doc.documentElement;
+  if (!root || root.localName !== "svg" || doc.querySelector("parsererror")) return null;
+  const unsafe = [root, ...root.querySelectorAll("*")].some(
+    (el) =>
+      ANIM_UNSAFE.test(el.localName) ||
+      [...el.attributes].some((a) => /^on/i.test(a.name) || /^(href|xlink:href)$/i.test(a.name)),
+  );
+  return unsafe ? null : document.importNode(root, true);
+}
+
+const animSize = (markup) => {
+  const m = /viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(markup);
+  return m ? [Number(m[1]), Number(m[2])] : [480, 300];
+};
+
+/** A caption {en, es} as nodes for the current language ("bi" shows both). */
+function animWords(caption, lang) {
+  if (lang === "en") return [caption.en];
+  if (lang === "es") return [h("span", { lang: "es" }, caption.es)];
+  return [caption.en, " ", h("span", { class: "sp-es", lang: "es" }, caption.es)];
+}
+
+/** The teacher's explanation, in the student's language; a missing Spanish half falls back to the English text. */
+function animExplanation(b, lang) {
+  const { en = "", es = "" } = b.explanation ?? {};
+  if (lang === "bi" && en && es && en !== es)
+    return [rt("p", "sp-anim-explain", en), rt("p", "sp-anim-explain sp-es", es, { lang: "es" })];
+  const text = lang === "es" ? es || en : en || es;
+  const attrs = lang === "es" && !es ? { lang: "en" } : lang === "en" && !en ? { lang: "es" } : undefined;
+  return text ? [rt("p", "sp-anim-explain", text, attrs)] : [];
+}
+
+/** Registered in blocks.js. */
+function animationBlock(b, ctx) {
+  const lang = ctx.lang === "es" ? "es" : "en";
+  const made = expandAnimation(b, { lang, suffix: b.id });
+  const art = made.ok ? made.frames.map((f) => animSvg(f.svg)) : [];
+  if (!made.ok || art.some((a) => !a))
+    return h("p", { class: "sp-note-small", role: "note" }, ctx.msg("animMissing"));
+  const frames = made.frames.map((f, i) => ({ ...f, art: art[i] }));
+  for (const f of frames) {
+    f.art.removeAttribute("width");
+    f.art.removeAttribute("height");
+  }
+  const sizes = made.frames.map((f) => animSize(f.svg));
+  const last = frames.length - 1;
+  let at = 0;
+  let timer = 0;
+  let playing = false;
+
+  const titleId = nid("anim");
+  const stage = h("div", { class: "sp-anim-art", role: "group", "aria-label": made.alt });
+  stage.style.aspectRatio = `${Math.max(...sizes.map((s) => s[0]))} / ${Math.max(...sizes.map((s) => s[1]))}`;
+  const caption = h("p", { class: "sp-anim-caption", role: "status", "aria-live": "polite", "aria-atomic": "true" });
+  const count = h("span", { class: "sp-anim-count" });
+  const btn = (key, cls, onclick) => {
+    const b2 = h("button", { type: "button", class: `sp-btn sp-anim-btn ${cls}` }, ctx.msg(key));
+    b2.addEventListener("click", onclick);
+    return b2;
+  };
+  const replay = btn("animReplay", "", () => {
+    stop();
+    show(0);
+    if (motionOk()) play();
+  });
+  const back = btn("animBack", "", () => step(-1));
+  const toggle = btn("animPlay", "sp-btn-primary sp-anim-motion", () => (playing ? pause() : play()));
+  const next = btn("animNext", "", () => step(1));
+  const controls = h(
+    "div",
+    { class: "sp-anim-controls", role: "group", "aria-label": ctx.t("animControls") },
+    replay,
+    back,
+    toggle,
+    next,
+    count,
+  );
+
+  const motionOk = () =>
+    !(ctx.state?.calm || ctx.root?.classList.contains("sp-calm")) &&
+    !globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  function show(i, fade = false) {
+    at = Math.min(Math.max(i, 0), last);
+    const f = frames[at];
+    stage.replaceChildren(f.art);
+    if (fade && motionOk()) {
+      f.art.classList.add("is-new");
+      f.art.getBoundingClientRect(); // commit the start state so the CSS transition runs
+      f.art.classList.remove("is-new");
+    }
+    caption.replaceChildren(...animWords(f.caption, ctx.lang));
+    count.replaceChildren(ctx.msg("animStep", { n: at + 1, total: frames.length }));
+    const held = [back, next].find((b2) => b2 === document.activeElement);
+    back.disabled = at === 0;
+    next.disabled = at === last;
+    if (held?.disabled) replay.focus(); // a button that just switched off must not strand keyboard focus
+    sync();
+  }
+  function sync() {
+    toggle.replaceChildren(ctx.msg(playing ? "animPause" : "animPlay"));
+  }
+  function stop() {
+    clearTimeout(timer);
+    timer = 0;
+    playing = false;
+  }
+  function tick() {
+    timer = 0;
+    if (!playing || !root.isConnected || !motionOk()) {
+      stop();
+      sync();
+      return;
+    }
+    show(at + 1, true);
+    if (at < last) timer = setTimeout(tick, ANIM_PACE_MS);
+    else stop();
+    sync();
+  }
+  function play() {
+    if (!motionOk()) return;
+    if (at === last) show(0);
+    playing = true;
+    sync();
+    timer = setTimeout(tick, ANIM_PACE_MS);
+  }
+  function pause() {
+    stop();
+    sync();
+  }
+  function step(d) {
+    stop();
+    show(at + d, true);
+  }
+
+  const list = h(
+    "ol",
+    { class: "sp-anim-list" },
+    frames.map((f) => h("li", null, animWords(f.caption, ctx.lang))),
+  );
+  const listBody = [list];
+  if (made.table) {
+    const t = h("table", { class: "sp-table" });
+    t.append(
+      h("thead", null, h("tr", null, ...made.table.headers.map((x) => h("th", { scope: "col" }, x)))),
+      h("tbody", null, ...made.table.rows.map((r) => h("tr", null, ...r.map((c) => h("td", null, c))))),
+    );
+    listBody.push(h("div", { class: "sp-table-wrap", tabindex: "0", role: "region", "aria-label": made.title }, t));
+  }
+  const root = h(
+    "section",
+    { class: "sp-anim", "aria-labelledby": titleId },
+    rt("h3", "sp-anim-title", made.title, { id: titleId }),
+    animExplanation(b, ctx.lang),
+    stage,
+    caption,
+    controls,
+    h("details", { class: "sp-anim-steps" }, h("summary", null, ctx.msg("animSteps")), ...listBody),
+  );
+  show(0);
+  return root;
+}
+
+// ── player/block-diagram.js
+// The `diagram` block: a figure redrawn from its stored spec (never from stored SVG), with the data table as the
+// keyboard-reachable, non-visual alternative. The SVG is parsed as XML and imported, never assigned with
+// innerHTML, and anything that is not plain drawing (script, foreignObject, event attributes) is refused.
+
+const SVG_MIME = "image/svg+xml";
+
+/** An SVG element for generated markup, or null when it does not parse or holds anything but drawing. */
+function svgElement(markup) {
+  const doc = new DOMParser().parseFromString(markup, SVG_MIME);
+  const root = doc.documentElement;
+  if (!root || root.localName !== "svg" || doc.querySelector("parsererror")) return null;
+  const unsafe = [root, ...root.querySelectorAll("*")].some(
+    (el) =>
+      /^(script|foreignobject|iframe|object|embed|a)$/i.test(el.localName) ||
+      [...el.attributes].some((a) => /^on/i.test(a.name) || /^(href|xlink:href)$/i.test(a.name)),
+  );
+  return unsafe ? null : document.importNode(root, true);
+}
+
+function dataTable(table, caption) {
+  const t = h("table", { class: "sp-table" });
+  if (caption) t.append(rt("caption", "", caption));
+  t.append(
+    h("thead", null, h("tr", null, ...table.headers.map((x) => h("th", { scope: "col" }, x)))),
+    h("tbody", null, ...table.rows.map((r) => h("tr", null, ...r.map((c) => h("td", null, c))))),
+  );
+  return h("div", { class: "sp-table-wrap", tabindex: "0", role: "region", "aria-label": caption }, t);
+}
+
+/** Registered in blocks.js. English figure for "en" and "bi", Spanish for "es"; "bi" adds the Spanish caption. */
+function diagramBlock(b, ctx) {
+  const lang = ctx.lang === "es" ? "es" : "en";
+  const shown = renderDiagram(b, { lang, suffix: b.id });
+  const art = shown.ok ? svgElement(shown.svg) : null;
+  if (!art) return h("p", { class: "sp-note-small", role: "note" }, ctx.msg("diagramMissing"));
+  art.removeAttribute("width");
+  art.removeAttribute("height");
+  const fig = h("figure", { class: "sp-diagram" }, h("div", { class: "sp-diagram-art" }, art));
+  const caption = rt("figcaption", "", shown.caption);
+  if (ctx.lang === "bi") {
+    const es = renderDiagram(b, { lang: "es", suffix: b.id });
+    if (es.ok && es.caption !== shown.caption)
+      caption.append(" ", h("span", { class: "sp-es", lang: "es" }, es.caption));
+  }
+  fig.append(caption);
+  const bodyId = nid("dgt");
+  fig.append(
+    h(
+      "details",
+      { class: "sp-diagram-data" },
+      h("summary", { "aria-controls": bodyId }, ctx.msg("diagramData")),
+      h("div", { id: bodyId }, dataTable(shown.table, shown.caption)),
+    ),
+  );
+  return fig;
+}
+
 // ── player/hear.js
 // The "Read aloud" button. It speaks with the device voice and says so; with no voice it shows a plain message.
 
@@ -1149,6 +4281,8 @@ const RENDER = {
   table: tableBlock,
   organizer: organizerBlock,
   audio: audioBlock,
+  diagram: diagramBlock,
+  animation: animationBlock,
 };
 
 /** One content block as an element, or null (notes and unknown types render nothing). */
@@ -3609,6 +6743,17 @@ const STRINGS = {
     inSpanish: "In Spanish:",
     listen: "Listen",
     table: "Table",
+    diagramData: "Show the data table",
+    diagramMissing: "This picture could not be shown. Ask your teacher for help.",
+    animPlay: "Play",
+    animPause: "Pause",
+    animBack: "Back",
+    animNext: "Next",
+    animReplay: "Replay",
+    animStep: "Step {n} of {total}",
+    animControls: "Animation controls",
+    animSteps: "Show all the steps as a list",
+    animMissing: "This animation could not be shown. Ask your teacher for help.",
     lookBack: "Look at the text and words again",
     progress: "Question {n} of {total}",
     progressLabel: "Your progress",
@@ -3827,6 +6972,17 @@ const STRINGS = {
     inSpanish: "En español:",
     listen: "Escuchar",
     table: "Tabla",
+    diagramData: "Mostrar la tabla de datos",
+    diagramMissing: "No se pudo mostrar esta imagen. Pida ayuda a su maestro o maestra.",
+    animPlay: "Reproducir",
+    animPause: "Pausar",
+    animBack: "Atrás",
+    animNext: "Siguiente",
+    animReplay: "Repetir",
+    animStep: "Paso {n} de {total}",
+    animControls: "Controles de la animación",
+    animSteps: "Mostrar todos los pasos en una lista",
+    animMissing: "No se pudo mostrar esta animación. Pida ayuda a su maestro o maestra.",
     lookBack: "Mira otra vez el texto y las palabras",
     progress: "Pregunta {n} de {total}",
     progressLabel: "Tu progreso",

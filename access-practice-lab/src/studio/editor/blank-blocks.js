@@ -2,6 +2,8 @@
 // language. The most common formats are offered first; the rest sit under "More types" so the menu stays short.
 
 import { uid } from "../core/schema.js";
+import { blankAnimationFields } from "./animation-editor.js";
+import { blankDiagramFields } from "./diagram-editor.js";
 
 export const FORMAT_LABEL = {
   choice: ["Multiple choice", "Opción múltiple"],
@@ -43,6 +45,8 @@ export const BLOCK_LABEL = {
   organizer: ["Graphic organizer", "Organizador gráfico"],
   note: ["Note for me (students never see this)", "Nota para mí (los estudiantes no la ven)"],
   audio: ["Read-aloud prompt", "Indicación para leer en voz alta"],
+  diagram: ["Diagram or chart", "Diagrama o gráfica"],
+  animation: ["Animation (step by step)", "Animación (paso a paso)"],
 };
 export const OTHER_BLOCKS = [
   "text",
@@ -52,6 +56,8 @@ export const OTHER_BLOCKS = [
   "table",
   "organizer",
   "audio",
+  "diagram",
+  "animation",
   "note",
 ];
 
@@ -125,5 +131,7 @@ const BLOCK_SKELETON = {
   organizer: () => ({ kind: "web", prompts: [""] }),
   note: () => ({ text: "" }),
   audio: () => ({ say: "", label: "" }),
+  diagram: () => blankDiagramFields("bar"),
+  animation: () => blankAnimationFields("process"),
 };
 export const newBlock = (type) => ({ id: uid("b"), type, ...BLOCK_SKELETON[type]() });

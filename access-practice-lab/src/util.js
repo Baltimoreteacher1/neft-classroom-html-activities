@@ -11,11 +11,46 @@ export const TIERS = {
   C: { name: "Expanding", range: "More independence", es: "Ampliando" },
 };
 export const DOMAIN_META = {
-  Listening: { icon: "listening", name: "Listening", room: "Listening practice", verb: "Listen", es: "Escuchar", blurb: "Follow directions, catch key details, and understand what you hear." },
-  Reading: { icon: "reading", name: "Reading", room: "Reading practice", verb: "Read", es: "Leer", blurb: "Read short texts, find evidence, and explain the main idea." },
-  Speaking: { icon: "speaking", name: "Speaking", room: "Speaking practice", verb: "Speak", es: "Hablar", blurb: "Plan what you will say, record it, and listen back." },
-  Writing: { icon: "writing", name: "Writing", room: "Writing practice", verb: "Write", es: "Escribir", blurb: "Build sentences and paragraphs with words and frames you choose." },
-  "Model-Test": { icon: "tests", name: "Model test", room: "Model test items", verb: "Practice", es: "Practicar", blurb: "Test-style questions to rehearse the format." },
+  Listening: {
+    icon: "listening",
+    name: "Listening",
+    room: "Listening practice",
+    verb: "Listen",
+    es: "Escuchar",
+    blurb: "Follow directions, catch key details, and understand what you hear.",
+  },
+  Reading: {
+    icon: "reading",
+    name: "Reading",
+    room: "Reading practice",
+    verb: "Read",
+    es: "Leer",
+    blurb: "Read short texts, find evidence, and explain the main idea.",
+  },
+  Speaking: {
+    icon: "speaking",
+    name: "Speaking",
+    room: "Speaking practice",
+    verb: "Speak",
+    es: "Hablar",
+    blurb: "Plan what you will say, record it, and listen back.",
+  },
+  Writing: {
+    icon: "writing",
+    name: "Writing",
+    room: "Writing practice",
+    verb: "Write",
+    es: "Escribir",
+    blurb: "Build sentences and paragraphs with words and frames you choose.",
+  },
+  "Model-Test": {
+    icon: "tests",
+    name: "Model test",
+    room: "Model test items",
+    verb: "Practice",
+    es: "Practicar",
+    blurb: "Test-style questions to rehearse the format.",
+  },
 };
 
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
@@ -27,7 +62,9 @@ const RAW = Symbol("raw");
 export const raw = (html) => ({ [RAW]: String(html ?? "") });
 /** Inline SVG icon from the shared sprite (pictures/ui-icons.svg). Decorative by default. */
 export const icon = (name, cls = "") =>
-  raw(`<svg class="ico ${cls}" aria-hidden="true" focusable="false"><use href="${ICONS}#${name}"></use></svg>`);
+  raw(
+    `<svg class="ico ${cls}" aria-hidden="true" focusable="false"><use href="${ICONS}#${name}"></use></svg>`,
+  );
 export function html(strings, ...values) {
   let out = strings[0];
   values.forEach((v, i) => {
@@ -77,7 +114,11 @@ const volatile = new Map();
 // data. The name survives reloads inside the frame, so a refresh cannot turn preview mode off.
 const PREVIEW = (() => {
   try {
-    return typeof window !== "undefined" && window.name === "lp-tour-preview" && window.self !== window.top;
+    return (
+      typeof window !== "undefined" &&
+      window.name === "lp-tour-preview" &&
+      window.self !== window.top
+    );
   } catch {
     return false;
   }
@@ -87,9 +128,10 @@ function storageWarning() {
   const node = document.getElementById("labStorageWarning");
   if (node) {
     node.hidden = !volatile.size;
-    node.textContent = document.documentElement?.lang === "es"
-      ? "No se pudo guardar en este dispositivo. El trabajo nuevo está solo en esta pestaña. Exporta un código de Pasaporte antes de cerrar o recargar."
-      : "This device could not save your latest work. It is kept only in this tab. Export a Passport code before closing or reloading.";
+    node.textContent =
+      document.documentElement?.lang === "es"
+        ? "No se pudo guardar en este dispositivo. El trabajo nuevo está solo en esta pestaña. Exporta un código de Pasaporte antes de cerrar o recargar."
+        : "This device could not save your latest work. It is kept only in this tab. Export a Passport code before closing or reloading.";
   }
 }
 // Listeners told after every write or removal, so an opt-in feature (the class link) can notice local progress
@@ -107,7 +149,9 @@ export const storage = {
     writeListeners.add(fn);
     return () => writeListeners.delete(fn);
   },
-  get isVolatile() { return !PREVIEW && volatile.size > 0; },
+  get isVolatile() {
+    return !PREVIEW && volatile.size > 0;
+  },
   refreshWarning: storageWarning,
   get(key) {
     if (PREVIEW) return volatile.has(key) ? volatile.get(key) : null;
@@ -145,14 +189,18 @@ export const storage = {
     try {
       localStorage.removeItem(key);
       volatile.delete(key);
-    } catch { volatile.set(key, null); }
+    } catch {
+      volatile.set(key, null);
+    }
     storageWarning();
     notifyWrite(key);
   },
   keys() {
     if (PREVIEW) return [...volatile.keys()].filter((key) => volatile.get(key) !== null);
     try {
-      return [...new Set([...Object.keys(localStorage), ...volatile.keys()])].filter((key) => !volatile.has(key) || volatile.get(key) !== null);
+      return [...new Set([...Object.keys(localStorage), ...volatile.keys()])].filter(
+        (key) => !volatile.has(key) || volatile.get(key) !== null,
+      );
     } catch {
       return [...volatile.keys()].filter((key) => volatile.get(key) !== null);
     }
@@ -180,6 +228,35 @@ export function testingWindowPhase(win, today = todayISO()) {
   const daysAway = Math.round((start - now) / 86400000);
   if (daysAway > 0) return { phase: "upcoming", daysAway };
   return { phase: daysAway === 0 ? "starting" : "open", daysAway: 0 };
+}
+
+/**
+ * Load a route's own stylesheet (`${BASE}/<file>`) the first time that route renders, so the lab shell does not carry
+ * CSS most visits never use (validate-language-page-performance ratchets the shell's blocking CSS). Resolves on load,
+ * on error, or after 3 s, so a slow sheet never blocks the page. Safe to call on every render.
+ */
+const routeSheets = new Map();
+export function ensureStylesheet(file) {
+  if (typeof document === "undefined") return Promise.resolve();
+  const href = `${BASE}/${file}`;
+  if (!routeSheets.has(href)) {
+    const present = document.querySelector(`link[rel="stylesheet"][href^="${href}"]`);
+    routeSheets.set(
+      href,
+      present
+        ? Promise.resolve()
+        : new Promise((resolve) => {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = href;
+            link.addEventListener("load", resolve, { once: true });
+            link.addEventListener("error", resolve, { once: true });
+            setTimeout(resolve, 3000);
+            document.head.append(link);
+          }),
+    );
+  }
+  return routeSheets.get(href);
 }
 
 /**

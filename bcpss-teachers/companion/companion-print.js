@@ -1,12 +1,12 @@
 // BCPSS Plan & Respond — print documents (Letter, black-and-white safe). Each builder returns a complete HTML document;
 // openPrint() shows it in a new tab and opens the print dialog. Student sheets and teacher sheets are separate documents.
 
-const esc = (v) =>
+export const esc = (v) =>
   String(v ?? "").replace(
     /[&<>"']/g,
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
   );
-const blanks = (s) =>
+export const blanks = (s) =>
   esc(s)
     .replace(/\[([^\]]+)\]/g, '<span class="b">$1</span>')
     .replace(/_{3,}/g, '<span class="b">&nbsp;</span>');
@@ -45,13 +45,13 @@ ol.frames li{margin:0 0 12pt}
 ul{margin:2pt 0 4pt;padding-left:16pt}
 `;
 
-function doc(title, body, footer) {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${CSS}</style></head><body>${body}<p class="foot">${esc(footer)}</p></body></html>`;
+export function doc(title, body, footer, extraCss = "") {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${CSS}${extraCss}</style></head><body>${body}<p class="foot">${esc(footer)}</p></body></html>`;
 }
 
-const unitLine = (u) =>
+export const unitLine = (u) =>
   `Grade ${esc(u.grade)} ${esc(u.subject)} · ${esc(u.curriculum_name || "")} Unit ${esc(u.unit_number)}: ${esc(u.unit_title)}`;
-const FOOT =
+export const FOOT =
   "EduWonderLab · original WIDA-aligned practice for BCPSS teachers. Not an official BCPSS or WIDA document.";
 
 /** Student language-support sheet (one level, one fade stage). */

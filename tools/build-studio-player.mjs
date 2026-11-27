@@ -8,6 +8,8 @@
  * exposes `window.StudioPlayer = { mountPlayer }`. The build FAILS on a top-level name that two modules both declare
  * (stripping imports puts every module in one scope), on an import that is not exported, and on import/export forms
  * it does not handle (default, namespace, `as`, dynamic). Deterministic: a second run changes nothing.
+ * The diagram generators (src/studio/x, print/html.js) are bundled in a nested scope of their own, so their names
+ * are checked separately and only what the player imports from them is visible to it.
  *
  *   node tools/build-studio-player.mjs          write the outputs
  *   node tools/build-studio-player.mjs --check  exit 1 when the outputs are stale
@@ -20,11 +22,19 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // STUDIO_PLAYER_SRC / STUDIO_PLAYER_OUT redirect the build (the tests build throwaway copies); normal runs use neither.
 const SRC = process.env.STUDIO_PLAYER_SRC || join(ROOT, "access-practice-lab/src/studio");
 const ENTRY = join(SRC, "player/index.js");
-const CSS_FILES = ["player.css", "formats.css", "games.css"].map((f) => join(SRC, "player", f));
+const CSS_FILES = ["player.css", "formats.css", "games.css", "diagram.css", "animation.css"].map((f) =>
+  join(SRC, "player", f),
+);
 const OUT_DIR = process.env.STUDIO_PLAYER_OUT || join(ROOT, "access-practice-lab/player");
 const OUT_JS = join(OUT_DIR, "studio-player.js");
 const OUT_CSS = join(OUT_DIR, "studio-player.css");
-const ALLOWED = [join(SRC, "player"), join(SRC, "core")];
+// player/ and core/ share ONE scope. x/ (the diagram generators) and print/ (only html.js is reached) are ISOLATED:
+// their modules are wrapped in a nested function so their many short top-level names (`text`, `line`, `round`...)
+// cannot collide with the player's, and only the names the player imports from them are exposed.
+const SHARED = [join(SRC, "player"), join(SRC, "core")];
+const ISOLATED = [join(SRC, "x"), join(SRC, "print")];
+const ALLOWED = [...SHARED, ...ISOLATED];
+const isolated = (file) => ISOLATED.some((dir) => file.startsWith(`${dir}/`));
 
 const fail = (msg) => {
   console.error(`build-studio-player: ${msg}`);
@@ -37,7 +47,7 @@ const IMPORT = /^import\s+([^;]*?)\s+from\s+"([^"]+)";?[ \t]*$/gms;
 /** Parse one module: its imports, exported names, top-level declarations and stripped body. */
 function parseModule(file) {
   if (!ALLOWED.some((dir) => file.startsWith(`${dir}/`)))
-    fail(`${rel(file)} is outside the player and core folders`);
+    fail(`${rel(file)} is outside the player, core, x and print folders`);
   let src = readFileSync(file, "utf8");
   if (/^\s*import\s*\(/m.test(src) || /\bimport\.meta\b/.test(src))
     fail(`${rel(file)}: dynamic import / import.meta`);
@@ -105,18 +115,54 @@ function collect() {
   const owner = new Map();
   for (const mod of order)
     for (const name of mod.declared) {
-      if (owner.has(name))
+      const key = `${isolated(mod.file) ? "iso" : "shared"}:${name}`;
+      if (owner.has(key))
         fail(
-          `top-level name "${name}" is declared in both ${rel(owner.get(name))} and ${rel(mod.file)}`,
+          `top-level name "${name}" is declared in both ${rel(owner.get(key))} and ${rel(mod.file)}`,
         );
-      owner.set(name, mod.file);
+      owner.set(key, mod.file);
     }
   if (!mods.get(ENTRY).exported.has("mountPlayer")) fail("index.js must export mountPlayer");
   return order;
 }
 
+/**
+ * Module bodies in dependency order. The isolated modules become ONE nested function emitted right after the last of
+ * them; it returns exactly the names the shared modules import from it. A shared module that needs those names
+ * before that point is a build error (dependency order would have to change).
+ */
+function bodies(order) {
+  const iso = order.filter((m) => isolated(m.file));
+  if (!iso.length) return order.map((m) => `// ── ${relative(SRC, m.file)}\n${m.body}`);
+  const isoFiles = new Set(iso.map((m) => m.file));
+  const exposed = new Set();
+  for (const m of order)
+    if (!isoFiles.has(m.file))
+      for (const imp of m.imports)
+        if (isoFiles.has(imp.from)) for (const n of imp.names) exposed.add(n);
+  const last = iso[iso.length - 1];
+  const out = [];
+  let emitted = false;
+  for (const m of order) {
+    if (!isoFiles.has(m.file)) {
+      if (!emitted && m.imports.some((imp) => isoFiles.has(imp.from)))
+        fail(`${rel(m.file)} needs an isolated module that is emitted later`);
+      out.push(`// ── ${relative(SRC, m.file)}\n${m.body}`);
+      continue;
+    }
+    if (m !== last) continue;
+    emitted = true;
+    const inner = iso.map((x) => `// ── ${relative(SRC, x.file)}\n${x.body}`).join("\n\n");
+    const names = [...exposed].sort().join(", ");
+    out.push(
+      `// ── isolated scope: ${[...isoFiles].map((f) => relative(SRC, f)).join(", ")}\nconst { ${names} } = (() => {\n${inner}\n\nreturn { ${names} };\n})();`,
+    );
+  }
+  return out;
+}
+
 function build() {
-  const parts = collect().map((m) => `// ── ${relative(SRC, m.file)}\n${m.body}`);
+  const parts = bodies(collect());
   const js = `// GENERATED by tools/build-studio-player.mjs from access-practice-lab/src/studio/player/index.js. Do not edit.
 (() => {
 "use strict";

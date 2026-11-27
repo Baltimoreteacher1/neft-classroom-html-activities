@@ -3,6 +3,8 @@
 // so the cursor never jumps; structural edits rebuild the panel and keep the open card open.
 
 import { uid } from "../core/schema.js";
+import { animationBlockEditor } from "./animation-editor.js";
+import { diagramBlockEditor } from "./diagram-editor.js";
 import {
   BLOCK_LABEL,
   COMMON_FORMATS,
@@ -191,6 +193,8 @@ export function createContentPanel(store, { S, onOpen }) {
   }
 
   const BLOCK_BODY = {
+    diagram: (b) => diagramBlockEditor(b, { store, S }),
+    animation: (b) => animationBlockEditor(b, { store, S }),
     text: (b, ctx) =>
       h(
         "div",
@@ -431,7 +435,7 @@ export function createContentPanel(store, { S, onOpen }) {
       b.title ||
       b.say ||
       (b.items ? b.items.map((i) => i.term).join(", ") : "") ||
-      b.alt ||
+      (typeof b.alt === "string" ? b.alt : b.alt?.en) ||
       S("(empty)", "(vacío)");
     return card(b, index, total, S(...BLOCK_LABEL[b.type]), summary, BLOCK_BODY[b.type](b, ctx));
   }

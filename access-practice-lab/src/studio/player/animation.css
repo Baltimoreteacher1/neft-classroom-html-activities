@@ -1,0 +1,82 @@
+/* The `animation` block (player/block-animation.js): a figure, a caption, and real buttons. The only motion is a
+   cross-fade between frames; prefers-reduced-motion and Calm mode (player.css) remove it, and the Play button too. */
+.sp-anim {
+  margin: 12px 0;
+}
+.sp-anim-title {
+  margin: 0 0 6px;
+}
+.sp-anim-explain {
+  margin: 0 0 10px;
+}
+.sp-anim-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 880px;
+  border: 1px solid var(--sp-line);
+  border-radius: var(--sp-radius);
+  background: #fff;
+  overflow: hidden;
+}
+.sp-anim-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+.sp-anim-art svg.is-new {
+  opacity: 0;
+}
+.sp-anim-caption {
+  min-height: 3.2em;
+  margin: 10px 0 6px;
+  font-weight: 600;
+}
+.sp-anim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.sp-anim-btn {
+  min-width: 44px;
+}
+.sp-anim-count {
+  margin-inline-start: 4px;
+  color: var(--sp-ink-2);
+  font-weight: 600;
+}
+.sp-anim-steps {
+  margin-top: 10px;
+}
+.sp-anim-steps summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid var(--sp-line);
+  border-radius: var(--sp-radius);
+}
+.sp-anim-list {
+  margin: 10px 0 0;
+  padding-inline-start: 1.6em;
+}
+.sp-anim-list li {
+  margin: 0 0 6px;
+}
+.sp-anim-steps .sp-table-wrap {
+  margin-top: 10px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-anim-motion {
+    display: none !important;
+  }
+}
+.sp-calm .sp-anim-motion {
+  display: none !important;
+}

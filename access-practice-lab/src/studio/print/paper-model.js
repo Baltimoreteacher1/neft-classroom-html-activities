@@ -6,6 +6,8 @@
 import { marksOf, parseMarked, tableBlanks } from "../core/check.js";
 import { plainMath } from "../core/math.js";
 import { safeImageSrc } from "../core/schema.js";
+import { expandAnimation } from "../x/animations.js";
+import { renderDiagram } from "../x/diagram-render.js";
 
 export const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -93,6 +95,35 @@ export function plotModel(q) {
     values,
     axisX: min <= 0 && max >= 0,
     axisY: min <= 0 && max >= 0,
+  };
+}
+
+// ── diagram blocks ───────────────────────────────────────────────────────────
+
+/**
+ * A `diagram` block as paper needs it, redrawn from its spec: the figure in English ("en", "bi") or Spanish ("es"),
+ * its natural width in points (one drawing unit is 0.75pt, so labels print at about their designed size), the
+ * caption (plus the Spanish caption when bilingual), and the data table the Word file prints as editable cells.
+ * A diagram never carries an answer, so the same model serves the student sheet and the Word file.
+ * @returns {{ok:false}|{ok:true, svg:string, widthPt:number, alt:string, caption:string, captionEs:string, table:{headers:string[], rows:string[][]}}}
+ */
+export function diagramPaper(block, lang) {
+  const shown = renderDiagram(block, { lang: lang === "es" ? "es" : "en", suffix: block.id });
+  if (!shown.ok) return { ok: false };
+  const width = Number(/^<svg[^>]*\swidth="([\d.]+)"/.exec(shown.svg)?.[1]) || 480;
+  let captionEs = "";
+  if (lang === "bi") {
+    const es = renderDiagram(block, { lang: "es", suffix: block.id });
+    if (es.ok && es.caption !== shown.caption) captionEs = es.caption;
+  }
+  return {
+    ok: true,
+    svg: shown.svg,
+    widthPt: Math.round(width * 0.75),
+    alt: shown.alt,
+    caption: shown.caption,
+    captionEs,
+    table: shown.table,
   };
 }
 
@@ -277,3 +308,43 @@ function keyScalar(q) {
 
 /** Plain-text key line for the Word key and the print tests. */
 export const keyPlain = (activity, q) => keyLines(activity, q).map(plainMath);
+
+// ── animation blocks ─────────────────────────────────────────────────────────
+
+const ANIMATION_WIDE = 560; // a figure drawn wider than this (the timeline) gets the full line on paper
+
+/**
+ * An `animation` block as paper needs it: the title, the teacher's explanation and one entry per frame (its figure,
+ * its width in points, its caption and, when bilingual, the Spanish caption). Paper has no motion, so the frames
+ * become a numbered filmstrip; the Word file prints the same captions as an editable numbered list. No answers.
+ * @returns {{ok:false}|{ok:true, title:string, titleEs:string, explanation:string, explanationEs:string, alt:string, frames:Array<{svg:string, widthPt:number, wide:boolean, caption:string, captionEs:string, alt:string}>, table:null|{headers:string[], rows:string[][]}}}
+ */
+export function animationPaper(block, lang) {
+  const l = lang === "es" ? "es" : "en";
+  const shown = expandAnimation(block, { lang: l, suffix: block.id });
+  if (!shown.ok) return { ok: false };
+  const bi = lang === "bi";
+  const es = bi ? expandAnimation(block, { lang: "es", suffix: block.id }) : null;
+  const { en: exEn = "", es: exEs = "" } = block.explanation ?? {};
+  const explanation = l === "es" ? exEs || exEn : exEn || exEs;
+  return {
+    ok: true,
+    title: shown.title,
+    titleEs: es?.ok && es.title !== shown.title ? es.title : "",
+    explanation,
+    explanationEs: bi && exEn && exEs && exEs !== exEn ? exEs : "",
+    alt: shown.alt,
+    frames: shown.frames.map((f) => {
+      const width = Number(/^<svg[^>]*\swidth="([\d.]+)"/.exec(f.svg)?.[1]) || 480;
+      return {
+        svg: f.svg,
+        widthPt: Math.min(504, Math.round(width * 0.75)),
+        wide: width > ANIMATION_WIDE,
+        caption: f.caption[l],
+        captionEs: bi && f.caption.es !== f.caption.en ? f.caption.es : "",
+        alt: f.alt,
+      };
+    }),
+    table: shown.table,
+  };
+}

@@ -81,9 +81,12 @@ export const A = activity("Fractions Practice");
 export const B = activity("Ratio Check");
 
 export const docx = async (text = "hello") => {
+  // A fixed date: JSZip stamps undated entries with the wall clock (2 s resolution), which made two builds of the
+  // same input differ whenever they straddled a boundary.
+  const date = new Date(2026, 0, 1);
   const z = new JSZip();
-  z.file("[Content_Types].xml", "<Types/>");
-  z.file("word/document.xml", `<w:document><w:t>${text}</w:t></w:document>`);
+  z.file("[Content_Types].xml", "<Types/>", { date });
+  z.file("word/document.xml", `<w:document><w:t>${text}</w:t></w:document>`, { date });
   return z.generateAsync({ type: "uint8array" });
 };
 export const deps = async (extra = {}) => ({

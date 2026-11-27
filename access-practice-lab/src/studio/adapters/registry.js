@@ -8,6 +8,43 @@ import { editableFor } from "./properties.js";
 import { hashSource } from "./util.js";
 import readingRoom from "./reading-room.js";
 import vocabAcademy from "./vocab-academy.js";
+import readingLadder from "./reading-ladder.js";
+import missions from "./missions.js";
+import puzzleDen from "./puzzles.js";
+import mentorTexts from "./mentor-texts.js";
+import newsroomPrompts from "./newsroom.js";
+import readingPath from "./reading-path.js";
+import newcomerPacks from "./newcomer-packs.js";
+import questMissions from "./quest.js";
+import studioTask from "./studio-task.js";
+import twr from "./twr.js";
+import talkTable from "./talk-table.js";
+import warmup from "./warmup.js";
+import subjectReading from "./subject-reading.js";
+import teachBack from "./teach-back.js";
+import wordParts from "./word-parts.js";
+import wordlab from "./wordlab.js";
+import phonics from "./phonics.js";
+import worldMissions from "./world-missions.js";
+import scenarios from "./scenarios.js";
+import voiceLab from "./voice-lab.js";
+import scaffoldItems from "./scaffold-items.js";
+import craftSentences from "./craft-sentences.js";
+import labActivity from "./lab-activity.js";
+import accessPrep from "./access-prep.js";
+import grammarPacks from "./grammar-packs.js";
+import claimCheck from "./claim-check.js";
+import argumentArena from "./argument-arena.js";
+import choiceBoards from "./choice-boards.js";
+import languageCity from "./language-city.js";
+import communication from "./communication.js";
+import exhibition from "./exhibition.js";
+import adventures from "./adventures.js";
+import errorDetective from "./error-detective.js";
+import conversationSim from "./conversation-sim.js";
+import constructionLab from "./construction-lab.js";
+import dialogueStudio from "./dialogue-studio.js";
+import sentenceArchitect from "./sentence-architect.js";
 import { normalizeActivity } from "../core/schema.js";
 import { validateActivity } from "../core/validate.js";
 
@@ -19,6 +56,43 @@ export const ADAPTERS = Object.freeze({
   [vocabAcademy.family]: vocabAcademy,
   [readingRoom.family]: readingRoom,
   [bcpssUnit.family]: bcpssUnit,
+  [readingLadder.family]: readingLadder,
+  [missions.family]: missions,
+  [puzzleDen.family]: puzzleDen,
+  [mentorTexts.family]: mentorTexts,
+  [newsroomPrompts.family]: newsroomPrompts,
+  [readingPath.family]: readingPath,
+  [newcomerPacks.family]: newcomerPacks,
+  [questMissions.family]: questMissions,
+  [studioTask.family]: studioTask,
+  [twr.family]: twr,
+  [talkTable.family]: talkTable,
+  [warmup.family]: warmup,
+  [subjectReading.family]: subjectReading,
+  [teachBack.family]: teachBack,
+  [wordParts.family]: wordParts,
+  [wordlab.family]: wordlab,
+  [phonics.family]: phonics,
+  [worldMissions.family]: worldMissions,
+  [scenarios.family]: scenarios,
+  [voiceLab.family]: voiceLab,
+  [scaffoldItems.family]: scaffoldItems,
+  [craftSentences.family]: craftSentences,
+  [labActivity.family]: labActivity,
+  [accessPrep.family]: accessPrep,
+  [grammarPacks.family]: grammarPacks,
+  [claimCheck.family]: claimCheck,
+  [argumentArena.family]: argumentArena,
+  [choiceBoards.family]: choiceBoards,
+  [languageCity.family]: languageCity,
+  [communication.family]: communication,
+  [exhibition.family]: exhibition,
+  [adventures.family]: adventures,
+  [errorDetective.family]: errorDetective,
+  [conversationSim.family]: conversationSim,
+  [constructionLab.family]: constructionLab,
+  [dialogueStudio.family]: dialogueStudio,
+  [sentenceArchitect.family]: sentenceArchitect,
 });
 
 export class CustomizeError extends Error {

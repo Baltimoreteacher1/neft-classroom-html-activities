@@ -150,7 +150,10 @@ export function stepperHTML(
   { label, current = steps.findIndex((s) => !s.done), i18n = I } = {},
 ) {
   return html`<ol class="studio-steps" aria-label="${label ?? i18n.S("Steps", "Pasos")}">
-    ${steps.map((s, i) => html`<li class="${i === current ? "is-current" : s.done ? "is-done" : ""}" ${i === current ? raw('aria-current="step"') : ""}><span class="step-n">${s.done && i !== current ? icon("check") : i + 1}</span><span class="step-l">${s.label}${s.done && i !== current ? html`<span class="visually-hidden"> ${i18n.T("(done)", "(hecho)")}</span>` : ""}</span></li>`)}
+    ${steps.map((s, i) => {
+      const body = html`<span class="step-n">${s.done && i !== current ? icon("check") : i + 1}</span><span class="step-l">${s.label}${s.done && i !== current ? html`<span class="visually-hidden"> ${i18n.T("(done)", "(hecho)")}</span>` : ""}</span>`;
+      return html`<li class="${i === current ? "is-current" : s.done ? "is-done" : ""}" ${i === current ? raw('aria-current="step"') : ""}>${s.href ? html`<a class="step-link" href="${s.href}">${body}</a>` : body}</li>`;
+    })}
   </ol>`;
 }
 
@@ -370,8 +373,13 @@ export function bridgesHTML(task, i18n = I) {
 export function supportsPanelHTML(
   task,
   stage,
-  { modelBody = "", modelId = "model", title, i18n = I } = {},
+  { modelBody = "", modelId = "model", title, insert = false, i18n = I } = {},
 ) {
+  // `insert`: the Writing Studio makes each frame and word a button that drops it into the draft.
+  const chip = (text) =>
+    insert
+      ? html`<li><button type="button" class="insert-chip" data-insert="${text}" title="${i18n.S("Add to my writing", "Agregar a mi escritura")}">${text}</button></li>`
+      : html`<li>${text}</li>`;
   const { T, S } = i18n;
   const g = task.stages.guided;
   const heading = title ?? T("Supports", "Apoyos");
@@ -383,7 +391,7 @@ export function supportsPanelHTML(
             "frames",
             T("Sentence frames", "Marcos de oraciones"),
             html`<ul class="frames inline">
-              ${g.frames.map((f) => html`<li>${f}</li>`)}
+              ${g.frames.map(chip)}
             </ul>`,
             { open: true },
           )
@@ -393,7 +401,7 @@ export function supportsPanelHTML(
       "bank",
       T("Word bank", "Banco de palabras"),
       html`<ul class="wordbank">
-        ${task.stages.supported.bank.map((w) => html`<li>${w}</li>`)}
+        ${task.stages.supported.bank.map(chip)}
       </ul>`,
       { open: true },
     )}
@@ -510,8 +518,9 @@ export function chooserHeroHTML({ domain = "", eyebrow, title, lead, art, loop =
 
 const helpLevels = ({ T }) => [T("Frames", "Marcos"), T("Word bank", "Banco de palabras"), T("On my own", "Por mi cuenta")];
 /** One task as a card: domain tile, type, one-sentence description, key language use and the help settings offered. */
-export function taskCardHTML({ href, title, ico, kind, time, desc = "", meta = [], why = "", i18n = I }) {
-  return html`<a class="card task-card" href="${href}">
+export function taskCardHTML({ href, title, ico, kind, time, desc = "", meta = [], why = "", badge = "", data = {}, i18n = I }) {
+  const attrs = raw(Object.entries(data).map(([k, v]) => `data-${k}="${esc(v)}"`).join(" "));
+  return html`<a class="card task-card" href="${href}" ${attrs}>${badge}
     <span class="task-top"><span class="task-ico">${icon(ico)}</span><span class="task-kind">${kind}</span><span class="task-time">${icon("clock")} ${time}</span></span>
     <strong class="task-title">${title}</strong>
     ${desc ? html`<span class="task-desc">${desc}</span>` : ""}

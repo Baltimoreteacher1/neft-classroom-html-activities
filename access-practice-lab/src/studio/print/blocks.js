@@ -4,6 +4,7 @@
 import { safeImageSrc } from "../core/schema.js";
 import { chrome } from "./formats.js";
 import { esc, mathHtml, paragraphsHtml } from "./html.js";
+import { animationPaper, diagramPaper } from "./paper-model.js";
 import { PRINT_STRINGS, tr } from "./strings.js";
 
 const orgText = (c, key) => esc(PRINT_STRINGS.org[c.lang === "es" ? "es" : "en"][key]);
@@ -96,6 +97,51 @@ function dataTable(b) {
   return `<table class="datatable">${b.caption ? `<caption>${mathHtml(b.caption)}</caption>` : ""}${head}<tbody>${rows}</tbody></table>`;
 }
 
+/** Extra print CSS for diagram blocks (appended by worksheet.js): kept whole and kept with what follows. */
+export const DIAGRAM_CSS =
+  "figure.diagram{margin:0 0 14pt;text-align:center;break-inside:avoid;break-after:avoid}" +
+  "figure.diagram svg{display:block;margin:0 auto;height:auto;max-height:4in}" +
+  "figure.diagram figcaption{margin-top:4pt;font-size:11pt}";
+
+function diagramFigure(c, b) {
+  const d = diagramPaper(b, c.lang);
+  if (!d.ok)
+    return `<figure class="image"><div class="nopic" role="img" aria-label="${esc(tr(c.lang === "es" ? "es" : "en", "diagramMissing"))}">${chrome(c.lang, "diagramMissing")}</div></figure>`;
+  const svg = d.svg.replace(/^<svg /, `<svg style="width:100%;max-width:${d.widthPt}pt" `);
+  const es = d.captionEs ? ` <span class="es" lang="es">/ ${esc(d.captionEs)}</span>` : "";
+  return `<figure class="diagram">${svg}<figcaption>${esc(d.caption)}${es}</figcaption></figure>`;
+}
+
+/** Extra print CSS for animation blocks (appended by worksheet.js): a numbered filmstrip, each frame kept whole. */
+export const ANIMATION_CSS =
+  "section.anim{margin:0 0 14pt}section.anim h2{margin:0 0 4pt;break-after:avoid}section.anim>p{break-after:avoid}" +
+  "ol.anim-strip{margin:0}" +
+  "li.anim-frame{display:grid;grid-template-columns:4.4in 1fr;gap:10pt;align-items:center;margin:0 0 7pt;padding:5pt;border:1.2pt solid #555;border-radius:5pt;break-inside:avoid}" +
+  "li.anim-frame.wide{grid-template-columns:1fr}" +
+  "li.anim-frame svg{display:block;width:100%;height:auto;max-height:3in}" +
+  "li.anim-frame .anim-words{font-size:12pt;margin:0}" +
+  "li.anim-frame .anim-no{display:inline-block;min-width:18pt;margin-right:5pt;font-weight:800}" +
+  "section.anim .datatable{margin-top:6pt}";
+
+function animationStrip(c, b) {
+  const a = animationPaper(b, c.lang);
+  const lang = c.lang === "es" ? "es" : "en";
+  if (!a.ok)
+    return `<figure class="image"><div class="nopic" role="img" aria-label="${esc(tr(lang, "animationMissing"))}">${chrome(c.lang, "animationMissing")}</div></figure>`;
+  const es = (t) => (t ? ` <span class="es" lang="es">/ ${esc(t)}</span>` : "");
+  const frames = a.frames
+    .map((f, i) => {
+      const svg = f.svg.replace(/^<svg /, `<svg style="max-width:${f.widthPt}pt" `);
+      return `<li class="anim-frame${f.wide ? " wide" : ""}">${svg}<p class="anim-words"><span class="anim-no">${i + 1}.</span>${mathHtml(f.caption)}${es(f.captionEs)}</p></li>`;
+    })
+    .join("");
+  const table = a.table
+    ? `<table class="datatable"><thead><tr>${a.table.headers.map((x) => `<th scope="col">${esc(x)}</th>`).join("")}</tr></thead><tbody>${a.table.rows.map((r) => `<tr>${r.map((x) => `<td>${esc(x)}</td>`).join("")}</tr>`).join("")}</tbody></table>`
+    : "";
+  const intro = a.explanation ? `<p>${mathHtml(a.explanation)}${es(a.explanationEs)}</p>` : "";
+  return `<section class="anim" aria-label="${esc(a.alt)}"><h2>${esc(a.title)}${es(a.titleEs)}</h2>${intro}<ol class="anim-strip">${frames}</ol>${table}</section>`;
+}
+
 const BLOCKS = {
   text: (c, b) =>
     b.role === "heading"
@@ -112,6 +158,8 @@ const BLOCKS = {
   table: (_c, b) => `<div class="tablewrap">${dataTable(b)}</div>`,
   organizer: (c, b) =>
     `<section class="organizer">${(ORGANIZERS[b.kind] || ORGANIZERS.web)(c, b)}</section>`,
+  diagram: diagramFigure,
+  animation: animationStrip,
   audio: (c, b) =>
     `<div class="listen"><b>${esc(b.label || "Listen")}</b> — ${chrome(c.lang, "listen")}</div>`,
 };

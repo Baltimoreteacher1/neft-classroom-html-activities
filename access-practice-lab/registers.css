@@ -119,9 +119,7 @@
     font-size: 0.9375rem !important;
   }
 }
-/* Wide screens: the editorial bar is one 64px row, wordmark left, five places and the tools right. From 1280px, so
-   1280- and 1366-wide school laptops get one row too (they wrapped "More" onto a second row and pushed every page
-   down 30-45px). */
+/* Wide screens (from 1280px): the editorial bar is one 64px row, wordmark left, five places and the tools right. */
 @media (min-width: 1280px) {
   .lab-top {
     min-height: 4rem;
@@ -145,42 +143,33 @@
     bottom: 0.2rem;
   }
 }
-/* 1100-1279px keeps the two-row bar; its tool buttons keep the 44px target instead of shrinking to 35px. */
-@media (min-width: 1100px) and (max-width: 1279px) {
+/* 1100-1599px: tool buttons keep 44px. 1280-1599px: one row; the promise line leaves the masthead (it stays in
+   the title). 1280-1359px: tighter, and "More" shows its icon only. */
+@media (min-width: 1100px) and (max-width: 1599px) {
   .lab-top .lab-tools > :is(.lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn) {
     flex: none !important;
     min-width: 2.75rem !important;
   }
 }
-/* 1280-1599px: the promise line leaves the masthead (it stays in the page title and the share card), the places sit a
-   little closer, and the tool buttons stop shrinking below the 44px target. */
 @media (min-width: 1280px) and (max-width: 1599px) {
   .lab-wordmark small {
     display: none;
   }
-  .lab-top .lab-tools > .top-link.top-aud,
-  .lab-tools > .top-link:not(.lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn) {
+  .lab-top .lab-tools > .top-link.top-aud {
     padding-inline: 0.5rem !important;
   }
-  .lab-top .lab-tools > :is(.lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn) {
-    flex: none !important;
-    min-width: 2.75rem !important;
-  }
 }
-/* 1280-1359px (1280-wide Chromebooks): a little tighter again so the row still fits. */
 @media (min-width: 1280px) and (max-width: 1359px) {
   .lab-wordmark strong {
     font-size: 1.05rem;
   }
-  .lab-top .lab-tools > .top-link.top-aud,
-  .lab-tools > .top-link:not(.lab-search-btn, .lab-read-btn, .lab-voice-btn, .lab-comfort-btn) {
+  .lab-top .lab-tools > .top-link.top-aud {
     padding-inline: 0.4rem !important;
   }
   .lab-tools > .lang-switch .lang-btn {
     min-width: 2.25rem;
     padding-inline: 0.4rem;
   }
-  /* "More" keeps its menu icon and its accessible name; the word is visually hidden (Spanish labels are longer). */
   .lab-utilities > summary {
     min-width: 2.75rem;
     padding-inline: 0.6rem;
@@ -191,7 +180,6 @@
     height: 1px;
     overflow: hidden;
     clip: rect(0 0 0 0);
-    white-space: nowrap;
   }
 }
 @media (min-width: 720px) and (max-width: 1099px) {

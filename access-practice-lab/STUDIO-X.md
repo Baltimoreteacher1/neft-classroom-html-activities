@@ -4,19 +4,24 @@ Studio X extends the Activity Studio (`STUDIO.md`). It adds no second editor, mo
 writes `lp-activity/1` and goes through `normalizeActivity` / `validateActivity`. Pure modules live in
 `src/studio/x/`; editor wiring is `editor/check-panel.js` and `editor/package-download.js`.
 
-## What exists
+## What exists (all reachable from the editor or the Create panel)
 
-| Capability                                             | Module           | In the editor                                                                                        |
-| ------------------------------------------------------ | ---------------- | ---------------------------------------------------------------------------------------------------- |
-| Quality inspector with safe repairs                    | `x/inspect*.js`  | **Check my work** tab: plain findings, jump to block, "Fix it for me" only for deterministic repairs |
-| Complete resource package (ZIP)                        | `x/package*.js`  | Share -> **Download complete package (ZIP)**                                                         |
-| Source ingestion (pasted text, structured lists, DOCX) | `x/ingest*.js`   | not wired yet                                                                                        |
-| Plain-language request -> plan -> first version        | `x/intent*.js`   | not wired yet                                                                                        |
-| Teacher recipes (`lp-recipe/1`)                        | `x/recipes.js`   | not wired yet                                                                                        |
-| Seeded variants (numbers, order, context)              | `x/variants*.js` | not wired yet                                                                                        |
-| Procedural diagrams with alt text                      | `x/diagram*.js`  | not wired yet                                                                                        |
+| Capability | Module | Where a teacher finds it |
+| --- | --- | --- |
+| Quality inspector with safe repairs | `x/inspect*.js` | Editor tab **Check my work** |
+| Complete resource package (ZIP) | `x/package*.js` | Share -> **Download complete package (ZIP)** |
+| Describe it (plain-language request -> plan -> first version) | `x/intent*.js` | Chooser / Create panel: **Describe it** |
+| Use my own material (pasted text, DOCX; PDF refused honestly) | `x/ingest*.js` | Chooser / Create panel: **Use my own material** |
+| Recipes (`lp-recipe/1`, six built in) | `x/recipes.js` | Chooser / Create panel: **Start from a recipe** |
+| Side-by-side versions, another version (seeded) | `x/variants*.js`, `editor/compare-*.js` | Editor tab **Versions side by side** |
+| Academic language support builder | `x/language-support*.js` | Editor tab **Language support** |
+| Component browser (recommended first) | `x/components*.js` | Editor tab **Add components** |
+| Mission builder (7 mission types) | `x/missions*.js` | **Add components** -> Build a mission |
+| `diagram` block (spec-only, redrawn everywhere) | `x/diagram*.js`, player/print/docx | Add components, or Add block -> Diagram |
+| `animation` block (7 presets, step/pause/replay, reduced motion) | `x/animations*.js`, player/print/docx | Add components, or Add block -> Animation |
+| Document fitting (7 goals, never below readable size) | `x/fit*.js` | Share -> **Fit to the page** |
 
-Tests: `node --test tools/studio-x-*.test.mjs`; browser: `node tools/studio-x-e2e.mjs`.
+Tests: `node --test tools/studio-x-*.test.mjs`; browser: `tools/studio-x-*-e2e.mjs`.
 
 ## Rules the modules keep
 
@@ -36,8 +41,10 @@ Tests: `node --test tools/studio-x-*.test.mjs`; browser: `node tools/studio-x-e2
 
 - PDF input is refused with an explanation (no PDF reader is installed or added). Paste the text or use DOCX.
 - Interactive HTML pages check answers in the browser, so those files contain the answers; the manifest says so.
-- Schema allows only raster `data:` images, so inline SVG diagrams become a table plus a review note unless the
-  caller supplies a publishable `src`.
-- Word output is verified structurally by the existing docx tests, not opened in Microsoft Word or Google Docs here.
-- Not built: animation builder, visual rules editor, simulations, mission creator, document fitting, side-by-side
-  differentiation workspace, component browser. Those need the shared model extended first and are listed as follow-ups.
+- Word output has no drawn figure for `diagram` / `animation` blocks (the docx package needs a PNG fallback and the Pages
+  Function cannot rasterize); Word gets the alt text, a real data table and captions. The printable version has the figure.
+- Not built: a visual "when this, then that" rules editor, free-form simulations, maps, flip cards, voice recording,
+  scroll-free jumping between mission stages (students move forward one question at a time).
+- Page counts in the Fit panel come from a browser measurement; the print dialog's count is the final word.
+- Word output is verified structurally by the docx tests, not opened in Microsoft Word or Google Docs here.
+- All Spanish is unreviewed by a native speaker.

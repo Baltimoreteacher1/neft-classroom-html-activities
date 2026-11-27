@@ -67,8 +67,87 @@ const EXAMPLES = {
 
 export const KIND_IDS = KINDS.map((k) => k.id);
 
-/** Step 1: four large choices. */
-export function chooseScreen({ S, onPick, onSample, welcome, onDismissWelcome }) {
+const START_WAYS = [
+  {
+    id: "describe",
+    en: "Describe what you want",
+    es: "Describir lo que quiere",
+    textEn: "Say it in your own words. You see the plan before anything is made.",
+    textEs: "Dígalo con sus propias palabras. Verá el plan antes de que se cree nada.",
+    load: async (o) => (await import("./describe-box.js")).describeBox(o),
+  },
+  {
+    id: "import",
+    en: "Use my own material",
+    es: "Usar mi propio material",
+    textEn: "Paste text or choose a Word file. You review what was found first.",
+    textEs: "Pegue texto o elija un archivo de Word. Primero revisa lo que se encontró.",
+    load: async (o) => (await import("./import-box.js")).importBox(o),
+  },
+  {
+    id: "recipe",
+    en: "Start from a recipe",
+    es: "Empezar con una receta",
+    textEn: "Reuse the shape of an activity you liked for a new topic.",
+    textEs: "Reutilice la forma de una actividad que le gustó para un tema nuevo.",
+    load: async (o) => (await import("./recipes-ui.js")).recipesBox(o),
+  },
+];
+
+/**
+ * "Or start another way": three closed disclosures under the four kinds (describe it, use my own material, recipes).
+ * Each opens on demand and loads its code then, so the chooser stays light and nothing changes for a teacher who
+ * ignores them. `opts`: { S, onBuilt({activity, notes}), onOpenMine?, onPickLesson?, context?, drafts? }.
+ */
+export function startOptions(opts) {
+  const { S } = opts;
+  const box = (way) => {
+    const body = h("div.xw-way-body");
+    let loaded = false;
+    const el = h(
+      "details.xw-way",
+      { "data-way": way.id },
+      h("summary", h("strong", S(way.en, way.es)), h("span", S(way.textEn, way.textEs))),
+      body,
+    );
+    el.addEventListener("toggle", async () => {
+      if (!el.open || loaded) return;
+      loaded = true;
+      body.append(h("p", { role: "status" }, S("Loading…", "Cargando…")));
+      try {
+        const { ensureWireCss } = await import("../../create/wire-kit.js");
+        ensureWireCss();
+        body.replaceChildren(await way.load(opts));
+      } catch {
+        loaded = false;
+        body.replaceChildren(
+          h("p.st-needs", S("This could not load. Close it and try again.", "No se pudo cargar. Ciérrelo e intente de nuevo.")),
+        );
+      }
+    });
+    return el;
+  };
+  return h(
+    "section.xw-start",
+    { "aria-labelledby": "xw-start-h" },
+    h("h2", { id: "xw-start-h" }, S("Or start another way", "O empiece de otra manera")),
+    START_WAYS.map(box),
+  );
+}
+
+/** Step 1: four large choices. `onBuilt` (optional) adds the three other ways to start under them. */
+export function chooseScreen({
+  S,
+  onPick,
+  onSample,
+  welcome,
+  onDismissWelcome,
+  onBuilt,
+  onOpenMine,
+  onPickLesson,
+  context,
+  drafts,
+}) {
   const cards = KINDS.map((k) =>
     h(
       "button.st-kind",
@@ -99,6 +178,7 @@ export function chooseScreen({ S, onPick, onSample, welcome, onDismissWelcome })
       : null,
     h("h1", { tabindex: "-1" }, S("What would you like to create?", "¿Qué le gustaría crear?")),
     h("div.st-kinds", cards),
+    onBuilt ? startOptions({ S, onBuilt, onOpenMine, onPickLesson, context, drafts }) : null,
     h(
       "p.st-sample",
       S("Want to look around first? ", "¿Quiere mirar primero? "),

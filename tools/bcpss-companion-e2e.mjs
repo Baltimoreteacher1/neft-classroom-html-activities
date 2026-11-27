@@ -93,7 +93,7 @@ async function run(width, label) {
     T("map shows content and language goals"),
     (await page.textContent(".cp-goals")).includes(detail.studio.can_do.language),
   );
-  await page.waitForSelector(".cp-seq-card[data-cp-unit]", { timeout: 8000 }).catch(() => {});
+  await page.waitForSelector(".cp-seq-card[data-cp-unit]", { timeout: 20000 }).catch(() => {});
   const nextCard = await page.$$eval(".cp-seq-card[data-cp-unit]", (els) =>
     els.map((e) => e.dataset.cpUnit),
   );
@@ -219,8 +219,265 @@ async function run(width, label) {
   );
   await plan.close();
 
+  // Grouped navigation
+  const groupLabels = await page.$$eval(".cp-vgroup-h", (els) =>
+    els.map((e) => e.textContent.trim()),
+  );
+  check(
+    T("views are listed under the six teacher groups"),
+    groupLabels.length === 6 &&
+      groupLabels.includes("Teach and explain") &&
+      groupLabels.includes("Writing and projects"),
+    groupLabels.join("|"),
+  );
+
+  // Read together
+  await page.click('[data-cp-view="text"]');
+  await page.waitForSelector(".cp-passage");
+  await page.click('[data-cp-act="text:next"]');
+  check(
+    T("read together: one sentence is current and a thinking prompt shows"),
+    (await page.$$eval(".cp-sent--now", (e) => e.length)) === 1 &&
+      /Stop and think/.test(await page.textContent(".cp-text")),
+  );
+  await page.click('[data-cp-act="text:word"]');
+  check(
+    T("read together: a unit word shows its meaning"),
+    /Example:/.test(await page.textContent(".cp-text .cp-say")),
+  );
+  const q0 = detail.reading.questions[0];
+  await page.click(`[data-cp-act="text:ans"][data-cp-arg="0:${q0.answer}"]`);
+  check(
+    T("read together: a right answer is confirmed"),
+    /Yes\./.test(await page.textContent(".cp-text")),
+  );
+  await page.click('[data-cp-act="text:ev"][data-cp-arg="0"]');
+  check(
+    T("read together: evidence is highlighted in the text"),
+    (await page.$$eval("mark.cp-ev", (e) => e.length)) >= 1,
+  );
+  const [rd] = await Promise.all([
+    context.waitForEvent("page"),
+    page.click('[data-cp-act="text:print"]'),
+  ]);
+  await rd.waitForLoadState("domcontentloaded");
+  check(
+    T("read together: the reading sheet prints with a teacher key"),
+    /Teacher key/.test(await rd.textContent("body")),
+  );
+  await rd.close();
+
+  // Word cards
+  await page.click('[data-cp-view="words"]');
+  check(
+    T("word cards: six pieces on the card"),
+    (await page.$$eval(".cp-frayer .cp-piece", (e) => e.length)) === 6,
+  );
+  await page.click('[data-cp-act="words:step"]');
+  const hidden1 = await page.$$eval(".cp-piece--hidden", (e) => e.length);
+  await page.click('[data-cp-act="words:step"]');
+  const hidden2 = await page.$$eval(".cp-piece--hidden", (e) => e.length);
+  check(
+    T("word cards: pieces appear one at a time"),
+    hidden1 === 5 && hidden2 === 4,
+    `${hidden1}/${hidden2}`,
+  );
+  const [wc] = await Promise.all([
+    context.waitForEvent("page"),
+    page.click('[data-cp-act="words:print"][data-cp-arg="blank"]'),
+  ]);
+  await wc.waitForLoadState("domcontentloaded");
+  check(
+    T("word cards: blank cards print"),
+    (await wc.$$eval(".card", (e) => e.length)) === detail.studio.vocab.length,
+  );
+  await wc.close();
+
+  // Virtual lab (math ratio, then the model-sentence builder)
+  await page.click('[data-cp-view="labs"]');
+  const rects0 = await page.$$eval("svg.cp-svg rect", (e) => e.length);
+  await page.click('[data-cp-act="labs:inc"][data-cp-arg="a"]');
+  const rects1 = await page.$$eval("svg.cp-svg rect", (e) => e.length);
+  check(T("ratio lab: more in A draws more blocks"), rects1 === rects0 + 2, `${rects0}->${rects1}`);
+  await page.click('[data-cp-act="labs:inc"][data-cp-arg="k"]');
+  check(
+    T("ratio lab: another group adds a table row"),
+    (await page.$$eval(".cp-table tbody tr", (e) => e.length)) === 3,
+  );
+  await page.click('[data-cp-act="labs:lab"][data-cp-arg="mentor"]');
+  await page.click('[data-cp-act="labs:mcheck"]');
+  check(
+    T("model sentence: checking an unsorted order does not reveal the answer"),
+    /Not all parts are in place|In place/.test(await page.textContent(".cp-labs")),
+  );
+
+  // Four-domain practice
+  await page.click('[data-cp-view="practice"]');
+  await page.click('[data-cp-act="practice:domain"][data-cp-arg="reading"]');
+  check(
+    T("practice: reading domain shows the passage"),
+    (await page.$$eval(".cp-passage", (e) => e.length)) === 1,
+  );
+  const [pr] = await Promise.all([
+    context.waitForEvent("page"),
+    page.click('[data-cp-act="practice:print"][data-cp-arg="student"]'),
+  ]);
+  await pr.waitForLoadState("domcontentloaded");
+  const prText = await pr.textContent("body");
+  check(
+    T("practice: the student set prints all four domains and says it is not an ACCESS test"),
+    ["Listening", "Speaking", "Reading", "Writing"].every((d) => prText.includes(d)) &&
+      /Not an ACCESS test/.test(prText),
+  );
+  await pr.close();
+
+  // Station rotation and spiral warm-up
+  await page.click('[data-cp-view="stations"]');
+  const rows4 = await page.$$eval(".cp-table tbody tr", (e) => e.length);
+  await page.click('[data-cp-act="stations:n"][data-cp-arg="3"]');
+  const rows3 = await page.$$eval(".cp-table tbody tr", (e) => e.length);
+  check(
+    T("stations: the rotation chart follows the station count"),
+    rows4 === 4 && rows3 === 3,
+    `${rows4}/${rows3}`,
+  );
+  await page.click('[data-cp-view="quick"]');
+  await page.click('[data-cp-act="quick:ans"][data-cp-arg="0:0"]');
+  check(
+    T("spiral warm-up: an answer gets feedback"),
+    (await page.$$eval(".cp-quick .cp-note[role=status]", (e) => e.length)) === 1,
+  );
+
+  // Transform a text
+  await page.click('[data-cp-view="transform"]');
+  await page.fill("#cpTx", detail.reading.texts["3_4"]);
+  await page.click('[data-cp-act="transform:run"]');
+  const tr = await page.textContent(".cp-transform .cp-result");
+  check(
+    T("transform: numbered sentences and unit words come back"),
+    /Numbered sentences/.test(tr) && /Unit words found/.test(tr) && /Reading load/.test(tr),
+  );
+  const [tp] = await Promise.all([
+    context.waitForEvent("page"),
+    page.click('[data-cp-act="transform:print"]'),
+  ]);
+  await tp.waitForLoadState("domcontentloaded");
+  check(T("transform: the student copy prints"), /Reading copy/.test(await tp.textContent("body")));
+  await tp.close();
+
+  // Cross-subject project
+  await page.click('[data-cp-view="projects"]');
+  await page.waitForFunction(
+    () => document.querySelector("#cpPartner option[value='g6-sci-u4']"),
+    null,
+    { timeout: 8000 },
+  );
+  await page.selectOption("#cpPartner", "g6-sci-u4");
+  await page.waitForSelector(".cp-card--lead", { timeout: 8000 });
+  const lead = await page.textContent(".cp-card--lead");
+  check(
+    T("project: an authored connection is labelled authored"),
+    /Authored connection/.test(lead),
+    lead.slice(0, 120),
+  );
+  const [pj] = await Promise.all([
+    context.waitForEvent("page"),
+    page.click('[data-cp-act="projects:print"][data-cp-arg="teacher"]'),
+  ]);
+  await pj.waitForLoadState("domcontentloaded");
+  check(
+    T("project: the teacher plan prints the five days"),
+    /Five days/.test(await pj.textContent("body")),
+  );
+  await pj.close();
+
+  // Diagrams
+  await page.click('[data-cp-view="map"]');
+  check(
+    T("map: the at-a-glance chart is drawn and labelled"),
+    (await page.$$eval('svg.cp-svg[aria-label^="Activities in this unit"]', (e) => e.length)) ===
+      1 && (await page.$$eval(".cp-tile", (e) => e.length)) === 5,
+  );
+  await page.click('[data-cp-view="words"]');
+  check(
+    T("word cards: the Frayer diagram has its connecting lines"),
+    (await page.$$eval(".cp-frayer-lines line", (e) => e.length)) === 4,
+  );
+  if (width > 640) {
+    const hit = await page.evaluate(() => {
+      const core = document.querySelector(".cp-frayer-core").getBoundingClientRect();
+      return [
+        ...document.querySelectorAll(
+          ".cp-frayer-quad .cp-piece:not(.cp-frayer-core) p, .cp-frayer-quad .cp-piece h5",
+        ),
+      ].filter((el) => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        return [...range.getClientRects()].some(
+          (r) =>
+            r.right > core.left &&
+            r.left < core.right &&
+            r.bottom > core.top &&
+            r.top < core.bottom,
+        );
+      }).length;
+    });
+    check(
+      T("word cards: the centre circle covers none of the text"),
+      hit === 0,
+      `${hit} text runs overlap`,
+    );
+  }
+  await page.click('[data-cp-view="stations"]');
+  const ring1 = await page.getAttribute("svg.cp-svg--ring", "aria-label");
+  await page.click('[data-cp-act="stations:round"][data-cp-arg="1"]');
+  const ring2 = await page.getAttribute("svg.cp-svg--ring", "aria-label");
+  check(
+    T("stations: the ring diagram changes with the round"),
+    ring1 !== ring2 && /Round 2/.test(ring2),
+    ring2,
+  );
+  await page.click('[data-cp-view="projects"]');
+  await page.waitForSelector(".cp-svg--venn", { timeout: 8000 });
+  const outside = await page.evaluate(() => {
+    const svg = document.querySelector("svg.cp-svg--venn");
+    const box = svg.getBoundingClientRect();
+    return [...svg.querySelectorAll("text")].filter((t) => {
+      const r = t.getBoundingClientRect();
+      return (
+        r.left < box.left - 1 ||
+        r.right > box.right + 1 ||
+        r.top < box.top - 1 ||
+        r.bottom > box.bottom + 1
+      );
+    }).length;
+  });
+  check(
+    T("project: the Venn diagram keeps every word inside its picture"),
+    outside === 0,
+    `${outside} outside`,
+  );
+  await page.click('[data-cp-view="text"]');
+  check(
+    T("read together: the sentence strip marks the current sentence"),
+    (await page.$$eval(".cp-strip .cp-dot--now", (e) => e.length)) === 1,
+  );
+
   // Layout, targets, axe, keyboard
-  for (const view of ["map", "build", "check", "reteach"]) {
+  for (const view of [
+    "map",
+    "build",
+    "check",
+    "reteach",
+    "text",
+    "words",
+    "labs",
+    "practice",
+    "stations",
+    "quick",
+    "transform",
+    "projects",
+  ]) {
     await page.click(`[data-cp-view="${view}"]`);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

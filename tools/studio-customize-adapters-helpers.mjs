@@ -9,6 +9,8 @@ import { stableStringify } from "../access-practice-lab/src/studio/adapters/util
 import { marksOf } from "../access-practice-lab/src/studio/core/check.js";
 import { BCPSS_UNITS, UNIT_CONNECTIONS } from "../data/bcpss-curriculum-seed.mjs";
 import { getUnitDetail, listUnits } from "../functions/_lib/bcpss/db.js";
+import { EXPECTED_A, listedA } from "./create-adapters-a-expected.mjs";
+import { EXPECTED_C, LISTED_C } from "./create-adapters-c-expected.mjs";
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export const CONTENT = join(ROOT, "access-practice-lab/content");
@@ -58,6 +60,9 @@ export const sourceFingerprint = () => {
     ...filesUnder(join(CONTENT, "bank")),
     ...filesUnder(join(CONTENT, "vocab-academy")),
     join(CONTENT, "reading-room/lessons.json"),
+    ...["ladder", "missions", "puzzles", "packs", "quest", "reading-path"].flatMap((d) =>
+      filesUnder(join(CONTENT, d)),
+    ),
   ].sort())
     h.update(f).update(readFileSync(f));
   h.update(stableStringify([BCPSS_UNITS, UNIT_CONNECTIONS]));
@@ -110,6 +115,7 @@ export const bilingual = (v, what) => {
 // ---- per-family: the expected number of questions, computed from the raw source ----
 export const GAP = /_{3,}/;
 export const EXPECTED = {
+  ...EXPECTED_A,
   "access-bank": async (ref) =>
     (await fetchJson(`/access-practice-lab/content/bank/${ref}.json`)).items.length,
   "vocab-academy": async (ref) => {
@@ -148,12 +154,65 @@ export const EXPECTED = {
       (c.language_exit_ticket_json?.prompt ? 1 : 0)
     );
   },
+  ...EXPECTED_C,
 };
+// Families added for the Create route sweep (tools/create-adapters-b.test.mjs has their faithfulness checks).
+const LAB = "/access-practice-lab/content";
+const sets = (n) => Math.ceil(n / 6);
+Object.assign(EXPECTED, {
+  "reading-ladder": async (ref) =>
+    (await fetchJson(`${LAB}/ladder/passages.json`)).passages.find((p) => p.id === ref).questions
+      .length,
+  missions: async (ref) => {
+    const m = await fetchJson(`${LAB}/missions/${ref}.json`);
+    const tasks = m.phases.flatMap((p) => p.tasks || []);
+    return (
+      sets(m.vocab.filter((v) => v.term && v.def).length) +
+      tasks.filter((x) => ["question", "evidence", "speak", "write"].includes(x.kind)).length
+    );
+  },
+  "puzzle-den": async () => 1,
+  "mentor-texts": async (ref) => {
+    const m = await import("../access-practice-lab/src/content/craft-mentor.js");
+    const text = m.findText(ref);
+    const moves = new Set([...text.text.matchAll(/\{(\w+):/g)].map((x) => x[1]));
+    return 1 + [...moves].reduce((n, mv) => n + (m.TRY[mv]?.[text.band]?.length || 0), 0);
+  },
+  "newsroom-prompts": async (ref) => {
+    const { NEWS_PROMPTS } = await import("../access-practice-lab/src/content/newsroom.js");
+    return NEWS_PROMPTS.find((p) => p.id === ref).ask.length + 1;
+  },
+  "reading-path": async () => 1,
+  "newcomer-packs": async (ref) => {
+    if (ref === "speaking-listening-cards")
+      return (await fetchJson(`${LAB}/packs/${ref}.json`)).cards.length;
+    if (ref === "new-arrival-school")
+      return sets((await fetchJson(`${LAB}/packs/${ref}.json`)).phrases.length);
+    const pack = await fetchJson(`${LAB}/packs/survival-vocabulary.json`);
+    return sets(pack.topics.find((x) => `survival-${x.id}` === ref).words.length);
+  },
+  "quest-missions": async (ref) => {
+    const m = await fetchJson(`${LAB}/quest/missions/${ref}.json`);
+    const kinds = ["check", "sort", "timeline", "write", "speak"];
+    const items = m.stages.flatMap((st) => st.items).filter((it) => kinds.includes(it.kind));
+    return sets((m.vocab || []).filter((v) => v.term && v.def).length) + items.length;
+  },
+});
 export const LISTED = {
   "access-bank": 40,
   "vocab-academy": 157,
   "reading-room": 183,
   "bcpss-unit": 162,
+  "reading-ladder": 18,
+  missions: 9,
+  "puzzle-den": 61,
+  "mentor-texts": 32,
+  "newsroom-prompts": 48,
+  "reading-path": 15,
+  "newcomer-packs": 14,
+  "quest-missions": 10,
+  ...LISTED_C,
+  ...(await listedA()),
 };
 
 // ---- independent key text for bank items: the draft's key must say what the bank's key says ----

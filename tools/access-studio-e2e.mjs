@@ -409,8 +409,75 @@ ok(
   !(await page.locator(".coach-moves .frame").count()),
   "independent feedback offers no sentence frames",
 );
+ok(
+  (await page
+    .locator('[data-help-tool="link"], .connectors, .insert-chip[data-insert]')
+    .count()) === 0 && (await page.locator("[data-self-check-item]").count()) === 3,
+  "independent writing offers no connecting words and a proofreading check only",
+);
 await go(`${BASE}/write?tab=portfolio`);
 ok((await bodyText()).includes("First draft"), "portfolio keeps the first draft");
+ok(
+  (await page.locator(".portfolio-stats li").count()) === 4 &&
+    !/\b(level\s*[1-6]|you scored)\b/i.test(await bodyText()),
+  "portfolio totals are counts, never a level or a score",
+);
+
+// writing tools: a frame drops into the draft, the plan fills its map and can start the draft
+await go(`${BASE}/write/wrt-erie-canal-cer`);
+await page.getByLabel("With frames and words").check();
+ok(
+  (await page.locator(".next-step a.btn").getAttribute("href")).endsWith("#wrt-sources"),
+  "a new task points the writer at the sources first",
+);
+await page.locator(".frames .insert-chip").first().click();
+await page.waitForFunction(() => document.querySelector("[data-draft]").value.includes("___"));
+ok(
+  await page.evaluate(() => {
+    const d = document.querySelector("[data-draft]");
+    return (
+      document.activeElement === d && d.value.slice(d.selectionStart, d.selectionEnd) === "___"
+    );
+  }),
+  "tapping a sentence frame adds it to the draft with its first blank selected",
+);
+await page.locator("[data-draft]").fill("");
+await page.locator("[data-org]").first().fill("the canal helped towns grow");
+ok(
+  (await page.locator(".plan-map li.is-filled").count()) === 1,
+  "a plan note fills its stop on the writing map",
+);
+await page.locator('[data-help-tool="plan"]').click();
+await page.locator("[data-use-plan]").click();
+await page.waitForFunction(() =>
+  document.querySelector("[data-draft]").value.includes("the canal helped towns grow"),
+);
+ok(true, "Use my plan puts the writer's own notes into the draft");
+await page.locator('[data-help-tool="stuck"]').click();
+await page.locator("#wrt-help-stuck").waitFor({ state: "visible" });
+ok(
+  (await page.locator("#wrt-help-stuck ul:not([hidden]) li").count()) >= 3 &&
+    (await page.locator("#wrt-help-plan").isHidden()),
+  "I'm stuck opens tips for the current step and closes the other tool",
+);
+await page.locator('[data-help-tool="listen"]').click();
+await page.locator("#wrt-help-listen").waitFor({ state: "visible" });
+ok(
+  (await page.locator("[data-listen-text]").innerText()).includes("the canal helped towns grow"),
+  "Listen to each sentence shows the writer's own sentence",
+);
+await go(`${BASE}/write`);
+await page.locator('[data-wrt-filter="q"]').fill("canal");
+ok(
+  (await page.locator(".task-card:visible").count()) >= 1 &&
+    (await page.locator(".task-card:visible").count()) < 6 &&
+    (await page.locator(".task-status").count()) >= 1,
+  "the task finder narrows the list and started tasks carry a status",
+);
+ok(
+  (await page.locator("#wrt-teach").count()) === 0,
+  "students do not see the teacher planning panel",
+);
 
 // ── Error Detective ───────────────────────────────────────────────────────────
 await go(`${BASE}/detective/sv-agree-3sg`);

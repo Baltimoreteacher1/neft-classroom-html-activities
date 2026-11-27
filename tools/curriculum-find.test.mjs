@@ -137,5 +137,20 @@ test("companions share the lesson or standard, differ in kind, never repeat the 
   }
 });
 
+
+/* ---------- The Language Page -> EduWonderLab bridge ---------- */
+const { mathBridge } = await import("../access-practice-lab/src/finder/math-bridge.js");
+test("Language Page bridge: math queries link to Find, language queries do not", () => {
+  for (const q of ["ratio vocabulary", "porcentajes", "equivalent expressions sentence frames", "math word problems"]) {
+    const m = mathBridge(q);
+    assert.ok(m, `${q} has no bridge`);
+    assert.equal(new URL(m.href).origin, "https://eduwonderlab.com");
+    assert.equal(new URL(m.href).searchParams.get("q"), q);
+  }
+  for (const q of ["listening", "speaking grade 3", "a table of contents", "the area near school", "", null]) {
+    assert.equal(mathBridge(q), null, `${q} should not bridge`);
+  }
+});
+
 console.log(process.exitCode ? `curriculum-find: FAILED (${passed} passed)` : `✓ curriculum-find: ${passed} checks passed`);
 

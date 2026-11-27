@@ -8,6 +8,7 @@
 //   /access-practice-lab/search?q=&for=teacher|student|family&grades=&all=1&skill=&kind=&format=&time=
 import { crumbsHTML } from "../components.js";
 import { resultCard } from "../finder/card.js";
+import { mathBridge } from "../finder/math-bridge.js";
 import {
   AUDIENCE_VALUES,
   BAND_VALUES,
@@ -281,14 +282,26 @@ function emptyHTML(I, band) {
   </section>`;
 }
 
+// A query that names mathematics also offers the Grade 6 math resources on EduWonderLab (a link, nothing shared).
+function mathBridgeHTML(I) {
+  const m = mathBridge(state.q);
+  if (!m) return "";
+  return html`<p class="panel fx-math-bridge">
+    ${I.T("Looking for the math itself?", "¿Buscas las matemáticas?")}
+    <a href="${m.href}" rel="noopener"
+      >${I.T("Grade 6 math practice, games and printables on EduWonderLab", "Práctica, juegos e imprimibles de matemáticas de 6.º grado en EduWonderLab")}</a
+    >
+  </p>`;
+}
+
 function resultsHTML(I, r, band) {
   if (r.mode === "home") return homeHTML(I, band);
-  if (!r.results.length) return html`${savedMiniHTML(I)}${activeHTML(I)}${emptyHTML(I, band)}`;
+  if (!r.results.length) return html`${savedMiniHTML(I)}${activeHTML(I)}${mathBridgeHTML(I)}${emptyHTML(I, band)}`;
   const qw = r.words;
   const list = r.results.slice(0, shown);
   byId = new Map(list.map((x) => [x.doc.id, x.doc]));
   const saved = new Set(readSaved().map((s) => s.id));
-  return html`${savedMiniHTML(I)}${activeHTML(I)}
+  return html`${savedMiniHTML(I)}${activeHTML(I)}${mathBridgeHTML(I)}
     <ul class="fx-cards">
       ${list.map((x, n) => resultCard(I, x, n, band, qw, saved))}
     </ul>

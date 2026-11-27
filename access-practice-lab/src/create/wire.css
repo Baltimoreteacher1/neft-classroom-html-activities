@@ -1,0 +1,376 @@
+/* The three "start another way" boxes (describe it, use my own material, recipes). They sit in the Activity Studio chooser
+   and inside the Create panel, so every class is xw-* and every token has a fallback. 44px targets, visible focus,
+   no motion. Tokens come from ds.css where present. */
+
+.xw-start,
+.xw-box,
+.xw-save {
+  --xw-ink: var(--ink, var(--text-primary, #182230));
+  --xw-ink-2: var(--ink-2, var(--text-secondary, #475467));
+  --xw-ink-3: var(--ink-3, var(--text-tertiary, #5a6678));
+  --xw-line: var(--line, var(--border-subtle, #e4e0d8));
+  --xw-control: var(--line-control, var(--border-control, #7c8799));
+  --xw-surface: var(--surface, var(--bg-surface, #fffdf8));
+  --xw-soft: var(--brand-soft, var(--bg-subtle, #f0e9da));
+  --xw-brand: var(--brand-ink, var(--brand-primary, #1e3a5f));
+  --xw-accent: var(--teal, var(--brand-accent, #0f766e));
+  --xw-warn-bg: var(--status-warning-bg, #fff7e6);
+  --xw-warn-ink: var(--status-warning-text, #7a4a00);
+  --xw-radius: var(--radius, 10px);
+  --xw-target: 2.75rem;
+  color: var(--xw-ink);
+  font: inherit;
+  min-inline-size: 0;
+}
+.xw-start {
+  display: grid;
+  gap: 0.6rem;
+  margin-block-start: 1.5rem;
+}
+.xw-start > h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.xw-way {
+  border: 1.5px solid var(--xw-line);
+  border-radius: var(--xw-radius);
+  background: var(--xw-surface);
+}
+.xw-way[open] {
+  border-color: var(--xw-control);
+}
+.xw-way > summary {
+  display: grid;
+  gap: 0.15rem;
+  min-block-size: var(--xw-target);
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  list-style-position: inside;
+}
+.xw-way > summary span {
+  color: var(--xw-ink-2);
+  font-size: 0.9375rem;
+}
+.xw-way-body {
+  padding: 0 1rem 1rem;
+}
+
+.xw-box,
+.xw-save {
+  display: grid;
+  gap: 0.9rem;
+}
+.xw-lead,
+.xw-hint,
+.xw-sub,
+.xw-status {
+  margin: 0;
+}
+.xw-lead {
+  color: var(--xw-ink-2);
+}
+.xw-hint {
+  color: var(--xw-ink-3);
+  font-size: 0.9375rem;
+}
+.xw-sub {
+  margin-block-start: 0.5rem;
+  font-weight: 700;
+}
+.xw-status {
+  min-block-size: 1.5rem;
+  color: var(--xw-ink-2);
+}
+.xw-status:empty {
+  display: none;
+}
+.xw-field {
+  display: grid;
+  gap: 0.35rem;
+  min-inline-size: 0;
+}
+.xw-field > label {
+  font-weight: 700;
+}
+.xw-input,
+.xw-file {
+  inline-size: 100%;
+  box-sizing: border-box;
+  min-block-size: var(--xw-target);
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid var(--xw-control);
+  border-radius: calc(var(--xw-radius) * 0.7);
+  background: var(--xw-surface);
+  color: var(--xw-ink);
+  font: inherit;
+}
+textarea.xw-input {
+  resize: vertical;
+}
+.xw-filename {
+  color: var(--xw-ink-2);
+  font-size: 0.9375rem;
+}
+
+.xw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--xw-target);
+  min-inline-size: var(--xw-target);
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid var(--xw-control);
+  border-radius: calc(var(--xw-radius) * 0.7);
+  background: var(--xw-surface);
+  color: var(--xw-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.xw-btn:hover:not(:disabled) {
+  background: var(--xw-soft);
+}
+.xw-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.xw-btn.xw-primary {
+  border-color: var(--xw-brand);
+  background: var(--xw-brand);
+  color: #fff;
+}
+.xw-btn.xw-primary:hover:not(:disabled) {
+  filter: brightness(1.12);
+  background: var(--xw-brand);
+}
+.xw-btn.xw-link {
+  border-color: transparent;
+  background: none;
+  color: var(--xw-brand);
+  text-decoration: underline;
+  padding-inline: 0.5rem;
+}
+.xw-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.xw-box :focus-visible,
+.xw-way > summary:focus-visible {
+  outline: 3px solid var(--xw-accent);
+  outline-offset: 2px;
+}
+.xw-plan h3:focus-visible,
+.xw-review-h:focus-visible {
+  outline-offset: 4px;
+}
+
+.xw-more {
+  border: 1.5px solid var(--xw-line);
+  border-radius: var(--xw-radius);
+}
+.xw-more > summary {
+  min-block-size: var(--xw-target);
+  padding: 0.6rem 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.xw-more > :not(summary) {
+  margin: 0 0.9rem 0.9rem;
+}
+
+.xw-plan {
+  display: grid;
+  gap: 0.8rem;
+}
+.xw-plan:empty {
+  display: none;
+}
+.xw-plan h3,
+.xw-review-h {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.xw-callout {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1.5px solid var(--xw-line);
+  border-inline-start: 5px solid var(--xw-accent);
+  border-radius: calc(var(--xw-radius) * 0.7);
+  background: var(--xw-soft);
+}
+.xw-callout[data-ok="false"] {
+  border-inline-start-color: var(--xw-warn-ink);
+  background: var(--xw-warn-bg);
+  color: var(--xw-warn-ink);
+}
+.xw-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+}
+.xw-facts dt {
+  font-weight: 700;
+}
+.xw-facts dd {
+  margin: 0;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.xw-choice {
+  display: grid;
+  gap: 0.4rem;
+}
+.xw-q {
+  margin: 0;
+  font-weight: 700;
+}
+.xw-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.xw-radios {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+.xw-radios legend {
+  padding: 0;
+  margin-block-end: 0.35rem;
+  font-weight: 700;
+}
+.xw-recipe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+}
+.xw-radio {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  min-block-size: var(--xw-target);
+  padding: 0.45rem 0.6rem;
+  border: 1.5px solid var(--xw-line);
+  border-radius: calc(var(--xw-radius) * 0.7);
+  flex: 1 1 14rem;
+  cursor: pointer;
+}
+.xw-radio:has(input:checked) {
+  border-color: var(--xw-accent);
+  background: var(--xw-soft);
+}
+.xw-radio input {
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  margin-block-start: 0;
+  accent-color: var(--xw-accent);
+  flex: none;
+}
+.xw-radio span {
+  display: grid;
+  min-inline-size: 0;
+}
+.xw-radio small {
+  color: var(--xw-ink-2);
+  font-size: 0.9375rem;
+}
+
+.xw-summary {
+  margin: 0;
+  font-weight: 700;
+}
+.xw-review {
+  display: grid;
+  gap: 0.5rem;
+}
+.xw-review-list,
+.xw-notes,
+.xw-found {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+.xw-review-item p {
+  margin: 0 0 0.3rem;
+}
+.xw-reason {
+  color: var(--xw-ink-2);
+}
+.xw-lines,
+.xw-tag {
+  display: inline-block;
+  margin-inline-end: 0.5rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: var(--xw-soft);
+  color: var(--xw-ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.xw-tag {
+  margin-inline-start: 0.5rem;
+  background: var(--xw-warn-bg);
+  color: var(--xw-warn-ink);
+}
+.xw-fail {
+  display: grid;
+  gap: 0.5rem;
+}
+.xw-sr {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .xw-facts {
+    grid-template-columns: 1fr;
+  }
+  .xw-btn:not(.xw-link) {
+    inline-size: 100%;
+  }
+  .xw-opts .xw-btn {
+    justify-content: flex-start;
+    text-align: start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xw-start *,
+  .xw-box * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .xw-btn.xw-primary {
+    border-color: ButtonText;
+  }
+  .xw-radio:has(input:checked) {
+    outline: 2px solid Highlight;
+  }
+}
+.xw-gaps {
+  display: grid;
+  gap: 0.6rem;
+}
+/* the lab header is sticky: keep a focused control clear of it (WCAG 2.2 focus not obscured) */
+.xw-box input,
+.xw-box textarea,
+.xw-box select,
+.xw-box button,
+.xw-way > summary {
+  scroll-margin-block: 6rem;
+}

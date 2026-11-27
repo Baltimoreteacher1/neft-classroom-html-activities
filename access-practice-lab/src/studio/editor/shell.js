@@ -3,7 +3,9 @@
 
 import { getLocal, saveLocal, studioApi } from "../drafts.js";
 import { createCheckPanel } from "./check-panel.js";
+import { createComparePanel } from "./compare-panel.js";
 import { createContentPanel } from "./content-panel.js";
+import { createLanguagePanel } from "./language-panel.js";
 import { createPreview } from "./preview.js";
 import { isPlatform, isVersion } from "./customize-logic.js";
 import { createQuickPanel } from "./quick.js";
@@ -19,6 +21,9 @@ const TABS = [
   ["content", "Edit content", "Editar contenido"],
   ["look", "Look & Feel", "Aspecto"],
   ["supports", "Student Supports", "Apoyos para estudiantes"],
+  ["add", "Add components", "Agregar componentes"],
+  ["language", "Language support", "Apoyo de lenguaje"],
+  ["versions", "Versions side by side", "Versiones lado a lado"],
   ["check", "Check my work", "Revisar mi trabajo"],
 ];
 
@@ -70,6 +75,9 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush, ai, nav })
     onSelect: (id) => (switchTab("content"), content.select(id)),
   });
   const content = createContentPanel(store, { S, onOpen: (id) => preview.goto(id) });
+  const compare = createComparePanel(store, { S, lang, onOpen: (id) => nav?.(goTo.edit(id)) });
+  const language = createLanguagePanel(store, { S });
+  let components = null; // loaded on first use: authoring code never reaches student pages
   const check = createCheckPanel(store, {
     S,
     onGo: (id) => (switchTab("content"), content.select(id)),
@@ -196,6 +204,34 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush, ai, nav })
     );
   }
 
+  async function addTab() {
+    const mine = tab;
+    components ||= (await import("./component-browser.js")).createComponentBrowser(store, { S });
+    if (tab !== mine) return;
+    panel.append(
+      h(
+        "div.st-add-row",
+        button(
+          S("Build a mission", "Crear una misión"),
+          async () => {
+            const { createMissionBuilder } = await import("./mission-builder.js");
+            openDialog(S("Build a mission", "Crear una misión"), (body, close) => {
+              const builder = createMissionBuilder({
+                S,
+                store,
+                onBuilt: () => (close(), switchTab("content")),
+              });
+              body.append(builder.el);
+              builder.render();
+            });
+          },
+          "ghost",
+        ),
+      ),
+      components.el,
+    );
+    components.render();
+  }
   function drawSide() {
     clear(tabBar);
     for (const [id, en, es] of TABS)
@@ -218,6 +254,9 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush, ai, nav })
     clear(panel);
     if (tab === "quick") (quick.render(), panel.append(quick.el));
     else if (tab === "content") (content.render(), panel.append(content.el));
+    else if (tab === "add") addTab();
+    else if (tab === "language") (panel.append(language.el), language.render());
+    else if (tab === "versions") (panel.append(compare.el), compare.render());
     else if (tab === "check") (panel.append(check.el), check.render());
     else panel.append(tab === "look" ? lookPanel(store, { S }) : supportsPanel(store, { S }));
     clear(more).append(moreOptions(store, { S, notify: say }));
@@ -315,6 +354,9 @@ export function mountEditor(root, { activity, S, lang, goTo, onFlush, ai, nav })
       saver.flush();
       saver.destroy();
       preview.destroy();
+      compare.destroy();
+      language.destroy();
+      components?.destroy();
       onFlush?.();
     },
   };
