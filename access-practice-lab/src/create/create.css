@@ -563,6 +563,7 @@
   grid-template-rows: auto auto;
   column-gap: 10px;
   align-items: center;
+  align-content: center; /* a taller row keeps title and subtitle together, centred beside the icon */
   text-align: start;
   min-block-size: 64px;
   padding: 10px 12px;
@@ -590,6 +591,27 @@
   place-items: center;
   color: var(--cr-brand);
   background: var(--cr-subtle);
+}
+/* each step-3 group has its own tone (no violet: validate:no-purple) */
+.cr-group[data-tone="students"] { --g: #0f6b68; }
+.cr-group[data-tone="print"] { --g: #1e3a5f; }
+.cr-group[data-tone="play"] { --g: #b45309; }
+.cr-group[data-tone="share"] { --g: #2f6b3a; }
+.cr-group[data-tone] .cr-tile-ico {
+  color: var(--g);
+  background: color-mix(in srgb, var(--g) 12%, var(--cr-surface));
+}
+.cr-group[data-tone] > .cr-sub {
+  color: var(--g);
+  border-inline-start: 4px solid var(--g);
+  padding-inline-start: 8px;
+}
+.cr-group[data-tone] .cr-tile:hover {
+  border-color: var(--g);
+}
+.cr-group[data-tone] .cr-tile-primary .cr-tile-ico {
+  color: #fff;
+  background: rgb(255 255 255 / 0.16);
 }
 .cr-tile-t {
   font-weight: 600;
@@ -653,7 +675,13 @@
   margin-block: 10px;
 }
 @media (max-width: 600px) {
+  /* the icon and radio take ~100px of each card, so phones get one column (a fieldset is min-content wide by default) */
+  .cr-formats {
+    min-inline-size: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
   .cr-format {
+    min-inline-size: 0;
     padding-inline-start: 60px;
     min-block-size: 64px;
   }
