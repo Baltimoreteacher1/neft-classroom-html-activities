@@ -179,3 +179,23 @@ test("K-3 may open quick write and nothing else in the Writing Studio", async ()
   );
   assert.equal(earlyCanOpen({ view: "write", id: "", tab: "portfolio" }), false);
 });
+
+test("every writing task carries its situation and prompt in Spanish", () => {
+  for (const t of tasks) {
+    for (const [en, es] of [
+      [t.scenario, t.scenarioEs],
+      [t.prompt, t.promptEs],
+    ]) {
+      assert.ok(es && es.trim().length > 20, `${t.id}: Spanish missing`);
+      assert.notEqual(es, en, `${t.id}: Spanish is a copy of the English`);
+      assert.match(
+        es,
+        /[áéíóúñ¿¡]|\b(el|la|los|las|de|que|y)\b/i,
+        `${t.id}: does not read as Spanish`,
+      );
+      // A number in the English (8:30, 3 to 5, 2 paragraphs) must survive the translation.
+      for (const n of en.match(/\d+(?::\d+)?/g) || [])
+        assert.ok(es.includes(n), `${t.id}: ${n} is missing in Spanish`);
+    }
+  }
+});
