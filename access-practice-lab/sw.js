@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "cb6388d2f5fd";
+const BUILD_HASH = "206cd3e17cd1";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=2c8320b3",
@@ -110,7 +110,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/postcard-store.js?v=af179446",
   "/access-practice-lab/src/intro/return-bar.js?v=2a5bfd20",
   "/access-practice-lab/src/intro/data.js?v=b892b13a",
-  "/access-practice-lab/src/studio-video-mount.js?v=74d82186",
+  "/access-practice-lab/src/studio-video-mount.js?v=fd8e7698",
   "/access-practice-lab/src/studio-video-routes.js?v=bdd08b0c",
   "/access-practice-lab/src/fold.js?v=61a347e2",
   "/access-practice-lab/src/views/home.js?v=20e9566f",
@@ -1463,8 +1463,9 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/wordlab-play.js?v=475e63eb",
   "/access-practice-lab/src/views/wordlab.js?v=81775e5b",
   "/access-practice-lab/src/views/worlds.js?v=63ad6f12",
-  "/access-practice-lab/src/views/write-plus.js?v=4ac65c9c",
-  "/access-practice-lab/src/views/write.js?v=2d6e976f",
+  "/access-practice-lab/src/views/write-more.js?v=1ae5cb05",
+  "/access-practice-lab/src/views/write-plus.js?v=118eeb34",
+  "/access-practice-lab/src/views/write.js?v=f461ac7c",
   "/access-practice-lab/src/vocab-academy/activities/build.js?v=8b04378d",
   "/access-practice-lab/src/vocab-academy/activities/core.js?v=9968bbd6",
   "/access-practice-lab/src/vocab-academy/activities/grade.js?v=e9a81144",
