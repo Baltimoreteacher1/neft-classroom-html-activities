@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "6df7ff979ddd";
+const BUILD_HASH = "cb6388d2f5fd";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=2c8320b3",
@@ -505,18 +505,20 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/content/world-missions.js?v=2ece6b5c",
   "/access-practice-lab/src/create/build.js?v=2d035c0e",
   "/access-practice-lab/src/create/deck-play.js?v=f6122843",
-  "/access-practice-lab/src/create/deck.js?v=7e2f6994",
-  "/access-practice-lab/src/create/extras.js?v=5f0dc0e9",
+  "/access-practice-lab/src/create/deck-talk.js?v=a6863097",
+  "/access-practice-lab/src/create/deck.js?v=3cdabdb8",
+  "/access-practice-lab/src/create/extras.js?v=38fa77eb",
   "/access-practice-lab/src/create/files.js?v=34a78dcb",
   "/access-practice-lab/src/create/handoff.js?v=6984a8af",
-  "/access-practice-lab/src/create/icons.js?v=f6499664",
+  "/access-practice-lab/src/create/icons.js?v=e81e0f5c",
   "/access-practice-lab/src/create/launcher.js?v=288267fc",
+  "/access-practice-lab/src/create/lesson-kit.js?v=9bd12ceb",
   "/access-practice-lab/src/create/my-recipes.js?v=352e017d",
   "/access-practice-lab/src/create/packet.js?v=c3777d62",
   "/access-practice-lab/src/create/page-entry.js?v=e38db39f",
   "/access-practice-lab/src/create/page.js?v=f747045b",
-  "/access-practice-lab/src/create/panel.js?v=6ffb569b",
-  "/access-practice-lab/src/create/print-games.js?v=fb7d7bdb",
+  "/access-practice-lab/src/create/panel.js?v=053b0c6d",
+  "/access-practice-lab/src/create/print-games.js?v=98511d23",
   "/access-practice-lab/src/create/routes.js?v=9328b773",
   "/access-practice-lab/src/create/scorm.js?v=61a352e8",
   "/access-practice-lab/src/create/session.js?v=1ec3bd7f",

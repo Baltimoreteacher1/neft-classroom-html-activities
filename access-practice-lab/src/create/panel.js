@@ -463,6 +463,7 @@ export function openCreate(env) {
           supports: { ...(state.supports || {}), level },
         }).activity,
       printable: () => Boolean(out.print),
+      base: () => state.base,
     });
     const qCount = (b.activity.blocks || []).filter((x) => x.type === "question").length;
     const uniq = new Set(
@@ -513,6 +514,9 @@ export function openCreate(env) {
           uniq >= 4
             ? tile("chain", S("I have… Who has?", "Yo tengo… ¿Quién tiene?"), S(`${uniq} cards that loop around the class`, `${uniq} tarjetas que recorren la clase`), () => printGame("whoHas"))
             : null,
+          uniq >= 4
+            ? tile("sort", S("Card sort", "Clasificar tarjetas"), S("Match sheet, cut-apart cards and key", "Hoja para unir, tarjetas y clave"), () => printGame("sort"))
+            : null,
           qCount
             ? tile("ticket", S("Exit slips", "Boletos de salida"), S("First questions to cut apart; no answers", "Primeras preguntas para recortar; sin respuestas"), () => printGame("exit"))
             : null,
@@ -526,6 +530,7 @@ export function openCreate(env) {
         title: S("Share and bundle", "Compartir y agrupar"),
         tone: "share",
         items: [
+          more.kit,
           tile("packet", S("Add to packet", "Agregar al paquete"), S("Combine pages into one PDF or Word file", "Una varias páginas en un PDF o Word"), () => addToPacket()),
           more.leveled,
           more.scorm,
@@ -644,7 +649,9 @@ export function openCreate(env) {
         ? G.bingoHtml(state.base, { lang }).html
         : kind === "whoHas"
           ? G.whoHasHtml(state.base, { lang }).html
-          : G.exitSlipsHtml(state.built.activity, { lang }).html;
+          : kind === "sort"
+            ? G.cardSortHtml(state.base, { lang }).html
+            : G.exitSlipsHtml(state.built.activity, { lang }).html;
     (await loaders.print()).openPrint(html, { lang, onFallback: say });
   }
 

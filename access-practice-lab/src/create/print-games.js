@@ -59,6 +59,14 @@ const T = {
     exit: "Exit slip",
     few: (n, need) => `This page has ${n} words with meanings. This game needs at least ${need}.`,
     noQ: "This resource has no questions for an exit slip.",
+    sort: "Card sort",
+    match: "Match each word to its meaning",
+    matchTip: "Write the letter of the meaning next to each word.",
+    cut: "Cut apart. Sort the cards into sets: a word, its meaning and an example.",
+    word: "Word",
+    meaning: "Meaning",
+    example: "Example",
+    key: "Answer key (teacher)",
   },
   es: {
     bingo: "Bingo de palabras",
@@ -78,6 +86,14 @@ const T = {
     few: (n, need) =>
       `Esta página tiene ${n} palabras con significado. Este juego necesita al menos ${need}.`,
     noQ: "Este recurso no tiene preguntas para un boleto de salida.",
+    sort: "Clasificar tarjetas",
+    match: "Une cada palabra con su significado",
+    matchTip: "Escribe la letra del significado junto a cada palabra.",
+    cut: "Recorta. Agrupa las tarjetas en juegos: una palabra, su significado y un ejemplo.",
+    word: "Palabra",
+    meaning: "Significado",
+    example: "Ejemplo",
+    key: "Clave de respuestas (docente)",
   },
 };
 const tr = (lang) => T[lang === "es" ? "es" : "en"];
@@ -229,4 +245,63 @@ export function exitSlipsHtml(activity, { lang = "en", take = 2 } = {}) {
     questions: qs.length,
     perPage: per,
   };
+}
+
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+/** The example with its own word (and endings such as -ly, -s) blanked, so sorting means reading, not spotting. */
+export function blankOut(example, term) {
+  const t = String(term || "").trim();
+  if (!t) return example;
+  const re = new RegExp(`\\b${t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\p{L}]*`, "giu");
+  return String(example).replace(re, "_____");
+}
+
+/**
+ * Card sort: page 1 a matching sheet (words numbered, meanings lettered in a seeded order), then cut-apart cards
+ * (word, meaning, example when the page has one) with a coloured band per card type, then the teacher's key.
+ * Up to 26 words (one letter each). @returns {{html: string, count: number}}
+ */
+export function cardSortHtml(activity, { lang = "en" } = {}) {
+  const t = tr(lang);
+  const words = wordsOf(activity).slice(0, 26);
+  const title = `${activity.title} · ${t.sort}`;
+  if (words.length < 4)
+    return { html: page(title, lang, "", `<p class="none">${esc(t.few(words.length, 4))}</p>`), count: 0 };
+  const rand = seeded(`${activity.id || activity.title}|sort`);
+  const meanings = shuffle(words, rand);
+  const letterOf = new Map(meanings.map((v, i) => [v, LETTERS[i]]));
+  const left = words.map((v, i) => `<li><span class="blank"></span><b>${i + 1}. ${esc(v.term)}</b></li>`).join("");
+  const right = meanings.map((v, i) => `<li><b>${LETTERS[i]}.</b> ${esc(v.def)}</li>`).join("");
+  const card = (kind, label, text) =>
+    `<div class="sc ${kind}"><span class="band">${label}</span><p>${esc(text)}</p></div>`;
+  const cards = shuffle(
+    words.flatMap((v) => [
+      card("w", t.word, v.term),
+      card("m", t.meaning, v.def),
+      ...(v.example ? [card("e", t.example, blankOut(v.example, v.term))] : []),
+    ]),
+    rand,
+  ).join("");
+  const key = words.map((v, i) => `<li>${i + 1}. ${esc(v.term)} — <b>${letterOf.get(v)}</b></li>`).join("");
+  const css = `header.n{display:flex;justify-content:space-between;font-size:10.5pt;margin-bottom:6pt}header.n b{color:#1e3a5f}
+.tip{margin:0 0 10pt;color:#475467;font-size:11pt}
+.match{display:grid;grid-template-columns:1fr 1.6fr;gap:18pt}
+.match ol{list-style:none;padding:0;margin:0;display:grid;gap:9pt;font-size:12pt;align-content:start}
+.match .terms li{display:flex;gap:8pt;align-items:baseline}
+.blank{display:inline-block;width:26pt;border-bottom:1.2pt solid #1b2430}
+.cardpage{break-before:page;page-break-before:always}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.sc{height:1.55in;border:1pt dashed #8a96a8;padding:0;display:flex;flex-direction:column;break-inside:avoid;overflow:hidden}
+.sc .band{display:block;padding:3pt 8pt;font-size:8.5pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.sc p{margin:auto 0;padding:6pt 10pt;text-align:center;font-size:11pt;line-height:1.3}
+.sc.w .band{background:#0f6b68}.sc.w p{font-size:17pt;font-weight:800;color:#0f6b68}
+.sc.m .band{background:#1e3a5f}.sc.e .band{background:#b45309}.sc.e p{font-style:italic}
+.key{break-before:page;page-break-before:always}.key ol{list-style:none;padding:0;columns:2;font-size:12pt}`;
+  const body = `<header class="n"><b>${esc(activity.title)}</b><span>${t.name}: ____________________</span></header>
+<h1>${t.match}</h1><p class="tip">${t.matchTip}</p>
+<div class="match"><ol class="terms">${left}</ol><ol>${right}</ol></div>
+<section class="cardpage"><p class="tip">✂ ${t.cut}</p><div class="cards">${cards}</div></section>
+<section class="key"><h1>${t.key} · ${esc(activity.title)}</h1><p class="tip">${t.cut}</p><ol>${key}</ol></section>`;
+  return { html: page(title, lang, css, body), count: words.length };
 }

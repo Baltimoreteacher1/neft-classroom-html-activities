@@ -120,6 +120,39 @@ export function moreActions(env) {
         },
       ),
     },
+    kit: env.base
+      ? {
+          icon: "kit",
+          label: S("Lesson kit (ZIP)", "Kit de la lección (ZIP)"),
+          sub: S("Slides, pages, games and checks, with a start page", "Diapositivas, páginas, juegos y boletos, con una página de inicio"),
+          onclick: run(
+            S("Building the lesson kit…", "Creando el kit de la lección…"),
+            S(
+              "Downloaded. Unzip it and open 00-start-here.html for a suggested lesson flow.",
+              "Descargado. Descomprímalo y abra 00-start-here.html para ver una secuencia sugerida.",
+            ),
+            async (a) => {
+              const [{ studentHtml, printHtml }, JSZip, { lessonKit }] = await Promise.all([
+                import("../studio/editor/preview.js"),
+                jszip(),
+                import("./lesson-kit.js"),
+              ]);
+              const kit = await lessonKit(a, env.base(), {
+                lang,
+                printable: Boolean(env.printable?.()),
+                studentHtml,
+                printHtml,
+              });
+              const zip = new JSZip();
+              const date = new Date(Date.UTC(2026, 0, 1));
+              zip.file("00-start-here.html", kit.startHtml, { date });
+              for (const f of kit.files) zip.file(f.name, f.data, { date });
+              const bytes = await zip.generateAsync({ type: "uint8array", compression: "DEFLATE" });
+              saveBlob(new Blob([bytes], { type: "application/zip" }), `${slug(a.title)}-lesson-kit.zip`);
+            },
+          ),
+        }
+      : null,
     leveled: env.buildAt
       ? {
           icon: "level",

@@ -38,7 +38,9 @@ Create is the front door to machinery that already exists. It invents no content
 | `scorm.js`                 | SCORM 1.2 package: manifest + the offline student page with the SCORM boot (completion, no score).    |
 | `word-cards.js`            | Printable Frayer-style word cards from the page's own word list.                                       |
 | `deck-play.js`             | Class play in the slide deck: team points (T) and a fair number picker (P). No names, timers or storage. |
-| `print-games.js`           | Word bingo (a card per student + caller's list), I have / Who has loop cards, and exit slips.         |
+| `deck-talk.js`             | Slide deck: hands-up vote tally (V, correct bar marked only after the answer is shown) and partner-talk frames (F). |
+| `lesson-kit.js`            | Lesson kit ZIP: every output this page supports plus a start page with a suggested lesson flow.        |
+| `print-games.js`           | Word bingo, I have / Who has loop cards, card sort (examples with the word blanked) and exit slips.   |
 | `extras.js`, `icons.js`    | Step-3 tiles, the saved-recipe bar, and line icons built with DOM calls.                               |
 
 ## The three steps
@@ -53,9 +55,10 @@ Create is the front door to machinery that already exists. It invents no content
    **My recipes** saves these choices by name for any page. Ready-made structure recipes are extra formats in step 1,
    offered only when every step can be filled from the page.
 3. **Use it.** Tiles in four groups: with students (Activity Studio, offline HTML, slides with team points and a
-   student picker, PowerPoint), print and edit (PDF, Word, answer key, word cards), play and check (word bingo from 8
-   words, I have / Who has from 4, exit slips from the first questions, never their answers), share and bundle
-   (packet, three-level set for WIDA 1-2 / 3 / 4, SCORM 1.2, complete ZIP). Print and Word appear for
+   student picker, hands-up votes, partner-talk frames, PowerPoint), print and edit (PDF, Word, answer key, word cards),
+   play and check (word bingo from 8 words, I have / Who has and card sort from 4, exit slips from the first questions,
+   never their answers), share and bundle (lesson kit, packet, three-level set for WIDA 1-2 / 3 / 4, SCORM 1.2,
+   complete ZIP). Print and Word appear for
    worksheets and exit tickets. **Use your own file or text** in the picker starts from a teacher's material.
 
 The last choice per resource is remembered, so a refresh or browser restart reopens the same format and settings.
