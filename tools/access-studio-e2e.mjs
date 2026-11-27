@@ -479,6 +479,86 @@ ok(
   "students do not see the teacher planning panel",
 );
 
+// quick write, badges, partner notes, teacher focus and conference
+ok(
+  (await page.locator(".badge-grid li").count()) === 10,
+  "the Writing Studio shows the writer's badges",
+);
+ok(
+  (await page.locator(".badge-grid li.is-earned").count()) >= 1,
+  "a badge is collected for work already done",
+);
+await go(`${BASE}/write?tab=quick`);
+ok(
+  (await page.locator(".quick-card").count()) >= 12 &&
+    (await page.locator("studio-video").count()) === 0,
+  "quick write offers picture and question prompts without the studio video card",
+);
+await page.locator(".quick-card").first().click();
+await page.waitForSelector("[data-quick-draft]");
+const ledgerBeforeQuick = (await store(LEDGER)).entries.length;
+await page.locator("[data-quick-draft]").fill("A girl flew a red kite. It got stuck in a tree.");
+await page.locator("[data-quick-save]").click();
+await page.waitForSelector(".saved-note");
+ok(
+  (await store(LEDGER)).entries.length === ledgerBeforeQuick,
+  "a quick write adds nothing to the language evidence ledger",
+);
+await go(`${BASE}/write?tab=quick`);
+ok((await page.locator(".quick-saved li").count()) === 1, "a saved quick write is listed");
+await go(`${BASE}/write?tab=portfolio`);
+ok(
+  !(await bodyText()).includes("A girl flew a red kite"),
+  "quick writes stay out of the task portfolio",
+);
+await go(`${BASE}/write/wrt-mulch-cer?focus=evidence`);
+ok(
+  (await page.locator(".focus-banner").count()) === 1,
+  "a focus in the link is shown to the writer",
+);
+await go(`${BASE}/write/wrt-mulch-cer?focus=%3Cb%3Ex`);
+ok(
+  (await page.locator(".focus-banner").count()) === 0,
+  "a focus that is not on the list shows nothing",
+);
+ok(
+  (await page.locator("[data-conference-field]").count()) === 0 &&
+    (await page.locator(".teacher-assign").count()) === 0,
+  "students see no conference fields and no assign panel",
+);
+await page.locator('[data-partner-field="glow"]').fill("the two numbers");
+await page.locator('[data-partner-field="wonder"]').fill("why the rain slows down");
+await page.evaluate(() => localStorage.setItem("accessPracticeLab:v1:audience", "teacher"));
+await go(`${BASE}/write/wrt-mulch-cer`);
+await page.locator('[data-conference-field="next"]').fill("Explain why the chips slow the rain.");
+ok(
+  (await page.locator(".focus-links [data-copy-link]").count()) >= 3 &&
+    (
+      await page.locator(".focus-links [data-copy-link]").first().getAttribute("data-copy-link")
+    ).includes("focus="),
+  "teacher view offers task links that carry a focus",
+);
+await go(`${BASE}/write/wrt-mulch-cer?sheet=conference`);
+ok(
+  (await page.locator(".sheet-checks li").count()) >= 3 &&
+    !(await bodyText()).includes("I claim that mulch reduces"),
+  "the conference sheet lists look-fors and carries no model response or student writing",
+);
+await page.evaluate(() => localStorage.setItem("accessPracticeLab:v1:audience", "student"));
+await go(`${BASE}/write/wrt-mulch-cer`);
+ok(
+  (await page.locator(".conference-card").innerText()).includes(
+    "Explain why the chips slow the rain.",
+  ),
+  "the writer sees the conference note with the piece",
+);
+await go(`${BASE}/write?tab=portfolio`);
+ok(
+  (await bodyText()).includes("why the rain slows down") &&
+    (await bodyText()).includes("Explain why the chips slow the rain."),
+  "partner and conference notes appear in the portfolio",
+);
+
 // ── Error Detective ───────────────────────────────────────────────────────────
 await go(`${BASE}/detective/sv-agree-3sg`);
 await page.locator("[data-next]").click();

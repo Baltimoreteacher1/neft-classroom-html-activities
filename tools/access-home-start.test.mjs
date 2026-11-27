@@ -318,8 +318,8 @@ test("audience doors: Student, Family, Classroom and ESOL Teacher, then search a
           ],
         );
         const href = (id) => doc.querySelector(`[data-audience-door="${id}"]`).getAttribute("href");
-        // Both teacher doors open the one Teacher Hub in their role's view (access-teacher/hub-role.js).
-        assert.equal(href("teacher"), "/access-teacher/?role=classroom");
+        // The Classroom Teacher door opens the lesson kit (access-teacher/classroom/); the ESOL door the Teacher Hub in its view.
+        assert.equal(href("teacher"), "/access-teacher/classroom/");
         assert.equal(href("esol"), "/access-teacher/?role=esol");
         assert.equal(doc.querySelector('[data-audience-door="esol"]').dataset.doorRole, "esol");
         // The district door is a link under the doors, not a fifth audience (award audit C6).
@@ -705,7 +705,7 @@ test("styles: the start sheet is critical, uses tokens and keeps 48px targets", 
   const index = read("access-practice-lab/index.html");
   assert.match(
     index,
-    /data-lab-critical href="\/access-practice-lab\/home-start\.css\?v=[0-9a-f]{12}"/,
+    /data-lab-critical href="\/access-practice-lab\/home-start\.css\?v=[0-9a-f]{8}"/,
   );
   assert.equal(index, read("access-practice-lab/app-shell"), "app-shell mirrors index.html");
   const css = read("access-practice-lab/home-start.css");

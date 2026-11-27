@@ -199,8 +199,37 @@ try {
     assert.ok(txt.length > 300, "the worksheet preview has content");
     const [dl] = await Promise.all([
       page.waitForEvent("download"),
-      d.getByRole("button", { name: "Download editable Word file" }).click(),
+      d.getByRole("button", { name: /^Editable Word file/ }).click(),
     ]);
+    for (const name of [/^Word bingo/, /^I have… Who has\?/, /^Card sort/])
+      assert.ok(
+        await d.getByRole("button", { name }).isVisible(),
+        `vocabulary page offers ${name}`,
+      );
+    // the lesson kit: one ZIP, a start page that links exactly the files in it
+    const [kitDl] = await Promise.all([
+      page.waitForEvent("download"),
+      d.getByRole("button", { name: /^Lesson kit/ }).click(),
+    ]);
+    const kit = await (await import("jszip")).default.loadAsync(readFileSync(await kitDl.path()));
+    const names = Object.keys(kit.files).sort();
+    assert.ok(
+      names.includes("00-start-here.html") && names.includes("01-slides.html"),
+      names.join(),
+    );
+    assert.ok(
+      names.includes("06-word-bingo.html") && names.includes("08-card-sort.html"),
+      names.join(),
+    );
+    const start = await kit.file("00-start-here.html").async("string");
+    const links = [...start.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).sort();
+    assert.deepEqual(
+      links,
+      names.filter((n) => n !== "00-start-here.html"),
+      "start page links = folder",
+    );
+    const student = await kit.file("02-student-page.html").async("string");
+    assert.ok(student.length > 20000, "the kit carries the real offline student page");
     clicks++;
     const file = join(SHOTS, "s2-vocab-worksheet.docx");
     await dl.saveAs(file);
@@ -214,6 +243,8 @@ try {
       seconds,
     });
     await page.screenshot({ path: join(SHOTS, "s2-panel.png") });
+    await d.locator("#cr-s3").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: join(SHOTS, "s2-step3.png") });
     ok(`S2 vocabulary worksheet -> Word (${clicks} clicks, ${seconds.toFixed(1)} s)`);
   }
 
@@ -229,14 +260,22 @@ try {
       .last()
       .innerText()
       .catch(() => "");
-    await d
-      .locator("fieldset.cr-seg", { hasText: "Language support" })
-      .getByText("More support")
-      .click();
+    await d.locator("fieldset.cr-levels", { hasText: "Students" }).getByText("WIDA 1-2").click();
     await page.waitForTimeout(300);
     const after = await d.locator("details.cr-more").last().innerText();
     assert.notEqual(after, before, "the change list reflects the adjustment");
     assert.match(after, /read-aloud|frames|word bank|hint/i);
+    // play-and-check tiles and the three-level set (new outputs, real builders)
+    for (const name of [/^Exit slips/, /^Three-level set/])
+      assert.ok(await d.getByRole("button", { name }).isVisible(), String(name));
+    const [lv] = await Promise.all([
+      page.waitForEvent("download"),
+      d.getByRole("button", { name: /^Three-level set/ }).click(),
+    ]);
+    const lvZip = await (await import("jszip")).default.loadAsync(readFileSync(await lv.path()));
+    const dirs = new Set(Object.keys(lvZip.files).map((f) => f.split("/")[0]));
+    assert.equal(dirs.size, 3, `three level folders: ${[...dirs]}`);
+    assert.ok(Object.keys(lvZip.files).some((f) => f.endsWith("/answer-key.html")));
     await d.locator("fieldset.cr-seg", { hasText: "Show" }).getByText("Printed page").click();
     const print = await frameText(page);
     assert.ok(print.length > 300, "printed page renders");
@@ -471,7 +510,25 @@ try {
       const d = document.querySelector("dialog.cr-dialog");
       return d.scrollWidth - d.clientWidth;
     });
+    if (overflow > 1)
+      console.log(
+        "OVERFLOW-DEBUG",
+        await p.evaluate(() => {
+          const d = document.querySelector("dialog.cr-dialog");
+          const r = d.getBoundingClientRect().right;
+          return [...d.querySelectorAll("*")]
+            .filter((e) => e.getBoundingClientRect().right > r + 1)
+            .slice(0, 8)
+            .map(
+              (e) =>
+                `${e.tagName}.${e.className} ${Math.round(e.getBoundingClientRect().right - r)}`,
+            );
+        }),
+      );
     assert.ok(overflow <= 1, `dialog scrolls sideways at 390px by ${overflow}px`);
+    await p.screenshot({ path: join(SHOTS, "s10-phone.png") });
+    await dialog(p).locator("#cr-s3").scrollIntoViewIfNeeded();
+    await p.screenshot({ path: join(SHOTS, "s10-phone-step3.png") });
     await p.screenshot({ path: join(SHOTS, "s10-phone.png") });
     await pctx.close();
     ok("S10 phone 390px: the panel fits with no sideways scroll");

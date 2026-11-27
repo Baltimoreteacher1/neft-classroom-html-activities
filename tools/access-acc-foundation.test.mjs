@@ -115,7 +115,7 @@ test("standalone ACCESS pages load tokens and the shell, and carry a section", (
     assert.match(html, /\/access-practice-lab\/src\/acc\/shell\.js/, `${file} loads the shell`);
     assert.match(html, new RegExp(`<body[^>]*data-acc-section="${section}"`), `${file} section`);
   }
-  assert.match(read("access-practice-lab/index.html"), /acc\.css\?v=[0-9a-f]{12}/);
+  assert.match(read("access-practice-lab/index.html"), /acc\.css\?v=[0-9a-f]{8}/);
 });
 
 test("ACCESS pages do not load Math Workbench or formula pop-up scripts", () => {

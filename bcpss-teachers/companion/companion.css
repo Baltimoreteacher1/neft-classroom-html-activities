@@ -890,3 +890,407 @@ mark.cp-ev {
 .cp-venn-cap {
   text-align: center;
 }
+
+/* ── Present mode ────────────────────────────────────────────────────────── */
+.cp--present {
+  font-size: 1.25rem;
+}
+.cp--present .cp-teacher,
+.cp--present [data-cp-act$=":print"] {
+  display: none !important;
+}
+.cp--present .cp-passage {
+  font-size: 1.5rem;
+  max-width: none;
+}
+.cp--present .cp-question {
+  font-size: 1.7rem;
+}
+.cp-present-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  font: 650 1.1rem/1.3 var(--font-display);
+}
+
+/* ── Guess my word ───────────────────────────────────────────────────────── */
+.cp-guess {
+  display: grid;
+  gap: 1rem;
+}
+.cp-clues {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.cp-clue {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.8rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand-accent);
+  border-radius: var(--radius);
+}
+.cp-clue small {
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+.cp-clue span {
+  font-size: 1.2rem;
+}
+.cp--present .cp-clue span {
+  font-size: 1.6rem;
+}
+.cp-reveal {
+  padding: 1rem;
+  text-align: center;
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 1.4rem;
+}
+.cp-reveal b {
+  font: 700 2.2rem/1.2 var(--font-display);
+}
+.cp-stars {
+  font: 700 1.3rem/1 var(--font-display);
+  color: var(--ink);
+}
+
+/* ── Today's lesson timeline ─────────────────────────────────────────────── */
+.cp-timeline {
+  display: flex;
+  gap: 3px;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.cp-timeline span {
+  min-width: 0;
+  padding: 0.45rem 0.4rem;
+  background: var(--brand);
+  color: #fff;
+  font: 600 0.78rem/1.2 var(--font);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cp-timeline span:nth-child(even) {
+  background: var(--brand-accent);
+}
+
+.cp-step > .cp-btn {
+  justify-self: start;
+}
+
+/* ── Engagement and week ─────────────────────────────────────────────────── */
+.cp-mgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.6rem;
+}
+.cp-mcard {
+  min-height: 6.5rem;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.2rem;
+  padding: 0.6rem;
+  font: 600 1rem/1.3 var(--font);
+  color: #fff;
+  background: var(--brand);
+  border: 2px solid var(--brand);
+  border-radius: calc(var(--radius) + 2px);
+  cursor: pointer;
+}
+.cp-mcard > span[aria-hidden] {
+  font: 700 2rem/1 var(--font-display);
+}
+.cp-mcard--up {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--border-control);
+}
+.cp-mcard--up.cp-mcard--word span {
+  font: 700 1.15rem/1.2 var(--font-display);
+}
+.cp-mcard--up.cp-mcard--meaning span {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.cp-mcard small {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-2);
+}
+.cp-mcard--done {
+  background: var(--cognate-bg);
+  border-color: var(--cognate-border);
+  color: var(--cognate-ink);
+  cursor: default;
+}
+.cp-mcard:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.cp-corner-grid,
+.cp-week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.6rem;
+}
+.cp-corner {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-control);
+  border-radius: var(--radius);
+  font-weight: 650;
+}
+.cp-corner span {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+}
+.cp-tallybar {
+  display: flex;
+  gap: 3px;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.cp-tallybar span {
+  padding: 0.45rem 0.5rem;
+  color: #fff;
+  font: 600 0.85rem/1.2 var(--font);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cp-tb-got {
+  background: var(--brand-accent);
+}
+.cp-tb-partly {
+  background: var(--brand);
+}
+.cp-tb-notyet {
+  background: #6b4a00;
+}
+
+/* Grid children default to min-width:auto, which let a 3-button group push the nav wider than a phone screen. */
+.cp-top,
+.cp-vgroups {
+  grid-template-columns: minmax(0, 1fr);
+}
+.cp-vgroup,
+.cp-top > * {
+  min-width: 0;
+}
+.cp,
+.cp-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.cp > *,
+.cp-body > * {
+  min-width: 0;
+}
+
+/* ── Two-level navigation ────────────────────────────────────────────────── */
+.cp-nav {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.cp-gtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.cp-gtab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  font: 650 0.92rem/1.2 var(--font);
+  color: var(--ink);
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.cp-gtab:hover {
+  background: var(--bg-interactive-hover);
+}
+.cp-gtab[aria-pressed="true"] {
+  background: var(--surface-2);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.cp-gtab:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.cp-gcount {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 0.75rem;
+}
+.cp-gtab[aria-pressed="true"] .cp-gcount {
+  background: var(--brand);
+  color: #fff;
+}
+.cp-keyhint {
+  font-size: 0.85rem;
+  margin-right: auto;
+}
+@media (max-width: 640px) {
+  .cp-keyhint {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .cp-gtabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .cp-gtab {
+    justify-content: space-between;
+    text-align: left;
+    padding: 0 0.7rem;
+    border-color: var(--border-subtle);
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+  }
+}
+
+/* ── Quick start ─────────────────────────────────────────────────────────── */
+.cp-quick-start {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.6rem;
+}
+.cp-qs {
+  display: grid;
+  gap: 0.15rem;
+  min-height: 56px;
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  font: 650 1rem/1.25 var(--font);
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-control);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.cp-qs small {
+  font-weight: 400;
+  color: var(--ink-2);
+}
+.cp-qs:hover {
+  border-color: var(--brand);
+}
+.cp-qs:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ── Accessibility ───────────────────────────────────────────────────────── */
+.cp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+/* Skip link: off screen until it has keyboard focus, then a full-size button. */
+.cp-skip {
+  position: absolute;
+  left: -9999px;
+  min-height: 44px;
+  padding: 0 1rem;
+  font: 650 0.95rem/1 var(--font);
+  color: #fff;
+  background: var(--brand);
+  border: 0;
+  border-radius: var(--radius);
+}
+.cp-skip:focus {
+  position: static;
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.cp-tool-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--brand);
+}
+.cp-tool-h {
+  font: 700 1.3rem/1.2 var(--font-display);
+  margin: 0;
+}
+.cp-tool-h:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+.cp--present .cp-tool-h {
+  font-size: 1.8rem;
+}
+/* Meaning never rests on colour alone. */
+.cp-dot--ev::after {
+  content: "★";
+  margin-left: 0.1rem;
+  font-size: 0.7rem;
+}
+.cp-mcard--done::before {
+  content: "✓ ";
+  font-weight: 800;
+}
+.cp-sent--now::before {
+  content: "▶ ";
+  font-size: 0.8em;
+  color: var(--brand);
+}
+@media (forced-colors: active) {
+  .cp [aria-pressed="true"] {
+    outline: 3px solid CanvasText;
+    outline-offset: 2px;
+  }
+  .cp-sent--now,
+  mark.cp-ev {
+    outline: 2px solid Highlight;
+  }
+  .cp-svg-bar,
+  .cp-tallybar span,
+  .cp-timeline span {
+    forced-color-adjust: none;
+  }
+}

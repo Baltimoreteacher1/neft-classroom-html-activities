@@ -5,6 +5,7 @@ import test from "node:test";
 import { SCORE_CLAIM } from "./lib/access-studio-rules.mjs";
 import { COUNTDOWN, click, makeCtx, mount, resetStorage, type } from "./lib/access-studios-dom.mjs";
 
+const { MORE_EPISODES } = await import("../access-practice-lab/src/views/city-more-episodes.js");
 const { BUILDINGS, MISSIONS, missionsAt, missionOf } = await import(
   "../access-practice-lab/src/content/city.js"
 );
@@ -389,8 +390,14 @@ test("hub, building, progress and teacher pages render in English and Spanish wi
     bld.root.textContent.includes("Rosa") && bld.root.querySelector("svg.city-scene-svg title"),
   );
   const prog = await open("en", "progress");
-  assert.equal(prog.root.querySelectorAll(".city-prog-list li").length, 12);
-  assert.ok(flat(prog.root).includes("0 of 12 finished on my own"));
+  // The city totals count the 12 missions and the episodes (Community Market + MORE_EPISODES), and the page lists both.
+  const episodes = 1 + MORE_EPISODES.length;
+  assert.equal(
+    prog.root.querySelectorAll(".city-prog-list:not(.city-prog-episodes) li").length,
+    12,
+  );
+  assert.equal(prog.root.querySelectorAll(".city-prog-episodes li").length, episodes);
+  assert.ok(flat(prog.root).includes(`0 of ${12 + episodes} finished on my own`));
   const guide = await open("en", "teacher");
   assert.equal(guide.root.querySelectorAll("table.city-table").length, 2);
   assert.ok(
@@ -430,7 +437,7 @@ test("a mission on my own is recorded as independent; the same mission with a wo
   const saved = JSON.parse(localStorage.getItem("accessPracticeLab:v1:city"));
   assert.deepEqual([saved.prog["order-lunch"].indep, saved.prog["order-lunch"].supp], [1, 1]);
   const prog = await open("en", "progress");
-  assert.ok(flat(prog.root).includes("1 of 12 finished on my own"));
+  assert.ok(flat(prog.root).includes(`1 of ${12 + 1 + MORE_EPISODES.length} finished on my own`));
   assert.ok(flat(prog.root).includes("1 on my own · 1 with support"));
 });
 

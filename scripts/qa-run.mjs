@@ -532,6 +532,9 @@ const COVERAGE = [
   // LEARNING STUDIOS landing page (a static page on The Language Page host). The scoped `test` run reaches the tests
   // that read it (language-page-host, studios-proxy, access-sitemap, studio-app-listing).
   [/^learning-studios\/index\.html$/, ["test", "validate:static", "validate:js-syntax", "check"]],
+  // The presented live tour (/tour/) and its audience room: its own tests are in `test`
+  // (tools/tour-live.test.mjs, functions/api/tour-room/tour-room.test.mjs); the browser run is tools/tour-live-e2e.mjs.
+  [/^(tour\/|shared\/tour-live\/|functions\/api\/tour-room\/|tools\/tour-live)/, ["test", "validate:static", "validate:js-syntax", "validate:save-resume", "check"]],
 
   // ACCESS PRACTICE LAB — one content contract (access-practice-lab/CONTENT.md)
   // read by the app, the teacher hub, printables and inventory. The gate pins
@@ -1159,6 +1162,12 @@ const COVERAGE = [
   // The deploy driver is covered by tools/deploy-path.test.mjs (bash -n, lock,
   // per-worktree engine link, manifest regeneration); nothing else reads it.
   [/^(scripts\/ship\.sh|tools\/deploy-path\.test\.mjs)$/, ["test"]],
+  // Answer keys in every multiple-choice bank that is not a lesson config (those
+  // are covered by validate:math through the lessons/*/config.json rule below).
+  [
+    /^(spiral-review\/bank\.json|data\/(family-homework-ladder|part-two-session2-practice|retrieval-bank)\.json|teacher-tools\/do-now-generator\/lessons-manifest\.json|curriculum\/learning-labs\/[^/]+\/content\.json|tools\/(validate-bank-answers\.mjs|lib\/answer-match\.mjs)|scripts\/lib\/rational\.mjs)$/,
+    ["validate:bank-answers"],
+  ],
   [
     /^lessons\/[^/]+\/config\.json$/,
     [

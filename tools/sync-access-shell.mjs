@@ -7,7 +7,7 @@
  *     directly, while `/index.html` 308-redirects to `/` and loops) for clean deep-link URLs like
  *     /access-practice-lab/Speaking/B/<id>. If it drifts, deep links render a stale build (the "Activity 2 of 6" +
  *     empty panel bug).
- *  2. Every module and stylesheet URL carries a hash of its own bytes (`?v=<12 hex>`). Hashed URLs are served with
+ *  2. Every module and stylesheet URL carries a hash of its own bytes (`?v=<8 hex>`, see `version` below). Hashed URLs are served with
  *     `immutable` caching (the Pages Function) and kept offline (sw.js), so a version string that is not a content
  *     hash would pin a stale file for a year. Relative module imports resolve through the import map, so a cached
  *     dependency can never mix with a newer entry point.
@@ -34,6 +34,11 @@ const sha = (...buffers) => {
   for (const b of buffers) h.update(b);
   return h.digest("hex").slice(0, 12);
 };
+// Module and stylesheet versions: the first 8 hex of the file's SHA-256. A version only has to change when that one
+// file changes (a 1 in 4 billion chance per edit of repeating), and the import map carries one per src module, so
+// every hex digit saved is ~0.5 KB gzip off the shell (validate-language-page-performance: shellHtmlGzipKB).
+// functions/access-practice-lab/[[path]].js checks served bytes against this length.
+const version = (buffer) => sha(buffer).slice(0, 8);
 
 function walk(directory, keep, prefix = "") {
   return readdirSync(directory, { withFileTypes: true })
@@ -50,7 +55,7 @@ const modules = walk(join(dir, "src"), (n) => n.endsWith(".js"));
 const imports = Object.fromEntries(
   modules.map((relative) => {
     const url = `${BASE}/src/${relative}`;
-    return [url, `${url}?v=${sha(readFileSync(join(dir, "src", relative)))}`];
+    return [url, `${url}?v=${version(readFileSync(join(dir, "src", relative)))}`];
   }),
 );
 const importMap = `<!-- lab-modules:begin -->\n    <script type="importmap">\n${JSON.stringify(
@@ -136,7 +141,7 @@ const criticalSheets = [];
 index = index.replace(
   /href="(\/access-practice-lab\/[A-Za-z0-9._-]+\.css)(?:\?v=[^"]*)?"/g,
   (_, href) => {
-    const versioned = `${href}?v=${sha(readFileSync(join(dir, href.slice(`${BASE}/`.length))))}`;
+    const versioned = `${href}?v=${version(readFileSync(join(dir, href.slice(`${BASE}/`.length))))}`;
     sheets.push(versioned);
     if (criticalSheetPaths.has(href)) criticalSheets.push(versioned);
     return `href="${versioned}"`;

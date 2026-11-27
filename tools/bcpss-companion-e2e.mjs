@@ -9,6 +9,8 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { GROUPS } from "../bcpss-teachers/companion/companion-data.js";
+import { NEW_VIEWS } from "../bcpss-teachers/companion/views-registry.js";
 import { listUnits } from "../functions/_lib/bcpss/db.js";
 import { startStudioServer } from "./lib/bcpss-studio-serve.mjs";
 import { skipExit } from "./lib/skip-exit.mjs";
@@ -16,6 +18,18 @@ import { skipExit } from "./lib/skip-exit.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const UNIT = "g6-math-u2";
 const results = [];
+const GROUP_OF = {
+  map: "teach",
+  build: "language",
+  check: "assess",
+  reteach: "assess",
+  ...Object.fromEntries(NEW_VIEWS.map((v) => [v.id, v.group])),
+};
+/** Open a view the way a teacher does: its section tab, then the view. */
+async function openView(page, id) {
+  await page.click(`[data-cp-group="${GROUP_OF[id]}"]`);
+  await page.click(`.cp-nav [data-cp-view="${id}"]`);
+}
 const check = (name, ok, detail = "") => {
   results.push(ok);
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${ok ? "" : ` — ${detail}`}`);
@@ -43,6 +57,8 @@ async function run(width, label) {
   const context = await browser.newContext({
     viewport: { width, height: 900 },
     reducedMotion: "reduce",
+    // The page registers an offline service worker; requests it serves bypass page.route and hit the bare test server.
+    serviceWorkers: "block",
     acceptDownloads: true,
   });
   const page = await context.newPage();
@@ -107,8 +123,46 @@ async function run(width, label) {
     groups.join("|"),
   );
 
+  // Accessibility: skip link, tool heading, announcement, read aloud
+  await page.focus(".cp-skip");
+  const skipBox = await page.$eval(".cp-skip", (e) => e.getBoundingClientRect().height);
+  await page.keyboard.press("Enter");
+  check(
+    T("skip link is 44px when focused and moves focus to the tool heading"),
+    skipBox >= 43.5 && (await page.evaluate(() => document.activeElement?.id)) === "cpTool",
+    `${skipBox}px`,
+  );
+  await openView(page, "corners");
+  check(
+    T("the open tool is named in a heading"),
+    (await page.textContent("#cpTool")).trim() === "Four corners",
+  );
+  check(
+    T("a tool change is announced to screen readers"),
+    /Now showing Four corners/.test(await page.textContent(".cp-live")),
+  );
+  check(
+    T("projected tools offer Read aloud"),
+    (await page.$$eval("[data-cp-read]", (e) => e.length)) === 1,
+  );
+  await openView(page, "map");
+
+  // Quick start
+  const qs = await page.$$eval(".cp-qs", (e) => e.map((b) => b.dataset.cpView));
+  check(
+    T("map: six quick-start tasks, each a real tool"),
+    qs.length === 6 && qs.every((id) => GROUP_OF[id]),
+    qs.join(","),
+  );
+  await page.click('.cp-qs[data-cp-view="tally"]');
+  check(
+    T("quick start opens the tool and its section"),
+    (await page.getAttribute('.cp-nav [data-cp-view="tally"]', "aria-pressed")) === "true" &&
+      (await page.getAttribute('[data-cp-group="assess"]', "aria-pressed")) === "true",
+  );
+
   // Build a set
-  await page.click('[data-cp-view="build"]');
+  await openView(page, "build");
   await page.click('[data-cp-purpose="vocab"]');
   const rows = await page.$$eval(".cp-set .cp-item", (els) => els.length);
   const picked = await page.$$eval(".cp-set .cp-check:checked", (els) => els.length);
@@ -152,7 +206,7 @@ async function run(width, label) {
   await pop.close();
 
   // Check work
-  await page.click('[data-cp-view="check"]');
+  await openView(page, "check");
   await page.fill("#cpText", detail.studio.exit_ticket.model);
   const before404 = writes.length;
   await page.click("[data-cp-analyze]");
@@ -198,7 +252,7 @@ async function run(width, label) {
   await slip.close();
 
   // Reteach
-  await page.click('[data-cp-view="reteach"]');
+  await openView(page, "reteach");
   check(T("reteach plan has eight steps"), (await page.$$eval(".cp-step", (e) => e.length)) === 8);
   const contentModel = await page.textContent(".cp-step:nth-child(3)");
   await page.click('[data-cp-pathway="language"]');
@@ -220,19 +274,20 @@ async function run(width, label) {
   await plan.close();
 
   // Grouped navigation
-  const groupLabels = await page.$$eval(".cp-vgroup-h", (els) =>
-    els.map((e) => e.textContent.trim()),
+  const groupLabels = await page.$$eval("[data-cp-group]", (els) =>
+    els.map((e) => e.firstChild.textContent.trim()),
   );
   check(
-    T("views are listed under the six teacher groups"),
+    T("views sit under the six teacher sections, one section open at a time"),
     groupLabels.length === 6 &&
-      groupLabels.includes("Teach and explain") &&
-      groupLabels.includes("Writing and projects"),
+      groupLabels[0] === "Teach and explain" &&
+      groupLabels.includes("Writing and projects") &&
+      (await page.$$eval(".cp-nav .cp-view", (e) => e.length)) < 8,
     groupLabels.join("|"),
   );
 
   // Read together
-  await page.click('[data-cp-view="text"]');
+  await openView(page, "text");
   await page.waitForSelector(".cp-passage");
   await page.click('[data-cp-act="text:next"]');
   check(
@@ -268,7 +323,7 @@ async function run(width, label) {
   await rd.close();
 
   // Word cards
-  await page.click('[data-cp-view="words"]');
+  await openView(page, "words");
   check(
     T("word cards: six pieces on the card"),
     (await page.$$eval(".cp-frayer .cp-piece", (e) => e.length)) === 6,
@@ -294,7 +349,7 @@ async function run(width, label) {
   await wc.close();
 
   // Virtual lab (math ratio, then the model-sentence builder)
-  await page.click('[data-cp-view="labs"]');
+  await openView(page, "labs");
   const rects0 = await page.$$eval("svg.cp-svg rect", (e) => e.length);
   await page.click('[data-cp-act="labs:inc"][data-cp-arg="a"]');
   const rects1 = await page.$$eval("svg.cp-svg rect", (e) => e.length);
@@ -312,7 +367,7 @@ async function run(width, label) {
   );
 
   // Four-domain practice
-  await page.click('[data-cp-view="practice"]');
+  await openView(page, "practice");
   await page.click('[data-cp-act="practice:domain"][data-cp-arg="reading"]');
   check(
     T("practice: reading domain shows the passage"),
@@ -332,7 +387,7 @@ async function run(width, label) {
   await pr.close();
 
   // Station rotation and spiral warm-up
-  await page.click('[data-cp-view="stations"]');
+  await openView(page, "stations");
   const rows4 = await page.$$eval(".cp-table tbody tr", (e) => e.length);
   await page.click('[data-cp-act="stations:n"][data-cp-arg="3"]');
   const rows3 = await page.$$eval(".cp-table tbody tr", (e) => e.length);
@@ -341,7 +396,7 @@ async function run(width, label) {
     rows4 === 4 && rows3 === 3,
     `${rows4}/${rows3}`,
   );
-  await page.click('[data-cp-view="quick"]');
+  await openView(page, "quick");
   await page.click('[data-cp-act="quick:ans"][data-cp-arg="0:0"]');
   check(
     T("spiral warm-up: an answer gets feedback"),
@@ -349,7 +404,7 @@ async function run(width, label) {
   );
 
   // Transform a text
-  await page.click('[data-cp-view="transform"]');
+  await openView(page, "transform");
   await page.fill("#cpTx", detail.reading.texts["3_4"]);
   await page.click('[data-cp-act="transform:run"]');
   const tr = await page.textContent(".cp-transform .cp-result");
@@ -366,7 +421,7 @@ async function run(width, label) {
   await tp.close();
 
   // Cross-subject project
-  await page.click('[data-cp-view="projects"]');
+  await openView(page, "projects");
   await page.waitForFunction(
     () => document.querySelector("#cpPartner option[value='g6-sci-u4']"),
     null,
@@ -391,14 +446,116 @@ async function run(width, label) {
   );
   await pj.close();
 
+  // Guess my word
+  await openView(page, "guess");
+  const c1 = await page.$$eval(".cp-clue", (e) => e.length);
+  await page.click('[data-cp-act="guess:clue"]');
+  const c2 = await page.$$eval(".cp-clue", (e) => e.length);
+  check(T("guess my word: clues appear one at a time"), c1 === 1 && c2 === 2, `${c1}/${c2}`);
+  await page.click('[data-cp-act="guess:got"]');
+  const stars = await page.textContent(".cp-stars");
+  check(
+    T("guess my word: a class guess earns stars and reveals the word"),
+    /★ [1-9]/.test(stars) && (await page.$$eval(".cp-reveal", (e) => e.length)) === 1,
+    stars,
+  );
+  await page.click('[data-cp-act="guess:next"]');
+  check(
+    T("guess my word: next word starts with one clue"),
+    (await page.$$eval(".cp-clue", (e) => e.length)) === 1,
+  );
+
+  // Today's lesson
+  await openView(page, "day");
+  const sum = async () =>
+    (await page.$$eval(".cp-day .cp-step-head span", (e) => e.map((x) => x.textContent))).at(-1);
+  const end45 = await sum();
+  await page.click('[data-cp-act="day:min"][data-cp-arg="60"]');
+  const end60 = await sum();
+  check(
+    T("today's lesson: steps fill 45 or 60 minutes"),
+    /–45 min/.test(end45) && /–60 min/.test(end60),
+    `${end45} / ${end60}`,
+  );
+  await page.click('.cp-day [data-cp-view="text"]');
+  check(
+    T("today's lesson: a step opens its view"),
+    (await page.getAttribute('[data-cp-view="text"]', "aria-pressed")) === "true",
+  );
+
+  // Present mode
+  await openView(page, "practice");
+  await page.click('[data-cp-present="on"]');
+  const presentOk = await page.evaluate(() => {
+    const root = document.querySelector(".cp--present");
+    const visible = (sel) => [...root.querySelectorAll(sel)].some((e) => e.offsetParent);
+    return (
+      Boolean(root) &&
+      !visible(".cp-teacher") &&
+      !visible('[data-cp-act$=":print"]') &&
+      !document.querySelector(".cp--present .cp-vgroups")
+    );
+  });
+  check(T("present mode hides teacher notes, print buttons and navigation"), presentOk);
+  await page.keyboard.press("Escape");
+  check(
+    T("Escape leaves present mode and returns focus"),
+    (await page.$$eval(".cp--present", (e) => e.length)) === 0 &&
+      (await page.evaluate(() => document.activeElement?.dataset.cpPresent)) === "on",
+  );
+
+  // Word match, four corners, routine, week, tally
+  await openView(page, "match");
+  const deck = await page.$$eval(".cp-mcard", (e) => e.map((b) => b.getAttribute("aria-label")));
+  check(
+    T("word match: twelve face-down cards"),
+    deck.length === 12 && deck.every((l) => /face down/.test(l)),
+  );
+  await page.click('[data-cp-act="match:flip"][data-cp-arg="0"]');
+  await page.click('[data-cp-act="match:flip"][data-cp-arg="1"]');
+  check(
+    T("word match: two cards turn over and the result is announced"),
+    (await page.$$eval(".cp-mcard--up", (e) => e.length)) >= 2 &&
+      /pair|match/i.test(await page.textContent(".cp-match [role=status]")),
+  );
+  await openView(page, "corners");
+  const s1 = await page.textContent(".cp-corners .cp-question");
+  await page.click('[data-cp-act="corners:next"]');
+  check(
+    T("four corners: next statement and four corners shown"),
+    s1 !== (await page.textContent(".cp-corners .cp-question")) &&
+      (await page.$$eval(".cp-corner", (e) => e.length)) === 4,
+  );
+  await openView(page, "routine");
+  await page.click('[data-cp-act="routine:next"]');
+  check(
+    T("language routine: steps advance"),
+    (await page.textContent(".cp-routine .cp-dot--now")).trim() === "2",
+  );
+  await openView(page, "week");
+  check(T("this week: five days"), (await page.$$eval(".cp-week .cp-card", (e) => e.length)) === 5);
+  await page.click('.cp-week [data-cp-view="corners"]');
+  check(
+    T("this week: a day's section opens its view"),
+    (await page.getAttribute('[data-cp-view="corners"].cp-view', "aria-pressed")) === "true",
+  );
+  await openView(page, "tally");
+  for (let k = 0; k < 3; k++) await page.click('[data-cp-act="tally:inc"][data-cp-arg="notyet"]');
+  await page.click('[data-cp-act="tally:inc"][data-cp-arg="got"]');
+  check(
+    T("tally: counts drive the suggested next step"),
+    /reteach/i.test(await page.textContent(".cp-tally")) &&
+      (await page.$$eval(".cp-tallybar span", (e) => e.length)) === 2,
+  );
+
   // Diagrams
-  await page.click('[data-cp-view="map"]');
+  await openView(page, "map");
   check(
     T("map: the at-a-glance chart is drawn and labelled"),
     (await page.$$eval('svg.cp-svg[aria-label^="Activities in this unit"]', (e) => e.length)) ===
       1 && (await page.$$eval(".cp-tile", (e) => e.length)) === 5,
   );
-  await page.click('[data-cp-view="words"]');
+  await openView(page, "words");
   check(
     T("word cards: the Frayer diagram has its connecting lines"),
     (await page.$$eval(".cp-frayer-lines line", (e) => e.length)) === 4,
@@ -428,7 +585,7 @@ async function run(width, label) {
       `${hit} text runs overlap`,
     );
   }
-  await page.click('[data-cp-view="stations"]');
+  await openView(page, "stations");
   const ring1 = await page.getAttribute("svg.cp-svg--ring", "aria-label");
   await page.click('[data-cp-act="stations:round"][data-cp-arg="1"]');
   const ring2 = await page.getAttribute("svg.cp-svg--ring", "aria-label");
@@ -437,7 +594,7 @@ async function run(width, label) {
     ring1 !== ring2 && /Round 2/.test(ring2),
     ring2,
   );
-  await page.click('[data-cp-view="projects"]');
+  await openView(page, "projects");
   await page.waitForSelector(".cp-svg--venn", { timeout: 8000 });
   const outside = await page.evaluate(() => {
     const svg = document.querySelector("svg.cp-svg--venn");
@@ -457,7 +614,7 @@ async function run(width, label) {
     outside === 0,
     `${outside} outside`,
   );
-  await page.click('[data-cp-view="text"]');
+  await openView(page, "text");
   check(
     T("read together: the sentence strip marks the current sentence"),
     (await page.$$eval(".cp-strip .cp-dot--now", (e) => e.length)) === 1,
@@ -477,20 +634,39 @@ async function run(width, label) {
     "quick",
     "transform",
     "projects",
+    "guess",
+    "day",
+    "match",
+    "corners",
+    "routine",
+    "week",
+    "tally",
   ]) {
-    await page.click(`[data-cp-view="${view}"]`);
+    await openView(page, view);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     );
     check(T(`${view}: no horizontal scroll`), overflow <= 0, `${overflow}px`);
-    const small = await page.$$eval(".cp button, .cp a.cp-btn, .cp select, .cp .cp-check", (els) =>
-      els
-        .filter(
+    const clipped = await page.$$eval(
+      ".cp-view, .cp-chip",
+      (els) =>
+        els.filter(
           (e) =>
             e.offsetParent &&
-            (e.getBoundingClientRect().height < 43.5 || e.getBoundingClientRect().width < 43.5),
-        )
-        .map((e) => `${e.className}:${Math.round(e.getBoundingClientRect().height)}`),
+            e.getBoundingClientRect().right > document.documentElement.clientWidth + 1,
+        ).length,
+    );
+    check(T(`${view}: no control sits off the right edge`), clipped === 0, `${clipped} clipped`);
+    const small = await page.$$eval(
+      ".cp button:not(.cp-skip), .cp a.cp-btn, .cp select, .cp .cp-check",
+      (els) =>
+        els
+          .filter(
+            (e) =>
+              e.offsetParent &&
+              (e.getBoundingClientRect().height < 43.5 || e.getBoundingClientRect().width < 43.5),
+          )
+          .map((e) => `${e.className}:${Math.round(e.getBoundingClientRect().height)}`),
     );
     check(
       T(`${view}: controls are at least 44px`),
@@ -508,14 +684,32 @@ async function run(width, label) {
     });
     check(T(`${view}: axe serious/critical = 0`), axe.length === 0, axe.join(","));
   }
-  await page.click('[data-cp-view="map"]');
-  await page.focus('[data-cp-view="build"]');
+  await openView(page, "map");
+  await page.focus('[data-cp-group="language"]');
+  await page.keyboard.press("Enter");
+  const groupKept =
+    (await page.getAttribute('[data-cp-group="language"]', "aria-pressed")) === "true" &&
+    (await page.evaluate(() => document.activeElement?.dataset.cpGroup)) === "language";
+  await page.focus('.cp-nav [data-cp-view="build"]');
   await page.keyboard.press("Enter");
   check(
-    T("keyboard Enter switches the view and keeps focus on it"),
-    (await page.getAttribute('[data-cp-view="build"]', "aria-pressed")) === "true" &&
+    T("keyboard: Enter opens a section, then a view, and focus stays put"),
+    groupKept &&
+      (await page.getAttribute('.cp-nav [data-cp-view="build"]', "aria-pressed")) === "true" &&
       (await page.evaluate(() => document.activeElement?.dataset.cpView)) === "build",
   );
+  await openView(page, "guess");
+  await page.click('[data-cp-present="on"]');
+  const clues0 = await page.$$eval(".cp-clue", (e) => e.length);
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("PageDown");
+  const clues2 = await page.$$eval(".cp-clue", (e) => e.length);
+  check(
+    T("present mode: arrow keys and clicker keys step forward"),
+    clues2 === clues0 + 2,
+    `${clues0}->${clues2}`,
+  );
+  await page.keyboard.press("Escape");
   check(T("no console or page errors"), errors.length === 0, errors.slice(0, 3).join(" | "));
   await context.close();
 }

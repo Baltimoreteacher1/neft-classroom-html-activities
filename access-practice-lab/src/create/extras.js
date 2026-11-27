@@ -7,6 +7,10 @@ import { saveBlob, slug } from "./files.js";
 import { icon } from "./icons.js";
 import { deleteRecipe, listRecipes, saveRecipe } from "./my-recipes.js";
 
+/** The leveled set: the three WIDA tiers a mixed class most often needs, in folder order. */
+export const LEVEL_SET = Object.freeze(["emerging", "developing", "expanding"]);
+const LEVEL_DIR = { emerging: "1", developing: "2", expanding: "3" };
+
 const PPTX_SRC = "/assets/vendor/pptxgenjs-4.0.1/pptxgen.min.js";
 
 function loadScript(src, global) {
@@ -116,6 +120,75 @@ export function moreActions(env) {
         },
       ),
     },
+    kit: env.base
+      ? {
+          icon: "kit",
+          label: S("Lesson kit (ZIP)", "Kit de la lección (ZIP)"),
+          sub: S("Slides, pages, games and checks, with a start page", "Diapositivas, páginas, juegos y boletos, con una página de inicio"),
+          onclick: run(
+            S("Building the lesson kit…", "Creando el kit de la lección…"),
+            S(
+              "Downloaded. Unzip it and open 00-start-here.html for a suggested lesson flow.",
+              "Descargado. Descomprímalo y abra 00-start-here.html para ver una secuencia sugerida.",
+            ),
+            async (a) => {
+              const [{ studentHtml, printHtml }, JSZip, { lessonKit }] = await Promise.all([
+                import("../studio/editor/preview.js"),
+                jszip(),
+                import("./lesson-kit.js"),
+              ]);
+              const kit = await lessonKit(a, env.base(), {
+                lang,
+                printable: Boolean(env.printable?.()),
+                studentHtml,
+                printHtml,
+              });
+              const zip = new JSZip();
+              const date = new Date(Date.UTC(2026, 0, 1));
+              zip.file("00-start-here.html", kit.startHtml, { date });
+              for (const f of kit.files) zip.file(f.name, f.data, { date });
+              const bytes = await zip.generateAsync({ type: "uint8array", compression: "DEFLATE" });
+              saveBlob(new Blob([bytes], { type: "application/zip" }), `${slug(a.title)}-lesson-kit.zip`);
+            },
+          ),
+        }
+      : null,
+    leveled: env.buildAt
+      ? {
+          icon: "level",
+          label: S("Three-level set (ZIP)", "Juego de tres niveles (ZIP)"),
+          sub: S("Same task at WIDA 1-2, 3 and 4", "La misma tarea en WIDA 1-2, 3 y 4"),
+          onclick: run(
+            S("Building three levels…", "Creando tres niveles…"),
+            S(
+              "Downloaded: one folder per level, each with the student page and, for printable formats, a print copy and key.",
+              "Descargado: una carpeta por nivel, cada una con la página del estudiante y, si se imprime, una copia y la clave.",
+            ),
+            async () => {
+              const [{ studentHtml, printHtml }, JSZip, { LEVELS }] = await Promise.all([
+                import("../studio/editor/preview.js"),
+                jszip(),
+                import("./supports.js"),
+              ]);
+              const zip = new JSZip();
+              let title = "";
+              for (const id of LEVEL_SET) {
+                const lv = LEVELS.find((l) => l.id === id);
+                const a = env.buildAt(id);
+                title = title || a.title;
+                const dir = `${LEVEL_DIR[id]}-${slug(lv.label.en)}`;
+                zip.file(`${dir}/student.html`, await studentHtml(a, { lang }));
+                if (env.printable?.()) {
+                  zip.file(`${dir}/print.html`, (await printHtml(a, { lang, part: "student" })).html);
+                  zip.file(`${dir}/answer-key.html`, (await printHtml(a, { lang, part: "key" })).html);
+                }
+              }
+              const bytes = await zip.generateAsync({ type: "uint8array", compression: "DEFLATE" });
+              saveBlob(new Blob([bytes], { type: "application/zip" }), `${slug(title)}-three-levels.zip`);
+            },
+          ),
+        }
+      : null,
     zip: {
       icon: "zip",
       label: S("Complete package (ZIP)", "Paquete completo (ZIP)"),
@@ -139,7 +212,7 @@ export function moreActions(env) {
   };
 }
 
-/** Step 3 as titled groups of icon tiles. groups: [{ title, items: [tile|null], empty? }] */
+/** Step 3 as titled groups of icon tiles. groups: [{ title, tone?, items: [tile|null], note?, empty? }] */
 export function tileGroups(groups) {
   return h(
     "div.cr-groups",
@@ -147,6 +220,7 @@ export function tileGroups(groups) {
       const items = g.items.filter(Boolean);
       return h(
         "section.cr-group",
+        g.tone ? { "data-tone": g.tone } : {},
         h("h4.cr-sub", g.title),
         g.note ? h("p.cr-fine", g.note) : null,
         items.length

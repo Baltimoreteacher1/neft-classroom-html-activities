@@ -58,13 +58,19 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 | Footers grouped by audience (lab and standalone pages); Teacher Hub, BCPSS crumb and build stamp say The Language Page | C6, T5 | `tools/access-acc-foundation.test.mjs`, host rewrite checked |
 | Language Adventures and Language Studio no longer featured in More; site directory regenerated | D5 decision | `tools/access-intro-guide.test.mjs` |
 
+**Tranche 5 — classroom teachers and student engagement (`docs/language-page/navigation.md`)**
+| Item | Finding | Proof |
+| --- | --- | --- |
+| Classroom Teacher door opens one page for today's lesson: teaching moves, three-level sentence-frame card, word cards, student practice link (Joel: the Hub was "overwhelming, disjointed" for classroom teachers) | C6, usability | `tools/access-classroom-kit.test.mjs`; axe 0 serious at 1366 and 390; print 1 Letter page each |
+| Student Hub "My week": practice days against the learner's own goal, skills this week, one next skill | E6 (engagement) | `tools/access-my-week.test.mjs`; axe 0 serious |
+| Hub links the lesson kit from its hero and "Go straight to" (all four roles) | — | `tools/access-hub-role.test.mjs` |
+
 **Performance pass (2026-11-27; WS6)**
 | Item | Finding | Proof |
 | --- | --- | --- |
 | Lab-host HTML compressed: `no-transform` (kept, it blocks the beacon) also stopped Cloudflare's edge compressing, so the shell left at 208,906 bytes; `brandLabResponse` now asks the Workers runtime to encode it (gzip 34,102 / br 29,732; plain for `identity`) | T1 | `functions/language-page-host.test.mjs`; measured in workerd (`wrangler pages dev`) for gzip, br, identity and `gzip;q=0` |
 | Adventure World files (~113 KB compressed) off every page: `lab/meta.js` reads `src/adventures/worlds/domains.js`; module preloads 136 → 129 | T1 | `tools/access-world-domains.test.mjs` recomputes the table and fails on drift |
 | Lab CSS bundles minified with lightningcss (full 222 → 180 KB brotli, critical 48 → 36 KB) | T1 | `tools/access-critical-styles.test.mjs`; 28 route × width screenshots identical to the unminified bundles |
-| `shellHtmlGzipKB` still over its ratchet (33.2 vs 31.8; it was 33.4 on main before this pass): the import map's 1,460 12-hex hashes are the weight | WS6 | not raised; structural fix open |
 
 ## Not started
 WS2 chrome-budget browser gate and the newcomer door · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,

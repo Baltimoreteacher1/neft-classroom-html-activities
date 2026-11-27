@@ -68,7 +68,9 @@ export function studioVideoFor(pathname) {
  */
 export async function mountStudioVideo(root, pathname, isCurrent = () => true) {
   const entry = studioVideoFor(pathname);
-  if (!entry || root.querySelector(`studio-video[data-id="${entry.id}"]`)) return;
+  // A view that shares a mapped path but is not that screen (a sub-page behind ?tab=) opts out with data-no-studio-video.
+  if (!entry || root.querySelector("[data-no-studio-video]")) return;
+  if (root.querySelector(`studio-video[data-id="${entry.id}"]`)) return;
   if (!document.querySelector(`link[href="${STYLES}"]`)) {
     const link = document.createElement("link");
     link.rel = "stylesheet";

@@ -61,6 +61,24 @@ import {
   teacherChooserHTML,
   teacherTaskHTML,
 } from "./write-plus.js";
+import {
+  QUICK,
+  badgeFacts,
+  badgesHTML,
+  celebrateBadges,
+  conferenceHTML,
+  conferenceSheetHTML,
+  extrasRowHTML,
+  focusBannerHTML,
+  focusFrom,
+  notesForPortfolioHTML,
+  onMoreClick,
+  onMoreInput,
+  partnerHTML,
+  quickChooserHTML,
+  quickWriteHTML,
+  teacherAssignHTML,
+} from "./write-more.js";
 
 /** write-studio.css loads here, on /write only, so the lab shell does not carry it on every other page. */
 let sheet = null;
@@ -233,7 +251,7 @@ async function chooserHTML(ctx, index, entries) {
     })}
     ${
       tasks.length
-        ? html`${teacherChooserHTML(I, ctx, tasks)}${myWritingHTML(I, ctx, tasks, S.studio)}${filterBarHTML(I, tasks, anyStarted)}${jumpNavHTML(forms.map((f) => [`wrt-${f}`, formName(f)]), I.S("Jump to a kind of writing task", "Ir a un tipo de tarea de escritura"))}
+        ? html`${teacherChooserHTML(I, ctx, tasks)}${myWritingHTML(I, ctx, tasks, S.studio)}${extrasRowHTML(I, ctx, tasks, S.studio)}${badgesHTML(I, S.studio, [...full.values()])}${filterBarHTML(I, tasks, anyStarted)}${jumpNavHTML(forms.map((f) => [`wrt-${f}`, formName(f)]), I.S("Jump to a kind of writing task", "Ir a un tipo de tarea de escritura"))}
           ${
             recs.length
               ? html`<section class="task-group is-next" aria-labelledby="wrt-next-h">
@@ -308,6 +326,7 @@ function portfolioHTML(ctx, tasks) {
                 </div>
                 ${growth && (growth.changes.length || growth.gainedMoves.length) ? html`<section class="entry-changes"><h3>${icon("growth")} ${I.T("What changed", "Qué cambió")}</h3><ul>${growth.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${growth.gainedMoves.map((m) => html`<li>${I.T(`Now ${m.toLowerCase()}`, `Ahora: ${m.toLowerCase()}`)}</li>`)}</ul></section>` : ""}
                 <p class="row-actions no-print"><a class="btn small" href="${BASE}/write/${id}?grades=${ctx.band}">${icon("writing")} ${w.finishedAt ? I.T("Open this piece", "Abrir este texto") : I.T("Keep working on it", "Seguir trabajando")}</a><button type="button" class="btn small" data-copy-piece="${id}">${icon("copy")} ${I.T("Copy the latest version", "Copiar la última versión")}</button></p>
+                ${notesForPortfolioHTML(I, w)}
                 ${w.reflection ? html`<section class="entry-reflection"><h3>${I.T("What I improved and why", "Qué mejoré y por qué")}</h3><p class="portfolio-response">${w.reflection}</p></section>` : ""}
               </article>`;
             })
@@ -413,6 +432,7 @@ export async function render(ctx) {
   await ensureStyles();
   const index = await loadStudioIndex();
   S = { ...(S || {}), band: ctx.band, studio: loadStudio(), ledger: loadLedger() };
+  S.allTasks = (await loadWritingTasks()).tasks;
   const q = new URLSearchParams(location.search);
   const id = ctx.route.id;
   if (!id && q.get("tab") === "portfolio")
@@ -420,7 +440,23 @@ export async function render(ctx) {
       title: I.S("Writing portfolio", "Portafolio de escritura"),
       html: portfolioHTML(ctx, (await loadWritingTasks()).tasks),
     };
-  if (!id) return { title: I.S("Writing Studio", "Estudio de escritura"), html: await chooserHTML(ctx, index, S.ledger.entries) };
+  if (!id && q.get("tab") === "quick") {
+    S.task = null;
+    const prompt = QUICK.find((x) => x.id === q.get("p"));
+    const crumbs = crumbsHTML([
+      [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`],
+      [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`],
+      [I.S("Quick write", "Escritura rápida"), prompt ? `${BASE}/write?tab=quick&grades=${ctx.band}` : null],
+    ]);
+    return {
+      title: I.S("Quick write", "Escritura rápida"),
+      html: html`${crumbs}${prompt ? quickWriteHTML(I, ctx, S.studio, prompt) : quickChooserHTML(I, ctx, S.studio)}`,
+    };
+  }
+  if (!id) {
+    S.task = null;
+    return { title: I.S("Writing Studio", "Estudio de escritura"), html: await chooserHTML(ctx, index, S.ledger.entries) };
+  }
   const found = await findTask(id, q.get("from"));
   if (!found)
     return {
@@ -428,6 +464,10 @@ export async function render(ctx) {
       html: html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h1 tabindex="-1">${I.T("We could not find that task.", "No pudimos encontrar esa tarea.")}</h1><a class="btn" href="${BASE}/write?grades=${ctx.band}">${I.T("Writing Studio", "Estudio de escritura")}</a></section>`,
     };
   const { task, mission } = found;
+  if (q.get("sheet") === "conference") {
+    S.task = null;
+    return { title: task.title, html: conferenceSheetHTML(I, ctx, task) };
+  }
   S.task = task;
   S.mission = mission;
   S.fx = choiceEffects(task, mission, S.studio);
@@ -498,7 +538,8 @@ export async function render(ctx) {
               <button type="button" class="ghost small" data-say="${task.prompt}">${icon("volume")} ${I.T("Hear the task", "Escuchar la tarea")}</button></div>
           </div>
         </header>
-        ${teacherTaskHTML(I, ctx, task)}
+        ${teacherTaskHTML(I, ctx, task, teacherAssignHTML(I, ctx, task))}
+        ${focusBannerHTML(I, task, focusFrom(location.search))}
         ${nextStepHTML(I, ctx, task, S.state, text, analyzed)}
         ${stepperHTML(stepsFor(S.state, text, analyzed), { label: I.S("Writing steps", "Pasos de escritura") })}
         ${S.state.versions.length ? stageLockedHTML(S.stage) : stagePickerHTML(S.stage, sug)}
@@ -528,6 +569,7 @@ ${text}</textarea></label>
                 <button type="button" class="ghost" data-read-draft>${icon("volume")} ${I.T("Read my writing to me", "Leer mi escritura en voz alta")}</button>
               </div>
             </section>
+            ${conferenceHTML(I, S.state, Boolean(text.trim()))}
             ${supportsHTML(task)}
             ${disclosure(
               "wrt-tools",
@@ -550,6 +592,7 @@ ${text}</textarea></label>
                 </section>
                 <section class="panel" id="wrt-finish">
                   <h3><span class="step-badge">5</span> ${I.T("Finish", "Terminar")}</h3>
+                  ${partnerHTML(I, S.state)}
                   <label class="field"><span>${I.T("What did you improve, and why?", "¿Qué mejoraste y por qué?")}</span><textarea rows="3" data-reflection ${IGN}>${S.state.reflection}</textarea></label>
                   ${reflectStartersHTML(I)}
                   <div class="row-actions"><button type="button" class="btn btn-primary" data-finish ${wordCount(S.state.reflection) >= 5 ? "" : raw("disabled")}>${icon("bookmark")} ${I.T("Save to my portfolio", "Guardar en mi portafolio")}</button></div>
@@ -583,6 +626,7 @@ function feedback(ctx) {
     announce(I.S("Nothing has changed since your last feedback. Revise your writing, then ask again.", "No ha cambiado nada desde tus últimos comentarios. Revisa tu escritura y vuelve a pedirlos."));
     return;
   }
+  const badgesBefore = badgeFacts(S.studio, S.allTasks || []);
   lockStage();
   S.state.attemptId ||= `a${Date.now().toString(36)}`;
   const first = !S.ledger.entries.some(
@@ -615,11 +659,13 @@ function feedback(ctx) {
   saveLedger(S.ledger);
   save();
   announce(I.S("Feedback ready. Read your next moves, then revise.", "Comentarios listos. Lee tus próximos pasos y luego revisa."));
+  celebrateBadges(I, badgesBefore, badgeFacts(S.studio, S.allTasks || []));
   ctx.rerender();
 }
 
 export function onInput(e, ctx) {
   if (onPlusFilter(e, I)) return;
+  if (S?.studio && onMoreInput(e, I, S.studio, S.task ? S.state : null, S.task ? save : () => saveStudio(S.studio))) return;
   if (onLoopInput(e)) return;
   import("../lang/echo-self.js").then((m) => m.onEchoSelfInput(e, ctx));
   if (!S?.task) return;
@@ -694,6 +740,9 @@ export async function onClick(e, ctx) {
     return true;
   }
   if (onPlusClick(e, I)) return true;
+  const more = onMoreClick(e, I, S.studio, () => saveStudio(S.studio), S.allTasks || []);
+  if (more === "rerender") ctx.rerender();
+  if (more) return true;
   const piece = t.closest("[data-copy-piece]");
   if (piece) {
     copyOut(S.studio.writing[piece.dataset.copyPiece]?.versions.at(-1)?.text || "");
@@ -838,6 +887,7 @@ export async function onClick(e, ctx) {
     return true;
   }
   if (t.closest("[data-finish]")) {
+    const badgesBefore = badgeFacts(S.studio, S.allTasks || []);
     addVersion(S.state, S.state.draft ?? "", "final");
     S.state.finishedAt = new Date().toISOString();
     if (S.mission) {
@@ -846,6 +896,7 @@ export async function onClick(e, ctx) {
     }
     save();
     announce(I.S("Saved to your portfolio.", "Guardado en tu portafolio."));
+    celebrateBadges(I, badgesBefore, badgeFacts(S.studio, S.allTasks || []));
     ctx.rerender();
     return true;
   }

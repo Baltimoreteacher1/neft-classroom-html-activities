@@ -52,7 +52,7 @@ export function buildPracticePack(detail, level) {
 
 function panel(id, pack, vs) {
   if (id === "listening")
-    return `<p><b>Teacher:</b> read the text below at a natural pace, twice. Students listen the first time, jot key words the second time, then rebuild the text with a partner.</p>
+    return `<p class="cp-teacher"><b>Teacher:</b> read the text below at a natural pace, twice. Students listen the first time, jot key words the second time, then rebuild the text with a partner.</p>
       <div class="cp-say">${esc(pack.listening.text)}</div>
       <p><b>Key words:</b> ${pack.listening.keyWords.map(esc).join(", ")}</p>
       <p><b>Students:</b> ${esc(pack.listening.support)}</p>
@@ -84,7 +84,7 @@ export function render(st, detail) {
       <p class="cp-note">Informal practice in all four language domains, built from this unit's own content. It is not an ACCESS test and it gives no scores or levels.</p>
       <fieldset class="cp-field"><legend>Choose a domain</legend><div class="cp-chiprow">${DOMAINS.map((d) => `<button type="button" class="cp-chip" data-cp-act="${ID}:domain" data-cp-arg="${d.id}" aria-pressed="${d.id === vs.d}"><span aria-hidden="true">${domainIcon(d.label)}</span> ${d.label}<small>${esc(d.hint)}</small></button>`).join("")}</div></fieldset>
       <div class="cp-card">${panel(vs.d, pack, vs)}</div>
-      ${pack.lookFor ? `<p class="cp-muted"><b>Look for (teacher):</b> ${esc(pack.lookFor)}</p>` : ""}
+      ${pack.lookFor ? `<p class="cp-muted cp-teacher"><b>Look for (teacher):</b> ${esc(pack.lookFor)}</p>` : ""}
       <div class="cp-actions"><button type="button" class="cp-btn cp-btn--solid" data-cp-act="${ID}:print" data-cp-arg="student">Print the student set (4 tasks)</button><button type="button" class="cp-btn" data-cp-act="${ID}:print" data-cp-arg="teacher">Print the teacher key</button></div>
     </div>`;
 }

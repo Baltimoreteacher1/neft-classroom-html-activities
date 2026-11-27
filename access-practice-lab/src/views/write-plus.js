@@ -633,6 +633,11 @@ export function teacherChooserHTML(I, ctx, tasks) {
           <button type="button" class="btn small" data-copy-link="${studentLink(ctx)}">${icon("copy")} ${I.T("Copy the student link", "Copiar el enlace para estudiantes")}</button>
           <a class="btn small" href="${BASE}/printables/studio-writing" target="_blank" rel="noopener">${icon("print")} ${I.T("Print task cards", "Imprimir tarjetas")}</a>
         </p>
+        <h3>${I.T("A five-minute warm-up", "Un calentamiento de cinco minutos")}</h3>
+        <p>${I.T("Quick writes are picture and question prompts with no feedback and no record of supports: a low-pressure start, a bell-ringer or an early-finisher choice.", "Las escrituras rápidas son imágenes y preguntas sin comentarios ni registro de apoyos: un inicio sin presión, una actividad de entrada o una opción para quien termina antes.")}</p>
+        <p class="row-actions"><button type="button" class="btn small" data-copy-link="${location.origin}${BASE}/write?tab=quick&grades=${ctx.band}">${icon("copy")} ${I.T("Copy the quick-write link", "Copiar el enlace de escritura rápida")}</button></p>
+        <h3>${I.T("On each task, in Teacher view", "En cada tarea, en la vista docente")}</h3>
+        <ul class="teach-routine"><li>${I.T("Assign with a focus: the link shows students one goal for the day.", "Asignar con un enfoque: el enlace muestra a los estudiantes una meta para el día.")}</li><li>${I.T("Print a conference sheet with look-fors and questions.", "Imprimir una hoja de conferencia con qué observar y preguntas.")}</li><li>${I.T("Leave a conference note on the writer's device. They see it with the piece and in their portfolio.", "Dejar una nota de conferencia en el dispositivo del escritor. La ve con el texto y en su portafolio.")}</li></ul>
       </div>
       <div class="table-scroll" tabindex="0" role="region" aria-label="${I.S("Every writing task for this grade band", "Todas las tareas de escritura de este grupo de grados")}">
         <table class="data-table teach-table">
@@ -653,7 +658,7 @@ const FOCUS = {
   sentence: ["Sentences", "Oraciones"],
 };
 
-export function teacherTaskHTML(I, ctx, task) {
+export function teacherTaskHTML(I, ctx, task, extra = "") {
   if (!isTeacherView()) return "";
   const e = task.expected || {};
   const g = task.stages?.guided || {};
@@ -669,6 +674,7 @@ export function teacherTaskHTML(I, ctx, task) {
           <ul>${(task.organizer || []).map((o) => html`<li><strong>${o.label}.</strong> ${o.hint}</li>`)}</ul>
           ${e.minWords ? html`<p class="fine">${I.T(`Usual length: ${e.minWords}–${e.maxWords} words, ${e.paragraphs || 1} paragraph${(e.paragraphs || 1) === 1 ? "" : "s"}.`, `Extensión habitual: ${e.minWords}–${e.maxWords} palabras, ${e.paragraphs || 1} ${(e.paragraphs || 1) === 1 ? "párrafo" : "párrafos"}.`)}</p>` : ""}
           <p class="row-actions"><button type="button" class="btn small" data-copy-link="${studentLink(ctx, task.id)}">${icon("copy")} ${I.T("Copy the student link", "Copiar el enlace para estudiantes")}</button></p>
+          ${extra}
         </div>
         <div>
           ${

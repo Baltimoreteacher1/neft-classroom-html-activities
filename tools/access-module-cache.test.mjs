@@ -34,7 +34,7 @@ test("home and deep-link shells share a complete content-versioned module map", 
     const hash = createHash("sha256")
       .update(readFileSync(new URL(file, source)))
       .digest("hex")
-      .slice(0, 12);
+      .slice(0, 8);
     assert.equal(
       imports[prefix + file],
       `${prefix}${file}?v=${hash}`,

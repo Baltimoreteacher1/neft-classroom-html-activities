@@ -448,6 +448,13 @@ await t("the BCPSS Teachers Hub, shared plan routes, family cards, insights, and
   }
 });
 
+await t("the presented tour and its live room are served on the lab host; look-alike paths are not", () => {
+  for (const path of ["/tour", "/tour/", "/tour/join/?r=ABCDE", "/tour/stops.js", "/api/tour-room/state?code=ABCDE", "/api/tour-room/open"])
+    assert.deepEqual(at(`https://thelanguagepage.com${path}`), { kind: "serve" }, path);
+  for (const path of ["/tourist", "/tours/", "/api/tour-roomx/state"])
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "redirect", `${path} must go to eduwonderlab.com`);
+});
+
 await t("lab-host HTML asks the Workers runtime to compress it (no-transform stops Cloudflare's edge doing it)", async () => {
   // Measured 2026-11-27: the lab shell went out as 208,906 bytes on thelanguagepage.com, 30,646 on eduwonderlab.com.
   // A Content-Encoding header with encodeBody "automatic" (the default) makes workerd encode for the visitor's real
