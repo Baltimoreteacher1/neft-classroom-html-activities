@@ -25,7 +25,7 @@ test("?role= names a known role or nothing", () => {
 
 test("every role orders every hub card, and hides none", () => {
   const all = cardIds(dom.window.document);
-  assert.equal(all.length, 9, "the hub has nine Go straight to cards, each with a data-lib-id");
+  assert.equal(all.length, 10, "the hub has ten Go straight to cards, each with a data-lib-id");
   assert.equal(new Set(all).size, all.length);
   for (const role of TEACHER_ROLES) {
     assert.deepEqual(
@@ -48,7 +48,7 @@ test("the ESOL role puts WIDA data and practice tests first; the classroom role 
   assert.equal(doc.getElementById("thLibraryTitle").textContent, "Your ESOL toolkit");
   assert.equal(applyRole(doc, "classroom")[0], "bcpss");
   assert.equal(doc.getElementById("thLibraryTitle").textContent, "For your classroom");
-  assert.equal(cardIds(doc).length, 9, "reordering never drops a card");
+  assert.equal(cardIds(doc).length, 10, "reordering never drops a card");
 });
 
 test("unknown cards keep their place at the end", () => {
@@ -63,7 +63,7 @@ test("the home links both teacher doors to their role", () => {
     new URL("../access-practice-lab/src/views/home-audience.js", import.meta.url),
     "utf8",
   );
-  assert.match(src, /"\/access-teacher\/\?role=classroom"/);
+  assert.match(src, /"\/access-teacher\/classroom\/"/);
   assert.match(src, /"\/access-teacher\/\?role=esol"/);
   assert.match(HUB, /hub-role\.js"\)\.then\(\(m\) => m\.mountHubRole\(document\)\)/);
 });

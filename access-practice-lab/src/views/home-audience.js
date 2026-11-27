@@ -55,7 +55,7 @@ export const AUDIENCE_DOORS = Object.freeze([
       "Language supports for the lessons you already teach.",
       "Apoyos de lenguaje para las lecciones que ya enseña.",
     ],
-    href: () => "/access-teacher/?role=classroom",
+    href: () => "/access-teacher/classroom/",
     art: { src: `${ART}/68-classroom-lesson.svg`, w: 640, h: 400 },
   },
   {
