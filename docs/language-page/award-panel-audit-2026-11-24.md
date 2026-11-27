@@ -173,3 +173,11 @@ a language before counting a field.
 ### Tranche 3 is live (2026-11-25)
 Production serves `ce40e6f9`; `smoke:live` 41/41; the live network gate passes on 79 routes; `/studios/language/speaking` and `/writing`
 carry their own titles; `/method` answers 200 and is in the sitemap.
+
+### T5 follow-up, 2026-11-27
+A browser sweep of all 183 sitemap routes on production found 168 distinct titles. The duplicates are mostly one view reached by two URLs (privacy,
+accessibility, the family tour, the vocabulary curriculum), which is correct. The real defect was the nine `/studios/language/*` pages: the
+proxy sent each its own title, but the studios app (a separate Worker, not in this repository) sets its generic title again after it loads, so the
+browser tab still read "Learning Studios". The proxy now also injects a small script that keeps the listed title for the path in the address bar
+(`studioTitleGuard`, tested in jsdom, including in-app navigation). The permanent fix is a per-route title in the studios app itself.
+

@@ -10,7 +10,7 @@
  */
 import assert from "node:assert/strict";
 import { languagePageRoute } from "./_lib/language-page.js";
-import { STUDIOS_UPSTREAM, isStudiosRequest, proxyStudios, studioPageTitle } from "./_lib/studios-proxy.js";
+import { STUDIOS_UPSTREAM, isStudiosRequest, proxyStudios, studioPageTitle, studioTitleGuard } from "./_lib/studios-proxy.js";
 import { STUDIO_APP_PAGES } from "../access-practice-lab/src/studio-app.js";
 import { onRequest } from "./_middleware.js";
 
@@ -206,7 +206,9 @@ await t("each studio page the listing names gets its own title; others keep the 
     titles.add(title);
   }
   assert.equal(titles.size, STUDIO_APP_PAGES.length, "two studio pages share a title");
-  assert.equal(studioPageTitle(shell, "/studios/math/lesson/3-2/practice", "thelanguagepage.com"), shell);
+  const math = studioPageTitle(shell, "/studios/math/lesson/3-2/practice", "thelanguagepage.com");
+  assert.ok(math.includes("<title>Learning Studios · The Language Page</title>"), "an unlisted page keeps the app's title");
+  assert.equal(studioPageTitle("<p>no head</p>", "/studios/language/speaking", "thelanguagepage.com"), "<p>no head</p>");
   const eduwonderlab = studioPageTitle(shell, "/studios/language/speaking", "eduwonderlab.com");
   assert.ok(!eduwonderlab.includes("The Language Page"), "the other host is not branded as The Language Page");
 });
@@ -220,6 +222,27 @@ await t("the proxy titles a studio page it serves and leaves other bodies alone"
   const asset = upstream(new Response("body{}", { headers: { "content-type": "text/css" } }));
   const css = u("https://thelanguagepage.com/studios/_next/static/a.css");
   assert.equal(await (await proxyStudios(new Request(css), css, asset.fn)).text(), "body{}");
+});
+
+await t("the title guard keeps a listed page's title when the app resets it and follows the address", async () => {
+  const { JSDOM } = await import("jsdom");
+  const html = studioPageTitle("<html><head><title>Learning Studios</title></head><body></body></html>", "/studios/language/speaking", "thelanguagepage.com");
+  const dom = new JSDOM(html, { url: "https://thelanguagepage.com/studios/language/speaking", runScripts: "dangerously" });
+  const { document, history } = dom.window;
+  assert.equal(document.title, "Speaking tasks · Learning Studios · The Language Page");
+  document.title = "Learning Studios · The Language Page"; // the app resets it
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(document.title, "Speaking tasks · Learning Studios · The Language Page");
+  history.pushState({}, "", "/studios/language/writing/"); // an in-app link
+  document.title = "Learning Studios";
+  await new Promise((r) => setTimeout(r, 20));
+  assert.match(document.title, /^Writing workshop/);
+  history.pushState({}, "", "/studios/math/lesson/3-2/practice"); // a page the listing does not name
+  document.title = "Fractions";
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(document.title, "Fractions");
+  const quote = studioTitleGuard("thelanguagepage.com");
+  assert.ok(!/<\/script/i.test(quote.slice(8, -9)), "the table cannot close the script early");
 });
 
 console.log(`studios-proxy: ${passed} checks passed.`);

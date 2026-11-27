@@ -55,20 +55,39 @@ const esc = (v) => String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
  * names each page; this puts that name in the <title> (and og:title when the app sets one). Pages the listing does not
  * name, such as a math lesson, keep the app's own title.
  */
+const titleFor = (page, hostname) =>
+  isLanguagePageHost(hostname) ? `${page.title[0]} · ${LAB_BRAND.name}` : page.title[0];
+const trimPath = (pathname) => (pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname);
+
+/**
+ * A script that keeps each listed studio page's title. The app sets its own title again once it has loaded, which puts the
+ * generic name back in the browser tab even though the HTML the server sent was right, and its in-app links change the
+ * address without loading a new page. The script re-applies the title for whatever path the address shows, whenever the
+ * title changes. For a path the listing does not name it does nothing, so the app's own titles stay.
+ */
+export function studioTitleGuard(hostname) {
+  const table = {};
+  for (const page of STUDIO_APP_PAGES) table[page.path] = titleFor(page, hostname);
+  const json = JSON.stringify(table).replace(/</g, "\\u003c");
+  return `<script>(function(){var T=${json};function f(){var t=T[location.pathname.replace(/\\/+$/,"")||"/"];if(t&&document.title!==t)document.title=t}f();new MutationObserver(f).observe(document.head,{childList:true,subtree:true,characterData:true})})()</script>`;
+}
+
 export function studioPageTitle(html, pathname, hostname) {
-  const key = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  const key = trimPath(pathname);
   const page = STUDIO_APP_PAGES.find((p) => p.path === key);
-  if (!page) return html;
-  const name = isLanguagePageHost(hostname)
-    ? `${page.title[0]} · ${LAB_BRAND.name}`
-    : page.title[0];
-  const title = esc(name);
-  return html
-    .replace(/<title>[^<]*<\/title>/, () => `<title>${title}</title>`)
-    .replace(
-      /(<meta\s+property=["']og:title["']\s+content=)["'][^"']*["']/,
-      (_, a) => `${a}"${title}"`,
-    );
+  let out = html;
+  if (page) {
+    const title = esc(titleFor(page, hostname));
+    out = out
+      .replace(/<title>[^<]*<\/title>/, () => `<title>${title}</title>`)
+      .replace(
+        /(<meta\s+property=["']og:title["']\s+content=)["'][^"']*["']/,
+        (_, a) => `${a}"${title}"`,
+      );
+  }
+  return out.includes("</head>")
+    ? out.replace("</head>", () => `${studioTitleGuard(hostname)}</head>`)
+    : out;
 }
 
 export async function proxyStudios(request, url, upstreamFetch = fetch) {
