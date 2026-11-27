@@ -455,4 +455,33 @@ await t("the presented tour and its live room are served on the lab host; look-a
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "redirect", `${path} must go to eduwonderlab.com`);
 });
 
+await t("lab-host HTML asks the Workers runtime to compress it (no-transform stops Cloudflare's edge doing it)", async () => {
+  // Measured 2026-11-27: the lab shell went out as 208,906 bytes on thelanguagepage.com, 30,646 on eduwonderlab.com.
+  // A Content-Encoding header with encodeBody "automatic" (the default) makes workerd encode for the visitor's real
+  // Accept-Encoding; a pre-compressed body ("manual") would send gzip to a client that cannot read it.
+  const html = "<html><head><title>ACCESS Practice Lab</title></head><body>hello</body></html>";
+  const page = (headers = {}) =>
+    new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", ...headers } });
+  const url = new URL("https://thelanguagepage.com/access-practice-lab/");
+  const res = await brandLabResponse(page(), url);
+  assert.equal(res.headers.get("content-encoding"), "gzip");
+  assert.equal(res.headers.get("vary"), "Accept-Encoding");
+  assert.match(res.headers.get("cache-control"), /no-transform/);
+  assert.equal(await res.text(), brandLabHtml(html, url.pathname), "the body is the branded page; the runtime encodes it");
+  const varied = await brandLabResponse(page({ vary: "Origin" }), url);
+  assert.equal(varied.headers.get("vary"), "Origin, Accept-Encoding");
+  const already = await brandLabResponse(page({ vary: "accept-encoding" }), url);
+  assert.equal(already.headers.get("vary"), "accept-encoding", "Vary is not doubled");
+  // other hosts, non-HTML and errors are untouched
+  const other = await brandLabResponse(page(), new URL("https://eduwonderlab.com/access-practice-lab/"));
+  assert.equal(other.headers.get("content-encoding"), null);
+  const js = await brandLabResponse(new Response("x", { headers: { "content-type": "application/javascript" } }), url);
+  assert.equal(js.headers.get("content-encoding"), null);
+  const gone = await brandLabResponse(new Response("no", { status: 404, headers: { "content-type": "text/html" } }), url);
+  assert.equal(gone.headers.get("content-encoding"), null);
+  // never a pre-compressed body: that would reach clients that sent `identity`
+  const src = readFileSync(new URL("./_lib/language-page.js", import.meta.url), "utf8");
+  assert.ok(!/encodeBody:\s*["']manual/.test(src) && !/CompressionStream/.test(src), "lab HTML must not be pre-compressed");
+});
+
 console.log(`language-page-host: ${passed} checks passed.`);

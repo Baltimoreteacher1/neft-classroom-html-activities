@@ -5,7 +5,7 @@
 // Honesty rules (PLATFORM.md): a tier is a classroom SUPPORT choice, never a WIDA proficiency level, and
 // every number built from this metadata is practice coverage, never a predicted ACCESS score.
 import { GAMES } from "../games/registry.js";
-import { WORLDS } from "../adventures/worlds/index.js";
+import { WORLD_DOMAINS } from "../adventures/worlds/domains.js";
 
 export const DOMAINS = Object.freeze(["Listening", "Reading", "Speaking", "Writing"]);
 export const DOMAIN_CODE = Object.freeze({
@@ -102,9 +102,9 @@ export function gameMeta(id) {
   if (lw && String(id).startsWith("world:"))
     return { id, skill: lw, primaryDomain: lw, domains: [lw], contentArea: "LoELA", mechanic: "mission-chain" };
   if (String(id).startsWith("world:")) {
-    const w = WORLDS.find((x) => `world:${x.id}` === id);
-    if (!w) return null;
-    const domains = [...new Set(w.missions.flatMap((mission) => mission.domains || []))].filter((d) => DOMAINS.includes(d));
+    const worldId = String(id).slice("world:".length);
+    if (!Object.hasOwn(WORLD_DOMAINS, worldId)) return null;
+    const domains = WORLD_DOMAINS[worldId].filter((d) => DOMAINS.includes(d));
     return { id, skill: "Integrated", primaryDomain: domains[0] || "Reading", domains: domains.length ? domains : [...DOMAINS], contentArea: "LoELA", mechanic: "mission-chain" };
   }
   const g = GAMES.find((x) => x.id === id);

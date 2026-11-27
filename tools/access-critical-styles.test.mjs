@@ -83,18 +83,27 @@ test("bundler writes a critical bundle (listed sheets, source order) and a full 
     assert.ok(
       full.indexOf(".a{") < full.indexOf(".b{") && full.indexOf(".b{") < full.indexOf(".c{"),
     );
+    // The bundles are minified (lightningcss drops the quotes around a one-word family), so faces are found by family.
+    const faces = (css, family) =>
+      css.match(new RegExp(`font-family:"?${family}"?[;}]`, "g"))?.length ?? 0;
+    assert.ok(face.includes('font-family:"F"'));
     assert.equal(
-      critical.split(face).length - 1,
+      faces(critical, "F"),
       2,
-      "critical is its sheets verbatim, duplicates included",
+      "critical keeps every sheet's faces, duplicates included",
     );
-    assert.ok(!full.includes(face), "full must not repeat an @font-face critical already declares");
-    assert.ok(
-      full.includes('font-family:"H"'),
-      "a face only a non-critical sheet declares stays in full",
+    assert.equal(
+      faces(full, "F"),
+      0,
+      "full must not repeat an @font-face critical already declares",
     );
-    assert.ok(!critical.includes('font-family:"H"'));
-    assert.ok(critical.includes('font-family:"G"'), "critical keeps its own faces");
+    assert.equal(faces(full, "H"), 1, "a face only a non-critical sheet declares stays in full");
+    assert.equal(faces(critical, "H"), 0);
+    assert.equal(faces(critical, "G"), 1, "critical keeps its own faces");
+    for (const css of [critical, full]) {
+      assert.ok(!css.includes("\n") && !css.includes("/*"), "the bundles are minified");
+      assert.match(css, /\.a\{color:red\}/, "rules survive minification");
+    }
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

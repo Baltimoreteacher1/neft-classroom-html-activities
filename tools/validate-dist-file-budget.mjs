@@ -14,14 +14,20 @@
  *
  * The limit is 20,000; this fails at FAIL_AT so a branch is told while there is still room to fix it
  * (a few hundred files is one generator run away), and warns from WARN_AT.
+ *
+ * 2026-11-27 (Joel: "get the file allowance to a safe number under 20,000"): FAIL_AT was 19,995, five files
+ * of headroom, so the gate only spoke when the next generator run would already freeze production. With the
+ * lesson downloads served from R2 (tools/offload-dist-downloads.mjs) dist/ is 17,708 files, so the gate now
+ * fails at 19,000 (1,000 files of headroom) and warns from 18,500. Do not raise these to admit growth: offload
+ * more to R2, or keep generated output out of dist/ (copyStandaloneHtml in vite.config.js).
  */
 import { existsSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const PAGES_LIMIT = 20000;
-export const FAIL_AT = 19995;
-export const WARN_AT = 19800;
+export const FAIL_AT = 19000;
+export const WARN_AT = 18500;
 
 /** Every file under `root`, recursively (dotfiles included: Pages counts them). */
 export function countFiles(root) {

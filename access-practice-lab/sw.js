@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "0e99f99bb4a6";
+const BUILD_HASH = "bde6e72b338e";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=2c8320b3",
@@ -61,16 +61,9 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/studio.js?v=fe989ddb",
   "/access-practice-lab/src/games/state.js?v=4a8d0b77",
   "/access-practice-lab/src/lab/listening.js?v=2e522e46",
-  "/access-practice-lab/src/lab/meta.js?v=feaa53f4",
+  "/access-practice-lab/src/lab/meta.js?v=f8eb72cf",
   "/access-practice-lab/src/games/registry.js?v=940e0468",
-  "/access-practice-lab/src/adventures/worlds/index.js?v=6a8217dd",
-  "/access-practice-lab/src/adventures/worlds/city-of-conversations.js?v=07e339f0",
-  "/access-practice-lab/src/adventures/worlds/community-design-lab.js?v=795198bd",
-  "/access-practice-lab/src/adventures/worlds/lost-city.js?v=2531af90",
-  "/access-practice-lab/src/adventures/worlds/mystery-museum.js?v=a492bdf8",
-  "/access-practice-lab/src/adventures/worlds/newsroom-studio.js?v=75c89b0f",
-  "/access-practice-lab/src/adventures/worlds/science-island.js?v=58a3b4ea",
-  "/access-practice-lab/src/adventures/worlds/storyverse.js?v=ab484c43",
+  "/access-practice-lab/src/adventures/worlds/domains.js?v=b418680b",
   "/access-practice-lab/src/lab/store.js?v=964b6de1",
   "/access-practice-lab/src/lab/tags.js?v=0584f6bb",
   "/access-practice-lab/src/journey/state.js?v=1e1f56f0",
@@ -311,6 +304,14 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/adventures/checks.js?v=b6e90604",
   "/access-practice-lab/src/adventures/engine.js?v=aabdfade",
   "/access-practice-lab/src/adventures/validate.js?v=3ff6af83",
+  "/access-practice-lab/src/adventures/worlds/city-of-conversations.js?v=07e339f0",
+  "/access-practice-lab/src/adventures/worlds/community-design-lab.js?v=795198bd",
+  "/access-practice-lab/src/adventures/worlds/index.js?v=6a8217dd",
+  "/access-practice-lab/src/adventures/worlds/lost-city.js?v=2531af90",
+  "/access-practice-lab/src/adventures/worlds/mystery-museum.js?v=a492bdf8",
+  "/access-practice-lab/src/adventures/worlds/newsroom-studio.js?v=75c89b0f",
+  "/access-practice-lab/src/adventures/worlds/science-island.js?v=58a3b4ea",
+  "/access-practice-lab/src/adventures/worlds/storyverse.js?v=ab484c43",
   "/access-practice-lab/src/arcade/games.js?v=11828316",
   "/access-practice-lab/src/arcade/host.js?v=8b11e4d0",
   "/access-practice-lab/src/arcade/hub-card.js?v=9908e85a",
