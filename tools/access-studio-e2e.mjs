@@ -559,6 +559,78 @@ ok(
   "partner and conference notes appear in the portfolio",
 );
 
+// topic words, speech to text (with a stand-in recognizer, in its own context) and the compare mini-lesson
+await go(`${BASE}/write/wrt-erie-canal-cer`);
+await page.getByLabel("With frames and words").check();
+const firstTerm = await page.locator("[data-topic-term]").first().getAttribute("data-topic-term");
+await page.locator("[data-draft]").fill(`I think the ${firstTerm} mattered.`);
+ok(
+  (await page.locator("[data-topic-term].is-used").count()) === 1 &&
+    (await page.locator("[data-topic-term].is-used").getAttribute("data-topic-term")) === firstTerm,
+  "a topic word fills in when the writer uses it",
+);
+await go(`${BASE}/write/wrt-sea-otter-summary`);
+await page.getByLabel("On my own").check();
+await page.waitForFunction(() => !document.querySelector("[data-topic-words]"));
+ok(
+  (await page.locator('[data-topic-words], [data-help-tool="say"]').count()) === 0,
+  "on my own shows no topic word list and no speech to text",
+);
+await go(`${BASE}/write/wrt-mulch-cer?sheet=compare`);
+ok(
+  (await page.locator(".compare-sample").count()) === 0,
+  "the compare mini-lesson stays closed outside Teacher view",
+);
+{
+  const sayContext = await browser.newContext({ viewport: { width: 1200, height: 900 } });
+  await sayContext.addInitScript(() => {
+    class StandIn {
+      start() {
+        this.timer = setTimeout(() => {
+          const alt = { transcript: "the mulch keeps the soil in place" };
+          this.onresult?.({ results: [Object.assign([alt], { isFinal: true })] });
+        }, 50);
+      }
+      stop() {
+        clearTimeout(this.timer);
+        setTimeout(() => this.onend?.(), 10);
+      }
+    }
+    window.SpeechRecognition = StandIn;
+  });
+  const sp = await sayContext.newPage();
+  await sp.goto(`${origin}${BASE}/write/wrt-mulch-cer`, { waitUntil: "networkidle" });
+  await sp.getByLabel("With frames and words").check();
+  await sp.locator("[data-draft]").fill("Mulch helps the soil.");
+  await sp.locator('[data-help-tool="say"]').click();
+  await sp.locator('[data-dictate="wrt-draft"]').click();
+  await sp.locator("[data-say-preview]").filter({ hasText: "mulch keeps" }).waitFor();
+  await sp.locator('[data-dictate="wrt-draft"]').click();
+  await sp.waitForFunction(() =>
+    document.querySelector("[data-draft]").value.includes("The mulch keeps the soil"),
+  );
+  await sp.locator("[data-feedback]").click();
+  await sp.waitForSelector(".coach-card");
+  const said = await sp.evaluate(() =>
+    JSON.parse(localStorage.getItem("accessPracticeLab:v1:ledger"))
+      .entries.filter((e) => e.src === "writing")
+      .at(-1),
+  );
+  ok(
+    said.supports.dictation === true && said.stage !== "independent",
+    "speech to text adds the words to the draft and is recorded as a support",
+  );
+  await sp.evaluate(() => localStorage.setItem("accessPracticeLab:v1:audience", "teacher"));
+  await sp.goto(`${origin}${BASE}/write/wrt-mulch-cer?sheet=compare`, { waitUntil: "networkidle" });
+  await sp.locator(".compare-sample").first().waitFor();
+  ok(
+    (await sp.locator(".compare-sample").count()) === 2 &&
+      (await sp.locator(".compare-sample details[open]").count()) === 0,
+    "Teacher view shows two samples side by side with what each writer did still hidden",
+  );
+  await sayContext.close();
+}
+
 // ── Error Detective ───────────────────────────────────────────────────────────
 await go(`${BASE}/detective/sv-agree-3sg`);
 await page.locator("[data-next]").click();

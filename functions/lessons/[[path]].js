@@ -1,3 +1,5 @@
+import { pfaResponse } from "../_lib/pfa/render.js";
+
 // R2 fallback for lesson downloads.
 //
 // Cloudflare Pages refuses a deployment over 20,000 files, and ~6,500 of ours are lesson downloads
@@ -34,6 +36,15 @@ export async function onRequest({ request, env, next }) {
   const response = await next();
   if (response.status !== 404) return response;
   if (request.method !== "GET" && request.method !== "HEAD") return response;
+
+  // Practice / Family / Assignments pages (/lessons/<id>/practice, /family-guide, /assignment,
+  // /assignment-answer-key) are rendered from functions/_lib/pfa so they add no files to dist/.
+  // Static first: this only runs when nothing on disk answers the path.
+  const pfa = pfaResponse(new URL(request.url).pathname);
+  if (pfa)
+    return request.method === "HEAD"
+      ? new Response(null, { status: pfa.status, headers: pfa.headers })
+      : pfa;
   if (!env.DOWNLOADS) return response;
 
   const key = downloadKey(new URL(request.url).pathname);

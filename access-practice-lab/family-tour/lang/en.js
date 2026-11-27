@@ -114,6 +114,7 @@ export default {
     adult1: "Read the question together.",
     adult2: "Wait. Let your child think and answer in English.",
     adult3: "Ask for one more detail.",
+    audioDirections: "Hear more at-home directions",
     doneTitle: "Nice work!",
     doneText: "Ask, wait, listen, and ask for one more detail. That is how practice at home works.",
     fb: {

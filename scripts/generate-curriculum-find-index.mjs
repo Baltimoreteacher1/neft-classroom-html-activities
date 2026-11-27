@@ -38,7 +38,8 @@ const tools = read("curriculum/all-resources/tools.json").tools;
 // "6.EE.A.3" and "6.RP.3d" are 2010 codes; the registry keeps them as oldId. "6.AT.B.7" drops its cluster letter.
 const byOld = new Map();
 for (const [code, s] of Object.entries(registry)) {
-  if (s.oldId) for (const old of String(s.oldId).split(/[\s,]+/)) byOld.set(old.toUpperCase(), code);
+  if (s.oldId)
+    for (const old of String(s.oldId).split(/[\s,]+/)) byOld.set(old.toUpperCase(), code);
 }
 function currentStandard(raw) {
   if (!raw) return null;
@@ -48,7 +49,8 @@ function currentStandard(raw) {
   if (registry[noCluster]) return noCluster;
   return byOld.get(noCluster.toUpperCase()) || byOld.get(code.toUpperCase()) || null;
 }
-const CODE_IN_TEXT = /\b(?:[56]\.(?:AT|NOS|GR|DS|RP|EE|NS|G|SP|NF|NBT|MD|OA)\.[A-D]?\.?\d+[a-d]?|MPP\.\d)\b/i;
+const CODE_IN_TEXT =
+  /\b(?:[56]\.(?:AT|NOS|GR|DS|RP|EE|NS|G|SP|NF|NBT|MD|OA)\.[A-D]?\.?\d+[a-d]?|MPP\.\d)\b/i;
 
 /* ---------- lessons --------------------------------------------------- */
 
@@ -68,7 +70,10 @@ function lessonOf(entry) {
   return null;
 }
 const unitOf = (entry, lesson) =>
-  entry.unit ?? (lesson ? Number(lesson.split("-")[0]) : Number(entry.path.match(/^\/math\/unit-(\d+)\//)?.[1]) || null);
+  entry.unit ??
+  (lesson
+    ? Number(lesson.split("-")[0])
+    : Number(entry.path.match(/^\/math\/unit-(\d+)\//)?.[1]) || null);
 
 /* ---------- descriptions ---------------------------------------------- */
 
@@ -140,7 +145,8 @@ function kindOf(entry) {
 }
 function levelOf(entry, kind) {
   const hay = `${entry.title} ${entry.variant || ""} ${entry.path}`.toLowerCase();
-  if (kind === "catch-up" || /extra support|group ?1|catchup|catch-up|on-ramp/.test(hay)) return "support";
+  if (kind === "catch-up" || /extra support|group ?1|catchup|catch-up|on-ramp/.test(hay))
+    return "support";
   if (kind === "enrichment" || /challenge|challenging|enrichment/.test(hay)) return "challenge";
   return null;
 }
@@ -213,7 +219,12 @@ for (const unit of downloads.units) {
         doc = {
           t: `${title || lesson.label} — ${base}`,
           p: r.url,
-          k: type.group === "homework" ? "family" : type.group === "assessments" ? "review" : "printable",
+          k:
+            type.group === "homework"
+              ? "family"
+              : type.group === "assessments"
+                ? "review"
+                : "printable",
           a: type.group === "homework" ? "sf" : r.teacherOnly ? "t" : "st",
           u: unit.unit,
           l: man ? String(man.id) : null,
@@ -224,7 +235,9 @@ for (const unit of downloads.units) {
         };
         if (/level 0|most support/i.test(base)) doc.v = "support";
         if (lesson.kind === "small-group" || lesson.kind === "catchup") {
-          doc.v = /group ?1|extra support|catch/i.test(`${lesson.level} ${lesson.kind}`) ? "support" : null;
+          doc.v = /group ?1|extra support|catch/i.test(`${lesson.level} ${lesson.kind}`)
+            ? "support"
+            : null;
           if (!doc.v) delete doc.v;
         }
         printDocs.set(key, doc);
@@ -261,7 +274,9 @@ const body = `${JSON.stringify(out)}\n`;
 if (process.argv.includes("--check")) {
   const current = existsSync(outPath) ? readFileSync(outPath, "utf8") : "";
   if (current !== body) {
-    console.error("✗ data/curriculum-find-index.json is stale — run: npm run generate-curriculum-find-index");
+    console.error(
+      "✗ data/curriculum-find-index.json is stale — run: npm run generate-curriculum-find-index",
+    );
     process.exit(1);
   }
   console.log(`✓ data/curriculum-find-index.json is current (${docs.length} documents)`);

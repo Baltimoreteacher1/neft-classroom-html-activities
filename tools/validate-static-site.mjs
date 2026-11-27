@@ -90,6 +90,9 @@ for (const file of htmlFiles) {
   // Navigation integrity: root-absolute page links should resolve to a real page.
   rootLinks
     .filter((asset) => asset.endsWith("/") || /\.html$/i.test(asset))
+    // Pages rendered by a Pages Function, not a file: /practice-hub/ (functions/practice-hub/).
+    // validate:pfa renders every one of them and fails if any does not answer.
+    .filter((asset) => !/^\/practice-hub\//.test(asset))
     .forEach((asset) => {
       const target = asset.endsWith("/") ? `${asset}index.html` : asset;
       if (!existsSync(join(root, target))) {

@@ -516,11 +516,12 @@ export const standardLabel = (index, code) =>
   index.standards[code] ? index.standards[code][1] : "";
 
 const words = (s) => norm(s).split(" ");
+// A prefix counts only before an inflection: "proportional" for "proportion", never "rational" for "ratio".
+const INFLECTION = /^(s|es|ies|e|al|ally|ed|ing|ly)?$/;
 function textHits(term, title, desc) {
   const stem = term.length > 4 ? term.replace(/(ies|es|s)$/, "") : term;
-  const inTitle = title.some((w) => w === term || w.startsWith(stem));
-  if (inTitle) return 2;
-  return desc.some((w) => w === term || w.startsWith(stem)) ? 1 : 0;
+  const hit = (w) => w === term || (w.startsWith(stem) && INFLECTION.test(w.slice(stem.length)));
+  return title.some(hit) ? 2 : desc.some(hit) ? 1 : 0;
 }
 
 /** Score one document against a parsed query; null when it does not answer the query at all. */

@@ -22,7 +22,7 @@
 <!-- curriculum-shell:begin -->
 <a class="ewl-skip" href="#main-content">Skip to main content</a><nav class="ewl-course-nav" aria-label="Curriculum navigation"><div class="ewl-course-nav__inner"><a class="ewl-course-brand" href="/curriculum/"><img src="/assets/favicon.svg" width="28" height="28" alt="">EduWonderLab<span>Grade 6 math</span></a><div class="ewl-course-menu"><ul class="ewl-course-links"><li><a href="/curriculum/">Dashboard</a></li><li><a href="/curriculum/units/">Lessons</a></li><li><a href="/curriculum/practice-workbooks/">Practice</a></li><li><a href="/curriculum/arcade/">Games</a></li><li><a href="/curriculum/learning-labs/">Learning labs</a></li><li><a href="/curriculum/family-connections/">Homework</a></li><li><a href="/curriculum/extra-help/">Extra Help</a></li><li><a href="/curriculum/fluency/">Fluency</a></li></ul><details class="ewl-course-more"><summary>More</summary><ul><li><a href="/curriculum/arcade/">Games</a></li><li><a href="/curriculum/learning-labs/">Learning labs</a></li><li><a href="/curriculum/family-connections/">Homework</a></li><li><a href="/curriculum/extra-help/">Extra Help</a></li><li><a href="/curriculum/fluency/">Fluency</a></li></ul></details></div></div></nav>
 <!-- curriculum-shell:end -->
-<main id="main-content" class="find-wrap" aria-labelledby="find-title">
+<main id="main-content" class="find-wrap" data-mode="search" aria-labelledby="find-title">
       <header class="find-head">
         <p class="find-eyebrow">Grade 6 math</p>
         <h1 id="find-title">Find a resource</h1>
@@ -30,9 +30,15 @@
           Say what you need in your own words. Find looks across every lesson, practice set, game,
           learning lab, project and printable in the course.
         </p>
+        <nav class="find-modes" aria-label="Ways to use Find">
+          <a href="/curriculum/find/" data-mode="search" aria-current="page">Search</a>
+          <a href="/curriculum/find/?mode=plan" data-mode="plan">Plan a set <span>for teachers</span></a>
+          <a href="/curriculum/find/?mode=path" data-mode="path">My practice path <span>for students</span></a>
+        </nav>
+        <p class="find-print-head">EduWonderLab Grade 6 math · printed <span id="find-print-date"></span></p>
       </header>
 
-      <form class="find-form" id="find-form" role="search" action="/curriculum/find/" method="get">
+      <form class="find-form find-search-only" id="find-form" role="search" action="/curriculum/find/" method="get">
         <label for="find-q" class="find-label">What are you looking for?</label>
         <div class="find-field">
           <input
@@ -51,7 +57,7 @@
         </p>
       </form>
 
-      <ul class="find-examples" id="find-examples" aria-label="Example searches">
+      <ul class="find-examples find-search-only" id="find-examples" aria-label="Example searches">
         <li><a href="?q=Practice+equivalent+expressions">Practice equivalent expressions</a></li>
         <li>
           <a href="?q=Ratios+for+beginning+English+learners"
@@ -76,7 +82,7 @@
       </noscript>
 
       <section
-        class="find-understood"
+        class="find-understood find-search-only"
         id="find-understood"
         aria-label="How Find read your search"
         hidden
@@ -84,17 +90,56 @@
 
       <div class="find-layout">
         <section class="find-results" aria-labelledby="find-results-title">
-          <h2 id="find-results-title" class="find-visually-hidden">Results</h2>
-          <p id="find-status" class="find-status" role="status" aria-live="polite"></p>
-          <aside class="find-lp" id="find-lp" hidden></aside>
-          <ol id="find-list" class="find-list"></ol>
-          <button type="button" id="find-more" class="find-more" hidden>Show more</button>
-          <section class="find-start" id="find-start" aria-labelledby="find-start-title">
+          <section class="find-shared" id="find-shared" aria-labelledby="find-shared-title" hidden></section>
+          <section class="find-plan find-plan-only" id="find-plan" aria-labelledby="find-plan-title">
+            <h2 id="find-plan-title">Plan a set</h2>
+            <p class="find-plan-lede">
+              Choose a lesson or topic and what the set is for. Find gathers resources that are
+              already in the course, in the order you would use them, and says why it chose each
+              one. Swap any pick, then save it as a collection, print it or share the link.
+            </p>
+            <form class="find-plan-form" id="find-plan-form" novalidate>
+              <div class="find-plan-field">
+                <label for="find-plan-target">Lesson or topic</label>
+                <select id="find-plan-target" name="target"></select>
+              </div>
+              <fieldset class="find-plan-purposes">
+                <legend>What is the set for?</legend>
+                <div id="find-plan-purposes" class="find-purpose-grid"></div>
+              </fieldset>
+              <p id="find-plan-error" class="find-plan-error" role="alert"></p>
+              <button type="submit" class="find-go">Build the set</button>
+            </form>
+            <div id="find-plan-out" class="find-plan-out"></div>
+          </section>
+          <section class="find-path find-path-only" id="find-path" aria-labelledby="find-path-title">
+            <h2 id="find-path-title">My practice path</h2>
+            <p class="find-plan-lede">
+              Pick the lesson you are working on. You get a short path: warm up, practice, play and
+              check yourself. Mark each step when you finish it.
+            </p>
+            <form class="find-path-form" id="find-path-form">
+              <label for="find-path-lesson">Which lesson are you working on?</label>
+              <div class="find-field">
+                <select id="find-path-lesson" name="lesson"></select>
+                <button type="submit" class="find-go">Start my path</button>
+              </div>
+            </form>
+            <div id="find-path-out" class="find-path-out"></div>
+          </section>
+          <h2 id="find-results-title" class="find-visually-hidden find-search-only">Results</h2>
+          <p id="find-status" class="find-status find-search-only" role="status" aria-live="polite"></p>
+          <aside class="find-lp find-search-only" id="find-lp" hidden></aside>
+          <ol id="find-list" class="find-list find-search-only"></ol>
+          <button type="button" id="find-more" class="find-more find-search-only" hidden>Show more</button>
+          <section class="find-start find-search-only" id="find-start" aria-labelledby="find-start-title">
+            <div class="find-resume" id="find-resume" hidden></div>
             <h2 id="find-start-title">Or start from what you want to do</h2>
             <div class="find-paths">
               <section aria-labelledby="fp-students">
                 <h3 id="fp-students">Students</h3>
                 <ul>
+                  <li><a href="?mode=path">Build my practice path</a></li>
                   <li><a href="/curriculum/my-progress/">Continue where I left off</a></li>
                   <li><a href="/curriculum/practice-workbooks/">Practice a skill</a></li>
                   <li><a href="/curriculum/arcade/">Play a learning game</a></li>
@@ -117,6 +162,7 @@
               <section aria-labelledby="fp-teachers">
                 <h3 id="fp-teachers">Teachers</h3>
                 <ul>
+                  <li><a href="?mode=plan">Plan a set for a lesson</a></li>
                   <li><a href="/curriculum/units/">Lessons by unit</a></li>
                   <li><a href="/curriculum/all-resources/">Every file, by unit and type</a></li>
                   <li><a href="?q=small+group+extra+support">Small-group and intervention</a></li>
@@ -127,21 +173,52 @@
           </section>
         </section>
 
-        <aside class="find-saved" id="find-saved" aria-labelledby="find-saved-title">
-          <h2 id="find-saved-title">
-            My list <span id="find-saved-count" class="find-count">0</span>
-          </h2>
+        <aside class="find-saved find-path-hide" id="find-saved" aria-labelledby="find-saved-title">
+          <h2 id="find-saved-title">My collections</h2>
           <p class="find-saved-note">
-            Save resources here to build a set for a lesson, a small group or a weekend. The list
-            stays on this device only; nothing is sent anywhere.
+            Save resources into collections for a lesson, a small group or a weekend. Collections
+            stay on this device only; nothing is sent anywhere.
+          </p>
+          <div class="find-set-bar">
+            <label for="find-set" class="find-visually-hidden">Collection to show</label>
+            <select id="find-set"></select>
+            <button type="button" id="find-set-new" class="find-quiet">New</button>
+          </div>
+          <h3 class="find-set-title">
+            <span id="find-set-name">My list</span>
+            <span id="find-saved-count" class="find-count">0</span>
+          </h3>
+          <p id="find-saved-empty" class="find-saved-note">
+            Nothing here yet. Press Save on any resource, or use Plan a set and save the whole set.
           </p>
           <ol id="find-saved-list" class="find-saved-list"></ol>
           <div class="find-saved-actions" id="find-saved-actions" hidden>
-            <button type="button" id="find-print">Print list</button>
-            <button type="button" id="find-copy">Copy links</button>
-            <button type="button" id="find-clear" class="find-quiet">Clear list</button>
+            <button type="button" id="find-print">Print</button>
+            <button type="button" id="find-share">Copy share link</button>
+            <button type="button" id="find-copy" class="find-quiet">Copy links</button>
           </div>
+          <details class="find-set-manage" id="find-set-manage">
+            <summary>Manage this collection</summary>
+            <form id="find-set-rename" class="find-set-rename">
+              <label for="find-set-rename-input">Name</label>
+              <div class="find-field">
+                <input id="find-set-rename-input" type="text" maxlength="80" autocomplete="off" />
+                <button type="submit" class="find-quiet">Rename</button>
+              </div>
+            </form>
+            <div class="find-set-danger">
+              <button type="button" id="find-set-clear" class="find-x">Empty this collection</button>
+              <button type="button" id="find-set-delete" class="find-x">Delete this collection</button>
+            </div>
+          </details>
           <p id="find-saved-status" class="find-saved-status" role="status" aria-live="polite"></p>
+          <details class="find-recent" id="find-recent" hidden>
+            <summary>Recently opened (<span id="find-recent-count">0</span>)</summary>
+            <ol id="find-recent-list" class="find-saved-list"></ol>
+          </details>
+          <button type="button" id="find-forget" class="find-x find-forget">
+            Clear everything Find keeps on this device
+          </button>
         </aside>
       </div>
     </main>

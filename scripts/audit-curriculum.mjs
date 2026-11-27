@@ -36,6 +36,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { routePfa } from "../functions/_lib/pfa/render.js";
 import { STUDIOS_BASE } from "../functions/_lib/studios-proxy.js";
 import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
 import { assertSweptEnough } from "../tools/lib/sweep-guard.mjs";
@@ -129,6 +130,8 @@ function isFunctionBackedRoute(link) {
   const path = link.split("#")[0].split("?")[0];
   // /studios is a reverse proxy to the Learning Studios Worker (functions/_lib/studios-proxy.js): no files on disk.
   if (path === STUDIOS_BASE || path.startsWith(`${STUDIOS_BASE}/`)) return true;
+  // Practice / Family / Assignments pages, rendered by functions/_lib/pfa: only if the renderer answers.
+  if (routePfa(path)) return true;
   return (
     path.startsWith("/access-practice-lab/") &&
     !path.startsWith("/access-practice-lab/printables/") &&

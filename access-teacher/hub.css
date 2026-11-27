@@ -100,6 +100,238 @@
   text-decoration-color: currentColor;
 }
 
+/* ── role switcher (BCPSS Teachers, Classroom Unit Finder, ESOL) ─────── */
+.th-role-switch {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--s-3);
+  margin: 1.25rem 0 0;
+}
+.th-role-pill {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color var(--dur-1) ease, box-shadow var(--dur-1) ease;
+}
+.th-role-pill strong {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+.th-role-pill span {
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+.th-role-pill:hover {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-card);
+}
+.th-role-pill.is-bcpss {
+  border: 2px solid var(--teal, #0f766e);
+  background: var(--teal-soft, #e6f4f1);
+}
+.th-role-pill.is-active {
+  border: 2px solid var(--brand);
+  background: var(--brand-soft);
+}
+.th-role-pill:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ── ESOL Hub: WIDA Materials by Domain + Just Activities ─────────────── */
+.th-esol-hub {
+  display: grid;
+  gap: var(--s-6);
+  padding-bottom: var(--s-6);
+  border-bottom: 1px solid var(--line);
+}
+.eh-band-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  padding: 0.9rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.eh-band-kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.eh-band-current {
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+.eh-section {
+  display: grid;
+  gap: var(--s-4);
+}
+.eh-domain-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+@media (max-width: 960px) {
+  .eh-domain-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .eh-domain-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.eh-domain-card {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  padding: 1.15rem;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--brand);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+.eh-domain-card.is-listening { border-top-color: #075568; }
+.eh-domain-card.is-reading { border-top-color: #2e4a94; }
+.eh-domain-card.is-speaking { border-top-color: #8a3a5c; }
+.eh-domain-card.is-writing { border-top-color: #9a4a26; }
+.eh-domain-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.eh-domain-head h3 {
+  margin: 0;
+  font: 600 1.2rem/1.2 var(--font-display);
+}
+.eh-domain-ico {
+  display: inline-grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.eh-domain-card.is-listening .eh-domain-ico { background: #e3f2f6; color: #075568; }
+.eh-domain-card.is-reading .eh-domain-ico { background: #e6ecfb; color: #2e4a94; }
+.eh-domain-card.is-speaking .eh-domain-ico { background: #f8e7ee; color: #8a3a5c; }
+.eh-domain-card.is-writing .eh-domain-ico { background: #faece5; color: #9a4a26; }
+.eh-domain-ico .ico {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.eh-domain-blurb {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+.eh-domain-actions {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: auto;
+}
+.eh-domain-actions .btn {
+  justify-content: center;
+  min-height: 2.55rem;
+}
+.eh-domain-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--brand-ink);
+  text-underline-offset: 0.2em;
+}
+.eh-essentials {
+  display: grid;
+  gap: var(--s-2);
+}
+.eh-sub-label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.eh-ess-grid,
+.eh-act-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14.5rem), 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.eh-ess-card,
+.eh-act-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  height: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color var(--dur-1) ease, box-shadow var(--dur-1) ease;
+}
+.eh-ess-card:hover,
+.eh-act-card:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-card);
+}
+.eh-ess-card:focus-visible,
+.eh-act-card:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.eh-ess-ico,
+.eh-act-ico {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.eh-ess-ico .ico,
+.eh-act-ico .ico {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.eh-ess-card strong,
+.eh-act-text strong {
+  display: block;
+  font-size: 0.96rem;
+  line-height: 1.25;
+}
+.eh-ess-card span span,
+.eh-act-text span {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+
 /* ── view tabs ─────────────────────────────────────────────────────────── */
 .th-views {
   position: sticky;

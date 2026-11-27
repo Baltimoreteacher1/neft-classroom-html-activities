@@ -64,9 +64,23 @@
 
     <div class="th-wrap">
       <section class="th-hero" aria-labelledby="thTitle">
-        <p class="th-kicker">ACCESS Practice Lab · EduWonderLab</p>
+        <p class="th-kicker">The Language Page · Teacher Hub</p>
         <h1 id="thTitle" tabindex="-1">Teacher Hub</h1>
-        <p class="lead">Find an activity, plan a lesson, run your class and review student work.</p>
+        <p class="lead">Find WIDA materials by domain, jump straight to activities, or pick activities by grade, subject, and unit.</p>
+        <nav class="th-role-switch no-print" aria-label="Choose your teacher view">
+          <a class="th-role-pill is-bcpss" href="/bcpss-teachers/">
+            <strong>BCPSS Teachers →</strong>
+            <span>Pick K–8 Grade, Subject &amp; Unit for Wit &amp; Wisdom, Reveal Math, SABES &amp; IQWST activities</span>
+          </a>
+          <a class="th-role-pill" href="/access-teacher/classroom/">
+            <strong>Classroom Teachers →</strong>
+            <span>Grade, Subject &amp; Unit activity finder + custom lesson kit</span>
+          </a>
+          <a class="th-role-pill is-active" href="#thEsolHub" aria-current="page">
+            <strong>ESOL Teachers</strong>
+            <span>WIDA materials by domain &amp; just activities (below)</span>
+          </a>
+        </nav>
         <form class="th-search no-print" role="search" action="/access-practice-lab/search" method="get">
           <input type="hidden" name="for" value="teacher" />
           <label class="visually-hidden" for="thSearch">Search all teacher resources</label>
@@ -74,14 +88,10 @@
           <input id="thSearch" name="q" type="search" placeholder="Search activities, printables, games and guides" autocomplete="off" />
           <button type="submit" class="btn btn-primary">Search</button>
         </form>
-        <p class="th-hero-cta no-print">
-          <a class="btn btn-primary" id="thAccessPrepBtn" href="/access-practice-lab/access-prep">ACCESS Prep</a>
-          <span class="fine">Practice for the yearly ACCESS English language test</span>
-        </p>
         <p class="th-hero-links no-print">
-          <a href="/access-teacher/classroom/"><strong>Classroom teacher? Today's lesson kit</strong></a>
-          <a href="/bcpss-teachers/">BCPSS Teacher Studio</a>
           <a href="/access-teacher/predictive/">WIDA Data Studio</a>
+          <a href="/bcpss-teachers/">BCPSS Teacher Studio</a>
+          <a href="/access-practice-lab/access-prep" id="thAccessPrepBtn">ACCESS Prep</a>
           <a href="/access-teacher/maker/">Sheet &amp; Card Maker</a>
         </p>
       </section>
@@ -99,6 +109,7 @@
 
       <main id="teacher-main" class="th-page-content" tabindex="-1">
         <div id="view-start" class="th-panel" role="tabpanel" aria-labelledby="tab-start" tabindex="-1">
+          <section id="thEsolHub" class="th-esol-hub no-print" aria-label="WIDA materials by domain and activities"></section>
           <section id="tcCommandCenter" class="tc-center no-print" aria-labelledby="tcTitle"></section>
           <section id="thLibrary" class="th-library no-print" aria-labelledby="thLibraryTitle">
             <div class="th-block-head">
@@ -245,6 +256,7 @@
       import("/access-practice-lab/src/create/page-entry.js");
       import("/access-teacher/activity-downloads.js").then((m) => m.mountActivityDownloads());
       import("/access-teacher/command-center.js").then((m) => m.mountCommandCenter(document.getElementById("tcCommandCenter")));
+      import("/access-teacher/esol-hub.js").then((m) => m.mountEsolHub(document.getElementById("thEsolHub")));
       import("/access-teacher/utility-dock.js").then((m) => m.mountUtilityDock(document.getElementById("thUtilityDock")));
       import("/access-teacher/constellation-mixer.js").then((m) => m.mountConstellationMixer(document.getElementById("thConstellationMixer")));
       import("/access-teacher/culture-calendar.js").then((m) => m.mountCultureCalendar(document.getElementById("thCultureCalendar")));

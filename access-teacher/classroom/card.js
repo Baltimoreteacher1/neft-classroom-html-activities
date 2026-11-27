@@ -160,6 +160,16 @@ function printPart(part) {
 
 setUp();
 render();
+document.addEventListener("lc:fill-unit", (e) => {
+  const { grade, topic, words } = e.detail || {};
+  if (GRADES.includes(grade)) state.grade = grade;
+  if (typeof topic === "string") state.topic = topic;
+  if (typeof words === "string") state.words = words;
+  setUp();
+  render();
+  const status = $("#lcStatus");
+  if (status && topic) status.textContent = `Loaded “${topic}” into your custom lesson kit.`;
+});
 for (const type of ["input", "change"]) document.addEventListener(type, onInput);
 document.addEventListener("click", (e) => {
   const print = e.target.closest("[data-lc-print]");

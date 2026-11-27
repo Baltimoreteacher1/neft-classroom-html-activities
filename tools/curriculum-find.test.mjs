@@ -43,7 +43,14 @@ test("index carries documents, standards and units", () => {
 });
 test("no document title carries a stringified object", () => {
   const bad = index.docs.filter((d) => /\[object Object\]/.test(d.t + d.d));
-  assert.equal(bad.length, 0, bad.slice(0, 3).map((d) => d.p).join(", "));
+  assert.equal(
+    bad.length,
+    0,
+    bad
+      .slice(0, 3)
+      .map((d) => d.p)
+      .join(", "),
+  );
 });
 
 /* ---------- parsing ---------- */
@@ -87,18 +94,32 @@ test("a 10-minute family activity → family resources, honest about time", () =
   assert.ok(!r.some((x) => x.why.some((w) => /\d+\s*min/.test(w))), "invented a duration");
 });
 test("ratios for beginning English learners → ratio resources with supports, plus The Language Page", () => {
-  const { results, query } = search(index, "Find activities about ratios for beginning English learners", { limit: 10 });
+  const { results, query } = search(
+    index,
+    "Find activities about ratios for beginning English learners",
+    { limit: 10 },
+  );
   assert.ok(results.length >= 5);
   for (const x of results) assert.equal(index.standards[x.doc.s]?.[0], "ratios", x.doc.p);
-  assert.ok(results.some((x) => x.doc.v === "support" || x.doc.es), "no support-level or Spanish resource");
-  assert.match(languagePageLink(query), /^https:\/\/thelanguagepage\.com\/access-practice-lab\/search\?/);
+  assert.ok(
+    results.some((x) => x.doc.v === "support" || x.doc.es),
+    "no support-level or Spanish resource",
+  );
+  assert.match(
+    languagePageLink(query),
+    /^https:\/\/thelanguagepage\.com\/access-practice-lab\/search\?/,
+  );
 });
 test("projects involving area and volume → projects first", () => {
   const r = top("Find projects involving area and volume");
   assert.equal(r[0].doc.k, "project");
 });
 test("language-only requests go to The Language Page, not to unrelated math", () => {
-  for (const q of ["Find science speaking activities for Grades 6-8", "Find listening activities with visual support", "Find visual vocabulary about ecosystems"]) {
+  for (const q of [
+    "Find science speaking activities for Grades 6-8",
+    "Find listening activities with visual support",
+    "Find visual vocabulary about ecosystems",
+  ]) {
     const res = search(index, q);
     assert.equal(res.results.length, 0, `${q} listed math resources`);
     assert.ok(languagePageLink(res.query), `${q} has no Language Page link`);
@@ -137,20 +158,34 @@ test("companions share the lesson or standard, differ in kind, never repeat the 
   }
 });
 
-
 /* ---------- The Language Page -> EduWonderLab bridge ---------- */
 const { mathBridge } = await import("../access-practice-lab/src/finder/math-bridge.js");
 test("Language Page bridge: math queries link to Find, language queries do not", () => {
-  for (const q of ["ratio vocabulary", "porcentajes", "equivalent expressions sentence frames", "math word problems"]) {
+  for (const q of [
+    "ratio vocabulary",
+    "porcentajes",
+    "equivalent expressions sentence frames",
+    "math word problems",
+  ]) {
     const m = mathBridge(q);
     assert.ok(m, `${q} has no bridge`);
     assert.equal(new URL(m.href).origin, "https://eduwonderlab.com");
     assert.equal(new URL(m.href).searchParams.get("q"), q);
   }
-  for (const q of ["listening", "speaking grade 3", "a table of contents", "the area near school", "", null]) {
+  for (const q of [
+    "listening",
+    "speaking grade 3",
+    "a table of contents",
+    "the area near school",
+    "",
+    null,
+  ]) {
     assert.equal(mathBridge(q), null, `${q} should not bridge`);
   }
 });
 
-console.log(process.exitCode ? `curriculum-find: FAILED (${passed} passed)` : `✓ curriculum-find: ${passed} checks passed`);
-
+console.log(
+  process.exitCode
+    ? `curriculum-find: FAILED (${passed} passed)`
+    : `✓ curriculum-find: ${passed} checks passed`,
+);
