@@ -385,10 +385,13 @@ try {
 
     // progress and teacher pages
     await go(page, "/city/progress");
+    // The totals count the 12 missions and every episode; the page lists the episodes in their own list.
+    const episodes = await page.locator(".city-prog-episodes li").count();
+    ok(episodes >= 1, "progress page lists the episodes");
     ok(
-      /1 of 12 finished on my own/.test(
-        (await page.locator("main, #app").first().innerText()).replace(/\s+/g, " "),
-      ),
+      (await page.locator("main, #app").first().innerText())
+        .replace(/\s+/g, " ")
+        .includes(`1 of ${12 + episodes} finished on my own`),
       "progress page counts",
     );
     await audit(page, `progress ${width}`);

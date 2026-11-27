@@ -705,7 +705,7 @@ test("styles: the start sheet is critical, uses tokens and keeps 48px targets", 
   const index = read("access-practice-lab/index.html");
   assert.match(
     index,
-    /data-lab-critical href="\/access-practice-lab\/home-start\.css\?v=[0-9a-f]{12}"/,
+    /data-lab-critical href="\/access-practice-lab\/home-start\.css\?v=[0-9a-f]{8}"/,
   );
   assert.equal(index, read("access-practice-lab/app-shell"), "app-shell mirrors index.html");
   const css = read("access-practice-lab/home-start.css");
