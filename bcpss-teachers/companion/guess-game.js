@@ -48,9 +48,8 @@ export function render(st, detail) {
       <div class="cp-set-head"><h4>Word ${vs.i + 1} of ${order.length}</h4><span class="cp-stars" aria-label="Class stars: ${vs.stars}">★ ${vs.stars}</span></div>
       <ol class="cp-clues">${clues
         .slice(0, shown)
-        .map(
-          (c) =>
-            `<li class="cp-clue cp-fadein"><small>${esc(c.label)}</small><span>${esc(c.text)}</span></li>`,
+         .map((c, k) =>
+            `<li class="cp-clue cp-fadein"><small>${esc(c.label)}</small><span${k === shown - 1 ? " data-cp-speak" : ""}>${esc(c.text)}</span></li>`,
         )
         .join("")}</ol>
       ${

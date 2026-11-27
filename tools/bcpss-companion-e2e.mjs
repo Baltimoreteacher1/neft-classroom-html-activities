@@ -123,6 +123,30 @@ async function run(width, label) {
     groups.join("|"),
   );
 
+  // Accessibility: skip link, tool heading, announcement, read aloud
+  await page.focus(".cp-skip");
+  const skipBox = await page.$eval(".cp-skip", (e) => e.getBoundingClientRect().height);
+  await page.keyboard.press("Enter");
+  check(
+    T("skip link is 44px when focused and moves focus to the tool heading"),
+    skipBox >= 43.5 && (await page.evaluate(() => document.activeElement?.id)) === "cpTool",
+    `${skipBox}px`,
+  );
+  await openView(page, "corners");
+  check(
+    T("the open tool is named in a heading"),
+    (await page.textContent("#cpTool")).trim() === "Four corners",
+  );
+  check(
+    T("a tool change is announced to screen readers"),
+    /Now showing Four corners/.test(await page.textContent(".cp-live")),
+  );
+  check(
+    T("projected tools offer Read aloud"),
+    (await page.$$eval("[data-cp-read]", (e) => e.length)) === 1,
+  );
+  await openView(page, "map");
+
   // Quick start
   const qs = await page.$$eval(".cp-qs", (e) => e.map((b) => b.dataset.cpView));
   check(
@@ -633,14 +657,16 @@ async function run(width, label) {
         ).length,
     );
     check(T(`${view}: no control sits off the right edge`), clipped === 0, `${clipped} clipped`);
-    const small = await page.$$eval(".cp button, .cp a.cp-btn, .cp select, .cp .cp-check", (els) =>
-      els
-        .filter(
-          (e) =>
-            e.offsetParent &&
-            (e.getBoundingClientRect().height < 43.5 || e.getBoundingClientRect().width < 43.5),
-        )
-        .map((e) => `${e.className}:${Math.round(e.getBoundingClientRect().height)}`),
+    const small = await page.$$eval(
+      ".cp button:not(.cp-skip), .cp a.cp-btn, .cp select, .cp .cp-check",
+      (els) =>
+        els
+          .filter(
+            (e) =>
+              e.offsetParent &&
+              (e.getBoundingClientRect().height < 43.5 || e.getBoundingClientRect().width < 43.5),
+          )
+          .map((e) => `${e.className}:${Math.round(e.getBoundingClientRect().height)}`),
     );
     check(
       T(`${view}: controls are at least 44px`),

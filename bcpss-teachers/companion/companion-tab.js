@@ -14,6 +14,7 @@ import {
 } from "./companion-data.js";
 import { openPrint, supportSheetDoc } from "./companion-print.js";
 import { bindCheck, bindReteach, checkView, reteachView } from "./companion-views.js";
+import { canSpeak, speak } from "./util.js";
 import { NEW_VIEWS, viewById } from "./views-registry.js";
 import { activityBars, activityStats } from "./visuals.js";
 
@@ -253,22 +254,28 @@ function navHtml(st) {
   return `<div class="cp-gtabs" role="group" aria-label="Sections">${tabs}</div><div class="cp-views" role="group" aria-label="${esc(active.label)}">${views}</div>`;
 }
 
+function toolHead(st, inner) {
+  const v = VIEWS.find((x) => x.id === st.view);
+  const readable = canSpeak() && inner.includes("data-cp-speak");
+  return `<div class="cp-tool-head"><div><h3 id="cpTool" class="cp-tool-h" tabindex="-1">${esc(v?.label || "")}</h3>${st.present ? "" : `<p class="cp-muted">${esc(v?.hint || "")}</p>`}</div>${readable ? `<button type="button" class="cp-btn" data-cp-read="1"><span aria-hidden="true">🔊</span> Read aloud</button>` : ""}</div>`;
+}
+
 function shell(st, inner) {
   if (st.present) {
     const v = VIEWS.find((x) => x.id === st.view);
     return `
     <div class="cp cp--present" data-cp-root>
-      <div class="cp-present-bar"><b>${esc(v?.label || "")}</b><span class="cp-muted cp-keyhint">Use ← and → or a clicker to step through.</span><button type="button" class="cp-btn" data-cp-present="off">Exit present mode</button></div>
-      <div class="cp-body" data-cp-body>${inner}</div>
+      <div class="cp-present-bar"><span class="cp-muted">Present mode</span><span class="cp-muted cp-keyhint">Use ← and → or a clicker to step through.</span><button type="button" class="cp-btn" data-cp-present="off">Exit present mode</button></div>
+      <div class="cp-body" data-cp-body>${toolHead(st, inner)}${inner}</div>
     </div>`;
   }
   return `
     <div class="cp" data-cp-root>
       <div class="cp-top">
         <div class="cp-set-head"><div><h3 class="cp-title">Plan &amp; Respond</h3><p class="cp-muted">Built from this unit's own words, goals and activities. Nothing you type here leaves this device.</p></div><button type="button" class="cp-btn cp-btn--solid" data-cp-present="on">Present to class</button></div>
-        <nav class="cp-nav" aria-label="Plan and respond">${navHtml(st)}</nav>
+        <nav class="cp-nav" aria-label="Plan and respond"><button type="button" class="cp-skip" data-cp-skip="1">Skip to the tool</button>${navHtml(st)}</nav>
       </div>
-      <div class="cp-body" data-cp-body>${inner}</div>
+      <div class="cp-body" data-cp-body>${toolHead(st, inner)}${inner}</div>
     </div>`;
 }
 
@@ -358,6 +365,18 @@ export function renderCompanionTab(panel, ctx) {
   });
 }
 
+/** One live region per panel, outside the redrawn markup, so screen readers hear each tool change once. */
+function announce(panel, text) {
+  let live = panel.previousElementSibling;
+  if (!live?.classList.contains("cp-live")) {
+    live = document.createElement("p");
+    live.className = "cp-live cp-sr";
+    live.setAttribute("aria-live", "polite");
+    panel.before(live);
+  }
+  live.textContent = text;
+}
+
 /** A view handler may return true (redraw), false (nothing) or a promise (redraw now, and again when it settles). */
 function settle(st, result) {
   if (result && typeof result.then === "function") {
@@ -381,6 +400,17 @@ function onClick(panel, e) {
     panel.querySelector(`[data-cp-present="${st.present ? "off" : "on"}"]`)?.focus();
     return;
   }
+  if (d.cpSkip) {
+    panel.querySelector("#cpTool")?.focus();
+    return;
+  }
+  if (d.cpRead) {
+    const text = [...panel.querySelectorAll("[data-cp-body] [data-cp-speak]")]
+      .map((el) => el.textContent.trim())
+      .join(". ");
+    speak(text);
+    return;
+  }
   if (d.cpGroup) {
     st.group = d.cpGroup;
     st.draw();
@@ -390,6 +420,7 @@ function onClick(panel, e) {
   if (d.cpView) {
     st.view = d.cpView;
     st.group = groupOf(st.view);
+    announce(panel, `Now showing ${VIEWS.find((v) => v.id === st.view)?.label || ""}`);
     remember(st.view);
     st.draw();
     panel.querySelector(`[data-cp-view="${st.view}"]`)?.focus();

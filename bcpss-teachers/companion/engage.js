@@ -76,7 +76,7 @@ export const corners = {
     const stems = tl.stems?.[st.level] || tl.stems?.["3_4"] || {};
     return `<div class="cp-corners">
       <p class="cp-muted">Read the statement. Students walk to the corner that matches what they think, talk with the people there, then one person from each corner shares.</p>
-      <div class="cp-card cp-card--lead"><p class="cp-eyebrow">Statement ${i + 1} of ${tl.statements.length}</p><p class="cp-question">${esc(tl.statements[i])}</p></div>
+      <div class="cp-card cp-card--lead"><p class="cp-eyebrow">Statement ${i + 1} of ${tl.statements.length}</p><p class="cp-question" data-cp-speak>${esc(tl.statements[i])}</p></div>
       <div class="cp-corner-grid">${(tl.corners || []).map((c, k) => `<div class="cp-corner"><span aria-hidden="true">${k + 1}</span>${esc(c)}</div>`).join("")}</div>
       <div class="cp-card"><h4>Say it like this</h4><ul class="cp-plain">${Object.entries(stems)
         .map(([k, v]) => `<li><b>${esc(k[0].toUpperCase() + k.slice(1))}:</b> ${blanks(v)}</li>`)
@@ -109,7 +109,7 @@ export const routine = {
       ${list.length > 1 ? `<div class="cp-chiprow">${list.map((x, k) => `<button type="button" class="cp-chip" data-cp-act="routine:pick" data-cp-arg="${k}" aria-pressed="${k === vs.r}">${esc(x.name)}</button>`).join("")}</div>` : ""}
       <div class="cp-card cp-card--lead"><p class="cp-eyebrow">${esc(r.name)}</p>
         <div class="cp-strip" role="img" aria-label="Step ${step + 1} of ${r.steps.length}">${r.steps.map((_, k) => `<span class="cp-dot${k === step ? " cp-dot--now" : ""}">${k + 1}</span>`).join("")}</div>
-        <p class="cp-question cp-fadein" role="status">${rest.length ? `<b>${esc(head)}.</b> ${blanks(rest.join(" — "))}` : blanks(head)}</p>
+        <p class="cp-question cp-fadein" role="status" data-cp-speak>${rest.length ? `<b>${esc(head)}.</b> ${blanks(rest.join(" — "))}` : blanks(head)}</p>
         ${r.source ? `<p class="cp-muted cp-teacher">Source: ${esc(r.source)}</p>` : ""}
       </div>
       <div class="cp-actions"><button type="button" class="cp-btn" data-cp-act="routine:prev" ${step === 0 ? "disabled" : ""}>Back</button><button type="button" class="cp-btn cp-btn--solid" data-cp-act="routine:next" ${step >= r.steps.length - 1 ? "disabled" : ""}>Next step</button></div>

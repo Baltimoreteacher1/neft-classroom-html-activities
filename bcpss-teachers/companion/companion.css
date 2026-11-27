@@ -1216,3 +1216,81 @@ mark.cp-ev {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
+
+/* ── Accessibility ───────────────────────────────────────────────────────── */
+.cp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+/* Skip link: off screen until it has keyboard focus, then a full-size button. */
+.cp-skip {
+  position: absolute;
+  left: -9999px;
+  min-height: 44px;
+  padding: 0 1rem;
+  font: 650 0.95rem/1 var(--font);
+  color: #fff;
+  background: var(--brand);
+  border: 0;
+  border-radius: var(--radius);
+}
+.cp-skip:focus {
+  position: static;
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.cp-tool-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--brand);
+}
+.cp-tool-h {
+  font: 700 1.3rem/1.2 var(--font-display);
+  margin: 0;
+}
+.cp-tool-h:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+.cp--present .cp-tool-h {
+  font-size: 1.8rem;
+}
+/* Meaning never rests on colour alone. */
+.cp-dot--ev::after {
+  content: "★";
+  margin-left: 0.1rem;
+  font-size: 0.7rem;
+}
+.cp-mcard--done::before {
+  content: "✓ ";
+  font-weight: 800;
+}
+.cp-sent--now::before {
+  content: "▶ ";
+  font-size: 0.8em;
+  color: var(--brand);
+}
+@media (forced-colors: active) {
+  .cp [aria-pressed="true"] {
+    outline: 3px solid CanvasText;
+    outline-offset: 2px;
+  }
+  .cp-sent--now,
+  mark.cp-ev {
+    outline: 2px solid Highlight;
+  }
+  .cp-svg-bar,
+  .cp-tallybar span,
+  .cp-timeline span {
+    forced-color-adjust: none;
+  }
+}
