@@ -372,13 +372,27 @@ export function setNoTransform(headers) {
   headers.set("Cache-Control", current ? `${current}, no-transform` : "no-transform");
 }
 
+const isHtml = (response) => (response.headers.get("content-type") || "").includes("text/html");
+
+/**
+ * `no-transform` has a cost: Cloudflare's edge will not compress the response either. Measured 2026-11-27, the lab shell
+ * went out as 208,906 bytes on thelanguagepage.com and 30,646 (brotli) on eduwonderlab.com, the same page. So the lab
+ * host asks the Workers runtime to encode its HTML: a Content-Encoding header with the default encodeBody "automatic"
+ * makes the runtime compress the body for the visitor's real Accept-Encoding (measured in workerd: brotli 29,732 bytes for a
+ * br client, gzip 34,102 for gzip, the plain 208,906 for `identity`). The header is a request to the runtime, not a claim
+ * about the bytes, which is why it is not paired with a pre-compressed body.
+ */
 export async function brandLabResponse(response, url) {
   if (!isLanguagePageHost(url.hostname) || !response.ok) return response;
-  if (!(response.headers.get("content-type") || "").includes("text/html")) return response;
+  if (!isHtml(response)) return response;
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   headers.delete("etag");
   setNoTransform(headers);
+  headers.set("Content-Encoding", "gzip");
+  const vary = headers.get("vary");
+  if (!/(^|,)\s*accept-encoding\s*(,|$)/i.test(vary || ""))
+    headers.set("Vary", vary ? `${vary}, Accept-Encoding` : "Accept-Encoding");
   return new Response(brandLabHtml(await response.text(), url.pathname), {
     status: response.status,
     statusText: response.statusText,
