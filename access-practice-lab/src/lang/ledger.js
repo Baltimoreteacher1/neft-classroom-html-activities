@@ -366,6 +366,7 @@ const SUPPORT_NAMES = {
   coach: "the language coach",
   l1: "Spanish bridges",
   hint: "hints",
+  dictation: "speech to text",
 };
 
 /** Learner-facing names of the supports an entry recorded as opened. */

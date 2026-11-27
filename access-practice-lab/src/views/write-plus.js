@@ -6,10 +6,11 @@
 import { readAudience } from "../audience.js";
 import { revealFoldsFor } from "../fold.js";
 import { sentences as splitSentences } from "../lang/text.js";
+import { cancelDictation, dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
 import { speak } from "../speech.js";
 import { addVersion, writingState } from "../lang/studio.js";
 import { disclosure } from "../studio-ui.js";
-import { BASE, announce, formatDate, html, icon, raw, todayISO, wordCount } from "../util.js";
+import { BASE, announce, formatDate, html, icon, raw, toHtml, todayISO, wordCount } from "../util.js";
 
 const IGN = raw("data-nsr-ignore");
 export const isTeacherView = () => readAudience() === "teacher";
@@ -304,6 +305,7 @@ const goalAnnounced = new Set();
 /** Called on every keystroke in the draft: sentence and paragraph counts, the saved stamp and the goal mark. */
 export function onDraftTyped(I, task, text) {
   const s = draftStats(text);
+  refreshTopicWords(I, task, text);
   const line = document.querySelector("[data-draft-stats]");
   if (line) line.textContent = statsText(I, s);
   const stamp = document.querySelector("[data-saved-stamp]");
@@ -437,6 +439,43 @@ export function tablePictureHTML(I, table) {
   </figure>`;
 }
 
+// ── topic words ───────────────────────────────────────────────────────────────────────────────
+const escRe = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** A term counts as used when each of its words appears, allowing common endings (erosion, runoffs, trials). */
+function termPattern(term) {
+  const words = String(term).toLowerCase().split(/\s+/).filter(Boolean);
+  const stem = (w) => (w.length > 4 ? w.replace(/(e|s|es|ed|ing)$/, "") : w);
+  return new RegExp(`\\b${words.map((w) => `${escRe(stem(w))}[a-z]*`).join("\\s+")}\\b`, "i");
+}
+/** The task's vocabulary terms that appear in the draft. */
+export function topicWordsUsed(vocab = [], text = "") {
+  return vocab.map((v) => v.term).filter((term) => term && termPattern(term).test(text));
+}
+
+/** Chips for the task's own vocabulary that fill in as the writer uses them. A word bank, so never "on my own". */
+export function topicWordsHTML(I, task, text, stage) {
+  if (stage === "independent" || !task.vocab?.length) return "";
+  const used = new Set(topicWordsUsed(task.vocab, text));
+  return html`<div class="topic-words" data-topic-words>
+    <p class="topic-words-label">${icon("words")} ${I.T("Topic words", "Palabras del tema")} <span class="fine" data-topic-count>${I.T(`${used.size} of ${task.vocab.length} used`, `${used.size} de ${task.vocab.length} usadas`)}</span></p>
+    <ul>${task.vocab.map((v) => html`<li class="${used.has(v.term) ? "is-used" : ""}" data-topic-term="${v.term}" title="${v.def}"><span class="tw-check">${icon("check")}</span>${v.term}<span class="visually-hidden" data-tw-state>${used.has(v.term) ? I.T(" (used)", " (usada)") : ""}</span></li>`)}</ul>
+  </div>`;
+}
+function refreshTopicWords(I, task, text) {
+  const box = document.querySelector("[data-topic-words]");
+  if (!box) return;
+  const used = new Set(topicWordsUsed(task.vocab, text));
+  for (const li of box.querySelectorAll("[data-topic-term]")) {
+    const on = used.has(li.dataset.topicTerm);
+    if (li.classList.contains("is-used") !== on) {
+      li.classList.toggle("is-used", on);
+      li.querySelector("[data-tw-state]").textContent = on ? I.S(" (used)", " (usada)") : "";
+    }
+  }
+  const count = box.querySelector("[data-topic-count]");
+  if (count) count.textContent = I.S(`${used.size} of ${task.vocab.length} used`, `${used.size} de ${task.vocab.length} usadas`);
+}
+
 // ── help tools beside the draft ──────────────────────────────────────────────────────────────
 // Four tools a writer opens when they want them. "I'm stuck" gives ways of working, never words for the response.
 // "Use my plan" and "Listen" work on the writer's own words, so they stay open "on my own". Connecting words are a
@@ -499,6 +538,7 @@ export function helpToolsHTML(I, task, state, stage, text, analyzed) {
       ${tool("plan", "list", "Use my plan", "Usar mi plan")}
       ${own ? "" : tool("link", "words", "Connecting words", "Palabras para conectar")}
       ${tool("listen", "volume", "Listen to each sentence", "Escuchar cada oración")}
+      ${own ? "" : tool("say", "speaking", "Say it, see it", "Dilo y míralo")}
     </div>
     <div class="help-panel" id="wrt-help-stuck" hidden>
       <p class="help-title">${I.T("Try one of these:", "Prueba una de estas ideas:")}</p>
@@ -518,6 +558,16 @@ export function helpToolsHTML(I, task, state, stage, text, analyzed) {
             <dl class="connectors">${CONNECTORS.map(([en, es, words]) => html`<div><dt>${I.T(en, es)}</dt><dd>${words.map(([w, g]) => html`<button type="button" class="insert-chip" data-insert="${w}">${w}${I.mode === "en" ? "" : html` <span class="gloss" lang="es">${g}</span>`}</button>`)}</dd></div>`)}</dl>
           </div>`
     }
+    ${
+      own
+        ? ""
+        : html`<div class="help-panel" id="wrt-help-say" hidden>
+            <p class="help-title">${I.T("Say your sentence out loud", "Di tu oración en voz alta")}</p>
+            <p>${I.T("Your words appear here. When you stop, they go into your writing so you can check and fix them.", "Tus palabras aparecen aquí. Cuando te detienes, pasan a tu escritura para que las revises y corrijas.")}</p>
+            <div data-say-controls>${dictationControlsHTML(DICT_ID, I, { label: I.T("Start talking", "Empezar a hablar") })}</div>
+            <p class="listen-sentence" data-say-preview aria-live="polite"></p>
+          </div>`
+    }
     <div class="help-panel" id="wrt-help-listen" hidden>
       <p class="help-title">${I.T("Listen for what sounds wrong", "Escucha lo que suena mal")}</p>
       <p class="listen-sentence" data-listen-text aria-live="polite"></p>
@@ -531,6 +581,7 @@ export function helpToolsHTML(I, task, state, stage, text, analyzed) {
   </div>`;
 }
 
+const DICT_ID = "wrt-draft";
 let listenAt = 0;
 function showSentence(I, ctx, move) {
   const box = document.querySelector("[data-draft]");
@@ -550,6 +601,7 @@ function showSentence(I, ctx, move) {
 }
 
 /** Clicks inside the help tools. Returns true when it handled the click. */
+export const stopDraftDictation = cancelDictation;
 export function onHelpClick(e, ctx, I, task, state) {
   const t = e.target;
   const open = t.closest("[data-help-tool]");
@@ -575,6 +627,34 @@ export function onHelpClick(e, ctx, I, task, state) {
     const plan = planText(task, state);
     if (plan) insertIntoDraft(plan, I);
     else announce(I.S("Your plan is empty. Write a note in a plan box first.", "Tu plan está vacío. Primero escribe una nota en una casilla del plan."));
+    return true;
+  }
+  const dict = t.closest(`[data-dictate="${DICT_ID}"]`);
+  if (dict) {
+    const preview = document.querySelector("[data-say-preview]");
+    const controls = document.querySelector("[data-say-controls]");
+    const redraw = () => {
+      if (controls) controls.innerHTML = toHtml(dictationControlsHTML(DICT_ID, I, { label: I.T("Start talking", "Empezar a hablar") }));
+    };
+    toggleDictation(DICT_ID, {
+      I,
+      onText: (words) => {
+        if (preview) preview.textContent = words;
+      },
+      onDone: (words) => {
+        let said = String(words || "").trim();
+        const before = document.querySelector("[data-draft]")?.value.trim() || "";
+        // Recognizers return lowercase without a final mark; start a new sentence with a capital.
+        if (said && (!before || /[.!?]["”']?$/.test(before))) said = said[0].toUpperCase() + said.slice(1);
+        if (said) {
+          state.used ||= {};
+          state.used.dictation = true;
+          insertIntoDraft(said, I);
+        }
+        if (preview) preview.textContent = "";
+        redraw();
+      },
+    }).then(redraw);
     return true;
   }
   const listen = t.closest("[data-listen]");
@@ -930,6 +1010,39 @@ export function notesForPortfolioHTML(I, w) {
   </section>`;
 }
 
+// ── teacher: compare two samples (a projectable mini-lesson) ──────────────────────────────────
+/** The early and strong practice samples for a task, side by side; what each writer did stays hidden until revealed. */
+export function compareLessonHTML(I, ctx, task, exemplars) {
+  const back = html`<p class="row-actions no-print"><a class="btn" href="${BASE}/write/${task.id}?grades=${ctx.band}">${icon("arrow-left")} ${I.T("Back to the task", "Volver a la tarea")}</a></p>`;
+  if (!isTeacherView())
+    return html`<article class="compare-lesson d-writing" data-no-studio-video>${back}<h1 tabindex="-1">${task.title}</h1><p>${I.T("This mini-lesson opens in Teacher view.", "Esta minilección se abre en la vista docente.")}</p></article>`;
+  const pick = (b) => exemplars.find((x) => x.taskId === task.id && x.practiceBand === b);
+  const a = pick("early");
+  const b = pick("strong");
+  if (!a || !b)
+    return html`<article class="compare-lesson d-writing" data-no-studio-video>${back}<h1 tabindex="-1">${task.title}</h1><p>${I.T("This task has no sample responses yet.", "Esta tarea aún no tiene respuestas de ejemplo.")}</p></article>`;
+  const sample = (label, x) => html`<section class="compare-sample"><h2>${label}</h2><p class="portfolio-response">${x.response}</p>
+    <details class="studio-disc"><summary>${icon("search")} ${I.T("Show what this writer did", "Mostrar lo que hizo este escritor")}</summary><div class="disc-body"><ul>${x.annotations.map((n) => html`<li>“${n.quote}” — <em>${n.dimension}</em>: ${n.note}</li>`)}</ul><p class="fine"><strong>${I.T("Next step:", "Próximo paso:")}</strong> ${x.nextStep}</p></div></details></section>`;
+  return html`<article class="compare-lesson d-writing" data-no-studio-video>
+    ${back}
+    <header>
+      <p class="eyebrow">${icon("teacher")} ${I.T("Mini-lesson · compare two samples", "Minilección · comparar dos ejemplos")} · ${task.keyUse}</p>
+      <h1 tabindex="-1">${task.title}</h1>
+      <p class="lead">${task.prompt}</p>
+      <p class="fine no-print">${I.T("Press Present to project it. Use it before students draft, or after their first draft to plan a revision. These are practice samples, not WIDA levels.", "Presione Presentar para proyectarla. Úsela antes de que escriban o después del primer borrador para planear una revisión. Son ejemplos de práctica, no niveles de WIDA.")}</p>
+    </header>
+    <div class="compare-grid">${sample(I.T("Sample A", "Ejemplo A"), a)}${sample(I.T("Sample B", "Ejemplo B"), b)}</div>
+    <section class="compare-talk panel">
+      <h2>${icon("conversation")} ${I.T("Talk with a partner", "Habla con un compañero")}</h2>
+      <ol>
+        <li>${I.T("Which sample would help the reader more? Why?", "¿Qué ejemplo ayudaría más al lector? ¿Por qué?")} <span class="tag">${I.T("Sample ___ helps more because…", "El ejemplo ___ ayuda más porque…")}</span></li>
+        <li>${I.T("Find one sentence in Sample B that does something Sample A does not.", "Encuentra una oración del ejemplo B que hace algo que el ejemplo A no hace.")} <span class="tag">${I.T("In Sample B, the writer…", "En el ejemplo B, el escritor…")}</span></li>
+        <li>${I.T("Choose one move you will try in your own writing.", "Elige una estrategia que vas a probar en tu propia escritura.")} <span class="tag">${I.T("I will try…", "Voy a intentar…")}</span></li>
+      </ol>
+    </section>
+  </article>`;
+}
+
 // ── teacher: focus for the day, conference note, conference sheet ───────────────────────────
 export const FOCUS = {
   evidence: ["Evidence", "Evidencia", "Use facts or numbers from the sources.", "Usa datos o números de las fuentes."],
@@ -964,7 +1077,7 @@ export function teacherAssignHTML(I, ctx, task) {
     <h4>${I.T("Assign with a focus", "Asignar con un enfoque")}</h4>
     <p class="fine">${I.T("Pick one focus. Students who open the link see it above the steps. The link carries no student information.", "Elija un enfoque. Los estudiantes que abren el enlace lo ven sobre los pasos. El enlace no lleva información de estudiantes.")}</p>
     <p class="focus-links">${list.map((k) => html`<button type="button" class="btn small" data-copy-link="${link(ctx, task.id, `&focus=${k}`)}">${icon("copy")} ${I.T(FOCUS[k][0], FOCUS[k][1])}</button>`)}</p>
-    <p class="row-actions"><a class="btn small" href="${BASE}/write/${task.id}?grades=${ctx.band}&sheet=conference" target="_blank" rel="noopener">${icon("print")} ${I.T("Conference sheet to print", "Hoja de conferencia para imprimir")}</a></p>
+    <p class="row-actions"><a class="btn small" href="${BASE}/write/${task.id}?grades=${ctx.band}&sheet=conference" target="_blank" rel="noopener">${icon("print")} ${I.T("Conference sheet to print", "Hoja de conferencia para imprimir")}</a><a class="btn small" href="${BASE}/write/${task.id}?grades=${ctx.band}&sheet=compare">${icon("library")} ${I.T("Mini-lesson: compare two samples", "Minilección: comparar dos ejemplos")}</a></p>
   </div>`;
 }
 

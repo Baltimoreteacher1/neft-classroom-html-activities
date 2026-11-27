@@ -38,6 +38,9 @@ import {
   checklistHTML,
   checksFor,
   cheerHTML,
+  compareLessonHTML,
+  stopDraftDictation,
+  topicWordsHTML,
   helpToolsHTML,
   onPlanTyped,
   planMapHTML,
@@ -78,12 +81,18 @@ import {
   teacherAssignHTML,
 } from "./write-plus.js";
 
-/** write-studio.css loads here, on /write only, so the lab shell does not carry it on every other page. */
+/**
+ * write-studio.css loads here, on /write only, so the lab shell does not carry it on every other page. The version is
+ * the first 12 hex of the file's sha256 (tools/access-writing-plus.test.mjs fails when it is stale), so a returning
+ * learner never gets new markup with an old cached sheet.
+ */
+export const WRITE_STYLES_VERSION = "7f81481a3ea0";
 let sheet = null;
 function ensureStyles() {
   if (typeof document === "undefined") return Promise.resolve();
-  const href = `${BASE}/write-studio.css`;
-  if (document.querySelector(`link[rel="stylesheet"][href^="${href}"]`)) return Promise.resolve();
+  const base = `${BASE}/write-studio.css`;
+  const href = `${base}?v=${WRITE_STYLES_VERSION}`;
+  if (document.querySelector(`link[rel="stylesheet"][href="${href}"]`)) return Promise.resolve();
   sheet ||= new Promise((resolve) => {
     const link = document.createElement("link");
     link.rel = "stylesheet";
@@ -466,6 +475,10 @@ export async function render(ctx) {
     S.task = null;
     return { title: task.title, html: conferenceSheetHTML(I, ctx, task) };
   }
+  if (q.get("sheet") === "compare") {
+    S.task = null;
+    return { title: task.title, html: compareLessonHTML(I, ctx, task, await loadExemplars().catch(() => [])) };
+  }
   S.task = task;
   S.mission = mission;
   S.fx = choiceEffects(task, mission, S.studio);
@@ -560,6 +573,7 @@ export async function render(ctx) {
               <label class="field paper"><span class="paper-head">${I.T("Your writing", "Tu escritura")} <span class="fine">${I.T("Saved on this device as you type", "Se guarda en este dispositivo mientras escribes")}<span class="saved-stamp" data-saved-stamp role="status"></span></span></span><textarea id="wrt-draft" rows="${task.expected.paragraphs > 1 ? 16 : 11}" spellcheck="false" placeholder="${I.S("Write here. You can change it as many times as you like.", "Escribe aquí. Puedes cambiarlo todas las veces que quieras.")}" data-draft ${IGN}>
 ${text}</textarea></label>
               <p class="meter ${wordCount(text) >= goalMin ? "is-met" : ""}"><span class="meter-bar"><span style="width:${Math.min(100, Math.round((wordCount(text) / goalMin) * 100))}%"></span></span><span class="meter-line"><span data-meter>${meterText(wordCount(text), goalMin, task.expected.maxWords)}</span>${statsLineHTML(I, text)}${cheerHTML(I, wordCount(text), goalMin)}</span></p>
+              ${topicWordsHTML(I, task, text, S.stage)}
               ${helpToolsHTML(I, task, S.state, S.stage, text, analyzed)}
               ${checklistHTML(I, task, S.state, S.stage)}
               <div class="row-actions">
@@ -615,7 +629,8 @@ const meterText = (n, min, max) => I.S(`${n} words · usually about ${min}–${m
 function lockStage() {
   if (S.state.stage) return;
   S.state.stage = S.stage;
-  S.state.used = { frames: S.stage === "guided", bank: S.stage !== "independent" };
+  // Keep what was opened before the first feedback (the model, speech to text); set what the stage provides.
+  S.state.used = { ...S.state.used, frames: S.stage === "guided", bank: S.stage !== "independent" };
 }
 
 function feedback(ctx) {
@@ -639,6 +654,7 @@ function feedback(ctx) {
     bank: S.state.used.bank,
     model: Boolean(S.state.used.model),
     coach: !first,
+    ...(S.state.used.dictation ? { dictation: true } : {}),
   };
   appendEntry(S.ledger, {
     src: "writing",
@@ -939,6 +955,7 @@ export function mount(root) {
 }
 export function unmount() {
   stopSpeech();
+  stopDraftDictation();
 }
 
 // The optional AI second look: authored coach categories chosen by a model, shown in the lab's own words.

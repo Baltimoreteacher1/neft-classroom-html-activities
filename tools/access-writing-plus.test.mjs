@@ -21,6 +21,7 @@ import {
   planText,
   resumeTask,
   stuckStep,
+  topicWordsUsed,
   studioStats,
   tableSeries,
   taskStatus,
@@ -208,4 +209,50 @@ test("connecting words are grouped by what they do, each with Spanish", () => {
       seen.add(w);
     }
   }
+});
+
+test("topic words count a term once its words are used, with common endings", () => {
+  const vocab = [
+    { term: "erosion" },
+    { term: "runoff" },
+    { term: "bare soil" },
+    { term: "trial" },
+    { term: "slope" },
+  ];
+  assert.deepEqual(
+    topicWordsUsed(
+      vocab,
+      "Erosion happened. The runoffs were big in two trials on the bare soils.",
+    ),
+    ["erosion", "runoff", "bare soil", "trial"],
+  );
+  assert.deepEqual(topicWordsUsed(vocab, "The soil was bare."), []);
+  assert.deepEqual(topicWordsUsed(vocab, "slopes and slope"), ["slope"]);
+  assert.deepEqual(topicWordsUsed(vocab, ""), []);
+  for (const t of tasks)
+    for (const v of t.vocab || [])
+      assert.deepEqual(
+        topicWordsUsed([v], `We wrote ${v.term} here.`),
+        [v.term],
+        `${t.id}: ${v.term}`,
+      );
+});
+
+test("speech to text has a learner-facing support name", async () => {
+  const { supportsUsed } = await import("../access-practice-lab/src/lang/ledger.js");
+  assert.deepEqual(supportsUsed({ supports: { dictation: true, coach: false } }), [
+    "speech to text",
+  ]);
+});
+
+test("the Writing Studio stylesheet URL carries the hash of its current bytes", async () => {
+  const { createHash } = await import("node:crypto");
+  const css = readFileSync(new URL("../access-practice-lab/write-studio.css", import.meta.url));
+  const src = readFileSync(new URL("../access-practice-lab/src/views/write.js", import.meta.url), "utf8");
+  const pinned = /WRITE_STYLES_VERSION = "([0-9a-f]{12})"/.exec(src)?.[1];
+  assert.equal(
+    pinned,
+    createHash("sha256").update(css).digest("hex").slice(0, 12),
+    "write-studio.css changed: set WRITE_STYLES_VERSION in src/views/write.js to the first 12 hex of its sha256",
+  );
 });

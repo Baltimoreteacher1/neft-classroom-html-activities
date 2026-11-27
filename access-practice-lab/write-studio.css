@@ -1115,3 +1115,124 @@
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
   }
 }
+
+/* topic words, say it, compare two samples */
+.topic-words {
+  margin: var(--s-3) 0 0;
+}
+.topic-words-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.6rem;
+  margin: 0 0 0.4rem;
+  font-weight: 800;
+}
+.topic-words ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.topic-words li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.25rem;
+  padding: 0.2rem 0.75rem 0.2rem 0.45rem;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-weight: 700;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+.topic-words .tw-check {
+  display: inline-grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+  color: transparent;
+}
+.topic-words .tw-check .ico {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+.topic-words li.is-used {
+  border-style: solid;
+  border-color: var(--right);
+  background: var(--right-soft);
+  color: var(--ink);
+}
+.topic-words li.is-used .tw-check {
+  border-color: var(--right);
+  background: var(--right);
+  color: var(--surface);
+}
+.help-panel .dict-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+}
+.help-panel .dict-row .btn {
+  min-height: 44px;
+}
+.help-panel .dict-note {
+  margin: 0;
+}
+.compare-lesson header h1 {
+  margin: 0.2rem 0 0.4rem;
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+}
+.compare-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-4);
+  margin: var(--s-4) 0;
+}
+.compare-sample {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.compare-sample h2 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.25rem;
+}
+.compare-sample .portfolio-response {
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+.compare-talk h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 var(--s-2);
+  font-size: 1.2rem;
+}
+.compare-talk ol {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-left: 1.3rem;
+  font-size: 1.0625rem;
+}
+.compare-talk .tag {
+  margin-left: 0.3rem;
+}
+@media (max-width: 860px) {
+  .compare-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.listen-sentence[data-say-preview]:empty {
+  display: none;
+}
