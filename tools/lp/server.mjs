@@ -27,6 +27,8 @@ const MOUNTS = [
   ["/assets/", "assets/"],
   ["/shared/", "shared/"],
   ["/access-practice-lab/pictures/", "access-practice-lab/pictures/"],
+  // Negative-control fixtures for tools/lp/check.mjs. Local server only; production never serves this path.
+  ["/__fixtures/", "tools/lp/fixtures/"],
 ];
 
 function resolveFile(urlPath) {

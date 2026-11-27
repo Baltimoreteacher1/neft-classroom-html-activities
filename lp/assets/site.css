@@ -360,8 +360,14 @@ ol {
   }
 }
 @media (max-width: 26rem) {
+  /* Visually hidden, not display:none: the text stays the button's accessible name. */
   .icon-btn .label {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }
 
@@ -715,6 +721,7 @@ textarea {
   resize: vertical;
 }
 fieldset {
+  min-width: 0; /* fieldsets default to min-content width, which overflows phones */
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: var(--s2);
@@ -1243,6 +1250,11 @@ tr:last-child td {
 .tool-layout {
   display: grid;
   gap: var(--s3);
+}
+.tool-layout > *,
+.practice-shell > *,
+.grid > * {
+  min-width: 0; /* grid items default to min-content width; long words or inputs would push past a phone screen */
 }
 @media (min-width: 64rem) {
   .tool-layout {
