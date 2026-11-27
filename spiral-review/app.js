@@ -104,6 +104,17 @@
     return res.json();
   }
 
+  /* Precomputed misconception diagnoses (scripts/generate-spiral-diagnoses.mjs):
+     the shared lesson detector run over this bank at build time. Optional —
+     when the file is missing or malformed the page behaves exactly as before. */
+  let diagnoses = { tags: {}, items: {} };
+  fetch("diagnoses.json", { cache: "no-cache" })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((d) => {
+      if (d && d.tags && d.items) diagnoses = d;
+    })
+    .catch(() => {});
+
   /* ── scope + spiral weighting ──
      SPIRAL LOGIC: every candidate question gets a weight that decreases for
      newer (higher-numbered) units, so older units are reviewed more often.
@@ -161,7 +172,10 @@
     const order = shuffle(q.choices.map((_, i) => i));
     const choices = order.map((i) => q.choices[i]);
     const correctIndex = order.indexOf(q.correctIndex);
-    return Object.assign({}, q, { choices, correctIndex });
+    // Diagnoses are keyed by the bank's choice positions; follow the shuffle.
+    const tags = diagnoses.items[q.id];
+    const diag = Array.isArray(tags) ? order.map((i) => tags[i] || null) : null;
+    return Object.assign({}, q, { choices, correctIndex, diag });
   }
 
   /* ── render setup selects ── */
@@ -300,6 +314,19 @@
     exp.textContent = text;
     els.feedback.innerHTML = "";
     els.feedback.appendChild(head);
+    // Name the thinking behind THIS wrong pick before the worked answer, when
+    // the shared detector identified one specific error for it.
+    const tag = !isRight && q.diag ? q.diag[choiceIndex] : null;
+    const info = tag ? diagnoses.tags[tag] : null;
+    if (info) {
+      const why = document.createElement("p");
+      why.className = "diagnosis";
+      const label = document.createElement("strong");
+      label.textContent = `Looks like: ${info.label}. `;
+      why.appendChild(label);
+      why.appendChild(document.createTextNode(info.student));
+      els.feedback.appendChild(why);
+    }
     els.feedback.appendChild(exp);
     const tagNote = document.createElement("p");
     tagNote.className = "review-note";

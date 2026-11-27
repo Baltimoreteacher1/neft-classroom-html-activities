@@ -701,6 +701,18 @@ const EXPLANATION_EXPRESSION =
 
 function verifiedExpression(item, correct) {
   if (correct == null || !Number.isFinite(correct)) return null;
+  // For LCM / GCF items the explanation's arithmetic ("LCM = 2 × 7 = 14") is a
+  // derived step, not the operation the problem asks for, so an operation label
+  // ("added when the problem multiplies… how many groups?") would coach the
+  // wrong idea. The stem's own concept decides; stay silent.
+  const stem = String(item?.stem ?? item?.title ?? "");
+  if (
+    /\b(LCM|GCF|GCD|least common (multiple|denominator)|greatest common (factor|divisor))\b/i.test(
+      stem,
+    )
+  ) {
+    return null;
+  }
   const text = String(item?.explanation ?? "");
   if (!text) return null;
   const seen = new Map();

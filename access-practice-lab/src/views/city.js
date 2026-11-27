@@ -12,7 +12,7 @@ import { crumbsHTML, setComponentsI18n } from "../components.js";
 import { BUILDINGS, MISSIONS, buildingOf, missionOf, missionsAt } from "../content/city.js";
 import { i18nFor } from "../i18n.js";
 import { missionStatus, nextMission, runsOf, totalsFor } from "../lang/city.js";
-import { BASE, html, icon, raw } from "../util.js";
+import { BASE, ensureStylesheet, html, icon, raw } from "../util.js";
 import { cityMapSVG, facadeThumbSVG, interiorSVG, portraitSVG } from "./city-art.js";
 import { guideHTML } from "./city-guide.js";
 import { cityHref, missionPage, onMissionClick, onMissionInput } from "./city-mission.js";
@@ -339,6 +339,8 @@ function progressHTML(ctx, I, st) {
 const page = (body) => html`<div class="city-page">${body}</div>`;
 
 export async function render(ctx) {
+  // city.css loads on /city only, so the lab shell does not carry a stylesheet most visits never use.
+  await ensureStylesheet("city.css");
   const I = i18nFor(ctx);
   setComponentsI18n(I);
   const id = ctx.route.id || "";

@@ -905,7 +905,12 @@
           (activeFilter !== FILTER_ALL
             ? " in <strong>" + escapeHtml(activeFilter) + "</strong>"
             : "") +
-          '.</p><button type="button" class="hub-clear-filters">Clear search &amp; filters</button>';
+          '.</p><p class="search-empty-enhanced"><a class="hub-find-link" href="/curriculum/find/?q=' +
+          encodeURIComponent(q) +
+          '">Search every practice set, game, lab and printable for <strong>' +
+          escapeHtml(q) +
+          "</strong></a></p>" +
+          '<button type="button" class="hub-clear-filters">Clear search &amp; filters</button>';
         panel.querySelector(".hub-clear-filters").addEventListener("click", function () {
           if (hubApi.searchBox) hubApi.searchBox.value = "";
           activeFilter = FILTER_ALL;

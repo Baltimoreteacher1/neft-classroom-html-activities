@@ -31,6 +31,8 @@ export const PURPOSES = [
       "kind-read_annotate",
       "kind-talk_cards",
       "tab-vocab",
+      "local-text",
+      "local-labs",
     ],
   },
   {
@@ -45,6 +47,7 @@ export const PURPOSES = [
       "kind-clue_game",
       "part-wall",
       "part-bingo",
+      "local-words",
     ],
   },
   {
@@ -58,6 +61,7 @@ export const PURPOSES = [
       "kind-sentence_combine",
       "part-talk",
       "kit-family",
+      "local-transform",
     ],
   },
   {
@@ -71,6 +75,7 @@ export const PURPOSES = [
       "kind-unscramble",
       "kind-quiz",
       "part-key",
+      "local-practice",
     ],
   },
   {
@@ -83,6 +88,7 @@ export const PURPOSES = [
       "kind-sentence_combine",
       "kind-talk_cards",
       "kit-exit",
+      "local-stations",
     ],
   },
   {
@@ -107,6 +113,7 @@ export const PURPOSES = [
       "kind-sentence_combine",
       "part-strips",
       "part-writing-key",
+      "local-projects",
     ],
   },
   {
@@ -120,6 +127,7 @@ export const PURPOSES = [
       "kind-read_annotate",
       "kind-cloze",
       "kind-write_scaffold",
+      "local-practice",
     ],
   },
   {
@@ -287,8 +295,57 @@ const LOCAL_ITEMS = [
     id: "local-retrieval",
     group: "practice",
     title: "Spiral Review Questions",
-    note: "Quick questions from earlier units",
-    view: "build",
+    note: "Five quick questions from earlier units, on screen or printed",
+    view: "quick",
+  },
+  {
+    id: "local-text",
+    group: "teach",
+    title: "Read Together",
+    note: "The unit's passage one sentence at a time, with words and evidence",
+    view: "text",
+  },
+  {
+    id: "local-labs",
+    group: "teach",
+    title: "Virtual Lab",
+    note: "A hands-on lab for this subject, plus a model-sentence builder",
+    view: "labs",
+  },
+  {
+    id: "local-words",
+    group: "vocab",
+    title: "Animated Word Cards",
+    note: "A concept card for each unit word, to project or print",
+    view: "words",
+  },
+  {
+    id: "local-practice",
+    group: "practice",
+    title: "Four-Domain Practice",
+    note: "Listening, speaking, reading and writing tasks from this unit",
+    view: "practice",
+  },
+  {
+    id: "local-stations",
+    group: "practice",
+    title: "Station Rotation",
+    note: "A rotation chart and station cards from the unit's activities",
+    view: "stations",
+  },
+  {
+    id: "local-transform",
+    group: "language",
+    title: "Transform a Text",
+    note: "Turn any pasted text into a supported student copy",
+    view: "transform",
+  },
+  {
+    id: "local-projects",
+    group: "projects",
+    title: "Cross-Subject Project",
+    note: "Pair this unit with one from another subject",
+    view: "projects",
   },
 ];
 

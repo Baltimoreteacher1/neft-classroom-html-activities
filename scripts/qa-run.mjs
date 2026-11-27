@@ -1107,7 +1107,7 @@ const COVERAGE = [
   // Language Studio player: the content gates plus the full render sweep (162 units x 3 bands x every activity x
   // 3 viewports). Ahead of the generic BCPSS rule so the sweep runs for player changes, not for every BCPSS edit.
   [
-    /^(bcpss-teachers\/(language-studio|companion)\/|db\/seeds\/bcpss\/v2\/(lesson-links\/|module-facts\/|index\.mjs$)|data\/ela-modules\.json$|functions\/_lib\/bcpss\/(lesson-links|module-facts)\.js$|functions\/api\/bcpss\/(units\/\[unitId\]\/lessons|lessons\/\[lessonId\])\.js$|tools\/(bcpss-studio-sweep|bcpss-studio-links-e2e|bcpss-module-e2e|bcpss-companion-e2e|bcpss-companion\.test|build-bcpss-activity-lessons|validate-bcpss-activity-lessons|build-bcpss-module-facts|validate-bcpss-module-facts|extract-ela-modules|ela-module-facts\.test|bcpss-activity-lessons\.test)\.mjs$|tools\/lib\/(bcpss-studio-serve|bcpss-activity-lessons|ela-module-facts)\.mjs$)/,
+    /^(bcpss-teachers\/(language-studio|companion)\/|db\/seeds\/bcpss\/v2\/(lesson-links\/|module-facts\/|index\.mjs$)|data\/ela-modules\.json$|functions\/_lib\/bcpss\/(lesson-links|module-facts)\.js$|functions\/api\/bcpss\/(units\/\[unitId\]\/lessons|lessons\/\[lessonId\])\.js$|tools\/(bcpss-studio-sweep|bcpss-studio-links-e2e|bcpss-module-e2e|bcpss-companion-e2e|bcpss-companion(-views)?\.test|build-bcpss-activity-lessons|validate-bcpss-activity-lessons|build-bcpss-module-facts|validate-bcpss-module-facts|extract-ela-modules|ela-module-facts\.test|bcpss-activity-lessons\.test)\.mjs$|tools\/lib\/(bcpss-studio-serve|bcpss-activity-lessons|ela-module-facts)\.mjs$)/,
     [
       "test",
       "validate:bcpss",
@@ -1430,6 +1430,14 @@ const COVERAGE = [
   [/^tools\/save-resume-config\.js$/, ["validate:save-resume", "validate:injection", "test"]],
   // Family Math 2.0 — requirement ledger and its suites (unit suites run inside `test`).
   [/^(docs\/family-math-2-|tools\/fm2\/)/, ["validate:fm2", "validate:static", "test"]],
+  // FIND — plain-language search over every resource (/curriculum/find/). The gate proves the page's
+  // lock, that data/curriculum-find-index.json is current, and the engine's answers to real requests
+  // (tools/curriculum-find.test.mjs). The browser half is the all-resources-style drive in validate:find.
+  // Must precede ALL RESOURCES and /^curriculum\// below.
+  [
+    /^(curriculum\/find\/|data\/curriculum-find-index\.json$|scripts\/generate-curriculum-find-index\.mjs$|tools\/(validate-find|curriculum-find\.test)\.mjs$)/,
+    ["validate:find", "validate:js-syntax", "check"],
+  ],
   // ALL RESOURCES — the complete directory. The static gate proves coverage (every manifest
   // resource flattened, tools.json current, one icon family); the browser gate drives it as a
   // teacher does. A tool page's own <title> feeds tools.json, so any curriculum/<tool>/index.html

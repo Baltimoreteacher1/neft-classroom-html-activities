@@ -33,7 +33,7 @@ const EVIDENCE_WORDS = [
   "the source",
   "evidence",
 ];
-const NAME_HINT = /\b(my name is|name\s*:|student\s*:|by\s+[A-Z][a-z]+\s+[A-Z][a-z]+)/i;
+export const NAME_HINT = /\b(my name is|name\s*:|student\s*:|by\s+[A-Z][a-z]+\s+[A-Z][a-z]+)/i;
 
 const norm = (s) =>
   String(s || "")

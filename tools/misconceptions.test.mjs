@@ -425,4 +425,13 @@ detects(
   "a typed value that is not in the list",
 );
 
+// LCM / GCF: the explanation's "2 × 7" is a derived step, not the operation the
+// problem asks for, so an operation label would coach the wrong idea.
+detects(
+  { stem: "What is the LCM of 2 and 7?", answer: "14", explanation: "LCM = 2 × 7 = 14." },
+  "9",
+  null,
+  "LCM item: no operation label read from the explanation",
+);
+
 console.log(`misconception detector: ${checks} checks passed.`);
