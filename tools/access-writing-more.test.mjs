@@ -13,8 +13,11 @@ import {
   BADGES,
   FOCUS,
   QUICK,
+  GOALS,
   badgeFacts,
   focusFrom,
+  goalProgress,
+  goalsFor,
   isQuickKey,
   newBadges,
   quickKey,
@@ -129,4 +132,34 @@ test("a focus in a link is one of a fixed list", () => {
   const used = new Set(tasks.flatMap((t) => (t.revisionPrompts || []).map((p) => p.focus)));
   for (const f of used) assert.ok(FOCUS[f], `tasks use the focus "${f}" but it has no label`);
   for (const [en, es, how, howEs] of Object.values(FOCUS)) assert.ok(en !== es && how !== howEs);
+});
+
+test("a chosen goal is checked from the draft, never scored", () => {
+  const task = tasks.find((t) => t.id === "wrt-mulch-cer");
+  const st = { versions: [] };
+  const p = (id, text, state = st) => goalProgress(id, task, state, "guided", text);
+  assert.deepEqual(p("sentences", "One. Two. Three. Four."), { now: 4, need: 5, done: false });
+  assert.equal(p("sentences", "One. Two. Three. Four. Five.").done, true);
+  assert.equal(p("length", "word ".repeat(task.expected.minWords)).done, true);
+  assert.equal(p("length", "too short").done, false);
+  assert.equal(p("topic", "Erosion and runoff and mulch.").done, true);
+  assert.equal(p("topic", "Erosion only.").done, false);
+  assert.equal(p("number", "It lost 410 grams.").done, true);
+  assert.equal(p("number", "It said “mulch helps”.").done, true);
+  assert.equal(p("number", "No numbers here.").done, false);
+  assert.deepEqual(p("reasons", "It works because rain hits chips, so soil stays."), {
+    now: 2,
+    need: 2,
+    done: true,
+  });
+  assert.equal(p("revise", "", { versions: [{ kind: "draft" }] }).done, false);
+  assert.equal(p("revise", "", { versions: [{ kind: "draft" }, { kind: "revision" }] }).done, true);
+  assert.equal(p("unknown", "x").done, false);
+  for (const g of GOALS) {
+    assert.ok(g.en && g.es && g.en !== g.es, g.id);
+    assert.doesNotMatch(g.en, /score|level|grade|perfect|points|streak|fast/i, g.id);
+  }
+  const own = goalsFor("independent").map((g) => g.id);
+  assert.ok(!own.includes("topic"), "on my own offers no topic-word goal");
+  assert.ok(own.length >= 4);
 });

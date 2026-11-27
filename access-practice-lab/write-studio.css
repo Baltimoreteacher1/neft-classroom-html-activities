@@ -1236,3 +1236,123 @@
 .listen-sentence[data-say-preview]:empty {
   display: none;
 }
+
+/* goal, week plan */
+.goal-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s-2) var(--s-3);
+  align-items: end;
+  margin: var(--s-3) 0 0;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.goal-row.is-met {
+  border-color: var(--right);
+  background: var(--right-soft);
+}
+.goal-field {
+  margin: 0;
+}
+.goal-field > span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 800;
+}
+.goal-field select {
+  width: 100%;
+  min-height: 44px;
+}
+.goal-status {
+  margin: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.goal-row.is-met .goal-status {
+  color: var(--right);
+}
+.journey-goal {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 var(--s-2);
+  font-weight: 700;
+}
+.journey-goal.is-met {
+  color: var(--right);
+}
+.tag.is-met {
+  border-color: var(--right);
+  color: var(--right);
+}
+.week-plan {
+  max-width: 56rem;
+}
+.week-plan header h1 {
+  margin: 0.2rem 0 0.4rem;
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+}
+.week-days {
+  display: grid;
+  gap: var(--s-3);
+  margin: var(--s-4) 0;
+  padding: 0;
+  list-style: none;
+}
+.week-day {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--room);
+  border-radius: 14px;
+  background: var(--surface);
+  break-inside: avoid;
+}
+.week-day h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0 0 var(--s-2);
+  font-size: 1.2rem;
+}
+.week-n {
+  color: var(--room-ink);
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.week-day ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 var(--s-2);
+  padding-left: 1.2rem;
+}
+.week-tools,
+.week-look {
+  margin: 0.3rem 0 0;
+}
+.week-tools a {
+  display: inline-block;
+  padding: 0.6rem 0.2rem;
+}
+@media (max-width: 560px) {
+  .goal-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media print {
+  .week-plan {
+    max-width: none;
+  }
+  .week-day {
+    border-left-width: 3px;
+  }
+}
