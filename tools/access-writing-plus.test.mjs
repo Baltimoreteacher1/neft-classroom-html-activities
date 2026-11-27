@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Writing Studio, the parts around the draft (access-practice-lab/src/views/write-plus.js).
+ * Writing Studio, the parts around the draft (access-practice-lab/src/views/write.js).
  *   - progress status and totals are counts of what is saved, taken from the studio document
  *   - the task filter matches on subject, language purpose, status and every search word
  *   - a frame dropped into a draft gets the spaces a writer would type and its first blank selected
@@ -25,7 +25,7 @@ import {
   studioStats,
   tableSeries,
   taskStatus,
-} from "../access-practice-lab/src/views/write-plus.js";
+} from "../access-practice-lab/src/views/write.js";
 
 const tasks = JSON.parse(
   readFileSync(new URL("../access-practice-lab/content/studio/writing.json", import.meta.url)),
