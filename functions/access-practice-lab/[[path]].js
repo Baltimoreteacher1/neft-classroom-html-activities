@@ -47,9 +47,13 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // The arcade's relative ./src and ./assets paths only resolve from a trailing-slash URL.
-  if (url.pathname === "/access-practice-lab/arcade") {
-    return Response.redirect(new URL(`/access-practice-lab/arcade/${url.search}`, url.origin), 308);
+  // These standalone pages use relative paths and require a trailing slash.
+  if (
+    url.pathname === "/access-practice-lab/arcade" ||
+    url.pathname === "/access-practice-lab/audio-practice"
+  ) {
+    url.pathname += "/";
+    return Response.redirect(url, 308);
   }
 
   // Static assets (have a file extension), the generated printable packets (under /printables/, real
@@ -62,6 +66,7 @@ export async function onRequest(context) {
     // The Family Tour is its own static page (family-tour/index.html), not an app route.
     url.pathname === "/access-practice-lab/family-tour" ||
     url.pathname === "/access-practice-lab/family-tour/" ||
+    url.pathname === "/access-practice-lab/audio-practice/" ||
     // The Activity Arcade is its own static page (arcade/index.html, hash-routed), not an app route.
     url.pathname === "/access-practice-lab/arcade/"
   ) {
