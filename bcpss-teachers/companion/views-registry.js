@@ -17,14 +17,14 @@ import * as transform from "./transform.js";
 export const NEW_VIEWS = [
   { id: "day", group: "teach", label: "Today's lesson", hint: "A full class period, ready to run", ...day },
   { group: "teach", label: "This week", hint: "Five-day language plan", ...week },
-  { group: "teach", label: "Language routine", hint: "Step by step on the board", ...routine },
+  { group: "teach", label: "Talk routine", hint: "A class talk routine, one step at a time", ...routine },
   { id: "text", group: "teach", label: "Read together", hint: "Passage, words and evidence", ...text },
-  { id: "labs", group: "teach", label: "Virtual lab", hint: "Hands-on for this subject", ...labs },
-  { id: "words", group: "vocab", label: "Word cards", hint: "Animated concept cards", ...words },
+  { id: "labs", group: "teach", label: "Hands-on lab", hint: "Try the idea on screen", ...labs },
+  { id: "words", group: "vocab", label: "Word cards", hint: "Meaning, examples and Spanish for each word", ...words },
   { id: "guess", group: "vocab", label: "Guess my word", hint: "Whole-class clue game", ...guess },
   { group: "vocab", label: "Word match", hint: "Memory game: words and meanings", ...match },
-  { group: "practice", label: "Four corners", hint: "Take a side, use a stem", ...corners },
-  { id: "practice", group: "practice", label: "Four-domain practice", hint: "Listen, speak, read, write", ...practice },
+  { group: "practice", label: "Four corners", hint: "Students pick a side and explain", ...corners },
+  { id: "practice", group: "practice", label: "Listen, speak, read, write", hint: "Practice all four skills", ...practice },
   {
     id: "stations",
     group: "practice",
@@ -41,9 +41,9 @@ export const NEW_VIEWS = [
     render: reserve.renderQuick,
     act: reserve.actQuick,
   },
-  { group: "assess", label: "Exit ticket tally", hint: "Count, then see what to do next", ...tally },
-  { id: "transform", group: "language", label: "Transform a text", hint: "Any text into a student copy", ...transform },
-  { id: "projects", group: "projects", label: "Cross-subject project", hint: "Pair two units", ...projects },
+  { group: "assess", label: "Sort exit tickets", hint: "Count them, see what to do next", ...tally },
+  { id: "transform", group: "language", label: "Prepare any text", hint: "Paste a text, get a student copy", ...transform },
+  { id: "projects", group: "projects", label: "Cross-subject project", hint: "Pair this unit with another subject", ...projects },
 ];
 
 export const viewById = (id) => NEW_VIEWS.find((v) => v.id === id);

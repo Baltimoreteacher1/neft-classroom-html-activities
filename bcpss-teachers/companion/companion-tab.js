@@ -25,9 +25,9 @@ export const esc = (v) =>
 
 const VIEWS = [
   { id: "map", group: "teach", label: "Unit map", hint: "How this unit fits together" },
-  { id: "build", group: "language", label: "Build a set", hint: "Pick a purpose, get resources" },
-  { id: "check", group: "assess", label: "Check work", hint: "See what an answer shows" },
-  { id: "reteach", group: "assess", label: "Reteach plan", hint: "A short small-group lesson" },
+  { id: "build", group: "language", label: "Gather resources", hint: "Pick a goal, get the right materials" },
+  { id: "check", group: "assess", label: "Check an answer", hint: "See what one student answer shows" },
+  { id: "reteach", group: "assess", label: "Reteach a small group", hint: "A short lesson for students who need it" },
   ...NEW_VIEWS,
 ];
 
@@ -92,6 +92,16 @@ function unitChip(u, label) {
   return `<button type="button" class="cp-seq-card" data-cp-unit="${esc(u.id || u.unit_id)}"><small>${esc(label)}</small><b>Unit ${esc(u.unit_number ?? "")}: ${esc(u.unit_title || u.title)}</b></button>`;
 }
 
+// The most common jobs, one tap away. Every id is a view in VIEWS.
+const QUICK_START = [
+  ["day", "Plan today's class", "A ready-to-run lesson"],
+  ["guess", "Play a word game", "Whole class, on the board"],
+  ["text", "Read with the class", "One sentence at a time"],
+  ["build", "Get support materials", "Frames, word banks, printables"],
+  ["tally", "Sort exit tickets", "And see what to do next"],
+  ["reteach", "Help a small group", "A short reteach plan"],
+];
+
 function mapView(map, catalog, detail) {
   const u = map.unit;
   const groups = groupCatalog(catalog)
@@ -117,6 +127,7 @@ function mapView(map, catalog, detail) {
     : "";
   return `
     <div class="cp-map">
+      <div class="cp-card"><h4>What do you want to do?</h4><div class="cp-quick-start">${QUICK_START.map(([id, title, sub]) => `<button type="button" class="cp-qs" data-cp-view="${id}"><b>${esc(title)}</b><small>${esc(sub)}</small></button>`).join("")}</div></div>
       <div class="cp-card cp-card--lead">
         <p class="cp-eyebrow">Big question</p>
         <p class="cp-question">${esc(map.question)}</p>

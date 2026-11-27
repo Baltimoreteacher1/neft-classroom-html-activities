@@ -123,6 +123,20 @@ async function run(width, label) {
     groups.join("|"),
   );
 
+  // Quick start
+  const qs = await page.$$eval(".cp-qs", (e) => e.map((b) => b.dataset.cpView));
+  check(
+    T("map: six quick-start tasks, each a real tool"),
+    qs.length === 6 && qs.every((id) => GROUP_OF[id]),
+    qs.join(","),
+  );
+  await page.click('.cp-qs[data-cp-view="tally"]');
+  check(
+    T("quick start opens the tool and its section"),
+    (await page.getAttribute('.cp-nav [data-cp-view="tally"]', "aria-pressed")) === "true" &&
+      (await page.getAttribute('[data-cp-group="assess"]', "aria-pressed")) === "true",
+  );
+
   // Build a set
   await openView(page, "build");
   await page.click('[data-cp-purpose="vocab"]');
