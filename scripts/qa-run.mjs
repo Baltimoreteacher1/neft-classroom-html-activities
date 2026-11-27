@@ -334,7 +334,7 @@ const COVERAGE = [
   // registry, the AI model cards, the performance budget, and the /method page. Tests run in npm test; the browser pieces
   // run inside validate:access-lab.
   [
-    /^(tools\/(generate-language-page-(tag-coverage|audio-manifest)|language-page-(tag-coverage|audio|ai-cards)\.test|validate-language-page-performance|access-method-e2e)\.mjs|data\/language-page-(perf-budget|tag-coverage-baseline|audio-manifest|audio-recordings)\.json|access-practice-lab\/(content\/metadata\/vocab\.json|src\/views\/method\.js)|docs\/language-page\/(ai-model-cards|coverage-matrix)\.md)$/,
+    /^(tools\/(generate-language-page-(tag-coverage|audio-manifest|curriculum-map)|language-page-(tag-coverage|audio|ai-cards|curriculum-map)\.test|validate-language-page-performance|access-method-e2e)\.mjs|data\/language-page-(perf-budget|tag-coverage-baseline|audio-manifest|audio-recordings|parity-baseline)\.json|access-practice-lab\/(content\/metadata\/vocab\.json|src\/views\/method\.js)|docs\/language-page\/(ai-model-cards|coverage-matrix|curriculum-map)\.md)$/,
     ["validate:access-lab", "test", "check"],
   ],
   // THE LANGUAGE PAGE TRUST GATES: what the host sends over the network, what its copy claims, and what its docs say

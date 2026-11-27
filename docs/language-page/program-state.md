@@ -84,6 +84,11 @@ that view opens (`ensureStylesheet`, as `city.css` already does) and check every
 owner and a visual-regression harness, and a mistake shows students an unstyled page. Bundling the files into one would cut requests, not the
 385 KB of blocking CSS. The ratchet in `data/language-page-perf-budget.json` still holds the line.
 
+**Curriculum map (2026-11-27):** `curriculum-map.md` is generated from the content files: a grade-by-grade spine (Vocabulary Academy K-8, thematic units 3-8, phonics path),
+a band-by-band parity table, and the differences between bands, with a ratchet so no share can fall (`tools/language-page-curriculum-map.test.mjs`). It shows that
+bands K-3 have no thematic units, no `picture` field with alt text and no listen-for cues, and that 19% (3-5) and 11% (6-8) of activities sit in a unit. Whether
+each difference is a gap is a curriculum decision for Joel and a reviewer; nothing was authored.
+
 ## Not started
 WS2 chrome-budget browser gate and the newcomer door · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
 sustained reading · WS4 recorded audio (H-19), Spanish activity titles and review (the grade 3–8 directions already exist in `es-guide.json`; audit E3 corrected), language packs, SLIFE path · WS5 writing volume and
