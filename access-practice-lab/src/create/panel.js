@@ -8,6 +8,7 @@ import { saveBlob, slug, wordFile } from "./files.js";
 import { moreActions, recipeBar, tileGroups } from "./extras.js";
 import { icon } from "./icons.js";
 import { openPacket } from "./packet.js";
+import { WAYS, openWay } from "./ways.js";
 import { addItem, lastChoiceFor, readSession, rememberChoice } from "./session.js";
 import { supportData, supportsPanel } from "./supports-ui.js";
 import { showUpload } from "./upload.js";
@@ -215,6 +216,17 @@ export function openCreate(env) {
     };
     search.addEventListener("input", draw);
     body.replaceChildren(
+      h(
+        "div.cr-ways",
+        { role: "group", "aria-label": S("Other ways to start", "Otras formas de empezar") },
+        WAYS.map((way) =>
+          h(
+            "button.cr-btn",
+            { type: "button", "data-way": way.id, onclick: () => openWay({ S, body, env, way, back: picker }) },
+            S(way.en, way.es),
+          ),
+        ),
+      ),
       h(
         "p.cr-lede",
         S(

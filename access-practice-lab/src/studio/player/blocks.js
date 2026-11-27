@@ -2,6 +2,8 @@
 // Teacher-only note blocks are never rendered.
 
 import { safeImageSrc } from "../core/schema.js";
+import { animationBlock } from "./block-animation.js";
+import { diagramBlock } from "./block-diagram.js";
 import { hearButton } from "./hear.js";
 import { glyph } from "./icons.js";
 import { h, nid, paragraphs, plainText, rich, rt } from "./util.js";
@@ -174,6 +176,8 @@ const RENDER = {
   table: tableBlock,
   organizer: organizerBlock,
   audio: audioBlock,
+  diagram: diagramBlock,
+  animation: animationBlock,
 };
 
 /** One content block as an element, or null (notes and unknown types render nothing). */

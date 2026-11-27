@@ -22,12 +22,16 @@ import {
   TextRun,
 } from "docx";
 import { normalizeActivity } from "../../../access-practice-lab/src/studio/core/schema.js";
-import { keyLines } from "../../../access-practice-lab/src/studio/print/paper-model.js";
+import {
+  diagramPaper,
+  keyLines,
+} from "../../../access-practice-lab/src/studio/print/paper-model.js";
 import {
   normLang,
   PRINT_STRINGS,
   tr,
 } from "../../../access-practice-lab/src/studio/print/strings.js";
+import { animationParagraphs } from "./docx-animation.js";
 import { questionBody } from "./docx-formats.js";
 import {
   allBorders,
@@ -181,6 +185,32 @@ const h2 = (text) =>
     children: [textRun(text, { bold: true, size: PT(15), color: "111111" })],
   });
 
+/**
+ * A diagram in Word: the docx package can only embed SVG together with a PNG fallback, and a Pages Function has no
+ * way to rasterize one (no new dependency, no native code), so the figure is NOT embedded. What the teacher gets is
+ * all editable: a note naming the diagram and its alt text, the same data as a real table, and the caption. The
+ * drawn figure is in the printable version (print/blocks.js).
+ */
+function diagramParagraphs(c, b) {
+  const d = diagramPaper(b, c.lang);
+  if (!d.ok) return [boxed(`[${c.t("diagramMissing")}]`, { shading: GREY }), gap()];
+  const cols = Math.max(d.table.headers.length, 1);
+  const w = Math.floor(TEXT_W / cols);
+  return [
+    boxed(`${c.t("diagramInWord")}: ${d.alt}`, { shading: GREY }),
+    table([d.table.headers, ...d.table.rows], {
+      widths: Array.from({ length: cols }, () => w),
+      header: true,
+    }),
+    para(
+      d.captionEs ? `${d.caption} / ${d.captionEs}` : d.caption,
+      { alignment: AlignmentType.CENTER, keepNext: true },
+      { size: PT(11), italics: true },
+    ),
+    gap(),
+  ];
+}
+
 function studentBlocks(c, a) {
   const out = [];
   for (const b of a.blocks) {
@@ -238,6 +268,12 @@ function studentBlocks(c, a) {
         );
         break;
       }
+      case "diagram":
+        out.push(...diagramParagraphs(c, b));
+        break;
+      case "animation":
+        out.push(...animationParagraphs(c, b));
+        break;
       case "organizer":
         out.push(...organizer(c, b), gap());
         break;
@@ -450,6 +486,21 @@ export async function buildDocx(input, opts = {}) {
     },
     numbering: {
       config: [
+        {
+          reference: "frames",
+          levels: [
+            {
+              level: 0,
+              format: LevelFormat.DECIMAL,
+              text: "%1.",
+              alignment: AlignmentType.LEFT,
+              style: {
+                paragraph: { indent: { left: 540, hanging: 540 } },
+                run: { bold: true, font: FONT, size: PT(12) },
+              },
+            },
+          ],
+        },
         {
           reference: "questions",
           levels: [

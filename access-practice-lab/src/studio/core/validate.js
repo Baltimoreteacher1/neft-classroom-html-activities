@@ -5,6 +5,9 @@
 // as hand-typed content, and the math is re-computed with exact arithmetic, never string-compared.
 
 import { expectedNumber, marksOf, tableBlanks } from "./check.js";
+import { checkAnimation, explainAnimation } from "../x/animations.js";
+import { checkDiagram } from "../x/diagram-render.js";
+import { explainDiagram } from "../x/diagram-words.js";
 import { SCHEMA_ID, questionsOf } from "./schema.js";
 import { evalExpr, parseAnswer, parseNumber, plainMath, ratEquals } from "./math.js";
 
@@ -219,6 +222,16 @@ export function validateActivity(activity) {
       add(warnings, "no-alt", "A picture is missing its description for screen readers.", b.id);
     if (b.type === "image" && !b.src)
       add(errors, "bad-image", "A picture could not be used. Use a PNG, JPG, WebP or GIF.", b.id);
+    if (b.type === "diagram") {
+      const problem = checkDiagram(b);
+      if (problem)
+        add(errors, "bad-diagram", `A diagram cannot be drawn yet. ${explainDiagram(problem).en}`, b.id);
+    }
+    if (b.type === "animation") {
+      const problem = checkAnimation(b);
+      if (problem)
+        add(errors, "bad-animation", `An animation cannot be played yet. ${explainAnimation(problem).en}`, b.id);
+    }
     if (b.type === "vocab" && b.items.some((v) => !v.term.trim() || !v.def.trim()))
       add(errors, "vocab-empty", "A vocabulary word is missing its meaning.", b.id);
   }

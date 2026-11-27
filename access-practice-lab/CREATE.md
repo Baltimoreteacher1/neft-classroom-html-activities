@@ -28,6 +28,7 @@ Create is the front door to machinery that already exists. It invents no content
 | `packet.js`                | The packet tray: reorder with buttons, remove, one combined PDF / Word / Studio copy, HTML per part.   |
 | `launcher.js`, `gate.js`   | Lab header controls. `main.js` imports only `gate.js` (1 KB); authoring code loads on teacher devices. |
 | `page.js`, `page-entry.js` | Teacher pages outside the lab: their existing Customize links open Create for the same resource.       |
+| `ways.js`, `wire-kit.js`, `wire.css` | Describe it, Use my own material and recipes inside the panel (shared with the Studio chooser). |
 | `handoff.js`, `files.js`   | Save a draft and open the Studio; download helpers and the Word request.                               |
 | `create.css`               | Panel styles on the lab's tokens, with fallbacks for pages outside the lab. Light only.                |
 | `supports.js`, `supports-ui.js` | Student level (WIDA tiers) and eight supports, mapped onto the Studio's `makeVersion` / `applySupports`. |
@@ -87,6 +88,8 @@ never merged or dropped silently; past the 80-block schema limit the count of bl
 - PDF upload reads only PDFs with real text (no text recognition for scans). "Pictures with words" applies only where a
   word list already has pictures; nothing draws or fetches pictures.
 - SCORM reports completion and session time only: the player keeps no score by design.
+- Studio X: **Describe what you want** sits above the resource list; own-material and structure recipes live in the Activity
+  Studio chooser (see `STUDIO-X.md`); the Create panel's own upload and recipe bar are separate and unchanged.
 
 ## Ledger
 

@@ -87,6 +87,25 @@ export function openShare({ store, saver, S, lang, link, setLink, goToBlock, fet
         const { html: doc } = await printHtml(store.get(), { lang, part: "student" });
         (await import("../print/open-print.js")).openPrint(doc);
       }));
+      items.push(
+        button(S("Fit to the page…", "Ajustar a la página…"), async () => {
+          const [{ createFitPanel }, { renderFitted }, { openPrint }] = await Promise.all([
+            import("./fit-panel.js"),
+            import("../x/fit-levels.js"),
+            import("../print/open-print.js"),
+          ]);
+          openDialog(S("Fit to the page", "Ajustar a la página"), (box) => {
+            const panel = createFitPanel({
+              S,
+              lang,
+              getActivity: () => store.get(),
+              onPrint: (options) => openPrint(renderFitted(store.get(), options, { part: "student", lang }).html),
+            });
+            box.append(panel.el);
+            panel.refresh();
+          });
+        }),
+      );
       const docx = (part, label) => button(label, async () => {
         say2(S("Building the Word file…", "Creando el archivo de Word…"));
         const res = await fetchImpl("/api/studio/docx", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ activity: store.get(), part, lang }) }).catch(() => null);

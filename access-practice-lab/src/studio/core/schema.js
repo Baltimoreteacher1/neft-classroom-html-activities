@@ -6,6 +6,10 @@
 //   { schema, id, rev, title, description, kind, template, context, supports, look, options, blocks, notes }
 // Text fields are plain strings. No HTML is ever accepted: renderers escape everything and apply only the math
 // markup in math.js ({3/4}, x^2) plus **bold**. Images are data: URLs (raster only) or same-site paths.
+// A `diagram` block stores the STRUCTURED SPEC of a generated figure (kind + numbers + labels), never SVG: every
+// renderer redraws it (x/diagram-render.js), so the figure stays accurate when a value changes.
+// An `animation` block stores only a PRESET name and its plain values (x/animations.js expands them into frames),
+// never markup, script or a timeline.
 
 export const SCHEMA_ID = "lp-activity/1";
 
@@ -71,6 +75,8 @@ export const BLOCK_TYPES = Object.freeze([
   "organizer",
   "note",
   "audio",
+  "diagram",
+  "animation",
 ]);
 
 export const LIMITS = Object.freeze({
@@ -232,6 +238,229 @@ function cleanQuestion(b) {
   };
 }
 
+// ── diagram specs ────────────────────────────────────────────────────────────
+
+/** Figure kinds a `diagram` block may hold. `id` is stored; the generators are in x/diagrams-*.js. */
+export const DIAGRAM_KINDS = Object.freeze([
+  "fraction",
+  "prism",
+  "tape",
+  "plane",
+  "bar",
+  "dot",
+  "histogram",
+  "timeline",
+  "foodweb",
+]);
+/** Size caps (the same numbers as CAPS in x/diagram-kit.js; the tests assert they agree). */
+export const DIAGRAM_LIMITS = Object.freeze({
+  categories: 40,
+  points: 60,
+  events: 24,
+  dotValues: 60,
+  histogramValues: 500,
+  parts: 12,
+  relationships: 60,
+  title: 60,
+  label: 40,
+});
+
+const FRACTION_LIKE = /^-?\d+(?:\.\d+)?(?:\s+\d+\/\d+|\/\d+)?$/;
+/** One line of plain text: control characters become spaces, runs of space collapse. */
+const dtext = (v, max) =>
+  String(v ?? "")
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);
+/** A finite number within +-1e9, or null (a blank cell stays blank; it never becomes 0). */
+const dnum = (v) => {
+  if (typeof v !== "number" && typeof v !== "string") return null;
+  if (typeof v === "string" && !v.trim()) return null;
+  const n = Number(v);
+  return Number.isFinite(n) && Math.abs(n) <= 1e9 ? n + 0 : null;
+};
+/** Like dnum, but a short fraction or mixed number ("3/4", "2 1/2") is kept as typed. */
+const dquant = (v) => {
+  const n = dnum(v);
+  if (n !== null || typeof v !== "string") return n;
+  const s = v.trim().replace(/\s+/g, " ");
+  return s.length <= 16 && FRACTION_LIKE.test(s) ? s : null;
+};
+const dlist = (v, max, fn) => (Array.isArray(v) ? v.slice(0, max).map(fn) : []);
+const dpair = (v) => (Array.isArray(v) ? [dnum(v[0]), dnum(v[1])] : [null, null]);
+const dtitled = (s, titleMax = DIAGRAM_LIMITS.title) => ({
+  title: dtext(s.title, titleMax),
+  unit: dtext(s.unit, 40),
+});
+
+const DIAGRAM_SPEC = {
+  fraction: (s) => ({
+    numerator: dnum(s.numerator),
+    denominator: dnum(s.denominator),
+    style: s.style === "circle" ? "circle" : "bar",
+  }),
+  prism: (s) => ({ l: dquant(s.l), w: dquant(s.w), h: dquant(s.h), unit: dtext(s.unit, 12) }),
+  tape: (s) => ({
+    parts: dlist(s.parts, DIAGRAM_LIMITS.parts, (p) => ({
+      label: dtext(p?.label, 24),
+      value: dquant(p?.value),
+    })),
+    total: dquant(s.total),
+  }),
+  plane: (s) => ({
+    xRange: dpair(s.xRange),
+    yRange: dpair(s.yRange),
+    points: dlist(s.points, DIAGRAM_LIMITS.points, (p) => ({
+      x: dnum(p?.x),
+      y: dnum(p?.y),
+      label: dtext(p?.label, 20),
+    })),
+  }),
+  bar: (s) => ({
+    ...dtitled(s),
+    categories: dlist(s.categories, DIAGRAM_LIMITS.categories, (c) => ({
+      label: dtext(c?.label, DIAGRAM_LIMITS.label),
+      value: dnum(c?.value),
+    })),
+  }),
+  dot: (s) => ({ ...dtitled(s), values: dlist(s.values, DIAGRAM_LIMITS.dotValues, dnum) }),
+  histogram: (s) => ({
+    ...dtitled(s),
+    values: dlist(s.values, DIAGRAM_LIMITS.histogramValues, dnum),
+    binWidth: dnum(s.binWidth),
+  }),
+  timeline: (s) => ({
+    events: dlist(s.events, DIAGRAM_LIMITS.events, (e) => ({
+      year: dnum(e?.year),
+      label: dtext(e?.label, 60),
+    })),
+  }),
+  foodweb: (s) => ({
+    relationships: dlist(s.relationships, DIAGRAM_LIMITS.relationships, (r) => ({
+      eats: dtext(r?.eats, 28),
+      eaten: dtext(r?.eaten, 28),
+    })),
+  }),
+};
+
+/**
+ * The cleaned spec of a diagram, or null for an unknown kind (the block is then dropped). Only the fields of the
+ * kind survive; sizes are capped, numbers are finite or null, text is one plain line. Whether the figure can
+ * actually be DRAWN is decided by the generators (validate.js reports it in plain words).
+ */
+export function cleanDiagramSpec(spec) {
+  if (!spec || typeof spec !== "object" || !DIAGRAM_KINDS.includes(spec.kind)) return null;
+  return { kind: spec.kind, ...DIAGRAM_SPEC[spec.kind](spec) };
+}
+// ── animation specs ──────────────────────────────────────────────────────────
+
+/** Presets an `animation` block may hold. The frames each one expands to are built in x/animations*.js. */
+export const ANIMATION_PRESETS = Object.freeze([
+  "process",
+  "timeline",
+  "word-build",
+  "sentence-expand",
+  "cause-effect",
+  "ratio-change",
+  "geometry-dims",
+]);
+/** Size caps: small on purpose, so every animation stays a few calm steps. */
+export const ANIMATION_LIMITS = Object.freeze({
+  stages: 8,
+  events: 8,
+  parts: 5,
+  additions: 6,
+  pairs: 6,
+  scales: 6,
+  dims: 6,
+  title: 60,
+  label: 40,
+  explanation: 400,
+  alt: 300,
+});
+export const WORD_PART_KINDS = Object.freeze(["prefix", "root", "suffix"]);
+export const SENTENCE_ADDS = Object.freeze(["because", "but", "so", "when", "where", "detail"]);
+export const GEOMETRY_SHAPES = Object.freeze(["prism", "fraction"]);
+
+const oneOf = (list, v, fallback) => (list.includes(v) ? v : fallback);
+const quantity = (q) => ({ label: dtext(q?.label, 24), value: dquant(q?.value) });
+
+const ANIMATION_PARAMS = {
+  process: (p) => ({
+    stages: dlist(p.stages, ANIMATION_LIMITS.stages, (s) => ({
+      label: dtext(s?.label, ANIMATION_LIMITS.label),
+      text: dtext(s?.text, 120),
+    })),
+  }),
+  timeline: (p) => ({
+    events: dlist(p.events, ANIMATION_LIMITS.events, (e) => ({
+      year: dnum(e?.year),
+      label: dtext(e?.label, 60),
+    })),
+  }),
+  "word-build": (p) => ({
+    word: dtext(p.word, 40),
+    meaning: dtext(p.meaning, 120),
+    parts: dlist(p.parts, ANIMATION_LIMITS.parts, (x) => ({
+      kind: oneOf(WORD_PART_KINDS, x?.kind, "root"),
+      text: dtext(x?.text, 12),
+      meaning: dtext(x?.meaning, 80),
+    })),
+  }),
+  "sentence-expand": (p) => ({
+    base: dtext(p.base, 120),
+    additions: dlist(p.additions, ANIMATION_LIMITS.additions, (a) => ({
+      adds: oneOf(SENTENCE_ADDS, a?.adds, "detail"),
+      text: dtext(a?.text, 100),
+    })),
+  }),
+  "cause-effect": (p) => ({
+    pairs: dlist(p.pairs, ANIMATION_LIMITS.pairs, (x) => ({
+      cause: dtext(x?.cause, 60),
+      effect: dtext(x?.effect, 60),
+    })),
+  }),
+  "ratio-change": (p) => ({
+    a: quantity(p.a),
+    b: quantity(p.b),
+    scales: dlist(p.scales, ANIMATION_LIMITS.scales, dquant),
+  }),
+  "geometry-dims": (p) =>
+    p.shape === "fraction"
+      ? {
+          shape: "fraction",
+          denominator: dnum(p.denominator),
+          numerators: dlist(p.numerators, ANIMATION_LIMITS.dims, dnum),
+        }
+      : {
+          shape: "prism",
+          unit: dtext(p.unit, 12),
+          dims: dlist(p.dims, ANIMATION_LIMITS.dims, (d) => ({
+            l: dquant(d?.l),
+            w: dquant(d?.w),
+            h: dquant(d?.h),
+          })),
+        },
+};
+
+/**
+ * The cleaned params of an animation preset, or null for an unknown preset (the block is then dropped). Only the
+ * fields of the preset survive; sizes are capped, numbers are finite or null, text is one plain line. Whether the
+ * frames can actually be BUILT (positive numbers, enough steps...) is decided by x/animations.js and reported by
+ * validate.js in plain words.
+ */
+export function cleanAnimationParams(preset, params) {
+  if (!ANIMATION_PRESETS.includes(preset)) return null;
+  return ANIMATION_PARAMS[preset](params && typeof params === "object" ? params : {});
+}
+
+/** `{en, es}` plain text; a bare string is the English half. */
+const bilingual = (v, max) => {
+  const o = typeof v === "string" ? { en: v } : v && typeof v === "object" ? v : {};
+  return { en: dtext(o.en, max), es: dtext(o.es, max) };
+};
+
 const BLOCKS = {
   text: (b) => ({
     text: str(b.text),
@@ -264,6 +493,18 @@ const BLOCKS = {
   }),
   note: (b) => ({ text: str(b.text, 1200) }),
   audio: (b) => ({ say: str(b.say, 600), label: str(b.label, 80) }),
+  diagram: (b) => ({
+    spec: cleanDiagramSpec(b.spec),
+    alt: bilingual(b.alt, 300),
+    caption: bilingual(b.caption, 200),
+  }),
+  animation: (b) => ({
+    preset: ANIMATION_PRESETS.includes(b.preset) ? b.preset : "",
+    params: cleanAnimationParams(b.preset, b.params),
+    title: dtext(b.title, ANIMATION_LIMITS.title),
+    explanation: bilingual(b.explanation, ANIMATION_LIMITS.explanation),
+    alt: bilingual(b.alt, ANIMATION_LIMITS.alt),
+  }),
 };
 
 /** Two blocks may never share an id (responses and edits address blocks by id): later duplicates get a fresh one. */
@@ -280,7 +521,10 @@ function uniqueIds(blocks) {
 export function cleanBlock(b) {
   if (!b || typeof b !== "object" || BAD_KEYS.has(b.type) || !BLOCK_TYPES.includes(b.type))
     return null;
-  return { id: isId(b.id) ? b.id : uid("b"), type: b.type, ...BLOCKS[b.type](b) };
+  const fields = BLOCKS[b.type](b);
+  if (b.type === "diagram" && !fields.spec) return null; // an unknown figure kind is never kept
+  if (b.type === "animation" && !fields.params) return null; // so is an unknown animation preset
+  return { id: isId(b.id) ? b.id : uid("b"), type: b.type, ...fields };
 }
 
 const WIDA = [0, 1, 2, 3, 4, 5, 6];

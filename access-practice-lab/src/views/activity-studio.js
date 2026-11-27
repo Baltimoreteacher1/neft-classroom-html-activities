@@ -9,7 +9,7 @@ import { applyHandoff, takeHandoff } from "../demand/handoff.js";
 import { i18nFor, langMode } from "../i18n.js";
 import { vocabSample } from "../studio/core/fixtures.js";
 import { SUBJECTS } from "../studio/core/curriculum.js";
-import { ID_RE, getLocal, knownClasses, newActivityId, saveLocal, siteKey } from "../studio/drafts.js";
+import { ID_RE, getLocal, knownClasses, listLocal, newActivityId, saveLocal, siteKey } from "../studio/drafts.js";
 import { KIND_IDS, chooseScreen, contentScreen } from "../studio/editor/create.js";
 import { mountEditor } from "../studio/editor/shell.js";
 import { chooserScreen, customizeCallout } from "../studio/editor/source-chooser.js";
@@ -151,6 +151,12 @@ export async function mount(rootEl, ctx) {
               host.querySelector("h1")?.focus()
             ),
             onSample: () => nav(`${HOME}/sample`),
+            // describe it / my own material / recipes: each hands back a valid activity (see editor/create.js startOptions)
+            onBuilt: onCreate,
+            onOpenMine: () => nav(GOTO.mine),
+            onPickLesson: () => ((wizard.kind = "interactive"), (wizard.mode = "lesson"), (wizard.needs = []), redraw(), host.querySelector("h1")?.focus()),
+            context: { ...(wizard.context.grade ? { grade: wizard.context.grade } : {}), ...(wizard.context.subject ? { subject: wizard.context.subject } : {}) },
+            drafts: listLocal().slice(0, 30),
             welcome: storage.get(WELCOME_KEY) !== "1",
             onDismissWelcome: () => (storage.set(WELCOME_KEY, "1"), redraw()),
           }),
@@ -166,6 +172,17 @@ export async function mount(rootEl, ctx) {
       updatedAt: Date.now(),
     };
     saveLocal(activity, null);
+    const notes = [...(res.notes || [])];
+    // a request for versions also yields one draft per level: they are saved too, and the teacher is told where
+    for (const v of res.versions || []) {
+      const copy = { ...v.activity, id: newActivityId(), rev: 0, createdAt: Date.now(), updatedAt: Date.now() };
+      if (saveLocal(copy, null))
+        notes.push({
+          en: `A "${v.tier}" version was also saved in My activities.`,
+          es: `También se guardó una versión "${v.tier}" en Mis actividades.`,
+        });
+    }
+    if (notes.length) handoff.set(activity.id, notes);
     wizard = null;
     say(
       S(
