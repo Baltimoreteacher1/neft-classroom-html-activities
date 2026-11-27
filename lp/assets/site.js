@@ -180,6 +180,45 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && reading) stopReading();
 });
 
+/* ---------- any element with data-say reads its text aloud ---------- */
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-say]");
+  if (!b) return;
+  if (!speech.supported) return toast("Read-aloud is not available in this browser.");
+  speech.speak(b.getAttribute("data-say"));
+});
+
+/* ---------- print buttons and tabs (shared components) ---------- */
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-print]")) window.print();
+});
+for (const tabs of $$("[data-tabs]")) {
+  const list = $("[role=tablist]", tabs);
+  const tabButtons = $$("[role=tab]", list);
+  const select = (tab, focus) => {
+    for (const t of tabButtons) {
+      const on = t === tab;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      const panel = document.getElementById(t.getAttribute("aria-controls"));
+      if (panel) panel.hidden = !on;
+    }
+    if (focus) tab.focus();
+  };
+  list.addEventListener("click", (e) => {
+    const t = e.target.closest("[role=tab]");
+    if (t) select(t, false);
+  });
+  list.addEventListener("keydown", (e) => {
+    const i = tabButtons.indexOf(document.activeElement);
+    if (i < 0) return;
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabButtons.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    select(tabButtons[(next + tabButtons.length) % tabButtons.length], true);
+  });
+}
+
 /* ---------- line focus (reading ruler) ---------- */
 const rTop = $("[data-ruler-top]");
 const rBottom = $("[data-ruler-bottom]");
