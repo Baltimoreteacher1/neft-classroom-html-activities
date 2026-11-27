@@ -45,12 +45,16 @@ try {
     .locator("[data-draft]")
     .fill("Mulch protects the soil because the covered tray lost less soil than the bare tray.");
   await page.locator("[data-feedback]").click();
+  // Feedback redraws the page asynchronously. Typing before the redraw lands in the textarea it replaces, so the
+  // revision below would be lost and the transfer link (it needs two versions) would never appear.
+  await page.locator(".coach-card").first().waitFor();
   await page
     .locator("[data-draft]")
     .fill(
       "Mulch protects the soil because the covered tray lost less soil than the bare tray. The data show that the cover slowed runoff.",
     );
   await page.locator("[data-feedback]").click();
+  await page.locator(".draft-history").waitFor();
   await page.locator("[data-reflection]").fill("I connected my claim to the measured evidence.");
   await page.locator("[data-finish]").click();
   const link = page.locator(

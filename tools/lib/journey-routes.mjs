@@ -92,6 +92,9 @@ export function hrefProblem(href, facts, content) {
   if (!a) return null; // the lab home
   if (a === "paper-passport")
     return existsSync(join(LAB_DIR, path.slice(BASE.length + 1))) ? null : "file missing";
+  // A static page inside the lab (a folder with its own index.html, e.g. /audio-practice/) is served as a file, not by
+  // the app's router, so it resolves when that file is on disk.
+  if (path.endsWith("/") && existsSync(join(LAB_DIR, ...parts, "index.html"))) return null;
   if (facts.domains.includes(a) && a !== "Model-Test") {
     if (!b) return null;
     return content.acts.has(`${band}|${a}|${b}|${c}`)

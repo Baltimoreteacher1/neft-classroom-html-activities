@@ -481,7 +481,7 @@ ok(
 
 // quick write, badges, partner notes, teacher focus and conference
 ok(
-  (await page.locator(".badge-grid li").count()) === 10,
+  (await page.locator(".badge-grid li").count()) === 11,
   "the Writing Studio shows the writer's badges",
 );
 ok(
@@ -559,6 +559,46 @@ ok(
   "partner and conference notes appear in the portfolio",
 );
 
+// a goal the writer chooses, and the teacher's five-day plan
+await go(`${BASE}/write/wrt-dust-bowl-cer`);
+await page.getByLabel("With frames and words").check();
+await page.locator("[data-goal]").selectOption("reasons");
+await page.locator("[data-draft]").fill("The dust storms grew because farmers plowed the grass.");
+ok(
+  (await page.locator(".goal-row.is-met").count()) === 0,
+  "a goal is not met before the writing meets it",
+);
+await page
+  .locator("[data-draft]")
+  .fill(
+    "The dust storms grew because farmers plowed the grass, so the soil blew away in the drought.",
+  );
+await page.locator(".goal-row.is-met").waitFor();
+ok(true, "the goal row shows the goal met as soon as the draft meets it");
+await page.locator("[data-feedback]").click();
+await page.locator(".coach-card").first().waitFor();
+await page
+  .locator("[data-reflection]")
+  .fill("I added a second reason so my explanation is stronger.");
+await page.locator("[data-finish]").click();
+await page.locator(".journey-goal.is-met").waitFor();
+ok(true, "the finish summary names the goal and that it was met");
+await go(`${BASE}/write/wrt-sea-otter-summary`);
+await page.getByLabel("On my own").check();
+// The redraw for "on my own" removes the word bank; until then the old goal list is still on the page.
+await page.waitForFunction(() => !document.querySelector(".wordbank, [data-topic-words]"));
+ok(
+  !(await page.locator("[data-goal] option").allInnerTexts()).some((t) =>
+    /topic word|because/i.test(t),
+  ),
+  "on my own offers no goal that names topic words or connecting words",
+);
+await go(`${BASE}/write/wrt-mulch-cer?sheet=week`);
+ok(
+  (await page.locator(".week-day").count()) === 0,
+  "the five-day plan stays closed outside Teacher view",
+);
+
 // topic words, speech to text (with a stand-in recognizer, in its own context) and the compare mini-lesson
 await go(`${BASE}/write/wrt-erie-canal-cer`);
 await page.getByLabel("With frames and words").check();
@@ -621,6 +661,19 @@ ok(
     "speech to text adds the words to the draft and is recorded as a support",
   );
   await sp.evaluate(() => localStorage.setItem("accessPracticeLab:v1:audience", "teacher"));
+  await sp.goto(`${origin}${BASE}/write/wrt-mulch-cer?sheet=compare`, { waitUntil: "networkidle" });
+  await sp.locator(".compare-sample").first().waitFor();
+  await sp.goto(`${origin}${BASE}/write/wrt-mulch-cer?sheet=week`, { waitUntil: "networkidle" });
+  await sp.locator(".week-day").first().waitFor();
+  const weekLinks = await sp
+    .locator(".week-tools a")
+    .evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+  ok(
+    (await sp.locator(".week-day").count()) === 5 &&
+      weekLinks.length >= 5 &&
+      weekLinks.every((h) => h.startsWith(`${BASE}/write`)),
+    "Teacher view shows a five-day plan whose links all open Writing Studio tools",
+  );
   await sp.goto(`${origin}${BASE}/write/wrt-mulch-cer?sheet=compare`, { waitUntil: "networkidle" });
   await sp.locator(".compare-sample").first().waitFor();
   ok(

@@ -41,7 +41,7 @@ import { cancelDictation, dictationControlsHTML, toggleDictation } from "../dict
  * the first 12 hex of the file's sha256 (tools/access-writing-plus.test.mjs fails when it is stale), so a returning
  * learner never gets new markup with an old cached sheet.
  */
-export const WRITE_STYLES_VERSION = "7f81481a3ea0";
+export const WRITE_STYLES_VERSION = "fada9e8400e6";
 let sheet = null;
 function ensureStyles() {
   if (typeof document === "undefined") return Promise.resolve();
@@ -288,6 +288,7 @@ function portfolioHTML(ctx, tasks) {
                 </div>
                 ${growth && (growth.changes.length || growth.gainedMoves.length) ? html`<section class="entry-changes"><h3>${icon("growth")} ${I.T("What changed", "Qué cambió")}</h3><ul>${growth.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${growth.gainedMoves.map((m) => html`<li>${I.T(`Now ${m.toLowerCase()}`, `Ahora: ${m.toLowerCase()}`)}</li>`)}</ul></section>` : ""}
                 <p class="row-actions no-print"><a class="btn small" href="${BASE}/write/${id}?grades=${ctx.band}">${icon("writing")} ${w.finishedAt ? I.T("Open this piece", "Abrir este texto") : I.T("Keep working on it", "Seguir trabajando")}</a><button type="button" class="btn small" data-copy-piece="${id}">${icon("copy")} ${I.T("Copy the latest version", "Copiar la última versión")}</button></p>
+                ${goalTagHTML(I, w)}
                 ${notesForPortfolioHTML(I, w)}
                 ${w.reflection ? html`<section class="entry-reflection"><h3>${I.T("What I improved and why", "Qué mejoré y por qué")}</h3><p class="portfolio-response">${w.reflection}</p></section>` : ""}
               </article>`;
@@ -430,6 +431,10 @@ export async function render(ctx) {
     S.task = null;
     return { title: task.title, html: conferenceSheetHTML(I, ctx, task) };
   }
+  if (q.get("sheet") === "week") {
+    S.task = null;
+    return { title: task.title, html: weekPlanHTML(I, ctx, task) };
+  }
   if (q.get("sheet") === "compare") {
     S.task = null;
     return { title: task.title, html: compareLessonHTML(I, ctx, task, await loadExemplars().catch(() => [])) };
@@ -528,6 +533,7 @@ export async function render(ctx) {
               <label class="field paper"><span class="paper-head">${I.T("Your writing", "Tu escritura")} <span class="fine">${I.T("Saved on this device as you type", "Se guarda en este dispositivo mientras escribes")}<span class="saved-stamp" data-saved-stamp role="status"></span></span></span><textarea id="wrt-draft" rows="${task.expected.paragraphs > 1 ? 16 : 11}" spellcheck="false" placeholder="${I.S("Write here. You can change it as many times as you like.", "Escribe aquí. Puedes cambiarlo todas las veces que quieras.")}" data-draft ${IGN}>
 ${text}</textarea></label>
               <p class="meter ${wordCount(text) >= goalMin ? "is-met" : ""}"><span class="meter-bar"><span style="width:${Math.min(100, Math.round((wordCount(text) / goalMin) * 100))}%"></span></span><span class="meter-line"><span data-meter>${meterText(wordCount(text), goalMin, task.expected.maxWords)}</span>${statsLineHTML(I, text)}${cheerHTML(I, wordCount(text), goalMin)}</span></p>
+              ${goalRowHTML(I, task, S.state, S.stage, text)}
               ${topicWordsHTML(I, task, text, S.stage)}
               ${helpToolsHTML(I, task, S.state, S.stage, text, analyzed)}
               ${checklistHTML(I, task, S.state, S.stage)}
@@ -667,6 +673,13 @@ export function onInput(e, ctx) {
 export function onChange(e, ctx) {
   if (onPlusFilter(e, I)) return;
   const t = e.target;
+  if (t.matches("[data-goal]") && S?.task) {
+    S.state.goal = t.value;
+    goalCheered.delete(S.task.id);
+    save();
+    refreshGoal(I, S.task, S.state, S.stage, S.state.draft ?? S.state.versions.at(-1)?.text ?? "");
+    return;
+  }
   if (t.matches("[data-pick]") && S?.studio) {
     const picks = S.studio.portfolio.picks;
     const i = picks.findIndex((p) => p.id === t.dataset.pick);
@@ -858,6 +871,8 @@ export async function onClick(e, ctx) {
   if (t.closest("[data-finish]")) {
     const badgesBefore = badgeFacts(S.studio, S.allTasks || []);
     addVersion(S.state, S.state.draft ?? "", "final");
+    const goalNow = S.state.goal ? goalProgress(S.state.goal, S.task, S.state, S.stage, S.state.draft ?? "") : null;
+    S.state.goalMet = Boolean(goalNow?.done);
     S.state.finishedAt = new Date().toISOString();
     if (S.mission) {
       const ms = missionState(S.studio, S.mission.id);
@@ -1237,6 +1252,7 @@ const goalAnnounced = new Set();
 export function onDraftTyped(I, task, text) {
   const s = draftStats(text);
   refreshTopicWords(I, task, text);
+  if (S?.state) refreshGoal(I, task, S.state, S.stage, text);
   const line = document.querySelector("[data-draft-stats]");
   if (line) line.textContent = statsText(I, s);
   const stamp = document.querySelector("[data-saved-stamp]");
@@ -1601,12 +1617,17 @@ export function journeyHTML(I, state) {
   const first = state.versions[0];
   const last = state.versions.at(-1);
   if (!first || !last) return "";
+  const goal = GOALS.find((g) => g.id === state.goal);
+  const goalLine = goal
+    ? html`<p class="journey-goal ${state.goalMet ? "is-met" : ""}">${icon(state.goalMet ? "check" : "flag")} ${I.T("My goal", "Mi meta")}: ${I.T(goal.en, goal.es)} — ${state.goalMet ? I.T("met!", "¡cumplida!") : I.T("not yet. Keep it for next time.", "todavía no. Guárdala para la próxima vez.")}</p>`
+    : "";
   const a = wordCount(first.text);
   const b = wordCount(last.text);
   const revs = state.versions.filter((v) => v.kind === "revision").length;
   const item = (n, en, es) => html`<li><strong>${n}</strong><span>${I.T(en, es)}</span></li>`;
   return html`<div class="journey" aria-label="${I.S("How this piece changed", "Cómo cambió este texto")}">
     <p class="journey-title">${icon("star")} ${I.T("You did it! Look how your writing grew.", "¡Lo lograste! Mira cómo creció tu escritura.")}</p>
+    ${goalLine}
     <div class="growth-bars" role="img" aria-label="${I.S(`First draft: ${a} words. Now: ${b} words.`, `Primer borrador: ${a} palabras. Ahora: ${b} palabras.`)}">
       <div class="data-bar"><span class="data-label">${I.T("First draft", "Primer borrador")}</span><span class="bar s1" style="width:${Math.max(4, Math.round((a / Math.max(a, b, 1)) * 70))}%"></span><span class="bar-val">${a}</span></div>
       <div class="data-bar"><span class="data-label">${I.T("Now", "Ahora")}</span><span class="bar s0" style="width:${Math.max(4, Math.round((b / Math.max(a, b, 1)) * 70))}%"></span><span class="bar-val">${b}</span></div>
@@ -1857,6 +1878,7 @@ export function badgeFacts(studio, tasks) {
     own: finished.some(([, w]) => w.stage === "independent"),
     partner: entries.some(([, w]) => String(w.partner?.glow || "").trim() && String(w.partner?.wonder || "").trim()),
     quick: quickWrites(studio).length >= 3,
+    goal: finished.some(([, w]) => w.goalMet),
   };
 }
 
@@ -1871,6 +1893,7 @@ export const BADGES = [
   ["explorer", "worlds", "Explorer", "Explorador", "Finish three different kinds of writing.", "Termina tres tipos de escritura diferentes."],
   ["own", "user", "On my own", "Por mi cuenta", "Finish a piece you wrote on your own.", "Termina un texto que escribiste por tu cuenta."],
   ["quick", "sparkle", "Quick writer", "Escritor veloz", "Save three quick writes.", "Guarda tres escrituras rápidas."],
+  ["goal", "flag", "Goal getter", "Logra metas", "Finish a piece that meets a goal you chose.", "Termina un texto que cumple una meta que elegiste."],
 ];
 
 export function badgesHTML(I, studio, tasks) {
@@ -2008,7 +2031,7 @@ export function teacherAssignHTML(I, ctx, task) {
     <h4>${I.T("Assign with a focus", "Asignar con un enfoque")}</h4>
     <p class="fine">${I.T("Pick one focus. Students who open the link see it above the steps. The link carries no student information.", "Elija un enfoque. Los estudiantes que abren el enlace lo ven sobre los pasos. El enlace no lleva información de estudiantes.")}</p>
     <p class="focus-links">${list.map((k) => html`<button type="button" class="btn small" data-copy-link="${link(ctx, task.id, `&focus=${k}`)}">${icon("copy")} ${I.T(FOCUS[k][0], FOCUS[k][1])}</button>`)}</p>
-    <p class="row-actions"><a class="btn small" href="${BASE}/write/${task.id}?grades=${ctx.band}&sheet=conference" target="_blank" rel="noopener">${icon("print")} ${I.T("Conference sheet to print", "Hoja de conferencia para imprimir")}</a><a class="btn small" href="${BASE}/write/${task.id}?grades=${ctx.band}&sheet=compare">${icon("library")} ${I.T("Mini-lesson: compare two samples", "Minilección: comparar dos ejemplos")}</a></p>
+    <p class="row-actions"><a class="btn small" href="${BASE}/write/${task.id}?grades=${ctx.band}&sheet=conference" target="_blank" rel="noopener">${icon("print")} ${I.T("Conference sheet to print", "Hoja de conferencia para imprimir")}</a><a class="btn small" href="${BASE}/write/${task.id}?grades=${ctx.band}&sheet=compare">${icon("library")} ${I.T("Mini-lesson: compare two samples", "Minilección: comparar dos ejemplos")}</a><a class="btn small" href="${BASE}/write/${task.id}?grades=${ctx.band}&sheet=week">${icon("calendar")} ${I.T("Five-day plan", "Plan de cinco días")}</a></p>
   </div>`;
 }
 
@@ -2124,4 +2147,173 @@ export function onMoreClick(e, I, studio, save, tasks = []) {
     return "rerender";
   }
   return false;
+}
+
+// ── a goal the writer chooses ─────────────────────────────────────────────────────────────────
+// One goal, picked by the writer, checked from the draft as they type. It describes the page (sentences, words,
+// a number, a reason); it is never a score. "On my own" offers no goal that names a word list or the task's words.
+export const GOALS = [
+  { id: "sentences", en: "Write 5 sentences", es: "Escribir 5 oraciones" },
+  { id: "length", en: "Reach the usual length", es: "Llegar a la extensión habitual" },
+  { id: "topic", en: "Use 3 topic words", es: "Usar 3 palabras del tema", supported: true },
+  { id: "number", en: "Include a number or a quotation from the sources", es: "Incluir un número o una cita de las fuentes" },
+  { id: "reasons", en: "Give 2 reasons (because, so, since)", es: "Dar 2 razones (porque, así que, ya que)", own: { en: "Give 2 reasons", es: "Dar 2 razones" } },
+  { id: "revise", en: "Change my draft after feedback", es: "Cambiar mi borrador después de los comentarios" },
+];
+const REASON_RE = /\b(because|so|since|therefore|as a result|that is why|porque|ya que|por eso)\b/gi;
+
+/** Progress toward a goal from the draft and the saved versions: { done, now, need }. */
+export function goalProgress(id, task, state, stage, text) {
+  const t = String(text || "");
+  const s = draftStats(t);
+  switch (id) {
+    case "sentences":
+      return { now: s.sentences, need: 5, done: s.sentences >= 5 };
+    case "length": {
+      const need = task.expected?.minWords || 50;
+      return { now: s.words, need, done: s.words >= need };
+    }
+    case "topic": {
+      const need = Math.min(3, task.vocab?.length || 0);
+      const now = topicWordsUsed(task.vocab, t).length;
+      return { now, need, done: need > 0 && now >= need };
+    }
+    case "number": {
+      const done = /\d/.test(t) || /["“”]/.test(t);
+      return { now: done ? 1 : 0, need: 1, done };
+    }
+    case "reasons": {
+      const now = (t.match(REASON_RE) || []).length;
+      return { now, need: 2, done: now >= 2 };
+    }
+    case "revise": {
+      const now = (state.versions || []).filter((v) => v.kind === "revision").length;
+      return { now, need: 1, done: now >= 1 };
+    }
+    default:
+      return { now: 0, need: 0, done: false };
+  }
+}
+export const goalsFor = (stage) => GOALS.filter((g) => !(stage === "independent" && g.supported));
+const goalLabel = (I, g, stage) => (stage === "independent" && g.own ? I.T(g.own.en, g.own.es) : I.T(g.en, g.es));
+const goalLabelS = (I, g, stage) => (stage === "independent" && g.own ? I.S(g.own.en, g.own.es) : I.S(g.en, g.es));
+
+function goalStatusText(I, task, state, stage, text) {
+  const g = goalsFor(stage).find((x) => x.id === state.goal);
+  if (!g) return I.S("Pick a goal if you want one.", "Elige una meta si quieres.");
+  const p = goalProgress(g.id, task, state, stage, text);
+  if (p.done) return I.S("Goal met! Nice work.", "¡Meta cumplida! Buen trabajo.");
+  return p.need > 1 ? I.S(`${p.now} of ${p.need} so far`, `${p.now} de ${p.need} hasta ahora`) : I.S("Not yet", "Todavía no");
+}
+
+export function goalRowHTML(I, task, state, stage, text) {
+  const goals = goalsFor(stage);
+  const chosen = goals.some((g) => g.id === state.goal) ? state.goal : "";
+  const p = chosen ? goalProgress(chosen, task, state, stage, text) : null;
+  return html`<div class="goal-row ${p?.done ? "is-met" : ""}" data-goal-row>
+    <label class="field goal-field"><span>${icon("flag")} ${I.T("My goal today", "Mi meta de hoy")}</span>
+      <select data-goal ${IGN}>
+        <option value="">${I.S("No goal (optional)", "Sin meta (opcional)")}</option>
+        ${goals.map((g) => html`<option value="${g.id}" ${chosen === g.id ? raw("selected") : ""}>${goalLabelS(I, g, stage)}</option>`)}
+      </select></label>
+    <p class="goal-status" data-goal-status role="status">${goalStatusText(I, task, state, stage, text)}</p>
+  </div>`;
+}
+
+const goalCheered = new Set();
+function refreshGoal(I, task, state, stage, text) {
+  const row = document.querySelector("[data-goal-row]");
+  if (!row) return;
+  const status = row.querySelector("[data-goal-status]");
+  const p = state.goal ? goalProgress(state.goal, task, state, stage, text) : null;
+  row.classList.toggle("is-met", Boolean(p?.done));
+  const next = goalStatusText(I, task, state, stage, text);
+  if (status && status.textContent !== next) status.textContent = next;
+  if (p?.done && !goalCheered.has(task.id)) {
+    goalCheered.add(task.id);
+    announce(I.S("You met your goal!", "¡Cumpliste tu meta!"));
+  }
+  if (!p?.done) goalCheered.delete(task.id);
+}
+
+/** The goal a writer chose for a piece, as a portfolio tag. */
+export function goalTagHTML(I, w) {
+  const g = GOALS.find((x) => x.id === w.goal);
+  if (!g) return "";
+  return html`<p class="entry-meta"><span class="tag ${w.goalMet ? "is-met" : ""}">${icon(w.goalMet ? "check" : "flag")} ${I.T("Goal", "Meta")}: ${goalLabel(I, g, w.stage)}${w.goalMet ? I.T(" — met", " — cumplida") : ""}</span></p>`;
+}
+
+// ── teacher: a five-day plan for one task ─────────────────────────────────────────────────────
+const QUICK_FOR_FORM = { narrative: "story", cer: "describe", essay: "describe", report: "describe", summary: "describe", letter: "opinion", email: "opinion", paragraph: "opinion" };
+
+/** A week with one writing task, built from the studio's own tools. Teacher view only; nothing about students. */
+export function weekPlanHTML(I, ctx, task) {
+  const back = html`<p class="row-actions no-print"><a class="btn" href="${BASE}/write/${task.id}?grades=${ctx.band}">${icon("arrow-left")} ${I.T("Back to the task", "Volver a la tarea")}</a><button type="button" class="btn btn-primary" data-print>${icon("print")} ${I.T("Print this plan", "Imprimir este plan")}</button></p>`;
+  if (!isTeacherView())
+    return html`<article class="week-plan d-writing" data-no-studio-video>${back}<h1 tabindex="-1">${task.title}</h1><p>${I.T("This plan opens in Teacher view.", "Este plan se abre en la vista docente.")}</p></article>`;
+  const q = QUICK.find((p) => p.kind === (QUICK_FOR_FORM[task.form] || "describe"));
+  const link = (href, en, es) => html`<a href="${href}">${I.T(en, es)}</a>`;
+  const u = (extra = "") => `${BASE}/write/${task.id}?grades=${ctx.band}${extra}`;
+  const days = [
+    {
+      en: "Read and notice", es: "Leer y observar",
+      do: [
+        [`Warm up with a quick write${q ? `: “${q.en}”` : ""} (5 minutes).`, `Calentamiento con una escritura rápida${q ? `: “${q.es}”` : ""} (5 minutos).`],
+        ["Read the situation and the sources aloud. Students save two sentences as evidence.", "Lean en voz alta la situación y las fuentes. Los estudiantes guardan dos oraciones como evidencia."],
+      ],
+      tools: [link(q ? `${BASE}/write?tab=quick&p=${q.id}&grades=${ctx.band}` : `${BASE}/write?tab=quick&grades=${ctx.band}`, "Quick write", "Escritura rápida"), link(u(), "The task", "La tarea")],
+      look: ["Students can say what the task asks in their own words.", "Los estudiantes pueden decir con sus palabras qué pide la tarea."],
+    },
+    {
+      en: "Study two samples", es: "Estudiar dos ejemplos",
+      do: [
+        ["Project the two samples. Partners decide which helps the reader more and why.", "Proyecte los dos ejemplos. En parejas deciden cuál ayuda más al lector y por qué."],
+        ["Reveal what each writer did. Students name one move to try.", "Muestre lo que hizo cada escritor. Los estudiantes nombran una estrategia para probar."],
+      ],
+      tools: [link(u("&sheet=compare"), "Compare two samples", "Comparar dos ejemplos")],
+      look: ["Students point to a sentence and say what it does.", "Los estudiantes señalan una oración y dicen qué hace."],
+    },
+    {
+      en: "Plan and draft", es: "Planear y escribir",
+      do: [
+        ["Students choose their level of help, fill the plan, then write. Speech to text and the help tools are there for those who need them.", "Cada estudiante elige su nivel de ayuda, llena el plan y escribe. La voz a texto y las herramientas de ayuda están para quien las necesite."],
+        ["Each writer picks one goal for the day.", "Cada escritor elige una meta para el día."],
+      ],
+      tools: [link(u(), "The task", "La tarea"), ...(task.revisionPrompts?.length ? [link(u(`&focus=${task.revisionPrompts[0].focus}`), "The task with a focus", "La tarea con un enfoque")] : [])],
+      look: ["Every writer has a draft and pressed Get feedback once.", "Cada escritor tiene un borrador y presionó Obtener comentarios una vez."],
+    },
+    {
+      en: "Feedback and revise", es: "Comentarios y revisión",
+      do: [
+        ["Partners read aloud and give one thing they liked and one thing they wonder.", "En parejas leen en voz alta y dicen una cosa que les gustó y una que se preguntan."],
+        ["Writers change one thing and ask for feedback again. Confer with a few writers.", "Los escritores cambian una cosa y vuelven a pedir comentarios. Converse con algunos escritores."],
+      ],
+      tools: [link(u("&sheet=conference"), "Conference sheet", "Hoja de conferencia")],
+      look: ["The draft changed: compare first draft and now.", "El borrador cambió: compare el primer borrador con el actual."],
+    },
+    {
+      en: "Finish and share", es: "Terminar y compartir",
+      do: [
+        ["Writers say what they improved and why, then save to the portfolio.", "Los escritores dicen qué mejoraron y por qué, y guardan en el portafolio."],
+        ["A few writers read aloud. Writers who are done can try the same move in a new task.", "Algunos escritores leen en voz alta. Quien termina puede probar la misma estrategia en una tarea nueva."],
+      ],
+      tools: [link(`${BASE}/write?tab=portfolio&grades=${ctx.band}`, "Portfolio", "Portafolio")],
+      look: ["The reflection names a change and a reason.", "La reflexión nombra un cambio y una razón."],
+    },
+  ];
+  return html`<article class="week-plan d-writing" data-no-studio-video>
+    ${back}
+    <header>
+      <p class="eyebrow">${icon("calendar")} ${I.T("Five-day plan", "Plan de cinco días")} · ${task.keyUse} · ${task.contentArea} · ${task.time}</p>
+      <h1 tabindex="-1">${task.title}</h1>
+      <p class="lead">${task.prompt}</p>
+      <p class="fine">${I.T("About 30–40 minutes a day. Change the order to fit your class; every link opens the tool for this task.", "Unos 30–40 minutos al día. Cambie el orden según su clase; cada enlace abre la herramienta para esta tarea.")}</p>
+    </header>
+    <ol class="week-days">
+      ${days.map((d, i) => html`<li class="week-day"><h2><span class="week-n">${I.T(`Day ${i + 1}`, `Día ${i + 1}`)}</span> ${I.T(d.en, d.es)}</h2>
+        <ul>${d.do.map(([en, es]) => html`<li>${I.T(en, es)}</li>`)}</ul>
+        <p class="week-tools no-print"><strong>${I.T("Open:", "Abrir:")}</strong> ${d.tools.map((x, j) => html`${j ? " · " : ""}${x}`)}</p>
+        <p class="week-look"><strong>${I.T("Look for:", "Observe:")}</strong> ${I.T(d.look[0], d.look[1])}</p></li>`)}
+    </ol>
+  </article>`;
 }
