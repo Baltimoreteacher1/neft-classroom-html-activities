@@ -207,8 +207,15 @@ export function languagePageRoute(url) {
   }
   if (url.pathname === "/robots.txt") return { kind: "robots" };
   if (url.pathname === "/sitemap.xml") return { kind: "sitemap" };
-  // "/" is the front-layer home page (lp/index.html via functions/index.js); it was a 302 to the lab until the
-  // 2026-11-27 front-layer release, which Joel asked for ("three large entry cards" on the home page).
+  // Joel, 2026-11-27: the lab (/access-practice-lab/) is the homepage, not the front-layer home.
+  if (url.pathname === "/")
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}/`,
+      // The target never changes, so browsers may cache this hop: a return visit skips a round trip.
+      cacheControl: "public, max-age=3600",
+    };
   if (url.pathname === "/access-prep" || url.pathname === "/access-prep/")
     return {
       kind: "redirect",

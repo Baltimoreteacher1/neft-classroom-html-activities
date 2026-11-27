@@ -22,8 +22,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // STUDIO_PLAYER_SRC / STUDIO_PLAYER_OUT redirect the build (the tests build throwaway copies); normal runs use neither.
 const SRC = process.env.STUDIO_PLAYER_SRC || join(ROOT, "access-practice-lab/src/studio");
 const ENTRY = join(SRC, "player/index.js");
-const CSS_FILES = ["player.css", "formats.css", "games.css", "diagram.css", "animation.css"].map((f) =>
-  join(SRC, "player", f),
+const CSS_FILES = ["player.css", "formats.css", "games.css", "diagram.css", "animation.css"].map(
+  (f) => join(SRC, "player", f),
 );
 const OUT_DIR = process.env.STUDIO_PLAYER_OUT || join(ROOT, "access-practice-lab/player");
 const OUT_JS = join(OUT_DIR, "studio-player.js");

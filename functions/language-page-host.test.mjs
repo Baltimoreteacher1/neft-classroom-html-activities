@@ -152,12 +152,13 @@ await t("Language Page library and letter short routes open their ACCESS Lab des
   });
 });
 
-await t("the root is the front-layer home, served on this host (2026-11-27 front-layer release)", () => {
-  assert.deepEqual(at("https://thelanguagepage.com/"), { kind: "serve" });
-  // The front layer's sections are served here too; the lab is still one click away.
+await t("the root lands on the lab with a temporary redirect", () => {
+  const r = at("https://thelanguagepage.com/");
+  assert.equal(r.status, 302);
+  assert.equal(r.location, "https://thelanguagepage.com/access-practice-lab/");
+  // The front layer's sections are still served here.
   for (const p of ["/practice/", "/tools/game-maker/", "/content/math/", "/access-guide/", "/about/", "/search/"])
     assert.deepEqual(at(`https://thelanguagepage.com${p}`), { kind: "serve" }, p);
-  assert.deepEqual(at("https://thelanguagepage.com/access-practice-lab/"), { kind: "serve" });
 });
 
 await t("/access-prep redirects to the lab's Access Prep hub, keeping queries", () => {
@@ -293,10 +294,12 @@ await t("the middleware redirects a non-lab path on the lab host before any gate
   assert.equal(res.headers.get("cache-control"), "no-store");
 });
 
-await t("the root falls through the middleware to the front-layer home (functions/index.js)", async () => {
-  const { fell } = await answer("https://thelanguagepage.com/");
-  assert.equal(fell, true);
-  assert.ok(LP_SITEMAP.includes("/"), "the home page is in the sitemap");
+await t("the lab root redirect is cacheable so a return visit skips the hop", async () => {
+  const { fell, res } = await answer("https://thelanguagepage.com/");
+  assert.equal(fell, false);
+  assert.equal(res.status, 302);
+  assert.equal(res.headers.get("location"), "https://thelanguagepage.com/access-practice-lab/");
+  assert.equal(res.headers.get("cache-control"), "public, max-age=3600");
 });
 
 await t("lab pages on the lab host fall through to the site", async () => {

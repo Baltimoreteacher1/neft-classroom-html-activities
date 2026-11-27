@@ -21,10 +21,10 @@ import {
   planText,
   resumeTask,
   stuckStep,
-  topicWordsUsed,
   studioStats,
   tableSeries,
   taskStatus,
+  topicWordsUsed,
 } from "../access-practice-lab/src/views/write.js";
 
 const tasks = JSON.parse(
@@ -248,7 +248,10 @@ test("speech to text has a learner-facing support name", async () => {
 test("the Writing Studio stylesheet URL carries the hash of its current bytes", async () => {
   const { createHash } = await import("node:crypto");
   const css = readFileSync(new URL("../access-practice-lab/write-studio.css", import.meta.url));
-  const src = readFileSync(new URL("../access-practice-lab/src/views/write.js", import.meta.url), "utf8");
+  const src = readFileSync(
+    new URL("../access-practice-lab/src/views/write.js", import.meta.url),
+    "utf8",
+  );
   const pinned = /WRITE_STYLES_VERSION = "([0-9a-f]{12})"/.exec(src)?.[1];
   assert.equal(
     pinned,
