@@ -25,7 +25,10 @@ export function bi(o, tag = "span", vars = null) {
 
 // Math-friendly text: x^2 -> x², keeps everything else escaped.
 export function mathText(s) {
-  return h(s).replace(/\^(\d)/g, (_, d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(d)]);
+  // Display only: a true minus sign before a number (answers are still typed with hyphen-minus).
+  return h(s)
+    .replace(/\^(\d)/g, (_, d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[Number(d)])
+    .replace(/(^|[\s(,=:])-(?=\d)/g, "$1−");
 }
 export function biMath(o, tag = "span") {
   return `<${tag} class="lang-en" lang="en">${mathText(o.en)}</${tag}><${tag} class="lang-es" lang="es">${mathText(o.es ?? o.en)}</${tag}>`;
@@ -76,4 +79,50 @@ export function genCheck(p, fixit = false) {
     solution: p.steps,
     fixit,
   };
+}
+
+// A table to complete. Blank cells are real text inputs labelled by their column header and row,
+// so a screen reader announces "Cups of water, row 3" and a keyboard user tabs cell to cell.
+export function tableBody(t, pid, { key = false, print = false } = {}) {
+  const head = t.headers
+    .map((hd, c) => `<th scope="col" id="${pid}-h${c}">${bi(hd)}</th>`)
+    .join("");
+  const body = t.rows
+    .map((row, r) => {
+      const cells = row
+        .map((cell, c) => {
+          const blank = t.blanks.find((b) => b.r === r && b.c === c);
+          if (!blank) return `<td${c === 0 ? ` id="${pid}-r${r}"` : ""}>${mathText(cell)}</td>`;
+          if (key) return `<td class="is-key">${mathText(blank.answer)}</td>`;
+          if (print) return `<td class="is-blank"><span class="sr">?</span></td>`;
+          return `<td class="is-blank"><input type="text" inputmode="decimal" autocomplete="off" data-blank="${t.blanks.indexOf(blank)}" aria-labelledby="${pid}-h${c} ${pid}-r${r}"></td>`;
+        })
+        .join("");
+      return `<tr>${cells}</tr>`;
+    })
+    .join("");
+  return `<p class="p-prompt" id="${pid}-q">${biMath(t.stem)}</p><div class="ptable-wrap"><table class="ptable" aria-describedby="${pid}-q"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+// A number line to place a point on. The SVG draws the line and any given marks; a native range
+// input (aligned under the line) is the control, so tap, drag, arrow keys and screen readers all
+// work without custom widget code. The point starts at 0, which is never an accepted answer.
+export function lineBody(t, pid, { print = false } = {}) {
+  // Ticks every 5 on a wide line (labels every 10) so it stays readable on a phone; the point
+  // still moves in steps of t.step.
+  const span = t.max - t.min;
+  const tick = span > 24 ? 5 : t.step;
+  const svg = renderVisual({
+    type: "numberLine",
+    min: t.min,
+    max: t.max,
+    step: tick,
+    marks: t.marks,
+    center: 0,
+    labelEvery: span > 40 ? 2 : 1,
+  });
+  const control = print
+    ? `<p class="tier-note">${bi({ en: "Draw a dot on the number line at your answer.", es: "Dibuja un punto en la recta numérica en tu respuesta." })}</p>`
+    : `<div class="nl-track"><label class="sr" for="${pid}-nl">${bi({ en: "Your point on the number line", es: "Tu punto en la recta numérica" })}</label><input class="nl-range" type="range" id="${pid}-nl" min="${t.min}" max="${t.max}" step="${t.step}" value="0" aria-describedby="${pid}-q ${pid}-fb"></div><p class="nl-readout">${bi({ en: "Your point:", es: "Tu punto:" })} <output for="${pid}-nl" class="nl-value">0</output></p>`;
+  return `<p class="p-prompt" id="${pid}-q">${biMath(t.stem)}</p><div class="p-visual nl-visual">${svg}</div>${control}`;
 }

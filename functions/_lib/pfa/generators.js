@@ -2272,3 +2272,222 @@ export function matches(answerType, answer, input) {
   }
   return normText(answer) === normText(input);
 }
+
+// ---- interactive task variants ---------------------------------------------------------------
+// Two more input types built from the same seeded problem (same params, same context):
+//   tableTask: complete a table (blank cells are typed in), for proportional / rate / pattern skills
+//   lineTask:  place a point on a number line (tap, drag or arrow keys), for integer skills
+// Blanks and accepted values are recomputed independently from `params` by
+// tools/pfa/generators.test.mjs.
+
+const firstSentence = (s) => (String(s).match(/^.*?[.?!](\s|$)/) || [String(s)])[0].trim();
+const headerOf = (h) =>
+  h && typeof h === "object" ? h : { en: String(h ?? ""), es: String(h ?? "") };
+
+export const TABLE_SPECS = ["ratioTable", "twoVar", "patternRule", "convertUnits", "unitRate"];
+export const LINE_SPECS = ["signedValue", "compareRational"];
+
+export function tableTask(spec, seed) {
+  const p = generate(spec, seed);
+  const q = p.params;
+  let headers;
+  let rows;
+  let blanks;
+  if (p.gen === "ratioTable") {
+    headers = p.visual.type === "table" ? p.visual.headers : [p.visual.xLabel, p.visual.yLabel];
+    rows = [
+      [q.a, q.b],
+      [2 * q.a, "?"],
+      [q.a * q.k, "?"],
+    ];
+    blanks = [
+      { r: 1, c: 1, answer: String(2 * q.b) },
+      { r: 2, c: 1, answer: String(q.b * q.k) },
+    ];
+  } else if (p.gen === "twoVar" && p.mode !== "equation") {
+    headers = p.visual.headers;
+    rows = [
+      [1, q.k],
+      [2, "?"],
+      [q.x, "?"],
+    ];
+    blanks = [
+      { r: 1, c: 1, answer: String(2 * q.k) },
+      { r: 2, c: 1, answer: String(q.k * q.x) },
+    ];
+  } else if (p.gen === "patternRule") {
+    headers = p.visual.headers;
+    rows = [
+      [1, q.start],
+      [2, q.start + q.step],
+      [3, "?"],
+      [q.n, "?"],
+    ];
+    blanks = [
+      { r: 2, c: 1, answer: String(q.start + 2 * q.step) },
+      { r: 3, c: 1, answer: String(q.start + (q.n - 1) * q.step) },
+    ];
+  } else if (p.gen === "convertUnits") {
+    headers = [p.visual.top.label, p.visual.bottom.label];
+    rows = [
+      [1, q.f],
+      [2, "?"],
+      [fmtNum(q.q), "?"],
+    ];
+    blanks = [
+      { r: 1, c: 1, answer: String(2 * q.f) },
+      { r: 2, c: 1, answer: fmtNum(q.q * q.f) },
+    ];
+  } else if (p.gen === "unitRate") {
+    headers = [p.visual.bottom.label, p.visual.top.label];
+    const rate = q.total / q.n;
+    rows = [
+      [q.n, q.total.toFixed(2)],
+      [1, "?"],
+      [3, "?"],
+    ];
+    blanks = [
+      { r: 1, c: 1, answer: fmtNum(rate) },
+      { r: 2, c: 1, answer: fmtNum(Math.round(3 * rate * 100) / 100) },
+    ];
+  } else {
+    return null;
+  }
+  return {
+    kind: "table",
+    gen: p.gen,
+    mode: p.mode,
+    seed,
+    params: q,
+    stem: {
+      en: `${firstSentence(p.stem.en)} Complete the table.`,
+      es: `${firstSentence(p.stem.es)} Completa la tabla.`,
+    },
+    headers: headers.map(headerOf),
+    rows,
+    blanks,
+    steps: p.steps,
+    distractors: p.distractors,
+  };
+}
+
+export function lineTask(spec, seed) {
+  const p = generate(spec, seed);
+  const q = p.params;
+  if (p.gen === "signedValue") {
+    const v = q.v;
+    // Wide lines end on a multiple of 10 so labels (every 10) read -40, -30, ...
+    const lim =
+      Math.abs(v) + 3 > 20
+        ? Math.ceil((Math.abs(v) + 3) / 10) * 10
+        : Math.ceil((Math.abs(v) + 3) / 5) * 5;
+    if (p.mode === "abs") {
+      const a = Math.abs(v);
+      return {
+        kind: "line",
+        gen: p.gen,
+        mode: p.mode,
+        seed,
+        params: q,
+        stem: {
+          en: `Place the number that is ${a} units from 0 and below zero.`,
+          es: `Ubica el número que está a ${a} unidades del 0 y por debajo de cero.`,
+        },
+        min: -lim,
+        max: lim,
+        step: 1,
+        labelEvery: 5,
+        marks: [],
+        accept: { eq: -a },
+        answerText: String(-a),
+        steps: {
+          en: [`Below zero means the negative side.`, `${a} units from 0 on that side is ${-a}.`],
+          es: [
+            `Por debajo de cero significa el lado negativo.`,
+            `A ${a} unidades del 0 en ese lado está ${-a}.`,
+          ],
+        },
+        distractors: [
+          wrong(
+            a,
+            "sign-dropped",
+            `${a} is above zero. Go to the other side of 0.`,
+            `${a} está por encima de cero. Ve al otro lado del 0.`,
+          ),
+        ],
+      };
+    }
+    return {
+      kind: "line",
+      gen: p.gen,
+      mode: p.mode,
+      seed,
+      params: q,
+      stem: {
+        en: `Place the opposite of ${v} on the number line.`,
+        es: `Ubica el opuesto de ${v} en la recta numérica.`,
+      },
+      min: -lim,
+      max: lim,
+      step: 1,
+      labelEvery: 5,
+      marks: [{ v, l: String(v) }],
+      accept: { eq: -v },
+      answerText: String(-v),
+      steps: p.steps,
+      distractors: p.distractors,
+    };
+  }
+  if (p.gen === "compareRational") {
+    const hi = Math.max(q.a, q.b);
+    const lo = Math.min(q.a, q.b);
+    return {
+      kind: "line",
+      gen: p.gen,
+      mode: p.mode,
+      seed,
+      params: q,
+      stem: {
+        en: `Two cities report ${q.a} °C and ${q.b} °C. Place a temperature that is warmer than both but still below 0 °C.`,
+        es: `Dos ciudades reportan ${q.a} °C y ${q.b} °C. Ubica una temperatura más cálida que las dos pero todavía por debajo de 0 °C.`,
+      },
+      min: -16,
+      max: 4,
+      step: 1,
+      labelEvery: 2,
+      marks: [
+        { v: q.a, l: String(q.a) },
+        { v: q.b, l: String(q.b) },
+      ],
+      accept: { gt: hi, lt: 0 },
+      answerText: hi + 1 === -1 ? "−1" : `any whole number from ${hi + 1} to −1`,
+      answerTextEs: hi + 1 === -1 ? "−1" : `cualquier número entero de ${hi + 1} a −1`,
+      steps: {
+        en: [
+          `Warmer means farther right. The warmer of the two is ${hi}.`,
+          `Any point right of ${hi} and left of 0 works, like ${hi + 1}.`,
+        ],
+        es: [
+          `Más cálido significa más a la derecha. La más cálida de las dos es ${hi}.`,
+          `Sirve cualquier punto a la derecha de ${hi} y a la izquierda de 0, como ${hi + 1}.`,
+        ],
+      },
+      distractors: [
+        wrong(
+          lo - 1,
+          "compare-negative-magnitude",
+          `${lo - 1} is colder than both. Warmer is to the right.`,
+          `${lo - 1} es más fría que las dos. Más cálido está a la derecha.`,
+        ),
+      ],
+    };
+  }
+  return null;
+}
+
+export function lineAccepts(task, value) {
+  const v = Number(value);
+  if (!Number.isFinite(v)) return false;
+  if (task.accept.eq != null) return Math.abs(v - task.accept.eq) < 1e-9;
+  return v > task.accept.gt && v < task.accept.lt;
+}

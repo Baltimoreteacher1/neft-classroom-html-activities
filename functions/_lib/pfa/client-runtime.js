@@ -3,7 +3,7 @@
 // files define (generate, matches, renderVisual, UI, t, bi, genBody, workedExample, genCheck, h) are
 // in scope here. No network requests, no external libraries.
 
-import { generate, matches } from "./generators.js";
+import { generate, lineAccepts, matches } from "./generators.js";
 import { bi, genBody, genCheck, h, workedExample } from "./problem-view.js";
 import { t, UI } from "./strings.js";
 
@@ -170,7 +170,12 @@ function initPlayer(pl) {
 
 // ---- homework problems ------------------------------------------------------------------------
 const KEY = `ewl_pfa_${LESSON}_hw`;
-const state = storage.get(KEY, { v: 1, p: {}, conf: null, done: false });
+// v2: number-line and table items joined the sets (2026-11-27), which renumbered problem ids, so a
+// v1 save could mark the wrong problem solved. Older saves are discarded, never misapplied.
+const STATE_VERSION = 2;
+const saved = storage.get(KEY, null);
+const state =
+  saved && saved.v === STATE_VERSION ? saved : { v: STATE_VERSION, p: {}, conf: null, done: false };
 const problems = DATA.problems || {};
 const counted = Object.keys(problems).filter((id) => problems[id].counted !== false);
 let streak = 0;
@@ -206,6 +211,12 @@ function readValue(card, d) {
     return [...card.querySelectorAll("input[type=checkbox]")].map((c) => c.checked);
   if (d.kind === "match") return card._pairs || {};
   if (d.kind === "explain") return card.querySelector("textarea")?.value || "";
+  if (d.kind === "table")
+    return [...card.querySelectorAll("input[data-blank]")].map((x) => x.value);
+  if (d.kind === "line") {
+    const r = card.querySelector(".nl-range");
+    return r?.dataset.moved ? r.value : "";
+  }
   return card.querySelector("input[type=text]")?.value || "";
 }
 
@@ -218,13 +229,18 @@ function judge(d, v) {
   if (d.kind === "match")
     return { ok: d.pairs.every((_, i) => v[i] === i) && Object.keys(v).length === d.pairs.length };
   if (d.kind === "explain") return { ok: v.trim().split(/\s+/).length >= 8 };
+  if (d.kind === "table") {
+    const cells = d.blanks.map((a, i) => matches("number", a, v[i]));
+    return { ok: cells.every(Boolean), cells };
+  }
+  if (d.kind === "line") return { ok: lineAccepts(d, v) };
   return { ok: matches(d.answerType, d.answer, v) };
 }
 
 // Wrong-answer feedback that names the misconception when the answer matches a known one.
 function misconceptionFeedback(d, v) {
   if (d.kind === "mc" && v != null) return d.why?.[Number(v)] || null;
-  if ((d.kind === "entry" || d.kind === "mc-gen") && d.known) {
+  if ((d.kind === "entry" || d.kind === "mc-gen" || d.kind === "line") && d.known) {
     const hit = d.known.find((k) => matches(d.answerType, k.value, v));
     return hit ? hit.why : null;
   }
@@ -288,7 +304,12 @@ function check(card) {
   const d = problems[pid] || card._data;
   if (!d) return;
   const v = readValue(card, d);
-  if (v == null || v === "" || (Array.isArray(v) && !v.some(Boolean) && d.kind === "select")) {
+  const empty =
+    v == null ||
+    v === "" ||
+    (Array.isArray(v) && d.kind === "select" && !v.some(Boolean)) ||
+    (Array.isArray(v) && d.kind === "table" && v.every((x) => !String(x).trim()));
+  if (empty) {
     announce(L(UI.yourAnswer));
     card.querySelector("input,textarea,button.chip")?.focus();
     return;
@@ -333,9 +354,18 @@ function check(card) {
     void card.offsetWidth;
     if (!reduced()) card.classList.add("shake");
     const mis = misconceptionFeedback(d, v);
-    showFeedback(card, false, mis ? `<p>${bi(mis)}</p>` : "");
-    for (const el of card.querySelectorAll("input[type=text],textarea"))
-      el.setAttribute("aria-invalid", "true");
+    let extra = mis ? `<p>${bi(mis)}</p>` : "";
+    if (d.kind === "table") {
+      const right = res.cells.filter(Boolean).length;
+      extra += `<p>${bi({ en: `${right} of ${res.cells.length} cells are right. Fix the cells outlined in red.`, es: `${right} de ${res.cells.length} casillas están bien. Corrige las casillas marcadas en rojo.` })}</p>`;
+      card
+        .querySelectorAll("input[data-blank]")
+        .forEach((el, i) => el.setAttribute("aria-invalid", String(!res.cells[i])));
+    } else {
+      for (const el of card.querySelectorAll("input[type=text],textarea"))
+        el.setAttribute("aria-invalid", "true");
+    }
+    showFeedback(card, false, extra);
     showHint(card, d, Math.min(3, rec.tries), pid);
   }
   if (!card._extra) {
@@ -440,6 +470,50 @@ function addSimilar(afterCard) {
   card.querySelector("input,button")?.focus();
 }
 
+// Number line: the native range input is the control; the SVG handle mirrors it (transform only).
+function initLine(card) {
+  const range = card.querySelector(".nl-range");
+  const svg = card.querySelector(".nl-visual svg");
+  if (!range || !svg) return;
+  const [x0, x1, v0, v1] = (svg.getAttribute("data-scale") || "30,610,0,1").split(",").map(Number);
+  const sx = (v) => x0 + ((v - v0) / (v1 - v0)) * (x1 - x0);
+  const ns = "http://www.w3.org/2000/svg";
+  const handle = doc.createElementNS(ns, "circle");
+  handle.setAttribute("class", "mv-handle");
+  handle.setAttribute("cx", String(sx(0)));
+  handle.setAttribute("cy", "60");
+  handle.setAttribute("r", "11");
+  handle.setAttribute("aria-hidden", "true");
+  svg.append(handle);
+  const out = card.querySelector(".nl-value");
+  const paint = () => {
+    const v = Number(range.value);
+    handle.style.transform = `translateX(${sx(v) - sx(0)}px)`;
+    if (out) out.textContent = String(v).replace("-", "−");
+  };
+  range.addEventListener("input", () => {
+    range.dataset.moved = "1";
+    paint();
+  });
+  // Tapping the drawn line moves the point there too.
+  svg.addEventListener("click", (e) => {
+    const box = svg.getBoundingClientRect();
+    const x = ((e.clientX - box.left) / box.width) * Number(svg.viewBox.baseVal.width || 640);
+    const step = Number(range.step) || 1;
+    const raw = v0 + ((x - x0) / (x1 - x0)) * (v1 - v0);
+    const v = Math.max(
+      Number(range.min),
+      Math.min(Number(range.max), Math.round(raw / step) * step),
+    );
+    range.value = String(v);
+    range.dataset.moved = "1";
+    paint();
+    range.focus();
+  });
+  card._paintLine = paint;
+  paint();
+}
+
 function restore() {
   for (const card of doc.querySelectorAll(".problem[data-pid]")) {
     const pid = card.dataset.pid;
@@ -451,7 +525,16 @@ function restore() {
       else if (d.kind === "select" && Array.isArray(rec.v))
         card.querySelectorAll("input[type=checkbox]").forEach((c, i) => (c.checked = !!rec.v[i]));
       else if (d.kind === "explain") card.querySelector("textarea").value = rec.v;
-      else if (["mc", "error", "mc-gen"].includes(d.kind)) {
+      else if (d.kind === "table" && Array.isArray(rec.v))
+        card.querySelectorAll("input[data-blank]").forEach((el, i) => (el.value = rec.v[i] ?? ""));
+      else if (d.kind === "line") {
+        const r = card.querySelector(".nl-range");
+        if (r) {
+          r.value = String(rec.v);
+          r.dataset.moved = "1";
+          card._paintLine?.();
+        }
+      } else if (["mc", "error", "mc-gen"].includes(d.kind)) {
         const r = [...card.querySelectorAll("input[type=radio]")].find(
           (x) => x.value === String(rec.v),
         );
@@ -633,6 +716,7 @@ function boot() {
 
   for (const pl of doc.querySelectorAll(".player")) initPlayer(pl);
   for (const card of doc.querySelectorAll('.problem[data-type="match"]')) initMatch(card);
+  for (const card of doc.querySelectorAll('.problem[data-type="line"]')) initLine(card);
   restore();
   updateProgress();
 

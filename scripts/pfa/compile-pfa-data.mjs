@@ -25,7 +25,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const CHECK = process.argv.includes("--check");
 const FORCE = process.argv.includes("--force");
 const read = (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8"));
-const { generate, parseNumber } = await import(
+const { generate, parseNumber, tableTask, lineTask } = await import(
   pathToFileURL(join(ROOT, "functions/_lib/pfa/generators.js")).href
 );
 
@@ -382,11 +382,31 @@ function compilePractice(lesson, cfg) {
     const borrowed = [...t2.rest, ...t1.rest].find((x) => x.type === "error");
     if (borrowed) t3.out.unshift({ ...borrowed, tier: 3, dok: 3 });
   }
+  // Interactive input types where the skill has a natural one: a number line to place a point on
+  // (Warm up) and a table to complete (Build). Both come from the lesson's own generator.
+  const taskItem = (kind, tier, key) => {
+    const seed = lessonSeed(lesson.id, key);
+    const t = kind === "table" ? tableTask(spec, seed) : lineTask(spec, seed);
+    if (!t) return [];
+    return [
+      {
+        type: kind,
+        gen: spec,
+        seed,
+        tier,
+        dok: tier === 1 ? 1 : 2,
+        misconception: t.distractors?.[0]?.tag || null,
+        origin: `${kind}:${spec}@seed${seed}`,
+      },
+    ];
+  };
   const problems = [
     ...t1.out,
     genItem(spec, lessonSeed(lesson.id, "hw1"), 1),
+    ...taskItem("line", 1, "line1"),
     ...t2.out,
     genItem(spec, lessonSeed(lesson.id, "hw2"), 2),
+    ...taskItem("table", 2, "table1"),
     ...t3.out,
   ];
   // Every set has an error analysis. When the lesson's own items offer none with Spanish, a "fix
@@ -447,6 +467,8 @@ function compilePractice(lesson, cfg) {
     genItem(spec, lessonSeed(lesson.id, "as1"), 1),
     ...t2.rest.slice(0, 2),
     genItem(spec, lessonSeed(lesson.id, "as2"), 2),
+    ...taskItem("table", 2, "astable"),
+    ...taskItem("line", 2, "asline"),
     ...t3.rest.slice(0, 1),
     genItem(spec, lessonSeed(lesson.id, "as3"), 3),
   ].map((x, i) => ({
