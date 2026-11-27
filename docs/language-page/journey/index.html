@@ -1,0 +1,1313 @@
+<meta charset="utf-8">
+<title>Language Page Journey</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A presentable, animated journey through thelanguagepage.com: what it is, how it works, and what is still to do.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&display=swap" rel="stylesheet">
+<style>
+/* VOICE occasion: a talk to teachers, leaders and families; warm, confident, honest
+   IDEA a field-guide map: one drawn trail across warm paper, each stop a page of the guide, a token travels the trail
+   PICTURE the route itself, revealed as the camera flies between stops; at each stop a live demo or a real screen
+   COLOUR warm paper #F7F4EC, harbor navy #17324D, teal #1FA6A2 for the trail and progress, amber #F2C15B for the one next action
+   TYPE Fraunces display + Atkinson Hyperlegible text (the site's own pair)
+   LAYOUT one 1600x900 stop fills the screen; HUD along the bottom; under 760px the stops stack as a readable page */
+:root{color-scheme:light;--paper:#F7F4EC;--paper2:#EFE8D8;--card:#FFFDF8;--navy:#17324D;--navy2:#274A6A;--navy3:#0F2438;--teal:#1FA6A2;--teal-ink:#0E6E6A;--teal-soft:#DFF2EE;--amber:#F2C15B;--amber-soft:#FFF3D8;--ink:#24323F;--muted:#55636F;--line:#E4DCCB;--listen:#075568;--speak:#E07A5F;--speak-ink:#A8432B;--read:#2E4A94;--write:#9A4A26;--tests:#6F7F8C;--ok:#1E7F4F;--warn:#A8432B}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font:18px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:4px solid var(--amber);outline-offset:3px}
+#app{position:fixed;inset:0;overflow:hidden;background:radial-gradient(120% 90% at 50% 40%,#FBF8F1,var(--paper) 60%,var(--paper2))}
+#dust{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#viewport{position:absolute;inset:0 0 64px 0;overflow:hidden}
+#world{position:absolute;left:0;top:0;transform-origin:0 0}
+#world.moving{will-change:transform}
+#route{position:absolute;overflow:visible;pointer-events:none}
+.bigword{position:absolute;font:800 260px/1 Fraunces,Georgia,serif;color:var(--navy);opacity:.055;white-space:nowrap;pointer-events:none;letter-spacing:-.03em}
+.bigword.es{color:var(--teal-ink);font-style:italic;font-weight:600}
+.sign{position:absolute;font:600 44px/1 Fraunces,Georgia,serif;color:var(--navy);white-space:nowrap;padding:14px 26px;background:var(--amber);border-radius:999px;box-shadow:0 6px 0 rgba(23,50,77,.18);opacity:0;transition:opacity .4s}
+.overview .sign{opacity:1}
+.sign b{font-family:"Atkinson Hyperlegible",sans-serif;font-weight:700;margin-right:12px}
+/* a stop: one page of the field guide */
+.st{position:absolute;width:1600px;height:900px;border-radius:40px;background:var(--card);box-shadow:0 2px 0 var(--line),0 40px 80px -40px rgba(23,50,77,.45);padding:64px 80px 56px;overflow:hidden;display:flex;flex-direction:column;font-size:26px;line-height:1.4}
+.st.dark{background:var(--navy);color:#F4F1E8}
+.overview .st{cursor:pointer}
+.overview .st:hover{box-shadow:0 0 0 14px var(--amber),0 40px 80px -40px rgba(23,50,77,.45)}
+.st h2{font:600 64px/1.04 Fraunces,Georgia,serif;letter-spacing:-.02em;margin:0 0 20px;color:var(--navy);max-width:1250px}
+.st.dark h2{color:#fff}
+.st p{margin:0}
+.lbl{font-size:22px;font-weight:700;color:var(--teal-ink);margin-bottom:10px}
+.dark .lbl{color:var(--amber)}
+.src{font-size:18px;color:var(--muted);margin-top:auto;padding-top:14px}
+.dark .src{color:#B9C6D2}
+.live-link{position:absolute;right:56px;top:52px;font-size:19px;font-weight:700;text-decoration:none;background:var(--teal-soft);color:var(--teal-ink);padding:10px 18px;border-radius:999px;border:2px solid transparent}
+.live-link:hover{border-color:var(--teal)}
+.dark .live-link{background:rgba(255,255,255,.1);color:#fff}
+.row{display:flex;gap:44px;flex:1;min-height:0}
+.col{display:flex;flex-direction:column;gap:18px;min-height:0}
+[data-b]{transition:opacity .6s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+[data-b]:not(.on){opacity:0;transform:translateY(26px)}
+.pill{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:10px 20px;font-weight:700;font-size:21px;border:2px solid var(--line);background:#fff}
+.btn{border:0;border-radius:16px;padding:16px 26px;font-weight:700;font-size:22px;background:var(--navy);color:#fff;min-height:56px}
+.btn.amber{background:var(--amber);color:var(--navy3)}
+.btn.ghost{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.btn:hover{filter:brightness(1.08)}
+/* browser frame around real screenshots */
+.browser{border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 0 0 2px var(--line),0 30px 60px -30px rgba(23,50,77,.5);display:flex;flex-direction:column}
+.browser .bar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#F1ECE1;font-size:17px;color:var(--muted)}
+.browser .bar i{width:13px;height:13px;border-radius:50%;background:#D9CFBD;display:block}
+.browser .bar span{margin-left:10px;background:#fff;border-radius:999px;padding:4px 16px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.browser .shot{position:relative;flex:1;overflow:hidden;background:#F7F4EC}
+.browser img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;transition:opacity .5s}
+
+/* S0 title */
+#s0{padding:0;flex-direction:row}
+#s0 .t-left{flex:1.05;padding:96px 0 80px 96px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+#s0 h1{font:800 150px/.92 Fraunces,Georgia,serif;letter-spacing:-.035em;margin:18px 0 34px;color:#fff}
+#s0 h1 span{display:block}
+#s0 .promise{font-size:38px;line-height:1.25;color:#F4F1E8;max-width:640px;position:relative;padding-bottom:14px}
+#s0 .promise::after{content:"";position:absolute;left:0;bottom:0;height:8px;width:100%;background:var(--amber);border-radius:6px;transform-origin:left;transform:scaleX(0)}
+#s0.live .promise::after{animation:drawx 1.2s .6s cubic-bezier(.6,0,.2,1) forwards}
+@keyframes drawx{to{transform:scaleX(1)}}
+#s0 .host{margin-top:44px;font-size:26px;color:#B9C6D2}
+#s0 .host b{color:#fff}
+#s0 .t-right{flex:1;position:relative}
+#s0 .page{position:absolute;left:50%;bottom:110px;width:330px;height:400px;margin-left:-165px;background:var(--card);border-radius:18px;transform:rotate(-5deg);box-shadow:24px 30px 0 rgba(0,0,0,.18)}
+#s0 .page::before{content:"";position:absolute;inset:44px 40px auto;height:200px;background:repeating-linear-gradient(#D9CFBD 0 8px,transparent 8px 34px)}
+#s0 .page::after{content:"Aa";position:absolute;left:40px;bottom:40px;font:800 96px/1 Fraunces,serif;color:var(--teal)}
+.chip{position:absolute;left:0;top:0;white-space:nowrap;border-radius:999px;padding:10px 22px;font-weight:700;font-size:28px;pointer-events:none;box-shadow:0 8px 20px -8px rgba(0,0,0,.4)}
+.chip.en{background:var(--teal);color:#fff}
+.chip.es{background:var(--amber);color:var(--navy3);font-style:italic}
+#s0 .hint{position:absolute;right:56px;bottom:46px;font-size:22px;color:#B9C6D2;z-index:2}
+#s0 .hint kbd{font:700 20px "Atkinson Hyperlegible";background:rgba(255,255,255,.14);border-radius:8px;padding:4px 10px;color:#fff}
+
+/* S1 three people */
+.people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;flex:1;margin-top:10px}
+.person{background:var(--paper);border-radius:28px;padding:30px 32px;display:flex;flex-direction:column;gap:16px}
+.person svg{width:100%;height:230px}
+.person h3{font:600 36px/1.1 Fraunces,serif;margin:0;color:var(--navy)}
+.person p{font-size:25px}
+
+/* S2 doors */
+#s2 .row{gap:52px}
+#s2 .browser{flex:1.45}
+.doors{flex:1;display:flex;flex-direction:column;gap:16px}
+.door{position:relative;display:flex;gap:20px;align-items:center;text-align:left;background:#fff;border:3px solid var(--line);border-radius:22px;padding:16px 20px 16px 16px;perspective:600px}
+.door .leaf{flex:none;width:78px;height:98px;border-radius:10px 10px 4px 4px;background:var(--paper2);position:relative;transform-style:preserve-3d}
+.door .leaf::before{content:"";position:absolute;inset:0;border-radius:10px 10px 4px 4px;background:var(--navy);transform-origin:left center;transition:transform .7s cubic-bezier(.3,.7,.2,1);box-shadow:inset -10px 0 0 rgba(255,255,255,.08)}
+.door .leaf::after{content:"";position:absolute;right:14px;top:48px;width:9px;height:9px;border-radius:50%;background:var(--amber)}
+.door.on .leaf::before,.door:hover .leaf::before{transform:rotateY(-72deg)}
+.door b{display:block;font:600 30px/1.1 Fraunces,serif;color:var(--navy)}
+.door span{display:block;font-size:21px;color:var(--muted);margin-top:4px}
+.door.on{border-color:var(--teal);background:var(--teal-soft)}
+
+/* S3 domains */
+#s3 .row{gap:40px;align-items:stretch}
+.orbit{flex:0 0 560px;position:relative}
+.orbit svg{width:560px;height:560px}
+.orbit .planet{cursor:pointer}
+.orbit .planet text{font:700 19px "Atkinson Hyperlegible";fill:#fff;text-anchor:middle;pointer-events:none}
+.bands{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.band{display:grid;grid-template-columns:120px minmax(0,1fr) 90px;align-items:center;gap:18px}
+.band .nm{font-weight:700;font-size:24px;color:var(--navy)}
+.band .track{height:46px;display:flex;border-radius:10px;overflow:hidden;background:var(--paper)}
+.band .seg{height:100%;transform-origin:left;transition:opacity .4s,transform 1s cubic-bezier(.2,.8,.2,1)}
+.band .seg.dim{opacity:.16}
+#s3:not(.grow) .band .seg{transform:scaleX(0)}
+.band .v{font:600 32px Fraunces,serif;color:var(--navy);font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.legend button{display:inline-flex;align-items:center;gap:10px;border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:20px;font-weight:700}
+.legend button i{width:18px;height:18px;border-radius:50%}
+.legend button[aria-pressed=true]{border-color:var(--navy)}
+
+/* S4 supports */
+.seg3{display:inline-flex;background:var(--paper);border-radius:999px;padding:6px;gap:4px;position:relative}
+.seg3 button{border:0;background:none;border-radius:999px;padding:14px 26px;font-weight:700;font-size:23px;position:relative;z-index:1;color:var(--navy);transition:color .3s}
+.seg3 button[aria-pressed=true]{color:#fff}
+.seg3 .thumb{position:absolute;top:6px;bottom:6px;border-radius:999px;background:var(--navy);transition:left .45s cubic-bezier(.3,.8,.2,1),width .45s cubic-bezier(.3,.8,.2,1)}
+.task{flex:1;background:var(--paper);border-radius:28px;padding:30px 34px;display:flex;flex-direction:column;gap:18px;position:relative}
+.task .prompt{font-size:27px;font-weight:700;color:var(--navy)}
+.layer{transition:opacity .5s,transform .6s cubic-bezier(.3,.8,.2,1),max-height .6s;max-height:220px;overflow:hidden}
+.layer.gone{opacity:0;transform:translateY(-30px) scale(.96);max-height:0}
+.frame{background:#fff;border:3px dashed var(--teal);border-radius:18px;padding:18px 22px;font-size:26px}
+.frame u{text-decoration:none;display:inline-block;min-width:110px;border-bottom:3px solid var(--teal);margin:0 4px}
+.bank{display:flex;flex-wrap:wrap;gap:10px}
+.bank span{background:var(--amber-soft);border:2px solid var(--amber);border-radius:12px;padding:6px 14px;font-size:22px;font-weight:700}
+.answer{background:#fff;border-radius:18px;min-height:96px;padding:18px 22px;color:var(--muted);font-size:23px;border:2px solid var(--line);margin-top:auto}
+.ledger{flex:0 0 470px;background:var(--navy);color:#fff;border-radius:28px;padding:32px;display:flex;flex-direction:column;gap:16px}
+.ledger h3{font:600 32px Fraunces,serif;margin:0}
+.ledger .rec{background:rgba(255,255,255,.08);border-radius:18px;padding:20px 22px;font-size:24px}
+.ledger .rec b{display:block;font:800 40px Fraunces,serif;margin-bottom:6px}
+.ledger .rec b.ind{color:var(--amber)}
+.ledger .rec b.sup{color:#8FE0DC}
+.ledger small{font-size:20px;color:#B9C6D2;line-height:1.35}
+
+/* S5 ladder */
+#s5 .row{gap:40px}
+.scene{flex:1.1;border-radius:26px;overflow:hidden;position:relative;background:#E9E2D2}
+.scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.4s cubic-bezier(.3,.7,.2,1);transform-origin:50% 60%}
+.scene .cap{position:absolute;left:18px;bottom:18px;background:rgba(255,253,248,.94);border-radius:14px;padding:8px 16px;font-size:19px;font-weight:700;color:var(--navy)}
+.ladder{flex:1;display:flex;flex-direction:column-reverse;justify-content:flex-start;gap:12px;position:relative;padding-left:34px;overflow:hidden}
+.ladder::before,.ladder::after{content:"";position:absolute;top:0;bottom:0;width:8px;border-radius:4px;background:var(--paper2)}
+.ladder::before{left:0}.ladder::after{right:-8px;display:none}
+.rung{position:relative;background:var(--paper);border-radius:22px;padding:18px 22px;border:3px solid transparent;transition:border-color .4s,background .4s,transform .4s;opacity:.62}
+.rung::before{content:"";position:absolute;left:-34px;top:50%;width:34px;height:8px;background:var(--paper2)}
+.rung.on{opacity:1;border-color:var(--speak);background:#fff;transform:translateX(8px)}
+.rung .n{font:800 22px "Atkinson Hyperlegible";color:var(--speak-ink)}
+.rung .q{font-size:23px;font-weight:700;color:var(--navy);margin:4px 0 8px;line-height:1.3}
+.rung .f{font-size:21px;color:var(--ink);font-style:italic;display:none}
+.rung.on .f{display:block}
+.rung:not(.on) .q{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rung .hear{display:none;margin-top:12px;align-items:center;gap:16px}
+.rung.on .hear{display:flex}
+.hear button{border:0;border-radius:999px;background:var(--speak);color:#fff;font-weight:700;font-size:21px;padding:12px 22px}
+.wave{display:flex;gap:5px;align-items:center;height:40px}
+.wave i{width:7px;height:8px;border-radius:4px;background:var(--speak);transition:height .12s}
+.said{font-size:19px;color:var(--muted);margin-top:8px;display:none;line-height:1.35;max-height:5.4em;overflow:auto}
+.rung.on .said{display:block}
+
+/* S6 upgrade lab */
+#s6 .row{gap:40px}
+.plain{font:600 40px Fraunces,serif;color:var(--navy);background:var(--paper);border-radius:20px;padding:18px 26px}
+.plain s{text-decoration-color:var(--speak);text-decoration-thickness:5px}
+#up-text{width:100%;height:150px;resize:none;border:3px solid var(--navy);border-radius:20px;padding:16px 20px;font:24px/1.4 "Atkinson Hyperlegible",sans-serif;color:var(--ink);background:#fff}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.lamps{flex:0 0 520px;display:flex;flex-direction:column;gap:16px}
+.lamp{display:flex;align-items:center;gap:18px;background:var(--paper);border-radius:20px;padding:16px 20px;font-size:24px;font-weight:700;color:var(--navy)}
+.lamp i{flex:none;width:40px;height:40px;border-radius:50%;background:#D9CFBD;display:grid;place-items:center;color:#fff;font-style:normal;font-size:24px;transition:background .4s,box-shadow .4s}
+.lamp.ok i{background:var(--ok);box-shadow:0 0 0 8px rgba(30,127,79,.18)}
+.lamp.no i{background:var(--speak-ink)}
+.msgs{background:#fff;border:2px solid var(--line);border-radius:20px;padding:16px 22px;font-size:21px;min-height:150px;display:flex;flex-direction:column;gap:8px}
+.msgs p{margin:0}
+.msgs .good{color:var(--ok);font-weight:700}
+
+/* S7 lesson */
+.ribbon{display:flex;gap:8px;height:116px;position:relative;margin-top:6px}
+.ribbon button{border:0;border-radius:16px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:10px 20px;text-align:left;color:#fff;transition:transform .3s,filter .3s;position:relative;overflow:hidden}
+.ribbon button b{font:600 32px Fraunces,serif}
+.ribbon button span{font-size:19px;opacity:.9}
+.ribbon button[aria-pressed=true]{transform:translateY(-8px);box-shadow:0 12px 0 var(--amber)}
+.ribbon .fill{position:absolute;inset:0;background:rgba(255,255,255,.22);transform-origin:left;transform:scaleX(0)}
+.playrow{display:flex;align-items:center;gap:18px;margin:22px 0 14px}
+.clock{font:800 54px Fraunces,serif;color:var(--navy);font-variant-numeric:tabular-nums;min-width:170px}
+.detail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;font-size:23px}
+.detail div{background:var(--paper);border-radius:20px;padding:18px 22px}
+.detail b{display:block;color:var(--teal-ink);font-size:20px;margin-bottom:4px}
+.drafts{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:24px;margin-top:20px;font-size:22px}
+.drafts > div{border-radius:20px;padding:16px 22px;border:2px solid var(--line);background:#fff}
+.drafts h4{margin:0 0 6px;font-size:19px;color:var(--muted)}
+mark{background:none;color:inherit;background-image:linear-gradient(var(--hl),var(--hl));background-repeat:no-repeat;background-size:0% 100%;transition:background-size .9s ease;border-radius:4px;padding:0 2px}
+mark.c1{--hl:#CDEFEA}mark.c2{--hl:#FFE6A8}mark.c3{--hl:#F8D3C8}
+.hl mark{background-size:100% 100%}
+.keyrow{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
+.keyrow span{font-size:18px;font-weight:700;padding:4px 12px;border-radius:8px}
+
+/* S8 library ring */
+#s8{padding-bottom:40px}
+.stage3d{flex:1;position:relative;perspective:2600px;perspective-origin:50% 20%;touch-action:none;cursor:grab}
+.stage3d:active{cursor:grabbing}
+.ring{position:absolute;left:50%;top:6px;width:0;height:0;transform-style:preserve-3d}
+.card3{position:absolute;left:-260px;top:0;width:520px;height:340px;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 0 0 2px var(--line);backface-visibility:hidden;border:0;padding:0}
+.card3 img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
+.card3.front{box-shadow:0 0 0 6px var(--amber)}
+.caption3{position:absolute;left:80px;right:80px;bottom:44px;display:flex;gap:30px;align-items:flex-end;justify-content:space-between;background:linear-gradient(transparent,var(--card) 30%);padding-top:30px}
+.caption3 h3{font:600 44px/1.05 Fraunces,serif;color:var(--navy);margin:0 0 6px}
+.caption3 p{font-size:24px;max-width:1000px}
+.caption3 .go{white-space:nowrap}
+
+/* S9 passport */
+#s9 .row{gap:56px}
+.pp{flex:0 0 620px;position:relative;perspective:1800px}
+.pp .inside{position:absolute;inset:20px 0 20px 0;background:#FFFBEF;border-radius:10px 28px 28px 10px;box-shadow:0 0 0 2px var(--line),18px 24px 0 rgba(23,50,77,.12);padding:34px 34px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:18px}
+.pp .inside h3{grid-column:1/-1;font:600 32px Fraunces,serif;margin:0;color:var(--navy)}
+.pp .cover{position:absolute;inset:20px 0 20px 0;border-radius:10px 28px 28px 10px;background:var(--navy);transform-origin:left center;transition:transform 1.4s cubic-bezier(.5,0,.2,1);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;backface-visibility:hidden;z-index:2;box-shadow:inset 14px 0 0 rgba(0,0,0,.15)}
+.pp .cover b{font:800 56px Fraunces,serif;color:var(--amber)}
+.pp .cover span{font-size:24px;color:#B9C6D2}
+.pp.open .cover{transform:rotateY(-160deg)}
+.stamp{display:grid;place-items:center;border-radius:50%;width:170px;height:170px;margin:auto;border:6px double currentColor;font:800 25px/1.1 Fraunces,serif;text-align:center;opacity:0;transform:scale(2.2) rotate(-25deg)}
+.stamp.down{animation:thud .5s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes thud{0%{opacity:0;transform:scale(2.2) rotate(-25deg)}100%{opacity:.92;transform:scale(1) rotate(var(--rot,-8deg))}}
+.facts{flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center}
+.fact{display:flex;gap:20px;align-items:flex-start;font-size:26px}
+.fact i{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:26px;color:#fff;background:var(--teal-ink)}
+.notscore{font:600 34px/1.2 Fraunces,serif;color:var(--navy);background:var(--amber-soft);border-left:10px solid var(--amber);border-radius:14px;padding:18px 24px}
+
+/* S10 teachers */
+#s10 .row{gap:44px}
+.stack{flex:1.25;position:relative;perspective:1600px}
+.stack .browser{position:absolute;width:86%;height:74%;transition:transform .8s cubic-bezier(.3,.8,.2,1)}
+.stack .b1{left:0;top:0}
+.stack .b2{right:0;bottom:0;transform:translate(60px,40px);opacity:0;transition:transform .8s cubic-bezier(.3,.8,.2,1),opacity .6s}
+#s10.two .stack .b2{transform:none;opacity:1}
+.tlist{flex:1;display:flex;flex-direction:column;gap:18px;font-size:24px}
+.tlist b{color:var(--navy)}
+.reset{background:var(--paper);border-radius:22px;padding:14px 18px 8px}
+.reset svg{width:100%;height:190px;display:block}
+.reset text{font:700 17px "Atkinson Hyperlegible"}
+#rs-line{stroke-dasharray:900;stroke-dashoffset:900}
+#s10.three #rs-line{transition:stroke-dashoffset 1.6s ease;stroke-dashoffset:0}
+#rs-no{opacity:0;transition:opacity .5s 1.5s}
+#s10.three #rs-no{opacity:1}
+
+/* S11 families */
+#s11 .row{gap:50px;align-items:center}
+.flip{flex:1.1;height:560px;perspective:2000px}
+.flip .inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.4,.1,.2,1)}
+.flip.es .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:30px;background:#fff;border:3px solid var(--line);padding:44px 48px;display:flex;flex-direction:column;gap:22px}
+.face.back{transform:rotateY(180deg)}
+.face h3{font:800 54px/1.05 Fraunces,serif;color:var(--navy);margin:0}
+.face .dir{font-size:28px;font-weight:700;color:var(--navy)}
+.face .promise2{background:var(--teal-soft);border:2px solid var(--teal);border-radius:20px;padding:22px 26px;font-size:27px}
+.face .promise2 b{display:block;margin-bottom:6px}
+.face .tag{margin-top:auto;font-size:20px;color:var(--muted)}
+.fam-side{flex:.9;display:flex;flex-direction:column;gap:20px}
+.fam-side .browser{height:360px}
+
+/* S12 privacy */
+#s12 .row{gap:40px}
+.dev{flex:1.15;position:relative}
+.dev svg{width:100%;height:100%}
+.pv .orb{transform-box:view-box;transform-origin:330px 300px;animation:spin 18s linear infinite}
+.pv .orb2{transform-box:view-box;transform-origin:330px 300px;animation:spin 26s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pv .tracker{transition:transform 1s}
+#s12.bounce .tr1{animation:knock 2.6s ease-in-out infinite}
+#s12.bounce .tr2{animation:knock2 2.9s .5s ease-in-out infinite}
+@keyframes knock{0%,100%{transform:translate(0,0)}45%{transform:translate(70px,40px)}55%{transform:translate(58px,32px)}}
+@keyframes knock2{0%,100%{transform:translate(0,0)}45%{transform:translate(-60px,50px)}55%{transform:translate(-48px,40px)}}
+.plist{flex:1;display:flex;flex-direction:column;gap:18px;justify-content:center}
+.plist div{display:flex;gap:18px;font-size:26px;align-items:flex-start}
+.plist i{flex:none;width:46px;height:46px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-style:normal;font-weight:800}
+
+/* S13 numbers */
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px;flex:1;margin-top:10px}
+.num{background:var(--paper);border-radius:26px;padding:26px 28px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.num b{font:800 84px/1 Fraunces,serif;color:var(--navy);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.num span{font-size:23px;margin-top:10px;line-height:1.3}
+.num::before{content:"";position:absolute;left:0;top:0;height:10px;width:100%;background:var(--c,var(--teal))}
+
+/* S14 road ahead */
+#s14 .row{gap:30px}
+.road{flex:1.1;position:relative}
+.road svg{width:100%;height:100%}
+.todo{flex:1;display:flex;flex-direction:column;gap:14px;justify-content:center}
+.todo div{display:flex;gap:18px;align-items:flex-start;background:var(--paper);border-radius:20px;padding:16px 20px;font-size:24px}
+.todo i{flex:none;width:42px;height:42px;border-radius:12px;border:3px dashed var(--teal-ink);color:var(--teal-ink);display:grid;place-items:center;font-style:normal;font-weight:800;font-size:20px}
+
+/* S15 finale */
+#s15 .row{align-items:center;gap:70px}
+#s15 h2{font-size:84px;max-width:none}
+.qr{flex:none;width:340px;background:#fff;border-radius:28px;padding:24px;text-align:center;color:var(--navy);font-weight:700;font-size:20px}
+.qr img{width:100%;display:block;margin-bottom:10px}
+.url{font:600 38px Fraunces,serif;color:var(--amber);margin:22px 0}
+.pills{display:flex;gap:12px;flex-wrap:wrap}
+.pills span{background:rgba(255,255,255,.1);border-radius:999px;padding:12px 22px;font-size:23px;font-weight:700}
+#s15 .fountain{position:absolute;inset:0;pointer-events:none;z-index:0}
+#s15 .row,#s15 .lbl{position:relative;z-index:1}
+
+/* HUD */
+#hud{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;gap:14px;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background:var(--navy);color:#fff;z-index:5}
+#hud .brand{font:600 20px Fraunces,serif;white-space:nowrap}
+#hud .now{flex:1;display:flex;align-items:center;gap:16px;overflow:hidden}
+#hud .now span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:17px;color:#D5DEE6}
+.dots{display:flex;gap:6px;align-items:center}
+.dots button{width:14px;height:14px;border-radius:50%;border:2px solid #8FA4B6;background:transparent;padding:0;transition:background .3s,transform .3s}
+.dots button.seen{background:var(--teal);border-color:var(--teal)}
+.dots button.cur{background:var(--amber);border-color:var(--amber);transform:scale(1.35)}
+.hb{border:0;background:rgba(255,255,255,.1);color:#fff;border-radius:12px;height:44px;min-width:44px;padding:0 14px;font-weight:700;font-size:16px;white-space:nowrap}
+.hb:hover{background:rgba(255,255,255,.2)}
+.hb.next{background:var(--amber);color:var(--navy3)}
+#notes{position:absolute;left:16px;right:16px;bottom:76px;max-width:980px;margin:auto;background:var(--navy3);color:#fff;border-radius:20px;padding:20px 24px;z-index:6;box-shadow:0 20px 50px rgba(0,0,0,.35);font-size:18px}
+#notes .top{display:flex;justify-content:space-between;gap:16px;color:#B9C6D2;font-size:15px;margin-bottom:8px}
+#notes .timer{font:700 18px "Atkinson Hyperlegible";color:var(--amber);font-variant-numeric:tabular-nums}
+#notes h3{font:600 24px Fraunces,serif;margin:0 0 6px}
+#notes p{margin:0 0 8px;line-height:1.45}
+#notes a{color:var(--amber)}
+#help{position:absolute;inset:0;background:rgba(15,36,56,.7);display:grid;place-items:center;z-index:9}
+#help .box{background:var(--card);border-radius:24px;padding:28px 34px;max-width:560px;width:calc(100% - 32px)}
+#help h3{font:600 30px Fraunces,serif;color:var(--navy);margin:0 0 12px}
+#help dl{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:0 0 18px}
+#help dt kbd{font:700 15px "Atkinson Hyperlegible";background:var(--paper2);border-radius:6px;padding:3px 9px}
+#black{position:absolute;inset:0;background:#000;z-index:8;opacity:0;pointer-events:none;transition:opacity .4s}
+#black.on{opacity:1;pointer-events:auto}
+#laser{position:absolute;width:44px;height:44px;margin:-22px;border-radius:50%;background:radial-gradient(var(--amber) 0 30%,rgba(242,193,91,.35) 45%,transparent 70%);pointer-events:none;z-index:7;display:none}
+#fade{position:absolute;inset:0;background:var(--paper);opacity:0;pointer-events:none;z-index:4;transition:opacity .25s}
+
+/* narrow screens: the stops become a readable page */
+body.reader{overflow:auto}
+.reader #app{position:static;overflow:visible;background:var(--paper)}
+.reader #viewport{position:static;overflow:visible}
+.reader #world{position:static;transform:none!important;padding:16px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px))}
+.reader #route,.reader .bigword,.reader .sign,.reader #dust,.reader #hud,.reader #notes{display:none}
+.reader .st{position:relative;left:auto!important;top:auto!important;transform:none!important;width:auto;height:auto;margin:0 0 20px;padding:28px 22px;border-radius:24px;font-size:17px}
+.reader .st h2,.reader #s15 h2{font-size:30px}
+.reader #s0{flex-direction:column}
+.reader #s0 .t-left{padding:20px}
+.reader #s0 h1{font-size:54px}
+.reader #s0 .promise{font-size:22px}
+.reader #s0 .host{font-size:17px;margin-top:20px}
+.reader #s0 .t-right,.reader #s0 .hint{display:none}
+.reader .row{flex-direction:column;gap:20px;align-items:stretch!important}
+.reader .people,.reader .nums{grid-template-columns:minmax(0,1fr)}
+.reader .nums{grid-template-columns:repeat(2,minmax(0,1fr))}
+.reader .num b{font-size:40px}.reader .num span{font-size:15px}
+.reader [data-b]{opacity:1;transform:none}
+.reader .live-link{position:static;display:inline-block;margin-bottom:12px;font-size:15px}
+.reader .browser,.reader .fam-side .browser{height:240px;flex:none}
+.reader .stack{height:280px;flex:none}
+.reader .orbit{flex:none;width:100%}.reader .orbit svg{width:100%;height:auto}
+.reader .ledger,.reader .lamps,.reader .pp{flex:none;width:100%}
+.reader .pp{height:420px}
+.reader .stamp{width:96px;height:96px;font-size:15px}
+.reader .scene{height:220px;flex:none}
+.reader .stage3d{height:300px;flex:none;perspective:1400px}
+.reader .ring{transform:scale(.55)}
+.reader .caption3{position:static;flex-direction:column;align-items:flex-start;background:none}
+.reader .caption3 h3{font-size:24px}.reader .caption3 p{font-size:16px}
+.reader .flip{height:420px;flex:none;width:100%}
+.reader .face h3{font-size:28px}.reader .face .dir,.reader .face .promise2{font-size:17px}
+.reader .dev,.reader .road{height:260px;flex:none}
+.reader .ribbon{height:80px}.reader .ribbon button b{font-size:18px}.reader .ribbon button span{font-size:13px}
+.reader .detail,.reader .drafts{grid-template-columns:minmax(0,1fr);font-size:16px}
+.reader .plain{font-size:22px}
+.reader .person svg{height:140px}
+.reader .person h3{font-size:24px}.reader .person p,.reader .fact,.reader .tlist,.reader .plist div,.reader .todo div,.reader .rung .q,.reader .rung .f{font-size:17px}
+.reader .door b{font-size:20px}.reader .door span{font-size:15px}
+.reader .notscore{font-size:20px}
+.reader .qr{width:220px}.reader .url{font-size:22px}
+.reader .band{grid-template-columns:64px minmax(0,1fr) 52px}.reader .band .nm{font-size:16px}.reader .band .v{font-size:20px}.reader .band .track{height:28px}
+.reader .seg3 button{padding:10px 12px;font-size:15px}
+.reader .lamp{font-size:17px}.reader .msgs{font-size:16px}
+.reader .ledger .rec b{font-size:26px}
+.reader #s2 .browser,.reader .fam-side,.reader .doors{flex:none}
+.reader .task{padding:18px}.reader .task .prompt,.reader .frame{font-size:17px}.reader .bank span,.reader .answer{font-size:15px}
+.reader .playrow{flex-wrap:wrap;gap:10px}.reader .clock{font-size:34px;min-width:0}.reader .btn{font-size:16px;padding:12px 16px;min-height:44px}
+.reader .stage3d{perspective:none;height:auto;cursor:auto}
+.reader .ring{position:static;transform:none!important;display:flex;gap:12px;overflow-x:auto;width:auto;height:auto;padding:6px 2px 10px}
+.reader .card3{position:relative;left:auto;transform:none!important;flex:none;width:260px;height:170px;backface-visibility:visible}
+.reader .flip{height:auto;perspective:none}.reader .flip .inner{transform:none!important;display:flex;flex-direction:column;gap:12px}
+.reader .face{position:relative;inset:auto;backface-visibility:visible;padding:20px}.reader .face.back{transform:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+
+<div id="app">
+<canvas id="dust" aria-hidden="true"></canvas>
+<div id="viewport">
+<div id="world">
+<svg id="route" aria-hidden="true"></svg>
+
+<!-- 0 -->
+<section class="st dark" id="s0" aria-label="Title">
+  <div class="t-left">
+    <div class="lbl">A guided journey through</div>
+    <h1><span>The</span><span>Language</span><span>Page</span></h1>
+    <p class="promise">English for school, in your language, K–8.</p>
+    <p class="host"><b>thelanguagepage.com</b>  ·  practice in listening, speaking, reading and writing</p>
+  </div>
+  <div class="t-right" id="t-right"><div class="page"></div></div>
+  <div class="hint">Press <kbd>→</kbd> or <kbd>Space</kbd> to begin</div>
+</section>
+
+<!-- 1 -->
+<section class="st" id="s1" aria-label="Why it exists">
+  <div class="lbl">Why it exists</div>
+  <h2>Three people. One shared problem.</h2>
+  <div class="people">
+    <div class="person" data-b="1">
+      <svg viewBox="0 0 400 230" aria-hidden="true"><rect x="0" y="190" width="400" height="40" rx="12" fill="#EFE8D8"/><circle cx="150" cy="80" r="44" fill="#C98B5B"/><path d="M100 190c0-52 22-80 50-80s50 28 50 80z" fill="#1FA6A2"/><path d="M118 62c10-30 54-36 70-6-14-6-40-6-70 6z" fill="#24323F"/><rect x="206" y="24" width="170" height="80" rx="22" fill="#fff" stroke="#17324D" stroke-width="4"/><path d="M226 104l-18 26 40-26z" fill="#fff" stroke="#17324D" stroke-width="4" stroke-linejoin="round"/><text x="291" y="76" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="38" fill="#17324D">Aa ñ é</text></svg>
+      <h3>The learner</h3>
+      <p>Is learning English for school while learning the school subjects themselves.</p>
+    </div>
+    <div class="person" data-b="2">
+      <svg viewBox="0 0 400 230" aria-hidden="true"><rect x="0" y="190" width="400" height="40" rx="12" fill="#EFE8D8"/><circle cx="130" cy="76" r="42" fill="#8D5A3B"/><path d="M80 190c0-54 22-82 50-82s50 28 50 82z" fill="#17324D"/><rect x="200" y="40" width="150" height="150" rx="14" fill="#fff" stroke="#17324D" stroke-width="4"/><rect x="226" y="72" width="96" height="10" rx="5" fill="#D9CFBD"/><rect x="226" y="98" width="70" height="10" rx="5" fill="#D9CFBD"/><text x="275" y="172" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="56" fill="#F2C15B">?</text></svg>
+      <h3>The teacher</h3>
+      <p>Has little time to differentiate, and can rarely tell if a task was done alone or with support.</p>
+    </div>
+    <div class="person" data-b="3">
+      <svg viewBox="0 0 400 230" aria-hidden="true"><rect x="0" y="190" width="400" height="40" rx="12" fill="#EFE8D8"/><path d="M60 190v-90l90-60 90 60v90z" fill="#F2C15B"/><rect x="128" y="130" width="44" height="60" rx="6" fill="#17324D"/><rect x="248" y="34" width="130" height="58" rx="18" fill="#1FA6A2"/><text x="313" y="73" text-anchor="middle" font-family="Atkinson Hyperlegible" font-weight="700" font-size="28" fill="#fff">Hello</text><rect x="268" y="106" width="110" height="58" rx="18" fill="#fff" stroke="#17324D" stroke-width="4"/><text x="323" y="145" text-anchor="middle" font-family="Atkinson Hyperlegible" font-weight="700" font-size="28" fill="#17324D">Hola</text></svg>
+      <h3>The family</h3>
+      <p>Speaks another language at home and has few ways to take part in school English.</p>
+    </div>
+  </div>
+  <p class="src">From the project’s own logic model. It states what the product is built to do; it is not evidence of impact.</p>
+</section>
+
+<!-- 2 -->
+<section class="st" id="s2" aria-label="Four doors">
+  <a class="live-link" href="https://thelanguagepage.com/access-practice-lab/" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl">The front page</div>
+  <h2>One page, with a door for each person.</h2>
+  <div class="row">
+    <div class="browser"><div class="bar"><i></i><i></i><i></i><span id="door-url">thelanguagepage.com/access-practice-lab/</span></div><div class="shot"><img id="door-a" src="shots/home.jpg" alt="The Language Page front page: Practice English for school, one step at a time, with doors for teachers, students, families and BCPSS teachers."><img id="door-b" src="shots/home.jpg" alt="" style="opacity:0"></div></div>
+    <div class="doors" id="doors"></div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="st" id="s3" aria-label="Four domains">
+  <div class="lbl">What is inside</div>
+  <h2>933 activities, four language domains, five grade bands.</h2>
+  <div class="row">
+    <div class="orbit"><svg id="orbit" viewBox="0 0 640 640" role="img" aria-label="Activities by domain: Listening 238, Speaking 219, Reading 203, Writing 222, practice tests 51."></svg></div>
+    <div class="bands">
+      <div id="bands"></div>
+      <div class="legend" id="legend"></div>
+      <p style="font-size:20px;color:var(--muted)">Tap a domain to see where its activities sit. The core bank grows with the grade bands it serves.</p>
+    </div>
+  </div>
+  <p class="src">Counted from the activity bank (access-practice-lab/content), 24 November 2026.</p>
+</section>
+
+<!-- 4 -->
+<section class="st" id="s4" aria-label="Supports">
+  <a class="live-link" href="https://thelanguagepage.com/access-practice-lab/voice/ladder/school-hallway" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl">The core idea</div>
+  <h2>Supports fade. The task stays the same.</h2>
+  <div class="row">
+    <div class="col" style="flex:1">
+      <div class="seg3" id="seg3" role="group" aria-label="Support level"><span class="thumb"></span><button aria-pressed="true" data-l="0">More support</button><button aria-pressed="false" data-l="1">Some support</button><button aria-pressed="false" data-l="2">On my own</button></div>
+      <div class="task">
+        <div class="prompt">The hallway gets crowded between classes. Explain one change the school could make so students get to class safely, and give a reason.</div>
+        <div class="layer" id="ly-frame"><div class="frame">One change the school could make is <u></u>. This would help because <u></u>. For example, <u></u>.</div></div>
+        <div class="layer" id="ly-bank"><div class="bank"><span>crowded</span><span>safely</span><span>walk on the right</span><span>bump into</span><span>because</span><span>for example</span></div></div>
+        <div class="answer" id="ly-ans">The learner speaks or writes here, with the same prompt at every level.</div>
+      </div>
+    </div>
+    <div class="ledger">
+      <h3>What the record says</h3>
+      <div class="rec"><b id="rec-kind" class="sup">Supported</b><span id="rec-why">Used a sentence frame and a word bank.</span></div>
+      <small>Work done on my own is recorded as independent. Work done with frames, a word bank or a model is recorded as supported, never as independent.</small>
+      <small>The teacher sees supports and independence as counts, so the next small group is easy to choose.</small>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="st" id="s5" aria-label="Speaking ladder">
+  <a class="live-link" href="https://thelanguagepage.com/access-practice-lab/voice/ladder/school-hallway" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl" style="color:var(--speak-ink)">Speaking pathway · The Busy Hallway, grades 6–8</div>
+  <h2>One picture. Speak three times, saying more.</h2>
+  <div class="row">
+    <div class="scene"><img id="hall" src="hallway.svg" alt="A busy school hallway with a row of lockers, students carrying backpacks, a clock, and a water fountain."><span class="cap">Original art from the site’s picture library</span></div>
+    <div class="ladder" id="ladder"></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="st" id="s6" aria-label="Language Upgrade Lab">
+  <a class="live-link" href="https://thelanguagepage.com/access-practice-lab/scaffold/language-upgrade?item=lu68-argue-phones" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl" style="color:var(--write)">Writing pathway · Language Upgrade Lab</div>
+  <h2>Make a plain sentence say exactly what you mean.</h2>
+  <div class="row">
+    <div class="col" style="flex:1">
+      <div class="plain">Phones in class are <s>bad</s>.</div>
+      <div style="font-size:22px">Revise this for an opinion essay to the school board. Frame: <i>Phones in class can be ___ because ___.</i></div>
+      <label for="up-text" class="lbl" style="margin:0;font-size:20px">Your revision (anyone in the room can type here)</label>
+      <textarea id="up-text" spellcheck="false" placeholder="Type a better sentence, then press Check my work."></textarea>
+      <div class="btns"><button class="btn" id="up-check">Check my work</button><button class="btn ghost" id="up-weak">Try a weak revision</button><button class="btn ghost" id="up-strong">Try a strong revision</button></div>
+    </div>
+    <div class="lamps">
+      <div class="lamp" id="lp-detail"><i>·</i>New information added</div>
+      <div class="lamp" id="lp-precision"><i>·</i>A precise word, the general one gone</div>
+      <div class="lamp" id="lp-connector"><i>·</i>Two ideas joined by a connector</div>
+      <div class="msgs" id="up-msgs" aria-live="polite"><p>Press <b>Check my work</b>. The feedback names one thing to fix and asks a question. It never gives the answer.</p></div>
+      <p style="font-size:19px;color:var(--muted)">This is the site’s real checker. It looks for patterns; it does not judge meaning or give a score.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="st" id="s7" aria-label="Featured lesson">
+  <a class="live-link" href="https://thelanguagepage.com/access-practice-lab/start/lesson" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl">Featured lesson · Safer Hallways: Speak, Write, Improve</div>
+  <h2>Ten minutes: speak first, then write, then improve.</h2>
+  <div class="ribbon" id="ribbon" role="group" aria-label="Lesson steps"></div>
+  <div class="playrow"><div class="clock" id="clock" aria-live="off">10:00</div><button class="btn amber" id="run-fast">Play the lesson in 20 seconds</button><button class="btn ghost" id="run-live">Run a live 10-minute clock</button></div>
+  <div class="detail" id="detail"><div><b>Teacher</b><span></span></div><div><b>Students</b><span></span></div></div>
+  <div class="drafts" id="drafts" data-b="2">
+    <div><h4>First draft</h4>The school should make the hallway bigger. It is too crowded.</div>
+    <div><h4>After one cue: “Add an example that starts with For example.”</h4><mark class="c1">One change the school could make is to put arrows on the floor</mark> so everyone walks the same way. <mark class="c2">This would help because students would not run into each other.</mark> <mark class="c3">For example, a student with a heavy backpack could get to class without being pushed.</mark></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="st" id="s8" aria-label="Library of practice">
+  <div class="lbl">Places to practice</div>
+  <h2>A library of places to practice, each with one clear job.</h2>
+  <div class="stage3d" id="stage3d" aria-label="Drag to spin, or choose a card"><div class="ring" id="ring"></div></div>
+  <div class="caption3"><div><h3 id="c3-title"></h3><p id="c3-text"></p></div><a class="btn amber go" id="c3-go" href="#" target="_blank" rel="noopener">Open live ↗</a></div>
+</section>
+
+<!-- 9 -->
+<section class="st" id="s9" aria-label="Passport">
+  <a class="live-link" href="https://thelanguagepage.com/access-practice-lab/passport" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl">Evidence from a learner’s own work</div>
+  <h2>A passport of finished practice.</h2>
+  <div class="row">
+    <div class="pp" id="pp">
+      <div class="inside"><h3>My Passport · grades 6–8</h3>
+        <div class="stamp" style="color:var(--listen);--rot:-9deg">Listening</div>
+        <div class="stamp" style="color:var(--speak-ink);--rot:7deg">Speaking</div>
+        <div class="stamp" style="color:var(--read);--rot:5deg">Reading</div>
+        <div class="stamp" style="color:var(--write);--rot:-6deg">Writing<br>on my own</div>
+      </div>
+      <div class="cover"><b>Passport</b><span>The Language Page</span></div>
+    </div>
+    <div class="facts">
+      <div class="fact" data-b="1"><i>✓</i><p>Stamps show how much a learner practised, saved on their own device.</p></div>
+      <div class="fact" data-b="1"><i>↗</i><p>A Growth Map shows what writing, speaking and missions reveal, and suggests next steps.</p></div>
+      <div class="fact" data-b="1"><i>✉</i><p>A one-page letter for home in English, Spanish or both, with no level and no score.</p></div>
+      <div class="notscore" data-b="2">Stamps are not an ACCESS score or a WIDA level.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="st" id="s10" aria-label="For teachers">
+  <a class="live-link" href="https://thelanguagepage.com/access-teacher/" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl">For teachers</div>
+  <h2>Find it, teach it, then read the evidence.</h2>
+  <div class="row">
+    <div class="stack">
+      <div class="browser b1"><div class="bar"><i></i><i></i><i></i><span>thelanguagepage.com/access-teacher/</span></div><div class="shot"><img src="shots/hub.jpg" alt="Teacher Hub: find an activity, plan a lesson, run your class and review student work."></div></div>
+      <div class="browser b2"><div class="bar"><i></i><i></i><i></i><span>thelanguagepage.com/access-teacher/predictive/?demo=1</span></div><div class="shot"><img src="shots/data.jpg" alt="WIDA Data Studio in sample mode, with a class at a glance."></div></div>
+    </div>
+    <div class="tlist">
+      <p><b>Teacher Hub.</b> Find an activity, plan a lesson, run a class and review student work. No password on this site.</p>
+      <p data-b="1"><b>WIDA Data Studio.</b> Teachers type in official results; the analysis runs in the browser. Sample mode uses 12 fictional students.</p>
+      <div class="reset" data-b="2">
+        <svg viewBox="0 0 640 190" aria-label="A growth line stops at the 2025–26 ACCESS scale reset; the studio gives no growth number across it.">
+          <line x1="20" y1="160" x2="620" y2="160" stroke="#D9CFBD" stroke-width="3"/>
+          <text x="40" y="184" fill="#55636F">Earlier results</text><text x="400" y="184" fill="#55636F">2025–26 and later</text>
+          <path id="rs-line" d="M40 130 C120 120 200 100 290 84 L330 84" fill="none" stroke="#1FA6A2" stroke-width="7" stroke-linecap="round"/>
+          <rect x="342" y="20" width="16" height="140" rx="6" fill="#A8432B"/>
+          <circle cx="430" cy="110" r="9" fill="#17324D"/><circle cx="520" cy="96" r="9" fill="#17324D"/>
+          <g id="rs-no"><rect x="30" y="8" width="300" height="44" rx="12" fill="#fff"/><text x="44" y="37" fill="#A8432B">No growth number across the reset</text></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="st" id="s11" aria-label="Families">
+  <a class="live-link" href="https://thelanguagepage.com/access-practice-lab/family-tour/" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl">For families</div>
+  <h2>Families take part in English or Spanish.</h2>
+  <div class="row">
+    <div class="flip" id="flip">
+      <div class="inner">
+        <div class="face"><div class="lbl">Family Tour · Step 1 of 4</div><h3>Welcome! Let’s Practice English Together</h3><div class="dir">Choose what to practice and your child’s grade.</div><div class="promise2"><b>You do not need perfect English to help.</b>Ask, wait and listen. You can talk in your home language, too.</div><div class="tag">Tap the card to switch language</div></div>
+        <div class="face back" lang="es"><div class="lbl">Recorrido familiar · Paso 1 de 4</div><h3>¡Bienvenidos! Practiquemos inglés juntos</h3><div class="dir">Elijan qué practicar y el grado de su hijo o hija.</div><div class="promise2"><b>No necesitan hablar inglés perfecto para ayudar.</b>Pregunten, esperen y escuchen. También pueden hablar en el idioma de su casa.</div><div class="tag">Toquen la tarjeta para cambiar de idioma</div></div>
+      </div>
+    </div>
+    <div class="fam-side">
+      <div class="browser"><div class="bar"><i></i><i></i><i></i><span>thelanguagepage.com/access-practice-lab/family-tour/</span></div><div class="shot"><img id="fam-en" src="shots/family-en.jpg" alt="Family Tour in English."><img id="fam-es" src="shots/family-es.jpg" alt="Family Tour in Spanish." style="opacity:0"></div></div>
+      <p style="font-size:23px">No account for families either. Practice itself stays in English; directions and the family pages offer Spanish.</p>
+      <p style="font-size:19px;color:var(--muted)">The Spanish is machine-drafted until a bilingual reviewer signs it off.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="st" id="s12" aria-label="Privacy">
+  <a class="live-link" href="https://thelanguagepage.com/access-practice-lab/privacy" target="_blank" rel="noopener">Open live ↗</a>
+  <div class="lbl">Privacy</div>
+  <h2>Progress stays on the learner’s own device.</h2>
+  <div class="row">
+    <div class="dev"><svg class="pv" viewBox="0 0 760 560" aria-label="A laptop inside a protective bubble. Stamps, drafts and recordings stay inside. Ads and trackers cannot get in. A recording leaves only when the learner sends it.">
+      <circle cx="330" cy="300" r="220" fill="#DFF2EE" stroke="#1FA6A2" stroke-width="5" stroke-dasharray="14 12"/>
+      <rect x="220" y="230" width="220" height="140" rx="12" fill="#17324D"/><rect x="234" y="244" width="192" height="112" rx="6" fill="#F7F4EC"/><path d="M190 372h280l-20 26H210z" fill="#274A6A"/>
+      <text x="330" y="306" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="40" fill="#1FA6A2">Aa</text>
+      <g class="orb"><circle cx="330" cy="140" r="26" fill="#F2C15B"/><text x="330" y="148" text-anchor="middle" font-size="22" font-weight="700" fill="#17324D">✓</text><circle cx="490" cy="330" r="26" fill="#9A4A26"/><text x="490" y="338" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">✎</text></g>
+      <g class="orb2"><circle cx="170" cy="320" r="26" fill="#E07A5F"/><text x="170" y="329" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">●</text></g>
+      <text x="330" y="470" text-anchor="middle" font-family="Atkinson Hyperlegible" font-weight="700" font-size="22" fill="#0E6E6A">stamps · drafts · recordings</text>
+      <g class="tracker tr1"><rect x="40" y="40" width="96" height="56" rx="14" fill="#fff" stroke="#9AA6B0" stroke-width="3"/><text x="88" y="75" text-anchor="middle" font-family="Atkinson Hyperlegible" font-weight="700" font-size="20" fill="#55636F">ads</text></g>
+      <g class="tracker tr2"><rect x="590" y="70" width="130" height="56" rx="14" fill="#fff" stroke="#9AA6B0" stroke-width="3"/><text x="655" y="105" text-anchor="middle" font-family="Atkinson Hyperlegible" font-weight="700" font-size="20" fill="#55636F">trackers</text></g>
+      <g transform="translate(640 420)"><circle r="44" fill="#17324D"/><circle cy="-10" r="14" fill="#F2C15B"/><path d="M-22 22c4-16 14-22 22-22s18 6 22 22z" fill="#F2C15B"/><text y="76" text-anchor="middle" font-family="Atkinson Hyperlegible" font-weight="700" font-size="20" fill="#17324D">teacher</text></g>
+      <circle id="sent" cx="0" cy="0" r="18" fill="#E07A5F" opacity="0"/>
+    </svg></div>
+    <div class="plist">
+      <div><i>1</i><p>No account is needed to practice.</p></div>
+      <div data-b="1"><i>2</i><p>No ads. No third-party analytics or trackers.</p></div>
+      <div data-b="2"><i>3</i><p>A recording leaves the device only when the learner chooses to send it.</p></div>
+      <button class="btn amber" id="send" data-b="2" style="align-self:flex-start">Send one recording to the teacher</button>
+      <p class="src" style="margin-top:8px">Checked on the live site: a network test of 79 pages passed on 25 November 2026.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="st" id="s13" aria-label="By the numbers">
+  <div class="lbl">By the numbers</div>
+  <h2>Built, counted and checked.</h2>
+  <div class="nums" id="nums"></div>
+  <p class="src">Measured from the repository on 24–25 November 2026. Counts of content, not results.</p>
+</section>
+
+<!-- 14 -->
+<section class="st" id="s14" aria-label="What is next">
+  <div class="lbl">Honest road ahead</div>
+  <h2>What is not finished yet.</h2>
+  <div class="row">
+    <div class="road"><svg viewBox="0 0 700 600" aria-hidden="true">
+      <path d="M180 600 C260 420 520 380 430 250 C380 180 330 130 360 40" fill="none" stroke="#EFE8D8" stroke-width="120" stroke-linecap="round"/>
+      <path id="road-mid" d="M180 600 C260 420 520 380 430 250 C380 180 330 130 360 40" fill="none" stroke="#1FA6A2" stroke-width="10" stroke-dasharray="26 26" stroke-linecap="round"/>
+      <g id="flags"></g>
+    </svg></div>
+    <div class="todo" id="todo"></div>
+  </div>
+  <p class="src">From the project’s own program record. None of these is claimed as done on the site.</p>
+</section>
+
+<!-- 15 -->
+<section class="st dark" id="s15" aria-label="Start here">
+  <div class="fountain" id="fountain"></div>
+  <div class="lbl">Your turn</div>
+  <div class="row">
+    <div class="col" style="flex:1;justify-content:center">
+      <h2>Where do your students need to speak or write more?</h2>
+      <div class="url">thelanguagepage.com/access-practice-lab/start</div>
+      <div class="pills"><span>No account to practice</span><span>Nothing is scored</span><span>Saves on this device</span><span>English and Spanish help</span></div>
+      <p class="src">Original practice, not an official WIDA assessment; no scores or placement.</p>
+    </div>
+    <div class="qr"><img src="qr-start.svg" alt="QR code that opens thelanguagepage.com/access-practice-lab/start">Scan to start</div>
+  </div>
+</section>
+</div>
+</div>
+
+<nav id="hud" aria-label="Presentation controls">
+  <span class="brand">The Language Page</span>
+  <div class="now"><div class="dots" id="dots"></div><span id="now-title"></span></div>
+  <button class="hb" id="b-prev" aria-label="Previous">←</button>
+  <button class="hb next" id="b-next">Next →</button>
+  <button class="hb" id="b-over" aria-pressed="false">Map</button>
+  <button class="hb" id="b-notes" aria-pressed="false">Notes</button>
+  <button class="hb" id="b-full" aria-label="Full screen">⛶</button>
+  <button class="hb" id="b-help" aria-label="Keyboard help">?</button>
+</nav>
+<aside id="notes" hidden><div class="top"><span id="n-pos"></span><span class="timer" id="n-timer">00:00</span></div><h3 id="n-title"></h3><div id="n-body"></div></aside>
+<div id="help" hidden><div class="box"><h3>Presenting</h3><dl>
+  <dt><kbd>→</kbd> <kbd>Space</kbd> <kbd>PgDn</kbd></dt><dd>Next build or stop (clickers work)</dd>
+  <dt><kbd>←</kbd> <kbd>PgUp</kbd></dt><dd>Back</dd>
+  <dt><kbd>M</kbd> or <kbd>O</kbd></dt><dd>The whole map; click any stop to fly there</dd>
+  <dt><kbd>N</kbd></dt><dd>Speaker notes and timer</dd>
+  <dt><kbd>F</kbd></dt><dd>Full screen</dd>
+  <dt><kbd>B</kbd></dt><dd>Black screen</dd>
+  <dt><kbd>L</kbd></dt><dd>Spotlight pointer</dd>
+  <dt><kbd>Home</kbd> <kbd>End</kbd></dt><dd>First or last stop</dd>
+</dl><button class="btn" id="help-close">Close</button></div></div>
+<div id="black"></div><div id="laser"></div><div id="fade"></div>
+</div>
+
+<script>
+{
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const RM = matchMedia("(prefers-reduced-motion: reduce)");
+const W = 1600, H = 900, HUD = 64;
+
+/* ---------- the stops: where each sits on the map, its builds and the speaker notes ---------- */
+const STOPS = [
+  {x:0,y:0,r:0,t:"The Language Page",b:0,n:["Welcome. This is a walk through thelanguagepage.com, the way a student, a teacher and a family meet it.","Everything you will see is live on the site today. Where something is not finished, I will say so."]},
+  {x:2700,y:700,r:-3,t:"Why it exists",b:3,n:["Three people, one problem. The learner learns English and school subjects at the same time.","The teacher cannot easily tell whether a task was done alone or with help. The family wants to help and often speaks another language.","This comes from the project’s logic model. It describes intent; it does not claim results."]},
+  {x:5400,y:100,r:2,t:"One page, four doors",b:3,n:["One front page asks a single question: who is here today?","Click each door to show where it leads. A teacher lands on Start Here, a student on their Learning Journey, a family on the Family Tour.","BCPSS teachers have a fourth door with curriculum-to-language bridges."],u:"https://thelanguagepage.com/access-practice-lab/"},
+  {x:8100,y:900,r:-2,t:"What is inside",b:1,n:["933 core activities in four domains, Listening, Speaking, Reading and Writing, plus 51 practice-test items in grades 6–8.","Tap a domain to light it up across the five grade bands, Kindergarten to grade 8.","Grades 6–8 has the most. The early grades are a known gap the team is working on."]},
+  {x:8600,y:3300,r:3,t:"Supports fade",b:2,n:["This is the heart of it. The prompt never changes. Only the help around it changes.","Press Next twice and watch the frame and the word bank fade. The record on the right changes from supported to independent.","Supported work is never recorded as independent. That is what lets a teacher trust the evidence."],u:"https://thelanguagepage.com/access-practice-lab/voice/ladder/school-hallway"},
+  {x:6000,y:3900,r:-2,t:"Speaking ladder",b:2,n:["One picture, three steps. Step one names things. Step two tells what is happening and why. Step three explains a change and gives a reason.","Press Hear first to play the model. The voice is synthesized speech today; recorded human voices are on the to-do list.","Recording is optional. The microphone is asked for only when someone presses Record. In the room, partner talk is the whole task."],u:"https://thelanguagepage.com/access-practice-lab/voice/ladder/school-hallway"},
+  {x:3300,y:3500,r:2,t:"Upgrade a sentence",b:2,n:["Invite someone to type a better version of “Phones in class are bad.” Then press Check my work.","The checker on this slide is the site’s own code. It looks for new information, a precise word with the general one gone, and a connector joining two ideas.","It names one thing to fix with a question. It never writes the answer and never gives a score."],u:"https://thelanguagepage.com/access-practice-lab/scaffold/language-upgrade?item=lu68-argue-phones"},
+  {x:600,y:4300,r:-3,t:"A ten-minute lesson",b:2,n:["The featured lesson: Notice 1 minute, Speak 2, Write 3, Improve 2, Share 2.","Click any step to see the teacher move and the student move. Play it fast to show the shape, or run the live clock to actually teach it.","Then compare the drafts. One cue, “add an example that starts with For example,” produces the change, the reason and the example."],u:"https://thelanguagepage.com/access-practice-lab/start/lesson"},
+  {x:1800,y:6600,r:2,t:"Places to practice",b:0,n:["A library of places, each built around one clear job. Drag the ring or click a card.","Every caption is the page’s own description. Use Open live to jump to the real page if you want to show it."]},
+  {x:4700,y:7100,r:-2,t:"Passport",b:2,n:["Learners collect stamps for finished practice, saved on their own device.","The Growth Map suggests next steps, and there is a one-page letter for home in English, Spanish or both.","Say it plainly: stamps are not an ACCESS score or a WIDA level."],u:"https://thelanguagepage.com/access-practice-lab/passport"},
+  {x:7600,y:6500,r:2,t:"For teachers",b:2,n:["The Teacher Hub: find an activity, plan a lesson, run a class, review student work. It is open on this site.","The WIDA Data Studio: teachers type official results and the analysis runs in the browser. Sample mode uses 12 fictional students, so you can learn it with no real data.","It refuses to report growth across the 2025–26 ACCESS scale reset rather than show a misleading number."],u:"https://thelanguagepage.com/access-teacher/"},
+  {x:10400,y:7000,r:-3,t:"Families",b:1,n:["The Family Tour opens with a promise: you do not need perfect English to help. Ask, wait and listen.","Tap the card to flip it to Spanish. No account is needed.","The Spanish is machine-drafted until a bilingual reviewer signs it off; say so if asked."],u:"https://thelanguagepage.com/access-practice-lab/family-tour/"},
+  {x:12300,y:4900,r:2,t:"Privacy",b:2,n:["Progress stays on the learner’s own device. No account is needed to practice.","No ads, and no third-party analytics or trackers. A network test of 79 live pages passed on 25 November.","Press Send to show the one exception: a recording leaves only when the learner chooses to send it."],u:"https://thelanguagepage.com/access-practice-lab/privacy"},
+  {x:11900,y:2200,r:-2,t:"By the numbers",b:0,n:["These are counts of content, measured from the code: 933 activities, 1,432 words with Spanish glosses, 774 sentence items, 234 listening scripts.","They are not results. No study of impact has been done yet."]},
+  {x:12600,y:-500,r:3,t:"The road ahead",b:1,n:["What is not done: recorded human voices, a bilingual review of the Spanish, a trained review of the content tags, usability sessions, and a pilot.","Naming this openly is part of the design. The site makes no claim it cannot back up."]},
+  {x:15400,y:300,r:0,t:"Start here",b:0,n:["Leave the room with one question: where do your students need to speak or write more?","Scan the code or type the address. It opens Start Here, which links to everything you saw today."],u:"https://thelanguagepage.com/access-practice-lab/start"}
+];
+const secs = STOPS.map((_, i) => $("#s" + i));
+const world = $("#world"), viewport = $("#viewport"), app = $("#app");
+
+/* ---------- route: a smooth trail through every stop ---------- */
+const PTS = STOPS.map(s => [s.x, s.y]);
+let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+PTS.forEach(([x, y]) => { minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y); });
+const segs = [];
+for (let i = 0; i < PTS.length - 1; i++) {
+  const p0 = PTS[i - 1] || PTS[i], p1 = PTS[i], p2 = PTS[i + 1], p3 = PTS[i + 2] || PTS[i + 1], k = 1.15;
+  const c1 = [p1[0] + (p2[0] - p0[0]) / 6 * k, p1[1] + (p2[1] - p0[1]) / 6 * k];
+  const c2 = [p2[0] - (p3[0] - p1[0]) / 6 * k, p2[1] - (p3[1] - p1[1]) / 6 * k];
+  segs.push(`C${c1[0]} ${c1[1]} ${c2[0]} ${c2[1]} ${p2[0]} ${p2[1]}`);
+}
+const D = `M${PTS[0][0]} ${PTS[0][1]}` + segs.join("");
+const pad = 1600, route = $("#route");
+const bx = minX - pad, by = minY - pad, bw = maxX - minX + pad * 2, bh = maxY - minY + pad * 2;
+Object.assign(route.style, { left: bx + "px", top: by + "px", width: bw + "px", height: bh + "px" });
+route.setAttribute("viewBox", `${bx} ${by} ${bw} ${bh}`);
+route.innerHTML = `<path d="${D}" fill="none" stroke="#EFE8D8" stroke-width="170" stroke-linecap="round"/>
+<path d="${D}" fill="none" stroke="#1FA6A2" stroke-opacity=".35" stroke-width="22" stroke-dasharray="2 46" stroke-linecap="round"/>
+<path id="trail" d="${D}" fill="none" stroke="#1FA6A2" stroke-width="24" stroke-linecap="round"/>
+<path id="measure" d="" fill="none" stroke="none"/>
+<g id="token"><circle r="70" fill="#F2C15B" stroke="#17324D" stroke-width="8"/><text y="24" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="66" fill="#17324D">Aa</text></g>`;
+const trail = $("#trail"), token = $("#token"), measure = $("#measure");
+const TOTAL = trail.getTotalLength();
+const LEN = PTS.map((p, i) => { if (!i) return 0; measure.setAttribute("d", `M${PTS[0][0]} ${PTS[0][1]}` + segs.slice(0, i).join("")); return measure.getTotalLength(); });
+trail.style.strokeDasharray = TOTAL;
+let tokenL = 0;
+function placeToken(L) {
+  tokenL = L;
+  trail.style.strokeDashoffset = TOTAL - L;
+  const p = trail.getPointAtLength(Math.max(0, Math.min(TOTAL, L)));
+  token.setAttribute("transform", `translate(${p.x} ${p.y}) rotate(${cam.r})`);
+}
+
+/* place each stop, its signpost, and the landscape words */
+STOPS.forEach((s, i) => {
+  const el = secs[i];
+  el.style.left = s.x - W / 2 + "px"; el.style.top = s.y - H / 2 + "px"; el.style.transform = `rotate(${s.r}deg)`;
+  const sign = document.createElement("div");
+  sign.className = "sign"; sign.innerHTML = `<b>${i + 1}</b>${s.t}`;
+  sign.style.left = s.x - W / 2 + 20 + "px"; sign.style.top = s.y - H / 2 - 120 + "px"; sign.style.transform = `rotate(${s.r}deg)`;
+  world.appendChild(sign);
+});
+const WORDS = [["listen", "escuchar"], ["speak", "hablar"], ["read", "leer"], ["write", "escribir"], ["explain", "explicar"], ["describe", "describir"], ["because", "porque"], ["compare", "comparar"], ["evidence", "evidencia"], ["notice", "notar"], ["argue", "argumentar"], ["revise", "revisar"], ["question", "pregunta"], ["family", "familia"]];
+for (let i = 0; i < PTS.length - 1; i++) {
+  const [a, b] = [PTS[i], PTS[i + 1]], w = WORDS[i % WORDS.length];
+  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, side = i % 2 ? 1 : -1;
+  [[w[0], "", 0], [w[1], " es", 1]].forEach(([txt, cls, j]) => {
+    const d = document.createElement("div");
+    d.className = "bigword" + cls; d.textContent = txt;
+    d.style.left = mx - 500 + j * 260 + "px"; d.style.top = my + side * (520 + j * 260) - 130 + "px";
+    d.style.transform = `rotate(${(i % 3 - 1) * 4}deg)`;
+    world.insertBefore(d, route.nextSibling);
+  });
+}
+
+/* ---------- camera ---------- */
+const cam = { x: 0, y: 0, s: 1, r: 0 };
+const vp = () => ({ w: viewport.clientWidth, h: viewport.clientHeight });
+function fitStop(i) {
+  const { w, h } = vp(), s = STOPS[i];
+  return { x: s.x, y: s.y, r: s.r, s: Math.min((w - 40) / W, (h - 36) / H) };
+}
+function fitAll() {
+  const { w, h } = vp(), bw2 = maxX - minX + W + 400, bh2 = maxY - minY + H + 600;
+  return { x: (minX + maxX) / 2, y: (minY + maxY) / 2 - 60, r: 0, s: Math.min(w / bw2, h / bh2) };
+}
+function apply() {
+  const { w, h } = vp();
+  world.style.transform = `translate(${w / 2}px,${h / 2}px) rotate(${-cam.r}deg) scale(${cam.s}) translate(${-cam.x}px,${-cam.y}px)`;
+}
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+let flight = 0;
+function fly(to, { ms = 1700, fromL = null, toL = null } = {}) {
+  const id = ++flight, from = { ...cam };
+  if (RM.matches || ms === 0) {
+    const fade = $("#fade");
+    fade.style.opacity = RM.matches && ms ? 1 : 0;
+    setTimeout(() => { Object.assign(cam, to); apply(); if (toL != null) placeToken(toL); fade.style.opacity = 0; }, RM.matches && ms ? 180 : 0);
+    return Promise.resolve();
+  }
+  const { w, h } = vp();
+  const dx = Math.abs(to.x - from.x), dy = Math.abs(to.y - from.y);
+  const sMid = Math.min(from.s, to.s, (w * .95) / (dx + W), (h * .95) / (dy + H)) * .92;
+  const la = Math.log(from.s), lb = Math.log(to.s), lm = Math.log(Math.min(sMid, from.s, to.s));
+  world.classList.add("moving");
+  return new Promise(res => {
+    const t0 = performance.now();
+    const step = now => {
+      if (id !== flight) return res();
+      const t = Math.min(1, (now - t0) / ms), e = ease(t);
+      cam.x = from.x + (to.x - from.x) * e; cam.y = from.y + (to.y - from.y) * e; cam.r = from.r + (to.r - from.r) * e;
+      cam.s = Math.exp((1 - e) * (1 - e) * la + 2 * e * (1 - e) * lm + e * e * lb);
+      apply();
+      if (fromL != null) placeToken(fromL + (toL - fromL) * e);
+      if (t < 1) requestAnimationFrame(step); else { world.classList.remove("moving"); res(); }
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/* ---------- state and navigation ---------- */
+let cur = 0, build = 0, overview = false, started = false, t0 = 0;
+const seen = new Set([0]);
+const dots = $("#dots");
+dots.innerHTML = STOPS.map((s, i) => `<button aria-label="Stop ${i + 1}: ${s.t}"></button>`).join("");
+$$("button", dots).forEach((b, i) => b.addEventListener("click", () => go(i)));
+function setBuild(i, k) {
+  build = k;
+  $$("[data-b]", secs[i]).forEach(el => el.classList.toggle("on", +el.dataset.b <= k));
+  HOOKS[i]?.build?.(k);
+}
+function hud() {
+  $$("button", dots).forEach((b, i) => { b.classList.toggle("cur", i === cur); b.classList.toggle("seen", seen.has(i)); });
+  $("#now-title").textContent = `${cur + 1} / ${STOPS.length} · ${STOPS[cur].t}`;
+  const s = STOPS[cur];
+  $("#n-pos").textContent = `Stop ${cur + 1} of ${STOPS.length}${s.b ? ` · build ${build} of ${s.b}` : ""}${cur < STOPS.length - 1 ? ` · next: ${STOPS[cur + 1].t}` : ""}`;
+  $("#n-title").textContent = s.t;
+  $("#n-body").innerHTML = s.n.map(p => `<p>${p}</p>`).join("") + (s.u ? `<p><a href="${s.u}" target="_blank" rel="noopener">Open the live page ↗</a></p>` : "");
+  try { history.replaceState(null, "", "#stop-" + (cur + 1)); } catch (e) {}
+}
+function enter(i) {
+  secs.forEach((el, j) => el.classList.toggle("live", j === i));
+  HOOKS.forEach((h, j) => { if (j !== i) h?.leave?.(); });
+  HOOKS[i]?.enter?.();
+}
+async function go(i, k = 0) {
+  i = Math.max(0, Math.min(STOPS.length - 1, i));
+  if (!started) { started = true; t0 = Date.now(); }
+  if (overview) setOverview(false, true);
+  const fromL = tokenL;
+  cur = i; seen.add(i);
+  setBuild(i, k); hud();
+  await fly(fitStop(i), { fromL, toL: LEN[i] });
+  if (cur === i) enter(i);
+}
+function next() {
+  if (overview) return go(cur);
+  if (build < STOPS[cur].b) { setBuild(cur, build + 1); hud(); return; }
+  if (cur < STOPS.length - 1) go(cur + 1);
+}
+function prev() {
+  if (overview) return go(cur);
+  if (build > 0) { setBuild(cur, build - 1); hud(); return; }
+  if (cur > 0) go(cur - 1, STOPS[cur - 1].b);
+}
+function setOverview(on, silent) {
+  overview = on;
+  app.classList.toggle("overview", on);
+  $("#b-over").setAttribute("aria-pressed", on);
+  if (!silent) fly(on ? fitAll() : fitStop(cur), { ms: 1400 });
+}
+secs.forEach((el, i) => el.addEventListener("click", () => { if (overview) go(i); }));
+
+/* ---------- controls ---------- */
+const typing = e => /^(TEXTAREA|INPUT|SELECT)$/.test(e.target.tagName);
+addEventListener("keydown", e => {
+  if (typing(e) && e.key !== "Escape") return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (["ArrowRight", "PageDown", " ", "ArrowDown"].includes(k)) { e.preventDefault(); next(); }
+  else if (["ArrowLeft", "PageUp", "ArrowUp", "Backspace"].includes(k)) { e.preventDefault(); prev(); }
+  else if (k === "Home") go(0);
+  else if (k === "End") go(STOPS.length - 1);
+  else if (k === "o" || k === "O" || k === "m" || k === "M") setOverview(!overview);
+  else if (k === "n" || k === "N") toggleNotes();
+  else if (k === "f" || k === "F") full();
+  else if (k === "b" || k === "B" || k === ".") $("#black").classList.toggle("on");
+  else if (k === "l" || k === "L") { laserOn = !laserOn; $("#laser").style.display = laserOn ? "block" : "none"; }
+  else if (k === "?") $("#help").hidden = !$("#help").hidden;
+  else if (k === "Escape") { $("#help").hidden = true; $("#black").classList.remove("on"); if (overview) go(cur); }
+});
+$("#b-next").onclick = next; $("#b-prev").onclick = prev;
+$("#b-over").onclick = () => setOverview(!overview);
+$("#b-notes").onclick = toggleNotes;
+$("#b-full").onclick = full;
+$("#b-help").onclick = () => { $("#help").hidden = false; };
+$("#help-close").onclick = () => { $("#help").hidden = true; };
+$("#black").onclick = () => $("#black").classList.remove("on");
+function toggleNotes() { const n = $("#notes"); n.hidden = !n.hidden; $("#b-notes").setAttribute("aria-pressed", !n.hidden); }
+function full() { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); } catch (e) {} }
+setInterval(() => { if (!started) return; const s = Math.floor((Date.now() - t0) / 1000); $("#n-timer").textContent = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; }, 1000);
+let laserOn = false;
+addEventListener("pointermove", e => { if (laserOn) { const l = $("#laser"); l.style.left = e.clientX + "px"; l.style.top = e.clientY + "px"; } });
+let sx = null;
+viewport.addEventListener("touchstart", e => { sx = e.touches[0].clientX; }, { passive: true });
+viewport.addEventListener("touchend", e => { if (sx == null || document.body.classList.contains("reader")) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 70 && !e.target.closest(".stage3d,textarea")) dx < 0 ? next() : prev(); sx = null; });
+
+/* ---------- word fountain (title and finale) ---------- */
+const FW = [["describe", "describir"], ["because", "porque"], ["for example", "por ejemplo"], ["compare", "comparar"], ["evidence", "evidencia"], ["explain", "explicar"], ["notice", "notar"], ["argue", "argumentar"], ["observe", "observar"], ["conclude", "concluir"]];
+function fountain(box, ox, oy, spread, d0 = 300, dr = 260) {
+  let n = 0, timer = null;
+  const spawn = () => {
+    if (RM.matches) return;
+    const pair = FW[n % FW.length], es = n % 2, c = document.createElement("span");
+    c.className = "chip " + (es ? "es" : "en"); c.textContent = pair[es]; if (es) c.lang = "es";
+    box.appendChild(c); n++;
+    const ang = -Math.PI / 2 + (Math.random() - .5) * spread, dist = d0 + Math.random() * dr;
+    const tx = ox + Math.cos(ang) * dist, ty = oy + Math.sin(ang) * dist;
+    c.animate([
+      { transform: `translate(${ox - 60}px,${oy}px) scale(.3)`, opacity: 0 },
+      { transform: `translate(${(ox + tx) / 2 - 60}px,${(oy + ty) / 2 - 80}px) scale(1)`, opacity: 1, offset: .35 },
+      { transform: `translate(${tx - 60}px,${ty}px) scale(1) rotate(${(Math.random() - .5) * 16}deg)`, opacity: 1, offset: .8 },
+      { transform: `translate(${tx - 60}px,${ty - 40}px) scale(.9)`, opacity: 0 }
+    ], { duration: 4200, easing: "cubic-bezier(.2,.7,.3,1)" }).onfinish = () => c.remove();
+  };
+  return { start() { if (!timer) { spawn(); timer = setInterval(spawn, 520); } }, stop() { clearInterval(timer); timer = null; } };
+}
+
+/* ---------- per-stop behaviour ---------- */
+const HOOKS = [];
+// 0 title
+{ const f = fountain($("#t-right"), 380, 520, 2.4); HOOKS[0] = { enter: () => f.start(), leave: () => f.stop() }; }
+// 2 doors
+{
+  const D2 = [["I’m a Teacher", "Find resources, plan practice, and support your students.", "start", "thelanguagepage.com/access-practice-lab/start"],
+              ["I’m a Student", "Play, practice, create, and keep learning.", "journey", "thelanguagepage.com/access-practice-lab/journey"],
+              ["I’m a Family Member", "Help your child practice English at home.", "family-en", "thelanguagepage.com/access-practice-lab/family-tour/"],
+              ["BCPSS Teachers", "K–8 Wit & Wisdom, Reveal Math, SABES and iQWST language bridges.", "home", "thelanguagepage.com/bcpss-teachers/"]];
+  const box = $("#doors");
+  box.innerHTML = D2.map((d, i) => `<button class="door" data-i="${i}"><span class="leaf"></span><span><b>${d[0]}</b><span>${d[1]}</span></span></button>`).join("");
+  let front = $("#door-a"), back = $("#door-b");
+  const pick = i => {
+    $$(".door", box).forEach((b, j) => b.classList.toggle("on", j === i));
+    const d = D2[i] || ["", "", "home", "thelanguagepage.com/access-practice-lab/"];
+    if (!front.src.endsWith(d[2] + ".jpg")) {
+      back.src = `shots/${d[2]}.jpg`; back.alt = i >= 0 ? `Where the ${d[0].replace("I’m a ", "")} door leads.` : front.alt;
+      back.style.opacity = 1; front.style.opacity = 0; [front, back] = [back, front];
+    }
+    $("#door-url").textContent = d[3];
+  };
+  $$(".door", box).forEach(b => b.addEventListener("click", () => pick(+b.dataset.i)));
+  HOOKS[2] = { build: k => pick(k - 1) };
+}
+// 3 orbit and bands
+{
+  const DOM = [["Listening", "var(--listen)", "#075568"], ["Speaking", "var(--speak)", "#E07A5F"], ["Reading", "var(--read)", "#2E4A94"], ["Writing", "var(--write)", "#9A4A26"], ["Practice tests", "var(--tests)", "#6F7F8C"]];
+  const BANDS = [["K", [9, 9, 9, 8, 0]], ["Grade 1", [16, 14, 15, 14, 0]], ["Grades 2–3", [23, 22, 23, 22, 0]], ["Grades 3–5", [75, 66, 78, 67, 0]], ["Grades 6–8", [115, 108, 78, 111, 51]]];
+  const tot = DOM.map((_, d) => BANDS.reduce((a, b) => a + b[1][d], 0));
+  const max = 463;
+  $("#bands").innerHTML = BANDS.map(([nm, v]) => `<div class="band"><span class="nm">${nm.replace("Grades ", "").replace("Grade ", "G")}</span><div class="track">${v.map((x, d) => x ? `<i class="seg" data-d="${d}" style="width:${x / max * 100}%;background:${DOM[d][1]}" title="${DOM[d][0]}: ${x}"></i>` : "").join("")}</div><span class="v">${v.reduce((a, b) => a + b, 0)}</span></div>`).join("");
+  $("#legend").innerHTML = DOM.map((d, i) => `<button aria-pressed="false" data-d="${i}"><i style="background:${d[1]}"></i>${d[0]} · ${tot[i]}</button>`).join("");
+  const svg = $("#orbit");
+  svg.innerHTML = `<circle cx="320" cy="320" r="250" fill="none" stroke="#E4DCCB" stroke-width="3" stroke-dasharray="4 10"/><circle cx="320" cy="320" r="160" fill="none" stroke="#E4DCCB" stroke-width="3" stroke-dasharray="4 10"/>
+    <circle cx="320" cy="320" r="104" fill="#17324D"/><text x="320" y="330" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="62" fill="#fff">933</text><text x="320" y="368" text-anchor="middle" font-family="Atkinson Hyperlegible" font-weight="700" font-size="20" fill="#F2C15B">activities</text>` +
+    DOM.map((d, i) => `<g class="planet" data-d="${i}" tabindex="0" role="button" aria-label="${d[0]}: ${tot[i]}"><circle r="${28 + tot[i] / 9}" fill="${d[2]}"/><text y="-2">${i === 4 ? "Tests" : d[0]}</text><text y="20">${tot[i]}</text></g>`).join("");
+  let sel = -1, raf = 0, a0 = 0;
+  const choose = d => {
+    sel = sel === d ? -1 : d;
+    $$(".seg", $("#s3")).forEach(s => s.classList.toggle("dim", sel >= 0 && +s.dataset.d !== sel));
+    $$("#legend button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.d === sel));
+    $$(".planet", svg).forEach(p => p.style.opacity = sel < 0 || +p.dataset.d === sel ? 1 : .35);
+  };
+  $$("#legend button").forEach(b => b.onclick = () => choose(+b.dataset.d));
+  $$(".planet", svg).forEach(p => { p.onclick = () => choose(+p.dataset.d); p.onkeydown = e => { if (e.key === "Enter") choose(+p.dataset.d); }; });
+  const draw = () => {
+    $$(".planet", svg).forEach((p, i) => {
+      const r = i === 4 ? 160 : 250, a = a0 * (i === 4 ? -1.6 : 1) + i * Math.PI * 2 / 4 + (i === 4 ? .8 : 0);
+      p.setAttribute("transform", `translate(${320 + Math.cos(a) * r} ${320 + Math.sin(a) * r})`);
+    });
+  };
+  draw();
+  const spin = () => { a0 += .0022; draw(); raf = requestAnimationFrame(spin); };
+  HOOKS[3] = { build: k => $("#s3").classList.toggle("grow", k >= 1), enter: () => { if (!RM.matches && !raf) spin(); }, leave: () => { cancelAnimationFrame(raf); raf = 0; } };
+}
+// 4 supports
+{
+  const seg = $("#seg3"), thumb = $(".thumb", seg), btns = $$("button", seg);
+  const REC = [["Supported", "sup", "Used a sentence frame and a word bank."], ["Supported", "sup", "Used a word bank."], ["Independent", "ind", "Done on my own, with no frame, words or model."]];
+  const level = l => {
+    btns.forEach((b, i) => b.setAttribute("aria-pressed", i === l));
+    thumb.style.left = btns[l].offsetLeft + "px"; thumb.style.width = btns[l].offsetWidth + "px";
+    $("#ly-frame").classList.toggle("gone", l > 0);
+    $("#ly-bank").classList.toggle("gone", l > 1);
+    const k = $("#rec-kind"); k.textContent = REC[l][0]; k.className = REC[l][1]; $("#rec-why").textContent = REC[l][2];
+    k.animate([{ transform: "scale(1.25)" }, { transform: "scale(1)" }], { duration: 400 });
+  };
+  btns.forEach((b, i) => b.onclick = () => level(i));
+  HOOKS[4] = { build: k => level(k), enter: () => level(build) };
+  requestAnimationFrame(() => level(0));
+}
+// 5 speaking ladder
+{
+  const STEPS = [["Amara", "Name four things you see in the hallway.", "I see ___, ___, ___ and ___.", "I see lockers, backpacks, a clock and a water fountain."],
+    ["Mateo", "Tell what the students are doing and why.", "The students are ___ because ___.", "The students are walking to class because the bell rang. One student is getting a drink from the fountain before the next lesson."],
+    ["Lina", "Explain one change the school could make so students get to class safely, and give a reason.", "One change the school could make is ___. This would help because ___. For example, ___.", "One change the school could make is to have students walk on the right side of the hallway. This would help because people going in different directions would not bump into each other. For example, a student with a heavy backpack could get to the water fountain without stopping traffic. A simple rule like this keeps everyone safe and on time."]];
+  const lad = $("#ladder");
+  lad.innerHTML = STEPS.map((s, i) => `<div class="rung" data-i="${i}"><div class="n">Step ${i + 1}</div><div class="q">${s[1]}</div><div class="f">${s[2]}</div><div class="hear"><button>Hear ${s[0]} first</button><span class="wave">${"<i></i>".repeat(16)}</span></div><div class="said">${s[0]}: “${s[3]}”</div></div>`).join("");
+  const ZOOM = ["scale(1.02)", "scale(1.18) translate(-4%,2%)", "scale(1.32) translate(4%,4%)"];
+  let waveT = 0;
+  const wave = (rung, ms) => {
+    clearInterval(waveT);
+    const bars = $$(".wave i", rung), end = Date.now() + ms;
+    waveT = setInterval(() => {
+      const live = Date.now() < end;
+      bars.forEach(b => b.style.height = (live ? 8 + Math.random() * 32 : 8) + "px");
+      if (!live) clearInterval(waveT);
+    }, 110);
+  };
+  const say = i => {
+    const line = STEPS[i][3], rung = $$(".rung", lad)[i];
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(line); u.lang = "en-US"; u.rate = .95;
+      const v = speechSynthesis.getVoices().find(v => /en[-_]US/i.test(v.lang)); if (v) u.voice = v;
+      u.onend = () => wave(rung, 0);
+      speechSynthesis.speak(u);
+    } catch (e) {}
+    wave(rung, line.split(" ").length * 330);
+  };
+  const step = k => {
+    $$(".rung", lad).forEach((r, i) => r.classList.toggle("on", i === k));
+    $("#hall").style.transform = ZOOM[k];
+  };
+  $$(".rung", lad).forEach((r, i) => { r.addEventListener("click", e => { if (e.target.closest("button")) say(i); else step(i); }); });
+  HOOKS[5] = { build: step, enter: () => step(build), leave: () => { try { speechSynthesis.cancel(); } catch (e) {} } };
+}
+// 6 language upgrade: the site's own checkUpgrade (access-practice-lab/src/lang/scaffold-check.js)
+{
+  const ITEM = { informal: "Phones in class are bad.", avoid: ["bad"], precision: ["distract", "distraction", "attention", "focus", "notifications", "harmful", "learning", "concentration"], connectors: ["because", "so", "which", "since", "as a result", "although", "however", "when", "after"], minAdded: 6, hint: "How exactly do phones affect students? Name the effect precisely." };
+  const escapeRe = w => String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const hasPhrase = (t, p) => new RegExp(`(^|[^a-z'])${escapeRe(p.toLowerCase())}($|[^a-z'])`).test(String(t).toLowerCase());
+  const startsWord = (t, s) => new RegExp(`(^|[^a-z])${escapeRe(s.toLowerCase())}`).test(String(t).toLowerCase());
+  const countWords = t => (String(t).match(/[A-Za-z0-9°']+/g) || []).length;
+  const FILLER = new Set("a an the and or but so very really just quite too also then than that this these those it its he she they them we you i me my our your his her their is are was were be been am do does did to of in on at as by for with from up out about into it's thing things stuff".split(" "));
+  const contentWords = t => (String(t).toLowerCase().match(/[a-z0-9°']+/g) || []).filter(w => !FILLER.has(w));
+  function checkUpgrade(item, revised = "") {
+    const text = String(revised).trim(), words = countWords(text), base = countWords(item.informal);
+    const norm = x => x.toLowerCase().replace(/\W+/g, " ").trim();
+    const changed = norm(text) !== norm(item.informal);
+    const avoidLeft = item.avoid.filter(w => hasPhrase(text, w));
+    const precisionUsed = item.precision.filter(w => startsWord(text, w));
+    const connectorsUsed = item.connectors.filter(w => hasPhrase(text, w));
+    const oldWords = new Set(contentWords(item.informal));
+    const newWords = [...new Set(contentWords(text))].filter(w => !oldWords.has(w) && !item.connectors.includes(w) && !item.avoid.includes(w));
+    const need = Math.max(2, Math.ceil(item.minAdded / 2));
+    const joined = connectorsUsed.some(c => {
+      const at = text.toLowerCase().search(new RegExp(`(^|[^a-z])${escapeRe(c)}($|[^a-z])`));
+      const after = contentWords(text.slice(at + c.length + 1)).length, before = contentWords(text.slice(0, Math.max(0, at))).length;
+      return after >= 2 && (before >= 2 || /^(although|however|when|after|since)$/.test(c));
+    });
+    const checks = { detail: changed && words >= base + item.minAdded && newWords.length >= need, precision: changed && precisionUsed.length > 0 && avoidLeft.length === 0, connector: changed && joined };
+    const messages = [];
+    if (!changed) messages.push(`Your revision is the same as the original. Change it so it says exactly what you mean. ${item.hint}`);
+    else {
+      if (!checks.detail) messages.push(newWords.length < need ? "Add new information: what exactly, where, when, or how much? Repeating words does not add detail." : "Add one more detail: what exactly, where, when, or how much?");
+      if (avoidLeft.length) messages.push(`"${avoidLeft[0]}" is a general word. ${item.hint}`);
+      else if (!precisionUsed.length) messages.push(`Name it exactly. ${item.hint}`);
+      if (!checks.connector) messages.push(connectorsUsed.length ? `Put an idea on each side of "${connectorsUsed[0]}" so it joins two ideas, not just sits in the sentence.` : "Join two ideas with a connector such as because, so or which.");
+    }
+    return { ok: Object.values(checks).every(Boolean), checks, messages: messages.length ? messages : ["You added new information, used a precise word and connected two ideas."] };
+  }
+  const ta = $("#up-text"), msgs = $("#up-msgs");
+  const esc = s => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const lamp = (id, ok) => { const l = $(id); l.classList.remove("ok", "no"); void l.offsetWidth; l.classList.add(ok ? "ok" : "no"); $("i", l).textContent = ok ? "✓" : "!"; };
+  const check = () => {
+    if (!ta.value.trim()) { msgs.innerHTML = "<p>Type a revision first.</p>"; return; }
+    const r = checkUpgrade(ITEM, ta.value);
+    lamp("#lp-detail", r.checks.detail); lamp("#lp-precision", r.checks.precision); lamp("#lp-connector", r.checks.connector);
+    msgs.innerHTML = r.messages.map(m => `<p class="${r.ok ? "good" : ""}">${esc(m)}</p>`).join("");
+  };
+  let typer = 0;
+  const type = (txt, then) => {
+    clearInterval(typer);
+    if (RM.matches) { ta.value = txt; then(); return; }
+    ta.value = ""; let i = 0;
+    typer = setInterval(() => { ta.value = txt.slice(0, ++i); if (i >= txt.length) { clearInterval(typer); setTimeout(then, 250); } }, 18);
+  };
+  const WEAK = "Phones in class are really really bad.";
+  const STRONG = "Phones in class can be harmful because notifications distract students and break their focus during lessons.";
+  const reset = () => { clearInterval(typer); ta.value = ""; $$(".lamp").forEach(l => { l.classList.remove("ok", "no"); $("i", l).textContent = "·"; }); msgs.innerHTML = "<p>Press <b>Check my work</b>. The feedback names one thing to fix and asks a question. It never gives the answer.</p>"; };
+  $("#up-check").onclick = check;
+  $("#up-weak").onclick = () => type(WEAK, check);
+  $("#up-strong").onclick = () => type(STRONG, check);
+  HOOKS[6] = { build: k => k === 0 ? reset() : type(k === 1 ? WEAK : STRONG, check) };
+}
+// 7 featured lesson
+{
+  const ST = [["Notice", 1, "#075568", "Show the picture. Ask: “What do you see? What problem could happen here?” Take two quick answers.", "Look at the picture and name two things and one problem."],
+    ["Speak", 2, "#C8553D", "Read the prompt. Partners take turns answering with the frame. The listener holds up one finger for the change and two for the reason.", "Say the response and explain one reason to a partner (or to yourself, aloud)."],
+    ["Write", 3, "#9A4A26", "Students turn what they said into two or three written sentences. Allow home-language notes first.", "Write the spoken idea as a short response."],
+    ["Improve", 2, "#2E4A94", "Give one cue only: “Add an example that starts with For example.” Students add it and read the new version once.", "Add one example to make the response clearer."],
+    ["Share", 2, "#17324D", "Two or three students read the revised response and say what they added.", "Read or say the revised response and explain the improvement."]];
+  const rib = $("#ribbon");
+  rib.innerHTML = ST.map((s, i) => `<button style="flex:${s[1]};background:${s[2]}" aria-pressed="false" data-i="${i}"><i class="fill"></i><b>${s[0]}</b><span>${s[1]} min</span></button>`).join("");
+  const show = i => { $$("button", rib).forEach((b, j) => b.setAttribute("aria-pressed", j === i)); const sp = $$("#detail span"); sp[0].textContent = ST[i][3]; sp[1].textContent = ST[i][4]; };
+  $$("button", rib).forEach(b => b.onclick = () => { stop(); show(+b.dataset.i); });
+  let raf = 0, live = 0;
+  const fills = () => $$(".fill", rib);
+  const paint = sec => {
+    let acc = 0;
+    ST.forEach((s, i) => { const len = s[1] * 60, f = Math.max(0, Math.min(1, (sec - acc) / len)); fills()[i].style.transform = `scaleX(${f})`; if (sec >= acc && sec < acc + len) show(i); acc += len; });
+    const left = Math.max(0, 600 - Math.round(sec));
+    $("#clock").textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+  };
+  function stop() { cancelAnimationFrame(raf); clearInterval(live); raf = 0; live = 0; }
+  const run = (speed) => {
+    stop();
+    const start = performance.now();
+    if (speed > 1) {
+      const tick = now => { const sec = Math.min(600, (now - start) / 1000 * speed); paint(sec); if (sec < 600) raf = requestAnimationFrame(tick); };
+      raf = requestAnimationFrame(tick);
+    } else {
+      live = setInterval(() => { const sec = (performance.now() - start) / 1000; paint(Math.min(600, sec)); if (sec >= 600) stop(); }, 250);
+    }
+  };
+  $("#run-fast").onclick = () => run(30);
+  $("#run-live").onclick = () => run(1);
+  show(0); paint(0);
+  HOOKS[7] = {
+    build: k => { $("#drafts").classList.toggle("hl", k >= 2); if (k === 1) run(30); if (k === 0) { stop(); paint(0); show(0); } },
+    leave: stop
+  };
+}
+// 8 library ring
+{
+  const LIB = [["reading", "Reading Room", "Read closely, collect evidence, and build the language to explain what a text means.", "/access-practice-lab/reading-room"],
+    ["wordlab", "Word Lab", "406 words for reading, math, science and social studies. Build words from parts, find Spanish twins, and catch false friends.", "/access-practice-lab/wordlab"],
+    ["newsroom", "Newsroom", "Be the reporter. Pick one of 24 story prompts, plan it, write it, read it aloud, and publish your own front page.", "/access-practice-lab/newsroom"],
+    ["scenarios", "Real-Life Scenarios", "14 short conversations: the school office, the doctor, the bus, the store and more. No clock and no score.", "/access-practice-lab/scenarios"],
+    ["arena", "Argument Arena", "Pick a topic, read the evidence, and build an argument you can say out loud: a claim, evidence and reasoning.", "/access-practice-lab/arena"],
+    ["mentor", "Mentor Text Explorer", "Read short texts the way authors do. Tap a highlighted move, see why it works, and keep it in your Writer’s Toolbox.", "/access-practice-lab/mentor"],
+    ["sor", "Science of Reading Studio", "Explicit word study, meaningful reading, and short practice games built around how reading works.", "/access-practice-lab/science-of-reading"],
+    ["worlds", "Language Worlds", "Start a connected mission in a place where language matters: explore, listen, read, build, communicate and revise.", "/access-practice-lab/worlds"],
+    ["write", "Writing Studio", "Read sources, collect evidence, write, get specific feedback, and revise. The first draft is kept so a learner can see growth.", "/access-practice-lab/write"],
+    ["speak", "Speaking Studio", "Plan what you will say, say it out loud, listen back, and say it better.", "/access-practice-lab/speak"],
+    ["vocab", "Word Builder", "Investigate how word parts work together, build an academic word, and return to it later for retrieval practice.", "/access-practice-lab/vocabulary"],
+    ["videos", "Videos", "Short animated videos, each with captions that can be turned on or off.", "/access-practice-lab/videos/"]];
+  const ring = $("#ring"), n = LIB.length, stepA = 360 / n, R = 960;
+  ring.innerHTML = LIB.map((c, i) => `<button class="card3" data-i="${i}" style="transform:rotateY(${i * stepA}deg) translateZ(${R}px)" aria-label="${c[1]}"><img src="shots/${c[0]}.jpg" alt="" decoding="async"></button>`).join("");
+  let ang = 0, target = null, raf = 0, drag = null, frontI = -1, hold = 0;
+  const caption = i => {
+    if (i === frontI) return; frontI = i;
+    $$(".card3", ring).forEach((c, j) => c.classList.toggle("front", j === i));
+    $("#c3-title").textContent = LIB[i][1]; $("#c3-text").textContent = LIB[i][2]; $("#c3-go").href = "https://thelanguagepage.com" + LIB[i][3];
+  };
+  const render = () => {
+    ring.style.transform = `translateZ(-${R}px) rotateY(${ang}deg)`;
+    caption(((Math.round(-ang / stepA) % n) + n) % n);
+  };
+  const tick = () => {
+    if (target != null) { ang += (target - ang) * .1; if (Math.abs(target - ang) < .05) { ang = target; target = null; hold = performance.now() + 2500; } }
+    else if (!drag && !RM.matches && performance.now() > hold) ang -= .09;
+    render(); raf = requestAnimationFrame(tick);
+  };
+  const stage = $("#stage3d");
+  stage.addEventListener("pointerdown", e => { drag = { x: e.clientX, a: ang, moved: false }; target = null; });
+  addEventListener("pointermove", e => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 4) drag.moved = true; ang = drag.a + dx * .25 / Math.max(cam.s, .3); });
+  addEventListener("pointerup", e => {
+    if (!drag) return; const d = drag; drag = null; hold = performance.now() + 2500;
+    if (!d.moved) { const c = e.target.closest(".card3"); if (c) { const i = +c.dataset.i; let t = -i * stepA; while (t - ang > 180) t -= 360; while (ang - t > 180) t += 360; target = t; caption(i); } }
+  });
+  render();
+  HOOKS[8] = { enter: () => { if (!raf) tick(); }, leave: () => { cancelAnimationFrame(raf); raf = 0; } };
+}
+// 9 passport
+{
+  const pp = $("#pp");
+  HOOKS[9] = {
+    build: k => {
+      pp.classList.toggle("open", k >= 1);
+      $$(".stamp", pp).forEach((s, i) => {
+        s.classList.remove("down");
+        if (k >= 1) setTimeout(() => s.classList.add("down"), RM.matches ? 0 : 1100 + i * 380);
+      });
+    }
+  };
+}
+// 10 teachers
+{
+  const s = $("#s10");
+  HOOKS[10] = { build: k => { s.classList.toggle("two", k >= 1); s.classList.toggle("three", k >= 2); } };
+  const st = $(".stack", s);
+  st.addEventListener("pointermove", e => { const r = st.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; st.style.transform = `rotateX(${-y * 5}deg) rotateY(${x * 7}deg)`; });
+  st.addEventListener("pointerleave", () => { st.style.transform = ""; });
+  st.style.transition = "transform .3s";
+}
+// 11 families
+{
+  const f = $("#flip");
+  const set = es => { f.classList.toggle("es", es); $("#fam-es").style.opacity = es ? 1 : 0; $("#fam-en").style.opacity = es ? 0 : 1; };
+  f.addEventListener("click", () => set(!f.classList.contains("es")));
+  HOOKS[11] = { build: k => set(k >= 1) };
+}
+// 12 privacy
+{
+  const s = $("#s12"), dot = $("#sent");
+  const send = () => {
+    if (RM.matches) { dot.setAttribute("opacity", 1); dot.setAttribute("cx", 640); dot.setAttribute("cy", 420); return; }
+    dot.setAttribute("opacity", 1);
+    const t0 = performance.now(), A = [330, 300], B = [640, 420], C = [560, 220];
+    const anim = now => {
+      const t = Math.min(1, (now - t0) / 1400), e = ease(t);
+      const x = (1 - e) ** 2 * A[0] + 2 * e * (1 - e) * C[0] + e * e * B[0], y = (1 - e) ** 2 * A[1] + 2 * e * (1 - e) * C[1] + e * e * B[1];
+      dot.setAttribute("cx", x); dot.setAttribute("cy", y);
+      if (t < 1) requestAnimationFrame(anim); else setTimeout(() => dot.setAttribute("opacity", 0), 900);
+    };
+    requestAnimationFrame(anim);
+  };
+  $("#send").onclick = send;
+  HOOKS[12] = { build: k => { s.classList.toggle("bounce", k >= 1); if (k === 2) send(); } };
+}
+// 13 numbers
+{
+  const N = [[933, "core practice activities, K–8", "var(--navy)"], [1432, "vocabulary words with Spanish glosses", "var(--teal)"], [774, "sentence-level practice items", "var(--amber)"], [234, "listening scripts", "var(--listen)"],
+    [34, "Speaking Studio tasks", "var(--speak)"], [22, "Writing Studio tasks", "var(--write)"], [5, "grade bands, Kindergarten to grade 8", "var(--read)"], [3, "levels of support on every studio task", "var(--teal-ink)"]];
+  $("#nums").innerHTML = N.map(n => `<div class="num" style="--c:${n[2]}"><b data-v="${n[0]}">0</b><span>${n[1]}</span></div>`).join("");
+  const fmt = v => v.toLocaleString("en-US");
+  const count = () => {
+    $$("#nums b").forEach((b, i) => {
+      const v = +b.dataset.v;
+      if (RM.matches) { b.textContent = fmt(v); return; }
+      const t0 = performance.now() + i * 90;
+      const f = now => { const t = Math.max(0, Math.min(1, (now - t0) / 1500)); b.textContent = fmt(Math.round(v * (1 - Math.pow(1 - t, 4)))); if (t < 1) requestAnimationFrame(f); };
+      requestAnimationFrame(f);
+    });
+  };
+  $$("#nums b").forEach(b => b.textContent = fmt(+b.dataset.v));
+  HOOKS[13] = { enter: count };
+}
+// 14 road ahead
+{
+  const T = [["Recorded human voices", "for the 234 listening scripts. Today the listening uses synthesized speech."],
+    ["Spanish review", "by a bilingual reviewer. Until then the Spanish is labelled machine-drafted."],
+    ["Content tags checked", "by a WIDA-trained reviewer; 42% of activities carry a Key Language Use tag today."],
+    ["Usability sessions", "with students, teachers and families, using the written protocol."],
+    ["A pilot", "planned before any claim about results is made."]];
+  $("#todo").innerHTML = T.map((t, i) => `<div data-b="1" style="transition-delay:${i * .18}s"><i>${i + 1}</i><p><b>${t[0]}</b> ${t[1]}</p></div>`).join("");
+  const path = $("#road-mid"), L = path.getTotalLength();
+  $("#flags").innerHTML = T.map((t, i) => { const p = path.getPointAtLength(L * (.12 + i * .2)); const s = 1 - i * .13; return `<g transform="translate(${p.x} ${p.y}) scale(${s})" data-b="1" style="transition-delay:${i * .18}s"><rect x="-4" y="-90" width="8" height="90" fill="#17324D"/><rect x="4" y="-90" width="70" height="44" rx="6" fill="#F2C15B"/><text x="39" y="-60" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="26" fill="#17324D">${i + 1}</text></g>`; }).join("");
+  path.animate?.([{ strokeDashoffset: 0 }, { strokeDashoffset: -52 }], { duration: 1200, iterations: Infinity });
+}
+// 15 finale
+{ const f = fountain($("#fountain"), 620, 930, 1.3, 90, 150); HOOKS[15] = { enter: () => f.start(), leave: () => f.stop() }; }
+
+/* ---------- dust: drifting letters behind the map, with a little parallax ---------- */
+{
+  const cv = $("#dust"), ctx = cv.getContext("2d");
+  const G = "aábcdeéfghiíjklmnñoópqrstuúvwxyz".split("");
+  let P = [], raf = 0;
+  const size = () => { const d = Math.min(2, devicePixelRatio || 1); cv.width = cv.clientWidth * d; cv.height = cv.clientHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); P = Array.from({ length: 46 }, () => ({ x: Math.random() * cv.clientWidth, y: Math.random() * cv.clientHeight, z: .3 + Math.random() * .7, g: G[Math.random() * G.length | 0], v: .1 + Math.random() * .25 })); };
+  const draw = () => {
+    const w = cv.clientWidth, h = cv.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    P.forEach(p => {
+      p.y -= p.v; if (p.y < -40) { p.y = h + 40; p.x = Math.random() * w; }
+      const px = ((p.x - cam.x * .02 * p.z) % w + w) % w, py = ((p.y - cam.y * .02 * p.z) % h + h) % h;
+      ctx.font = `${Math.round(22 + p.z * 40)}px Fraunces, Georgia, serif`; ctx.fillStyle = `rgba(23,50,77,${.035 + p.z * .045})`;
+      ctx.fillText(p.g, px, py);
+    });
+    raf = requestAnimationFrame(draw);
+  };
+  size(); addEventListener("resize", size);
+  if (!RM.matches) draw();
+  document.addEventListener("visibilitychange", () => { cancelAnimationFrame(raf); if (!document.hidden && !RM.matches && !document.body.classList.contains("reader")) draw(); });
+}
+
+/* ---------- layout: presenting mode, or a readable page on narrow screens ---------- */
+function layout() {
+  const reader = innerWidth < 760 || innerHeight < 420;
+  document.body.classList.toggle("reader", reader);
+  if (reader) { secs.forEach((el, i) => { el.classList.add("live"); $$("[data-b]", el).forEach(x => x.classList.add("on")); HOOKS[i]?.build?.(STOPS[i].b); }); return; }
+  Object.assign(cam, overview ? fitAll() : fitStop(cur)); apply(); placeToken(LEN[cur]);
+}
+addEventListener("resize", () => { flight++; layout(); });
+
+/* opening shot: the whole map, then a dive to the first stop (or the linked stop) */
+const m = /^#stop-(\d+)$/.exec(location.hash);
+const startAt = m ? Math.max(0, Math.min(STOPS.length - 1, +m[1] - 1)) : 0;
+cur = startAt; seen.add(startAt);
+layout();
+if (!document.body.classList.contains("reader")) {
+  Object.assign(cam, fitAll()); apply(); placeToken(LEN[startAt]);
+  setBuild(startAt, 0); hud();
+  setTimeout(() => fly(fitStop(startAt), { ms: 2200 }).then(() => enter(startAt)), 500);
+}
+}
+</script>
