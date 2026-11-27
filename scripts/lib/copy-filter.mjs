@@ -159,6 +159,14 @@ export function makeCopyFilter(root) {
     if (SKIP_COPY_RE.test(rel)) return false;
     const normalized = rel.split(sep).join("/");
     if (normalized.startsWith("data/audit/studio-audit/")) return false;
+    // Practice / Family / Assignments source data. It is bundled into the Pages Function that renders
+    // those pages (functions/_lib/pfa/), so no page fetches it, and 169 copies would push dist/ past
+    // Cloudflare's 20,000-file limit.
+    if (
+      /^data\/(practice|family)\/[^/]+\.json$/.test(normalized) ||
+      normalized === "data/assignments.json"
+    )
+      return false;
     // Developer tooling and test fixtures that live under shared/ for the Functions and the QA gates. They
     // cite source paths in prose (the privacy inventory names `math/fluency-lab/...` files), and
     // tools/bundle-dist-modules.mjs reads every text file in dist/ for such paths and keeps whatever they name,

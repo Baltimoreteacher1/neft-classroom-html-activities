@@ -275,7 +275,10 @@ async function rasterSweep(imageFiles, baseDir = ROOT) {
   await new Promise((ok) => server.listen(0, "127.0.0.1", ok));
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await chromium.launch({
+      headless: true,
+      ...(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {}),
+    });
     const page = await browser.newPage();
     const startPage = existsSync(join(baseDir, "curriculum/index.html"))
       ? "/curriculum/"

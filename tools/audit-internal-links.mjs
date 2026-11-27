@@ -9,6 +9,7 @@
  */
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, extname, join, resolve } from "node:path";
+import { routePfa } from "../functions/_lib/pfa/render.js";
 import { STUDIOS_BASE } from "../functions/_lib/studios-proxy.js";
 
 const ROOT = process.cwd();
@@ -140,6 +141,9 @@ for (const file of htmlFiles) {
     if (url.startsWith("/") && redirectCovers(pathname)) continue;
     // /studios is a reverse proxy to the Learning Studios Worker (functions/_lib/studios-proxy.js): no files on disk.
     if (pathname === STUDIOS_BASE || pathname.startsWith(`${STUDIOS_BASE}/`)) continue;
+    // Practice / Family / Assignments pages are rendered by a Pages Function (functions/_lib/pfa):
+    // a link resolves only if the renderer really answers it.
+    if (routePfa(pathname)) continue;
     problems.push({ file: file.slice(ROOT.length + 1), url });
   }
 }
