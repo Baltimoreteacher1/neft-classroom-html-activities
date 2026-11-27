@@ -451,11 +451,30 @@ export function openCreate(env) {
     );
 
     const words = (state.base.blocks || []).filter((x) => x.type === "vocab").reduce((n, x) => n + x.items.length, 0);
-    const more = moreActions({ S, lang, say, get: () => state.built.activity });
+    const more = moreActions({
+      S,
+      lang,
+      say,
+      get: () => state.built.activity,
+      buildAt: (level) =>
+        buildResource(state.base, {
+          format: state.format,
+          adjust: state.adjust,
+          supports: { ...(state.supports || {}), level },
+        }).activity,
+      printable: () => Boolean(out.print),
+    });
+    const qCount = (b.activity.blocks || []).filter((x) => x.type === "question").length;
+    const uniq = new Set(
+      (state.base.blocks || [])
+        .filter((x) => x.type === "vocab")
+        .flatMap((x) => x.items.filter((v) => v.def).map((v) => v.term.trim().toLowerCase())),
+    ).size;
     const tile = (ic, label, sub, onclick, primary = false) => ({ icon: ic, label, sub, onclick, primary });
     const groups = [
       {
         title: S("Use with students", "Usar con estudiantes"),
+        tone: "students",
         items: [
           tile("open", S("Open in Activity Studio", "Abrir en el Estudio de actividades"), S("Edit, assign or share a link", "Editar, asignar o compartir un enlace"), () => env.openStudio(b.activity), true),
           tile("html", S("Download HTML", "Descargar HTML"), S("Works offline in any browser", "Funciona sin conexión"), () => downloadHtml()),
@@ -465,6 +484,7 @@ export function openCreate(env) {
       },
       {
         title: S("Print and edit", "Imprimir y editar"),
+        tone: "print",
         items: [
           ...(out.print
           ? [
@@ -484,9 +504,30 @@ export function openCreate(env) {
         ),
       },
       {
+        title: S("Play and check", "Jugar y comprobar"),
+        tone: "play",
+        items: [
+          uniq >= 8
+            ? tile("bingo", S("Word bingo", "Bingo de palabras"), S("A different card per student; you read meanings", "Una tarjeta distinta por estudiante; usted lee significados"), () => printGame("bingo"))
+            : null,
+          uniq >= 4
+            ? tile("chain", S("I have… Who has?", "Yo tengo… ¿Quién tiene?"), S(`${uniq} cards that loop around the class`, `${uniq} tarjetas que recorren la clase`), () => printGame("whoHas"))
+            : null,
+          qCount
+            ? tile("ticket", S("Exit slips", "Boletos de salida"), S("First questions to cut apart; no answers", "Primeras preguntas para recortar; sin respuestas"), () => printGame("exit"))
+            : null,
+        ],
+        empty: S(
+          "Games need a word list with meanings (4 or more words); exit slips need questions.",
+          "Los juegos necesitan una lista de palabras con significado (4 o más); los boletos necesitan preguntas.",
+        ),
+      },
+      {
         title: S("Share and bundle", "Compartir y agrupar"),
+        tone: "share",
         items: [
           tile("packet", S("Add to packet", "Agregar al paquete"), S("Combine pages into one PDF or Word file", "Una varias páginas en un PDF o Word"), () => addToPacket()),
+          more.leveled,
           more.scorm,
           more.zip,
         ],
@@ -592,6 +633,18 @@ export function openCreate(env) {
   async function printCards() {
     const { wordCardsHtml } = await import("./word-cards.js");
     const { html } = wordCardsHtml(state.base, { lang });
+    (await loaders.print()).openPrint(html, { lang, onFallback: say });
+  }
+
+  /** Class games from the page's own words (the base) and exit slips from the built resource's questions. */
+  async function printGame(kind) {
+    const G = await import("./print-games.js");
+    const html =
+      kind === "bingo"
+        ? G.bingoHtml(state.base, { lang }).html
+        : kind === "whoHas"
+          ? G.whoHasHtml(state.base, { lang }).html
+          : G.exitSlipsHtml(state.built.activity, { lang }).html;
     (await loaders.print()).openPrint(html, { lang, onFallback: say });
   }
 

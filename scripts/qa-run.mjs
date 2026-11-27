@@ -1159,6 +1159,12 @@ const COVERAGE = [
   // The deploy driver is covered by tools/deploy-path.test.mjs (bash -n, lock,
   // per-worktree engine link, manifest regeneration); nothing else reads it.
   [/^(scripts\/ship\.sh|tools\/deploy-path\.test\.mjs)$/, ["test"]],
+  // Answer keys in every multiple-choice bank that is not a lesson config (those
+  // are covered by validate:math through the lessons/*/config.json rule below).
+  [
+    /^(spiral-review\/bank\.json|data\/(family-homework-ladder|part-two-session2-practice|retrieval-bank)\.json|teacher-tools\/do-now-generator\/lessons-manifest\.json|curriculum\/learning-labs\/[^/]+\/content\.json|tools\/(validate-bank-answers\.mjs|lib\/answer-match\.mjs)|scripts\/lib\/rational\.mjs)$/,
+    ["validate:bank-answers"],
+  ],
   [
     /^lessons\/[^/]+\/config\.json$/,
     [

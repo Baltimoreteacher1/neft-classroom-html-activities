@@ -5,6 +5,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildCatalog, GROUPS, PURPOSES } from "../bcpss-teachers/companion/companion-data.js";
 import { conceptCard, conceptDoc } from "../bcpss-teachers/companion/concept-cards.js";
+import { buildDayPlan, dayPlanDoc } from "../bcpss-teachers/companion/day-plan.js";
+import { cluesFor } from "../bcpss-teachers/companion/guess-game.js";
 import {
   causeOptions,
   cerCheck,
@@ -61,7 +63,7 @@ test("registry: unique ids, known groups, every view renders for every unit at e
     assert.equal(typeof v.act, "function");
     assert.ok(v.label && v.hint);
   }
-  assert.equal(NEW_VIEWS.length, 8);
+  assert.equal(NEW_VIEWS.length, 10);
   for (const detail of all)
     for (const level of LEVELS)
       for (const v of NEW_VIEWS) {
@@ -292,4 +294,30 @@ test("visuals: every diagram draws from the unit's data, is labelled, and stays 
   }
   assert.match(chainFlow({ because: "", event: "E", so: "" }), /<b>\?<\/b>/);
   assert.match(chainFlow({ because: "B", event: "E", so: "S" }), /<b>B<\/b>/);
+});
+
+test("guess my word: every word has clues and no clue before the last gives the word away", () => {
+  const fold = (x) => x.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+  for (const detail of all)
+    for (const v of detail.studio.vocab) {
+      const clues = cluesFor(v);
+      assert.ok(clues.length >= 3, `${detail.unit.id} ${v.term}: ${clues.length} clues`);
+      assert.equal(clues.at(-1).label, "First letter");
+      for (const c of clues.slice(0, -1))
+        assert.ok(!fold(c.text).includes(fold(v.term)), `${detail.unit.id} ${v.term}: "${c.text}"`);
+    }
+});
+
+test("today's lesson: steps add up to the class length and open real views", () => {
+  const views = new Set([...NEW_VIEWS.map((v) => v.id), "map", "build", "check", "reteach"]);
+  for (const detail of all)
+    for (const minutes of [45, 60]) {
+      const plan = buildDayPlan(detail, "3_4", minutes);
+      assert.equal(plan.minutes, minutes, `${detail.unit.id} ${minutes}`);
+      for (const s of plan.steps) {
+        assert.ok(s.title && s.text && s.minutes > 0, `${detail.unit.id} ${s.id}`);
+        if (s.view) assert.ok(views.has(s.view), `${detail.unit.id}: unknown view ${s.view}`);
+      }
+      clean(dayPlanDoc(plan), detail.unit.id);
+    }
 });

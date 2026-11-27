@@ -43,6 +43,8 @@ async function run(width, label) {
   const context = await browser.newContext({
     viewport: { width, height: 900 },
     reducedMotion: "reduce",
+    // The page registers an offline service worker; requests it serves bypass page.route and hit the bare test server.
+    serviceWorkers: "block",
     acceptDownloads: true,
   });
   const page = await context.newPage();
@@ -391,6 +393,64 @@ async function run(width, label) {
   );
   await pj.close();
 
+  // Guess my word
+  await page.click('[data-cp-view="guess"]');
+  const c1 = await page.$$eval(".cp-clue", (e) => e.length);
+  await page.click('[data-cp-act="guess:clue"]');
+  const c2 = await page.$$eval(".cp-clue", (e) => e.length);
+  check(T("guess my word: clues appear one at a time"), c1 === 1 && c2 === 2, `${c1}/${c2}`);
+  await page.click('[data-cp-act="guess:got"]');
+  const stars = await page.textContent(".cp-stars");
+  check(
+    T("guess my word: a class guess earns stars and reveals the word"),
+    /★ [1-9]/.test(stars) && (await page.$$eval(".cp-reveal", (e) => e.length)) === 1,
+    stars,
+  );
+  await page.click('[data-cp-act="guess:next"]');
+  check(
+    T("guess my word: next word starts with one clue"),
+    (await page.$$eval(".cp-clue", (e) => e.length)) === 1,
+  );
+
+  // Today's lesson
+  await page.click('[data-cp-view="day"]');
+  const sum = async () =>
+    (await page.$$eval(".cp-day .cp-step-head span", (e) => e.map((x) => x.textContent))).at(-1);
+  const end45 = await sum();
+  await page.click('[data-cp-act="day:min"][data-cp-arg="60"]');
+  const end60 = await sum();
+  check(
+    T("today's lesson: steps fill 45 or 60 minutes"),
+    /–45 min/.test(end45) && /–60 min/.test(end60),
+    `${end45} / ${end60}`,
+  );
+  await page.click('.cp-day [data-cp-view="text"]');
+  check(
+    T("today's lesson: a step opens its view"),
+    (await page.getAttribute('[data-cp-view="text"]', "aria-pressed")) === "true",
+  );
+
+  // Present mode
+  await page.click('[data-cp-view="practice"]');
+  await page.click('[data-cp-present="on"]');
+  const presentOk = await page.evaluate(() => {
+    const root = document.querySelector(".cp--present");
+    const visible = (sel) => [...root.querySelectorAll(sel)].some((e) => e.offsetParent);
+    return (
+      Boolean(root) &&
+      !visible(".cp-teacher") &&
+      !visible('[data-cp-act$=":print"]') &&
+      !document.querySelector(".cp--present .cp-vgroups")
+    );
+  });
+  check(T("present mode hides teacher notes, print buttons and navigation"), presentOk);
+  await page.keyboard.press("Escape");
+  check(
+    T("Escape leaves present mode and returns focus"),
+    (await page.$$eval(".cp--present", (e) => e.length)) === 0 &&
+      (await page.evaluate(() => document.activeElement?.dataset.cpPresent)) === "on",
+  );
+
   // Diagrams
   await page.click('[data-cp-view="map"]');
   check(
@@ -477,6 +537,8 @@ async function run(width, label) {
     "quick",
     "transform",
     "projects",
+    "guess",
+    "day",
   ]) {
     await page.click(`[data-cp-view="${view}"]`);
     const overflow = await page.evaluate(

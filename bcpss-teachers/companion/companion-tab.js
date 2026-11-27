@@ -205,11 +205,34 @@ function buildView(st, detail, catalog) {
 
 // ── Shell ───────────────────────────────────────────────────────────────────
 
+const VIEW_KEY = "cp:view";
+const remember = (id) => {
+  try {
+    localStorage.setItem(VIEW_KEY, id);
+  } catch {}
+};
+const recall = () => {
+  try {
+    const id = localStorage.getItem(VIEW_KEY);
+    return VIEWS.some((v) => v.id === id) ? id : null;
+  } catch {
+    return null;
+  }
+};
+
 function shell(st, inner) {
+  if (st.present) {
+    const v = VIEWS.find((x) => x.id === st.view);
+    return `
+    <div class="cp cp--present" data-cp-root>
+      <div class="cp-present-bar"><b>${esc(v?.label || "")}</b><button type="button" class="cp-btn" data-cp-present="off">Exit present mode</button></div>
+      <div class="cp-body" data-cp-body>${inner}</div>
+    </div>`;
+  }
   return `
     <div class="cp" data-cp-root>
       <div class="cp-top">
-        <div><h3 class="cp-title">Plan &amp; Respond</h3><p class="cp-muted">Built from this unit's own words, goals and activities. Nothing you type here leaves this device.</p></div>
+        <div class="cp-set-head"><div><h3 class="cp-title">Plan &amp; Respond</h3><p class="cp-muted">Built from this unit's own words, goals and activities. Nothing you type here leaves this device.</p></div><button type="button" class="cp-btn cp-btn--solid" data-cp-present="on">Present to class</button></div>
         <nav class="cp-vgroups" aria-label="Plan and respond">${GROUPS.map((g) => ({ g, views: VIEWS.filter((v) => v.group === g.id) }))
           .filter((x) => x.views.length)
           .map(
@@ -234,7 +257,7 @@ export function renderCompanionTab(panel, ctx) {
     return;
   }
   const st = panelState.get(panel) || {
-    view: "map",
+    view: recall() || "map",
     purpose: "introduce",
     fade: 0,
     picks: new Map(),
@@ -282,6 +305,14 @@ export function renderCompanionTab(panel, ctx) {
   panel.addEventListener("click", (e) => onClick(panel, e));
   panel.addEventListener("change", (e) => onChange(panel, e));
   panel.addEventListener("input", (e) => onInput(panel, e));
+  panel.addEventListener("keydown", (e) => {
+    const st = panelState.get(panel);
+    if (e.key === "Escape" && st?.present) {
+      st.present = false;
+      st.draw();
+      panel.querySelector('[data-cp-present="on"]')?.focus();
+    }
+  });
 }
 
 /** A view handler may return true (redraw), false (nothing) or a promise (redraw now, and again when it settles). */
@@ -301,8 +332,15 @@ function onClick(panel, e) {
   if (!t || t.tagName === "A") return;
   const { detail } = st.ctx;
   const d = t.dataset;
+  if (d.cpPresent) {
+    st.present = d.cpPresent === "on";
+    st.draw();
+    panel.querySelector(`[data-cp-present="${st.present ? "off" : "on"}"]`)?.focus();
+    return;
+  }
   if (d.cpView) {
     st.view = d.cpView;
+    remember(st.view);
     st.draw();
     panel.querySelector(`[data-cp-view="${st.view}"]`)?.focus();
     return;

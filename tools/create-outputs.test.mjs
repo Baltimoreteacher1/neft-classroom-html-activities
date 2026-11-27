@@ -189,3 +189,100 @@ test("new Create modules build DOM without innerHTML", () => {
       f,
     );
 });
+
+const G = await import(new URL("create/print-games.js", LAB));
+const X = await import(new URL("create/extras.js", LAB));
+
+test("deck class play: team points and a fair picker, offline, nothing stored", () => {
+  const html = D.deckHtml(worksheet);
+  for (const id of ["play", "play-t", "play-p", "pick", "pick-size", "pick-go"])
+    assert.match(html, new RegExp(`id="${id}"`), id);
+  assert.doesNotMatch(
+    html,
+    /localStorage|sessionStorage|setTimeout|setInterval/,
+    "no storage, no timers",
+  );
+  assert.match(html, /default-src 'none'/);
+  assert.match(D.deckHtml(worksheet, { lang: "es" }), /¿Quién responde\?/);
+  // the picker draws from a bag (no repeats until everyone has had a turn)
+  assert.match(html, /bag\.splice/);
+});
+
+test("word bingo: one distinct card per student, only the page's words, reprints identically", () => {
+  const words = new Set(
+    vocab.blocks.filter((b) => b.type === "vocab").flatMap((b) => b.items.map((v) => v.term)),
+  );
+  const r = G.bingoHtml(vocab, { count: 24 });
+  assert.equal(r.cards, 24);
+  assert.equal(r.size, G.bingoSize(words.size));
+  assert.ok(r.size >= 3);
+  const cards = r.html.match(/<table[\s\S]*?<\/table>/g);
+  assert.equal(cards.length, 24);
+  const seen = new Set();
+  for (const c of cards) {
+    const cells = [...c.matchAll(/<td(?: class="free")?>([^<]*)<\/td>/g)].map((m) => m[1]);
+    assert.equal(cells.length, r.size * r.size);
+    const terms = cells.filter((x) => x !== "FREE");
+    assert.equal(new Set(terms).size, terms.length, "no word twice on a card");
+    for (const t of terms)
+      assert.ok(
+        [...words].some((w) => w.replace(/&/g, "&amp;") === t || w === t),
+        t,
+      );
+    seen.add(terms.join("|"));
+  }
+  assert.ok(seen.size >= 23, "cards differ");
+  assert.equal(G.bingoHtml(vocab, { count: 24 }).html, r.html, "seeded: same page, same cards");
+  assert.match(r.html, /Caller's list/);
+  assert.equal(G.bingoHtml({ title: "x", blocks: [] }).cards, 0);
+  assert.deepEqual([7, 8, 16, 24].map(G.bingoSize), [0, 3, 4, 5]);
+});
+
+test("I have / Who has: every word held once and asked once; the chain closes", () => {
+  const r = G.whoHasHtml(vocab);
+  const have = [...r.html.matchAll(/I have: <b>([^<]*)<\/b>/g)].map((m) => m[1]);
+  const asks = [...r.html.matchAll(/means: “([^”]*)”/g)].map((m) => m[1]);
+  assert.equal(have.length, r.count);
+  assert.equal(new Set(have).size, have.length);
+  assert.equal(new Set(asks).size, asks.length);
+  assert.equal((r.html.match(/★ Start here/g) || []).length, 1);
+  assert.equal(G.whoHasHtml({ title: "x", blocks: [] }).count, 0);
+});
+
+test("exit slips: copies of the first questions that fit the page, never an answer", () => {
+  const r = G.exitSlipsHtml(worksheet);
+  assert.ok(r.questions >= 1 && r.questions <= 2);
+  assert.ok([2, 4].includes(r.perPage));
+  assert.equal((r.html.match(/<section class="slip">/g) || []).length, r.perPage);
+  const short = G.exitSlipsHtml({
+    title: "t",
+    blocks: [
+      { type: "question", id: "a", format: "short", prompt: "Why?", sample: "Because." },
+      { type: "question", id: "b", format: "short", prompt: "How?", sample: "Like so." },
+    ],
+  });
+  assert.equal(short.perPage, 4, "short questions: four slips to a page");
+  assert.equal(short.questions, 2);
+  for (const s of D.deckSlides(worksheet)
+    .filter((x) => x.kind === "question")
+    .slice(0, 2))
+    if (s.answer && s.answer.length > 12) assert.ok(!r.html.includes(s.answer));
+  assert.equal(G.exitSlipsHtml({ title: "x", blocks: [] }).questions, 0);
+});
+
+test("three-level set: each WIDA tier keeps every question's prompt and answer", () => {
+  assert.deepEqual([...X.LEVEL_SET], ["emerging", "developing", "expanding"]);
+  const base = new Map(questionsOf(worksheet).map((q) => [q.id, q]));
+  const widas = new Set();
+  for (const level of X.LEVEL_SET) {
+    const a = B.buildResource(vocab, { format: "worksheet", supports: { level, on: [] } }).activity;
+    widas.add(a.supports?.wida);
+    for (const q of questionsOf(a)) {
+      const o = base.get(q.id);
+      if (!o) continue;
+      assert.equal(q.prompt, o.prompt);
+      assert.deepEqual(q.answer ?? q.answers ?? null, o.answer ?? o.answers ?? null);
+    }
+  }
+  assert.equal(widas.size, 3, "three different levels");
+});

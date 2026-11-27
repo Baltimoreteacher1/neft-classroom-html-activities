@@ -5,6 +5,7 @@
 // The deck is built only from the resource's own words; nothing is invented. Pure apart from injected PptxGenJS.
 
 import { answerText } from "../studio/core/check.js";
+import { PLAY_CSS, playHtml, playJs } from "./deck-play.js";
 
 const MARK = /\[\[([^\]]*)\]\]/g;
 const LETTERS = "ABCDEFGHIJ";
@@ -283,6 +284,7 @@ export function deckHtml(activity, { lang = "en" } = {}) {
   const L = KIND_LABEL[es ? "es" : "en"];
   const slides = deckSlides(activity, { lang });
   const body = slides.map((sl, k) => slideHtml(sl, L, es, k, slides.length)).join("\n");
+  const play = playHtml(es);
   return `<!doctype html>
 <html lang="${es ? "es" : "en"}">
 <head>
@@ -290,21 +292,23 @@ export function deckHtml(activity, { lang = "en" } = {}) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:">
 <title>${esc(activity.title || "Slides")}</title>
-<style>${CSS}</style>
+<style>${CSS}${PLAY_CSS}</style>
 </head>
 <body>
 <div class="bar" id="bar"></div>
 <main>
 ${body}
 </main>
+${play.panel}
 <nav aria-label="${es ? "Diapositivas" : "Slides"}">
 <button type="button" id="prev" aria-label="${es ? "Anterior" : "Previous"}">‹</button>
 <span id="pos" aria-live="polite"></span>
 <button type="button" id="next" aria-label="${es ? "Siguiente" : "Next"}">›</button>
 <button type="button" id="rev">${es ? "Mostrar respuesta (A)" : "Show answer (A)"}</button>
 <button type="button" id="full">${es ? "Pantalla completa" : "Full screen"}</button>
+${play.nav}
 </nav>
-<script>${JS}</script>
+<script>${JS}${playJs(play.left)}</script>
 </body>
 </html>
 `;

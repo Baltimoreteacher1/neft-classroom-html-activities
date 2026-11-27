@@ -3,6 +3,8 @@
 // group is a key of GROUPS in companion-data.js: the six teacher-facing sections the views are listed under.
 
 import * as words from "./concept-cards.js";
+import * as day from "./day-plan.js";
+import * as guess from "./guess-game.js";
 import * as labs from "./labs.js";
 import * as practice from "./practice.js";
 import * as projects from "./projects.js";
@@ -11,9 +13,11 @@ import * as text from "./text-companion.js";
 import * as transform from "./transform.js";
 
 export const NEW_VIEWS = [
+  { id: "day", group: "teach", label: "Today's lesson", hint: "A full class period, ready to run", ...day },
   { id: "text", group: "teach", label: "Read together", hint: "Passage, words and evidence", ...text },
   { id: "labs", group: "teach", label: "Virtual lab", hint: "Hands-on for this subject", ...labs },
   { id: "words", group: "vocab", label: "Word cards", hint: "Animated concept cards", ...words },
+  { id: "guess", group: "vocab", label: "Guess my word", hint: "Whole-class clue game", ...guess },
   { id: "practice", group: "practice", label: "Four-domain practice", hint: "Listen, speak, read, write", ...practice },
   {
     id: "stations",

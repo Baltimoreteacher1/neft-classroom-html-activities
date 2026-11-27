@@ -328,11 +328,40 @@ function progressHTML(ctx, I, st) {
           </ul>
         </section>`,
     )}
+    ${episodeProgressHTML(I, band)}
     <div class="wl-actions">
       <a class="btn" href="${cityHref("", band)}"
         >${icon("arrow-left")} ${I.T("Back to the city map", "Volver al mapa de la ciudad")}</a
       >
     </div>`;
+}
+
+/** The episodes are counted in the city totals, so the progress page lists them beside the missions. */
+function episodeProgressHTML(I, band) {
+  const rows = [
+    { title: EPISODE_TITLE, href: episodeHref(band), rec: loadMarket() },
+    ...MORE_EPISODES.map((ep) => ({ title: ep.title, href: moreEpisodeHref(ep, band), rec: loadMoreEpisode(ep) })),
+  ];
+  const status = (rec) =>
+    rec.indep > 0
+      ? I.T("Finished on my own", "Terminado por mi cuenta")
+      : rec.runs > 0 || rec.done
+        ? I.T("Finished with support", "Terminado con apoyo")
+        : I.T("Not started", "Sin empezar");
+  return html`<section class="panel" aria-labelledby="ct-pb-episodes">
+    <h2 id="ct-pb-episodes">${I.T("Episodes", "Episodios")}</h2>
+    <ul class="city-prog-list city-prog-episodes">
+      ${rows.map(
+        ({ title, href, rec }) => html`<li>
+          <a href="${href}"><b>${P(I, title)}</b></a>
+          <span class="city-chip">${status(rec)}</span>
+          <span class="fine"
+            >${I.T(`${rec.indep || 0} on my own · ${rec.supp || 0} with support`, `${rec.indep || 0} por mi cuenta · ${rec.supp || 0} con apoyo`)}</span
+          >
+        </li>`,
+      )}
+    </ul>
+  </section>`;
 }
 
 /** Every Language City screen sits in one wrapper so its reading text can be held at 16px. */

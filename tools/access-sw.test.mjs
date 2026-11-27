@@ -185,7 +185,7 @@ test("the critical cache contains only first-route assets and the background set
   const core = parseList(swSource.match(/const PRECACHE_CORE = (\[[\s\S]*?\]);/)[1]);
   const more = parseList(swSource.match(/const PRECACHE_MORE = (\[[\s\S]*?\]);/)[1]);
   const sheets = [
-    ...index.matchAll(/href="(\/access-practice-lab\/[\w.-]+\.css\?v=[0-9a-f]{12})"/g),
+    ...index.matchAll(/href="(\/access-practice-lab\/[\w.-]+\.css\?v=[0-9a-f]{8})"/g),
   ].map((m) => m[1]);
   const map = JSON.parse(index.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]).imports;
   const shell = new JSDOM(index).window.document;
@@ -281,7 +281,15 @@ test("the Pages Function marks only hashed .js/.css whose bytes match the hash a
     (await onRequest({ request: new Request(`${ORIGIN}${path}`), env })).headers.get(
       "cache-control",
     );
-  // "2d711642b726" is the first 12 hex of SHA-256("x"), the body every call here receives.
+  // "2d711642b726" is the first 12 hex of SHA-256("x"), the body every call here receives. The shell writes 8 hex
+  // (tools/sync-access-shell.mjs); 12-hex URLs from shells and offline caches made before 2026-11-27 still verify.
+  assert.match(await call("/access-practice-lab/src/main.js?v=2d711642"), /immutable/);
+  assert.equal(await call("/access-practice-lab/src/main.js?v=01234567"), "no-store");
+  assert.notEqual(
+    await call("/access-practice-lab/src/main.js?v=2d7116"),
+    "public, max-age=31536000, immutable",
+    "a version shorter than 8 hex is not content-addressed",
+  );
   assert.match(await call("/access-practice-lab/src/main.js?v=2d711642b726"), /immutable/);
   assert.match(await call("/access-practice-lab/styles.css?v=2d711642b726"), /max-age=31536000/);
   assert.equal(

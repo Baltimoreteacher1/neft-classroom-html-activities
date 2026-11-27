@@ -619,7 +619,7 @@ test("the stylesheet, routes and shell are wired and every new string has Spanis
   }
   assert.match(
     readFileSync(new URL(`${LAB}index.html`, ROOT), "utf8"),
-    /experience\.css\?v=[0-9a-f]{12}/,
+    /experience\.css\?v=[0-9a-f]{8}/,
   );
   const gate = readFileSync(new URL(`${LAB}src/early/gate.js`, ROOT), "utf8");
   for (const v of ["warmup", "search", "portfolio", "collection"])
