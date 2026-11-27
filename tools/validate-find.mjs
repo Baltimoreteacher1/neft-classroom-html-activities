@@ -27,7 +27,15 @@ const OWNED_FILES = [
   "curriculum/find/index.html",
   "curriculum/find/find.css",
   "curriculum/find/find.js",
+  "curriculum/find/find-engine.js",
+  "curriculum/find/plan-engine.js",
+  "curriculum/find/plan-ui.js",
+  "curriculum/find/collections.js",
+  "curriculum/find/collections-ui.js",
+  "curriculum/find/dom.js",
   "tools/validate-find.mjs",
+  "tools/curriculum-find-plan.test.mjs",
+  "tools/validate-find-browser.mjs",
 ];
 
 const failures = [];
@@ -72,6 +80,15 @@ for (const m of html.matchAll(/\son[a-z]+="([A-Za-z_$][\w$]*)\s*\(/g)) {
   check(defined.has(m[1]), `inline handler calls ${m[1]}(), which find.js does not define`);
 }
 
+/* --- 2b. Every relative module import inside the surface resolves to an owned file ---------------------- */
+for (const [rel, body] of files) {
+  if (!rel.startsWith("curriculum/find/") || !rel.endsWith(".js")) continue;
+  for (const m of body.matchAll(/^import[^"']*["'](\.\/[^"']+)["']/gm)) {
+    const target = `curriculum/find/${m[1].slice(2)}`;
+    check(files.has(target), `${rel} imports ${m[1]}, which is not an owned file of the surface`);
+  }
+}
+
 /* --- 3. Stylesheet stays scoped -------------------------------------------- */
 for (const line of css.split("\n")) {
   const sel = line.match(/^\s*([a-z][\w-]*)\s*(?:,|\{)/);
@@ -82,8 +99,14 @@ for (const line of css.split("\n")) {
 
 /* --- 4 & 5. Light-only, and the label ------------------------------------- */
 for (const [rel, body] of files) {
-  check(!/prefers-color-scheme\s*:\s*dark/.test(body), `${rel} emits a dark-mode block; this is a light-only site`);
-  check(!/\bESOL\b/.test(body), `${rel} uses the discouraged label; say "support" or "Level 1" instead`);
+  check(
+    !/prefers-color-scheme\s*:\s*dark/.test(body),
+    `${rel} emits a dark-mode block; this is a light-only site`,
+  );
+  check(
+    !/\bESOL\b/.test(body),
+    `${rel} uses the discouraged label; say "support" or "Level 1" instead`,
+  );
 }
 
 /* -------------------------------------------------------------------------- */

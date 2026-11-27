@@ -219,6 +219,7 @@ const EXCLUSIVE = new Set([
   "validate:u4-adaptive-browser",
   "validate:math-workbench-browser",
   "validate:all-resources-browser",
+  "validate:find-browser",
   "validate:access-lab",
   "smoke:injection",
   "validate:visibility",
@@ -1444,8 +1445,8 @@ const COVERAGE = [
   // (tools/curriculum-find.test.mjs). The browser half is the all-resources-style drive in validate:find.
   // Must precede ALL RESOURCES and /^curriculum\// below.
   [
-    /^(curriculum\/find\/|data\/curriculum-find-index\.json$|scripts\/generate-curriculum-find-index\.mjs$|tools\/(validate-find|curriculum-find\.test)\.mjs$)/,
-    ["validate:find", "validate:js-syntax", "check"],
+    /^(curriculum\/find\/|data\/curriculum-find-index\.json$|scripts\/generate-curriculum-find-index\.mjs$|tools\/(validate-find(-browser)?|curriculum-find(-plan)?\.test)\.mjs$)/,
+    ["validate:find", "validate:find-browser", "validate:js-syntax", "check"],
   ],
   // ALL RESOURCES — the complete directory. The static gate proves coverage (every manifest
   // resource flattened, tools.json current, one icon family); the browser gate drives it as a

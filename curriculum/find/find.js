@@ -5,102 +5,25 @@
  * results. "My list" is localStorage on this device only (key below); it holds titles and URLs, never anything
  * about a student. Every listener is attached here; the page has no inline handlers. */
 
+import { initCollections, saveButton, syncSaveButtons } from "./collections-ui.js";
+import { $, el, facts as factsOf } from "./dom.js";
 import {
+  audienceLabel,
   companions,
   kindLabel,
-  audienceLabel,
   languagePageLink,
   search,
   standardLabel,
 } from "./find-engine.js";
+import { initPlan, renderPath, renderPlan, resumeInfo } from "./plan-ui.js";
 
 const INDEX_URL = "/data/curriculum-find-index.json";
-const LIST_KEY = "ewl-find-list-v1";
 const PAGE = 12;
-
-const $ = (id) => document.getElementById(id);
-const el = (tag, attrs = {}, ...kids) => {
-  const n = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) {
-    if (v == null || v === false) continue;
-    if (k === "class") n.className = v;
-    else if (k === "text") n.textContent = v;
-    else n.setAttribute(k, v === true ? "" : v);
-  }
-  for (const kid of kids.flat()) if (kid != null) n.append(kid);
-  return n;
-};
+const MODES = new Set(["search", "plan", "path"]);
 
 let index = null;
 let shown = PAGE;
 let last = null;
-
-/* ---------- My list (device only) -------------------------------------- */
-
-function readList() {
-  try {
-    const v = JSON.parse(localStorage.getItem(LIST_KEY) || "[]");
-    return Array.isArray(v)
-      ? v.filter((x) => x && typeof x.p === "string" && typeof x.t === "string")
-      : [];
-  } catch {
-    return [];
-  }
-}
-function writeList(list) {
-  try {
-    localStorage.setItem(LIST_KEY, JSON.stringify(list.slice(0, 60)));
-    return true;
-  } catch {
-    $("find-saved-status").textContent =
-      "This browser is not letting the page save. Your list will not be kept.";
-    return false;
-  }
-}
-const inList = (p) => readList().some((x) => x.p === p);
-function toggleSaved(doc) {
-  const list = readList();
-  const at = list.findIndex((x) => x.p === doc.p);
-  if (at >= 0) list.splice(at, 1);
-  else list.push({ t: doc.t, p: doc.p, k: doc.k });
-  writeList(list);
-  renderList();
-  $("find-saved-status").textContent =
-    at >= 0 ? `Removed “${doc.t}”.` : `Saved “${doc.t}” to My list.`;
-}
-function renderList() {
-  const list = readList();
-  $("find-saved-count").textContent = String(list.length);
-  const ol = $("find-saved-list");
-  ol.replaceChildren(
-    ...list.map((x) =>
-      el(
-        "li",
-        {},
-        el("a", { href: x.p, text: x.t }),
-        el("span", { class: "find-saved-kind", text: kindLabel(x.k) }),
-        removeButton(x),
-      ),
-    ),
-  );
-  $("find-saved-actions").hidden = list.length === 0;
-  for (const b of document.querySelectorAll("[data-save]")) syncSaveButton(b);
-}
-function removeButton(x) {
-  const b = el("button", {
-    type: "button",
-    class: "find-x",
-    "aria-label": `Remove ${x.t} from My list`,
-    text: "Remove",
-  });
-  b.addEventListener("click", () => toggleSaved(x));
-  return b;
-}
-function syncSaveButton(b) {
-  const saved = inList(b.dataset.save);
-  b.setAttribute("aria-pressed", String(saved));
-  b.textContent = saved ? "Saved" : "Save";
-}
 
 /* ---------- results ----------------------------------------------------- */
 
@@ -111,34 +34,16 @@ function metaLine(doc) {
   if (doc.s) bits.push(`${doc.s} ${standardLabel(index, doc.s)}`.trim());
   return bits.join(" · ");
 }
-function facts(doc) {
-  const f = [`For ${audienceLabel(doc.a)}`];
-  f.push(
-    doc.pr
-      ? (doc.f || []).map((x) => (x === "docx" ? "Word" : x.toUpperCase())).join(" + ")
-      : "Opens online",
-  );
-  if (doc.es) f.push("Spanish available");
-  if (doc.v === "support") f.push("Extra support level");
-  if (doc.v === "challenge") f.push("Challenge level");
-  return f;
-}
+const facts = (doc) => factsOf(doc, audienceLabel);
 
 function resultItem({ doc, why }) {
-  const save = el("button", {
-    type: "button",
-    class: "find-save",
-    "data-save": doc.p,
-    "aria-pressed": "false",
-  });
-  save.addEventListener("click", () => toggleSaved(doc));
-  syncSaveButton(save);
+  const save = saveButton(doc);
   const pals = companions(index, doc);
   const head = el(
     "div",
     { class: "find-item-head" },
     el("span", { class: "find-kind", text: kindLabel(doc.k) }),
-    el("h3", {}, el("a", { href: doc.p, text: doc.t })),
+    el("h3", {}, el("a", { href: doc.p, "data-doc": doc.p, text: doc.t })),
   );
   const parts = [head];
   const meta = metaLine(doc);
@@ -178,7 +83,7 @@ function resultItem({ doc, why }) {
               "li",
               {},
               el("span", { class: "find-kind", text: kindLabel(d.k) }),
-              el("a", { href: d.p, text: d.t }),
+              el("a", { href: d.p, "data-doc": d.p, text: d.t }),
             ),
           ),
         ),
@@ -250,13 +155,14 @@ function languagePanel(q, languageOnly) {
 function run(raw, { push = false } = {}) {
   const query = String(raw || "").trim();
   const url = new URL(location.href);
-  if (query) url.searchParams.set("q", query);
-  else url.searchParams.delete("q");
+  url.search = query ? new URLSearchParams({ q: query }).toString() : "";
   if (push) history.pushState({}, "", url);
+  setMode("search");
   $("find-q").value = query;
   $("find-start").hidden = Boolean(query);
   $("find-examples").hidden = Boolean(query);
   if (!query) {
+    renderResume();
     $("find-list").replaceChildren();
     $("find-status").textContent = "";
     $("find-understood").hidden = true;
@@ -282,10 +188,48 @@ function paint() {
       : `${n === 200 ? "200+" : n} resource${n === 1 ? "" : "s"} found. Showing the best ${Math.min(shown, n)}.`;
   $("find-list").replaceChildren(...results.slice(0, shown).map(resultItem));
   $("find-more").hidden = shown >= n;
+  syncSaveButtons();
+}
+
+/* ---------- modes: search, plan a set, practice path -------------------------------------------- */
+
+function setMode(mode) {
+  const wrap = document.querySelector(".find-wrap");
+  wrap.dataset.mode = mode;
+  for (const a of document.querySelectorAll(".find-modes a")) {
+    if (a.dataset.mode === mode) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  }
+  const titles = { search: "Find a resource", plan: "Plan a set", path: "My practice path" };
+  document.title = `${titles[mode]} — EduWonderLab Grade 6 Math`;
+}
+
+function route() {
+  const p = new URLSearchParams(location.search);
+  const mode = MODES.has(p.get("mode")) ? p.get("mode") : "search";
+  if (mode === "plan") {
+    setMode("plan");
+    renderPlan();
+  } else if (mode === "path") {
+    setMode("path");
+    renderPath();
+  } else run(p.get("q"));
+}
+
+function renderResume() {
+  const box = $("find-resume");
+  const r = resumeInfo();
+  box.hidden = !r;
+  if (!r) return;
+  box.replaceChildren(
+    el("a", { href: `?mode=path&lesson=${r.lesson}` },
+      el("strong", { text: "Continue my practice path" }),
+      el("span", { text: `${r.title} · ${r.done} of ${r.total} steps done` }),
+    ),
+  );
 }
 
 async function boot() {
-  renderList();
   $("find-form").addEventListener("submit", (e) => {
     e.preventDefault();
     run($("find-q").value, { push: true });
@@ -303,26 +247,17 @@ async function boot() {
     paint();
     $("find-list").children[first]?.querySelector("a")?.focus();
   });
-  $("find-print").addEventListener("click", () => window.print());
-  $("find-copy").addEventListener("click", async () => {
-    const text = readList()
-      .map((x) => `${x.t}\n${new URL(x.p, location.origin).href}`)
-      .join("\n\n");
-    try {
-      await navigator.clipboard.writeText(text);
-      $("find-saved-status").textContent =
-        "Links copied. Paste them into an email, a doc or your LMS.";
-    } catch {
-      $("find-saved-status").textContent =
-        "Copying is blocked in this browser. Use Print list instead.";
-    }
+  // The mode links and in-page links to another mode change the view without a page load.
+  document.querySelector(".find-wrap").addEventListener("click", (e) => {
+    const a = e.target.closest("a[href^='?mode='], .find-modes a");
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    history.pushState({}, "", new URL(a.href, location.href));
+    route();
   });
-  $("find-clear").addEventListener("click", () => {
-    writeList([]);
-    renderList();
-    $("find-saved-status").textContent = "My list is empty.";
-  });
-  addEventListener("popstate", () => run(new URLSearchParams(location.search).get("q")));
+  addEventListener("popstate", route);
+  document.addEventListener("find:navigate", route);
+  document.addEventListener("find:forgot", route);
 
   $("find-status").textContent = "Loading the resource index…";
   try {
@@ -335,7 +270,9 @@ async function boot() {
     return;
   }
   $("find-status").textContent = "";
-  run(new URLSearchParams(location.search).get("q"));
+  initCollections(index);
+  initPlan(index);
+  route();
 }
 
 boot();
