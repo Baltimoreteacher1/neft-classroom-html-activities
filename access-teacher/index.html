@@ -23,7 +23,7 @@
     <!-- mobile-access-injected:end -->
   <link rel="stylesheet" href="/access-practice-lab/acc.css">
 <link rel="stylesheet" href="/access-practice-lab/acc-engine.css">
-<link rel="stylesheet" href="/access-teacher/hub.css?v=2026.11.22" />
+<link rel="stylesheet" href="/access-teacher/hub.css?v=2026.11.27" />
 <script type="module" src="/access-practice-lab/src/acc/shell.js"></script>
 </head>
   <body class="th-body" data-acc-section="teacher">
@@ -36,8 +36,7 @@
             <rect x="21" y="2" width="17" height="17" rx="5.5" fill="#2E4A94" />
             <rect x="2" y="21" width="17" height="17" rx="5.5" fill="#8A3A5C" />
             <rect x="21" y="21" width="17" height="17" rx="5.5" fill="#9A4A26" /></svg></span
-        ><span class="lab-wordmark"
-          ><strong>ACCESS Practice Lab</strong><small>Teacher Hub</small></span
+        ><span class="lab-wordmark"><strong>ACCESS Practice Lab</strong><small>Teacher Hub</small></span
         ></a
       >
       <nav class="th-tools" aria-label="Teacher tools">
@@ -103,34 +102,34 @@
           <section id="thLibrary" class="th-library no-print" aria-labelledby="thLibraryTitle">
             <div class="th-block-head">
               <h2 id="thLibraryTitle" tabindex="-1">Go straight to</h2>
-              <p>The resources teachers open most.</p>
+              <p id="thLibraryLead">The resources teachers open most.</p>
             </div>
             <ul class="th-lib-grid" role="list">
-              <li><a class="th-lib-card" href="#activities" data-lib-target="activities">
+              <li data-lib-id="activities"><a class="th-lib-card" href="#activities" data-lib-target="activities">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#grid"></use></svg></span>
                 <span class="th-lib-text"><strong>Activities &amp; answer keys</strong><span>Filter by skill and level, build a playlist.</span></span></a></li>
-              <li><a class="th-lib-card" href="#printables" data-lib-target="printables">
+              <li data-lib-id="printables"><a class="th-lib-card" href="#printables" data-lib-target="printables">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#print"></use></svg></span>
                 <span class="th-lib-text"><strong>Printable packets</strong><span>Student and teacher packets, Word or PDF.</span></span></a></li>
-              <li><a class="th-lib-card" href="#tests" data-lib-target="tests">
+              <li data-lib-id="tests"><a class="th-lib-card" href="#tests" data-lib-target="tests">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#tests"></use></svg></span>
                 <span class="th-lib-text"><strong>Practice tests</strong><span>ACCESS-style tests for each domain.</span></span></a></li>
-              <li><a class="th-lib-card" href="#weekly" data-lib-target="weekly">
+              <li data-lib-id="weekly"><a class="th-lib-card" href="#weekly" data-lib-target="weekly">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#calendar"></use></svg></span>
                 <span class="th-lib-text"><strong>Road to ACCESS weekly links</strong><span>One link a week, with a family prompt.</span></span></a></li>
-              <li><a class="th-lib-card" href="#accContent" data-lib-target="accContent">
+              <li data-lib-id="content"><a class="th-lib-card" href="#accContent" data-lib-target="accContent">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#library"></use></svg></span>
                 <span class="th-lib-text"><strong>Content library</strong><span>Aligned content and coverage by domain.</span></span></a></li>
-              <li><a class="th-lib-card" href="#forms" data-lib-target="forms">
+              <li data-lib-id="forms"><a class="th-lib-card" href="#forms" data-lib-target="forms">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#list"></use></svg></span>
                 <span class="th-lib-text"><strong>Google Forms</strong><span>Self-grading forms for grades 6–8.</span></span></a></li>
-              <li><a class="th-lib-card" href="#liveClass">
+              <li data-lib-id="class"><a class="th-lib-card" href="#liveClass">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#classroom"></use></svg></span>
                 <span class="th-lib-text"><strong>Class code &amp; live class</strong><span>Join code, assignments and voice notes.</span></span></a></li>
-              <li><a class="th-lib-card is-data" href="/access-teacher/predictive/">
+              <li data-lib-id="data"><a class="th-lib-card is-data" href="/access-teacher/predictive/">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#growth"></use></svg></span>
                 <span class="th-lib-text"><strong>WIDA Data Studio</strong><span>Import ACCESS scores and see class patterns.</span></span></a></li>
-              <li><a class="th-lib-card is-bcpss" href="/bcpss-teachers/">
+              <li data-lib-id="bcpss"><a class="th-lib-card is-bcpss" href="/bcpss-teachers/">
                 <span class="th-lib-ico" aria-hidden="true"><svg class="ico" focusable="false"><use href="/access-practice-lab/pictures/ui-icons.svg#worlds"></use></svg></span>
                 <span class="th-lib-text"><strong>BCPSS Teacher Studio</strong><span>K–8 Wit &amp; Wisdom, Reveal Math, SABES &amp; IQWST language bridges.</span></span></a></li>
             </ul>
@@ -246,6 +245,7 @@
       import("/access-teacher/constellation-mixer.js").then((m) => m.mountConstellationMixer(document.getElementById("thConstellationMixer")));
       import("/access-teacher/culture-calendar.js").then((m) => m.mountCultureCalendar(document.getElementById("thCultureCalendar")));
       import("/access-teacher/hub-home.js");
+      import("/access-teacher/hub-role.js").then((m) => m.mountHubRole(document));
     </script>
   </body>
 </html>

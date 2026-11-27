@@ -4,7 +4,7 @@
 // footerBlock() from here so the disclaimer is worded once.
 import { installCalmFocus } from "../keep-in-view.js";
 import { chrome } from "./copy.js";
-import { ACC_ROUTES, NAV_IDS, routeById, trail } from "./routes.js";
+import { NAV_IDS, routeById, trail } from "./routes.js";
 
 installCalmFocus(); // programmatic focus never recentres the page (src/keep-in-view.js)
 
@@ -37,11 +37,60 @@ export function footerBlock(lang = "en") {
   return `<p class="acc-disclaimer"><strong>${esc(t.disclaimerLead)}</strong> ${esc(t.disclaimer)}</p><p class="acc-disclaimer">${esc(t.local)}</p>`;
 }
 
+/**
+ * The standalone footer is grouped by who it is for, like the Practice Lab footer (src/nav.js): students, families,
+ * classroom and ESOL teachers, help. Every link stays on the lab's own host (The Language Page serves each of them).
+ */
+export const FOOTER_GROUPS = Object.freeze([
+  {
+    en: "Students",
+    es: "Estudiantes",
+    links: [
+      ["/access-practice-lab/students", "Start practicing", "Empezar a practicar"],
+      ["/access-practice-lab/access-prep", "ACCESS practice", "Práctica ACCESS"],
+      ["/access-practice-lab/explore/progress", "My progress", "Mi progreso"],
+    ],
+  },
+  {
+    en: "Families",
+    es: "Familias",
+    links: [
+      ["/access-practice-lab/family-start", "Families: start here", "Familias: empiecen aquí"],
+      ["/access-practice-lab/family", "Family Corner", "Rincón de la familia"],
+    ],
+  },
+  {
+    en: "Teachers",
+    es: "Docentes",
+    links: [
+      ["/access-teacher/?role=classroom", "Classroom teachers", "Docentes de aula"],
+      ["/access-teacher/?role=esol", "ESOL teachers", "Docentes de ESOL"],
+      ["/access-teacher/predictive/", "WIDA Data Studio", "Estudio de datos WIDA"],
+      ["/bcpss-teachers", "BCPSS curriculum bridges", "Puentes del currículo de BCPSS"],
+    ],
+  },
+  {
+    en: "Help",
+    es: "Ayuda",
+    links: [
+      ["/access-practice-lab/site-guide", "Site Guide", "Guía del sitio"],
+      ["/access-practice-lab/search?for=teacher", "Find resources", "Buscar recursos"],
+      ["/access-practice-lab/privacy", "Privacy", "Privacidad"],
+      ["/access-practice-lab/accessibility", "Accessibility", "Accesibilidad"],
+    ],
+  },
+]);
+
 export function footerHTML(lang = "en") {
   const t = chrome(lang);
-  const nav = ACC_ROUTES.map((r) => `<li><a href="${r.path}">${esc(label(r, lang))}</a></li>`)
-    .join("");
-  return `<div class="acc-footer-inner"><nav aria-label="${esc(t.footerNav)}"><ul>${nav}</ul></nav>${footerBlock(lang)}</div>`;
+  const es = lang === "es";
+  const groups = FOOTER_GROUPS.map(
+    (g) =>
+      `<div class="acc-foot-group"><h2>${esc(es ? g.es : g.en)}</h2><ul>${g.links
+        .map(([href, en, esText]) => `<li><a href="${href}">${esc(es ? esText : en)}</a></li>`)
+        .join("")}</ul></div>`,
+  ).join("");
+  return `<div class="acc-footer-inner"><nav aria-label="${esc(t.footerNav)}"><div class="acc-foot-groups">${groups}</div></nav>${footerBlock(lang)}</div>`;
 }
 
 export function mountAccShell(doc = document) {

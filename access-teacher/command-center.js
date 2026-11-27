@@ -9,7 +9,7 @@
 // The grade band chosen here is the page's band: it goes in ?grades= and a `th:band` event tells the rest of the hub.
 // Reuses existing content, registries, and assignment infrastructure without duplicating engines.
 
-import { TEACHER_ROLES, readTeacherRole, rememberTeacherRole, roleOrder } from "/access-practice-lab/src/audience.js";
+import { TEACHER_ROLES, readTeacherRole, rememberTeacherRole, roleFromSearch, roleOrder } from "/access-practice-lab/src/audience.js";
 import { ACCESS_LAB_FLAGS } from "/access-practice-lab/src/lang/feature-flags.js";
 import { loadIndex } from "/access-practice-lab/src/content.js";
 import {
@@ -117,6 +117,9 @@ const initialTask = () => {
 
 export async function mountCommandCenter(host) {
   if (!host) return;
+  // A home door (Classroom or ESOL Teacher) links here with ?role=: that role orders the hub from the first paint.
+  const askedRole = roleFromSearch();
+  if (askedRole) rememberTeacherRole(askedRole);
   const index = await loadIndex().catch(() => null);
   const registry = buildResourceRegistry({ index, destinations: DESTINATIONS });
 
@@ -665,7 +668,7 @@ export async function mountCommandCenter(host) {
           ${ACCESS_LAB_FLAGS.teacherRoleEnabled ? html`<div class="th-band tc-role">
             <label class="th-band-label" for="tcRole" lang="${lang}">${say("I am a…", "Soy…")}</label>
             <select id="tcRole" data-teacher-role aria-describedby="tcRoleHint" lang="${lang}">${TEACHER_ROLES.map((r) => html`<option value="${r.id}" ${raw(readTeacherRole() === r.id ? "selected" : "")}>${r.title[lang === "es" ? 1 : 0]}</option>`)}</select>
-            <span id="tcRoleHint" class="visually-hidden" lang="${lang}">${say("Changes the first three cards only.", "Solo cambia el orden de las primeras tres tarjetas.")}</span>
+            <span id="tcRoleHint" class="visually-hidden" lang="${lang}">${say("Puts the tasks and resources for your role first. Nothing is hidden.", "Pone primero las tareas y los recursos de su función. No se oculta nada.")}</span>
           </div>` : ""}
         </div>
       </div>
@@ -739,7 +742,14 @@ export async function mountCommandCenter(host) {
     render();
   }
   host.addEventListener("change", (e) => {
-    if (ACCESS_LAB_FLAGS.teacherRoleEnabled && e.target.matches("[data-teacher-role]")) { rememberTeacherRole(e.target.value); render(); host.querySelector("[data-teacher-role]")?.focus(); }
+    if (ACCESS_LAB_FLAGS.teacherRoleEnabled && e.target.matches("[data-teacher-role]")) {
+      rememberTeacherRole(e.target.value);
+      render();
+      host.querySelector("[data-teacher-role]")?.focus();
+      // "Go straight to" (hub-role.js) follows the same role.
+      const { CustomEvent: Ev } = document.defaultView || globalThis;
+      document.dispatchEvent(new Ev("th:role", { detail: { role: e.target.value } }));
+    }
   });
   document.addEventListener("th:band", (e) => {
     if (e.detail?.from !== "tasks") setBand(e.detail?.band, { announceIt: false });

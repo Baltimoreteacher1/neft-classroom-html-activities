@@ -6,7 +6,7 @@
 //   /access-practice-lab/test/<id>
 // New: /tests, /road[/<week>], /family, /passport, /play?ids=…, /tools, and
 // ?grades=3-5|6-8 on any URL.
-import { brandTitle } from "./brand.js";
+import { brandName, brandTitle } from "./brand.js";
 import { installCalmFocus } from "./keep-in-view.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { earlyCanOpen, earlyGateHTML } from "./early/gate.js";
@@ -917,7 +917,7 @@ async function boot() {
   if (storage.get("accessPracticeLabClass:v1:link")) import("./class/link.js").then((m) => m.bootClassSync()).catch(() => {});
   registerSaveResume(() => render({ keepFocus: true }));
   const stamp = $("#labBuild");
-  if (stamp) stamp.textContent = stamp.dataset.build = `ACCESS Practice Lab · build ${BUILD}`;
+  if (stamp) stamp.textContent = stamp.dataset.build = `${brandName("ACCESS Practice Lab")} · build ${BUILD}`;
   await render({ scroll: false });
   document.documentElement.classList.add("lab-ready");
   watchNetwork();
