@@ -149,12 +149,23 @@ browser suites; `npm run check:pfa` runs both. The brief asked for the gates in 
 - **17 learning objectives** (1-1 to 1-6, 4-1 to 4-5, 10-1 to 10-6) had no Spanish anywhere. I
   wrote them (`data/practice/_objectives-es.json`). They render with
   `data-translation="needs-review"` and **need a native reviewer**.
-- **Per-choice Spanish wrong-answer feedback** is rarely authored in the source configs (25 of 784
-  items). Where it is missing, the Spanish feedback is the taxonomy's authored Spanish message for
-  that misconception, or the item's own Spanish hint. English shows the item's specific feedback.
-  This is not machine translation, but it is less specific than the English. Counts by unit
-  (taxonomy / hint): 1: 40/47, 2: 78/138, 3: 69/129, 4: 39/57, 5: 55/152, 6: 111/174, 7: 26/184,
-  8: 118/44, 9: 31/113, 10: 14/70.
+- **Per-choice Spanish wrong-answer feedback** is rarely authored in the source configs. Where an
+  item has specific English feedback (`choiceFeedback`) but no Spanish, the Spanish now comes from
+  `data/practice/_feedback-es.json`: 1,108 machine-assisted translations of those exact English
+  lines, written against `docs/family-homework-v3/es-style-guide.md` (tú register, the glossary
+  terms such as "parte a total" and "tasa unitaria", `60%`). Before this, a Spanish speaker who
+  picked a wrong answer saw a general hint where English named the mistake. `validate:pfa` checks
+  every line: the same set of numbers as the English (none dropped, none added), not the English
+  copied over, the family Spanish style detectors, and no stale entry. Six seeded defects prove
+  those checks fire. 701 of these lines show on the practice pages, where students get instant
+  feedback. The other 407 belong to assignment items, which are graded paper work and show no
+  per-answer feedback, so no page displays them today. Where an item has no specific English
+  either, both languages show the taxonomy message or the item's hint. These translations are
+  **machine-assisted and need native review**.
+- Translating the feedback turned up one wrong English line in the source. Lesson 7-8, "reflect
+  (3, -6) across the x-axis", told a student who picked (-3, -6) that they had changed both signs.
+  They changed only x, which is a reflection across the y-axis. Fixed in `lessons/7-8/config.json`,
+  its group 2 variant, the 7-8 Studio page and `data/homework-feedback-spanish.json`.
 - 344 source items were skipped because they had no Spanish. 9 orphan misconception tags in source
   items were dropped, not propagated.
 - 488 of 1,340 problems carry the lesson's main misconception tag (from its generator) because the
@@ -266,10 +277,25 @@ All of these reproduce on a clean `origin/main`.
   trace to this work. The "Claude pre-deploy verification" run hit an API usage limit (429), and
   the rest reproduce on `main` or are base drift; details are in the PR comment.
 
+## 10b. Decisions made after "you decide everything"
+
+- **`/lessons/<id>/homework` stays the family homework page; nothing redirects to the new
+  template.** It is a different product: the Family Math Studio page with its own v3 content, held
+  by about 20 gates. The Family Take-Home Sheet QR codes, the homework SCORM packages in Canvas and
+  families' bookmarks all point at it. Pointing that URL at the new practice page would change
+  what all of those open, and the CLAUDE.md rule on existing URLs exists because of the
+  2026-08-25 `/curriculum/` revert. The new pages stay at `/practice`, `/family-guide` and
+  `/assignment`, linked from the units page and `/practice-hub/`.
+- **Spanish feedback translated** (section 7) rather than left on the fallbacks.
+- **Spanish objectives:** reviewed against the style guide and left as written, still marked
+  needs-review, because no native speaker has checked them.
+- **Baltimoreteacher1/neft-classroom-html-activities#234 closed** with a comment. Its content is
+  on `main`.
+
 ## 11. Next 10
 
-1. Decide whether `/lessons/<id>/homework` should become the new template (section 1).
-2. Native-speaker review of the 17 objectives and of the per-choice Spanish feedback fallbacks.
+1. Done in 10b: `/lessons/<id>/homework` stays as it is (decision and reasons in 10b).
+2. Native-speaker review of the 17 objectives and the 1,108 translated feedback lines.
 3. Author per-choice Spanish feedback (`choiceFeedbackEs`) in the lesson configs. The compiler
    picks it up automatically.
 4. Add a tape-diagram input item (number-line and table-completion inputs shipped in 10a).

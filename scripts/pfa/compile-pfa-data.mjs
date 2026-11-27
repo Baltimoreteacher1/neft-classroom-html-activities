@@ -42,7 +42,10 @@ const objectivesEsReview = read("data/practice/_objectives-es.json");
 // use is counted as needs-review. An entry no item uses is a stale translation: validate:pfa fails.
 const feedbackEs = read("data/practice/_feedback-es.json");
 export const feedbackKey = (lessonId, stem, choice) =>
-  `${lessonId}|${createHash("sha1").update(`${String(stem).trim()}\u0000${String(choice).trim()}`).digest("hex").slice(0, 10)}`;
+  `${lessonId}|${createHash("sha1")
+    .update(`${String(stem).trim()}\u0000${String(choice).trim()}`)
+    .digest("hex")
+    .slice(0, 10)}`;
 const feedbackEsUsed = new Set();
 // Spanish objective: the lesson's own Practice Studio target, else a reviewed-pending translation.
 function objectiveEs(id) {

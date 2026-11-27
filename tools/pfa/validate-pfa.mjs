@@ -186,19 +186,39 @@ export function motionErrors(css) {
 // Translated wrong-answer feedback (data/practice/_feedback-es.json): the Spanish line must keep
 // every number of the English one and add none, must not be the English copied over, and must pass
 // the family Spanish style detectors (register, glossary terms, "60%", no English left in).
-const FEEDBACK_ES_RULES = new Set(["usted", "voseo", "vosotros", "concept-term", "percent-space", "english-left-in"]);
+const FEEDBACK_ES_RULES = new Set([
+  "usted",
+  "voseo",
+  "vosotros",
+  "concept-term",
+  "percent-space",
+  "english-left-in",
+]);
 const numSet = (t) =>
-  [...String(t).matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map((m) => m[0].replace(/,/g, "")).sort().join(" ");
+  // The SET of numbers: Spanish repeats one in idioms ("count by 5s" is "de 5 en 5"), never drops or adds one.
+  [
+    ...new Set(
+      [...String(t).matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)].map((m) => m[0].replace(/,/g, "")),
+    ),
+  ]
+    .sort()
+    .join(" ");
 function feedbackEsErrors(en, es) {
   const e = [];
   if (!es || !String(es).trim()) return ["missing Spanish"];
-  if (String(es).trim() === String(en).trim()) e.push("English copied over");
-  if (numSet(en) !== numSet(es)) e.push(`numbers differ (EN ${numSet(en) || "none"} / ES ${numSet(es) || "none"})`);
+  // A line that is only mathematics ("1,000 ≠ 900.") reads the same in both languages.
+  if (String(es).trim() === String(en).trim() && /\p{L}{2,}/u.test(en))
+    e.push("English copied over");
+  if (numSet(en) !== numSet(es))
+    e.push(`numbers differ (EN ${numSet(en) || "none"} / ES ${numSet(es) || "none"})`);
   for (const d of ES_DETECTORS) if (FEEDBACK_ES_RULES.has(d.id) && d.test(es)) e.push(d.why);
   return e;
 }
 const feedbackKey = (lessonId, stem, choice) =>
-  `${lessonId}|${createHash("sha1").update(`${String(stem).trim()}\u0000${String(choice).trim()}`).digest("hex").slice(0, 10)}`;
+  `${lessonId}|${createHash("sha1")
+    .update(`${String(stem).trim()}\u0000${String(choice).trim()}`)
+    .digest("hex")
+    .slice(0, 10)}`;
 
 // ---------- negative controls ------------------------------------------------------------------
 function control(name, ok) {
@@ -257,11 +277,24 @@ control(
 );
 control(
   "feedback-es: dropped number",
-  feedbackEsErrors("4 + 3 = 7, so 4x + 3x = 7x.", "Suma: 4x + 3x = 7x.").some((x) => x.includes("numbers")),
+  feedbackEsErrors("4 + 3 = 7, so 4x + 3x = 7x.", "Suma 4x + 3x.").some((x) =>
+    x.includes("numbers"),
+  ),
 );
 control(
   "feedback-es: English copied",
   feedbackEsErrors("Check the units.", "Check the units.").some((x) => x.includes("copied")),
+);
+control(
+  "feedback-es: idiom repeat and pure math pass",
+  feedbackEsErrors("Count by 5s.", "Cuenta de 5 en 5.").length === 0 &&
+    feedbackEsErrors("1,000 ≠ 900.", "1,000 ≠ 900.").length === 0,
+);
+control(
+  "feedback-es: added number",
+  feedbackEsErrors("Compare each step in x.", "Compara cada paso de 1 en x.").some((x) =>
+    x.includes("numbers"),
+  ),
 );
 control("feedback-es: spaced percent", feedbackEsErrors("It is 60%.", "Es 60 %.").length > 0);
 control(
@@ -365,10 +398,14 @@ for (const L of MAP.lessons) {
       }
     for (const c of p.choices || [])
       if (c.whyEsSource && c.whyEsSource !== "authored")
-        (needsReview[`unit ${d.unit}`] ||= { translated: 0, taxonomy: 0, hint: 0 })[c.whyEsSource]++;
+        (needsReview[`unit ${d.unit}`] ||= { translated: 0, taxonomy: 0, hint: 0 })[
+          c.whyEsSource
+        ]++;
     for (const k of p.known || [])
       if (k.whyEsSource && k.whyEsSource !== "authored")
-        (needsReview[`unit ${d.unit}`] ||= { translated: 0, taxonomy: 0, hint: 0 })[k.whyEsSource]++;
+        (needsReview[`unit ${d.unit}`] ||= { translated: 0, taxonomy: 0, hint: 0 })[
+          k.whyEsSource
+        ]++;
   }
   if (!hasBi(d.title) || !hasBi(f.title)) fail(10, `${id}: lesson title lacks Spanish`);
   if (!hasBi(d.objective)) fail(10, `${id}: objective lacks Spanish`);
@@ -520,7 +557,7 @@ for (const k of Object.keys(FEEDBACK_ES))
 bump("translated wrong-answer feedback lines checked", FEEDBACK_ES_USED.size);
 
 const needs = Object.entries(needsReview)
-  .map(([u, v]) => `${u}: ${v.taxonomy} taxonomy, ${v.hint} hint`)
+  .map(([u, v]) => `${u}: ${v.translated} translated, ${v.taxonomy} taxonomy, ${v.hint} hint`)
   .join("; ");
 if (failures.length) {
   console.error(`FAIL validate:pfa — ${failures.length} problem(s)`);
@@ -535,5 +572,5 @@ console.log(
     .map(([k, v]) => `${v} ${k}`)
     .join(
       ", ",
-    )}; 15 seeded defects caught.\n  Spanish wrong-answer feedback not authored per choice (shown from a machine-assisted translation of the English line, the taxonomy, or the item's own Spanish hint; needs review): ${needs || "none"}`,
+    )}; 17 seeded defects caught.\n  Spanish wrong-answer feedback not authored per choice (shown from a machine-assisted translation of the English line, the taxonomy, or the item's own Spanish hint; needs review): ${needs || "none"}`,
 );
