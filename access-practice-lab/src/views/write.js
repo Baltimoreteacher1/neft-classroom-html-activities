@@ -60,8 +60,6 @@ import {
   taskStatus,
   teacherChooserHTML,
   teacherTaskHTML,
-} from "./write-plus.js";
-import {
   QUICK,
   badgeFacts,
   badgesHTML,
@@ -78,7 +76,7 @@ import {
   quickChooserHTML,
   quickWriteHTML,
   teacherAssignHTML,
-} from "./write-more.js";
+} from "./write-plus.js";
 
 /** write-studio.css loads here, on /write only, so the lab shell does not carry it on every other page. */
 let sheet = null;
