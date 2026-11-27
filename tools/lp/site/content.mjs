@@ -30,10 +30,12 @@ const verifyTag = (std) =>
     ? ""
     : html` <span class="approx" title="This code has not been checked against the official source yet.">[VERIFY]</span>`;
 
-function unitCard(u) {
+// The card heading is one level below the heading it sits under: h2 straight after a page h1, h3 under a section h2.
+function unitCard(u, level = 3) {
+  const h = `h${level}`;
   return html`<article class="card">
   <span class="card-icon">${raw(icon(area(u.area).icon))}</span>
-  <h3><a class="card-link" href="${unitPath(u)}">${u.title}</a></h3>
+  ${raw(`<${h}${level === 2 ? ' class="h3"' : ""}>`)}<a class="card-link" href="${unitPath(u)}">${u.title}</a>${raw(`</${h}>`)}
   <p>${u.summary}</p>
   <div class="meta"><span class="chip">Grade ${u.grade}</span><span class="chip">${u.standard.code}</span><span class="chip teal">${u.eld}</span><span class="chip amber">${u.klu}</span></div>
 </article>`;
@@ -59,7 +61,7 @@ export function areaPage(data, a) {
   const grades = [...new Set(units.map((u) => u.grade))].sort((x, y) => x - y);
   return html`<div class="wrap">
 <div class="page-head"><span class="eyebrow">Content + Language</span><h1>${a.label}</h1><p class="lede">${ELD[a.eld]} (${a.eld}). Choose a grade.</p></div>
-${grades.map((g) => html`<section class="section"><h2><a href="/content/${a.slug}/grade-${g}/">Grade ${g}</a></h2><div class="grid cols-3">${units.filter((u) => u.grade === g).map(unitCard)}</div></section>`)}
+${grades.map((g) => html`<section class="section"><h2><a href="/content/${a.slug}/grade-${g}/">Grade ${g}</a></h2><div class="grid cols-3">${units.filter((u) => u.grade === g).map((u) => unitCard(u))}</div></section>`)}
 </div>`;
 }
 
@@ -67,7 +69,7 @@ export function gradePage(data, a, grade) {
   const units = data.units.filter((u) => u.area === a.slug && u.grade === grade);
   return html`<div class="wrap">
 <div class="page-head"><span class="eyebrow">${a.label}</span><h1>Grade ${grade} ${a.label.toLowerCase() === "math" ? "math" : a.label}</h1><p class="lede">${units.length} units with language demands mapped to ${a.eld}.</p></div>
-<div class="grid cols-3">${units.map(unitCard)}</div>
+<div class="grid cols-3">${units.map((u) => unitCard(u, 2))}</div>
 </div>`;
 }
 

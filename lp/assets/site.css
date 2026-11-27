@@ -1581,7 +1581,51 @@ input[type="file"]::file-selector-button {
   border: 1px solid var(--line);
 }
 
+/* practice extras: Spanish help toggle, keyboard hint, done chip */
+[data-es-gloss] {
+  display: none;
+}
+.show-es [data-es-gloss] {
+  display: inline;
+}
+button[data-spanish-help][aria-pressed="true"] {
+  background: var(--teal-tint);
+  color: var(--text);
+  border-color: var(--teal);
+}
+.passage-tools {
+  margin-bottom: var(--s2);
+}
+.key-hint {
+  font-size: var(--fs-sm);
+  margin: var(--s1) 0 0;
+}
+@media (hover: none), (pointer: coarse) {
+  .key-hint {
+    display: none;
+  }
+}
+:root:not(.student-mode) .key-hint {
+  display: none;
+}
+.done-chip {
+  background: var(--success-tint);
+  border-color: var(--success);
+}
+
 /* heading utilities (semantic level and visual size are separate) */
+.specimen {
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--s2);
+}
+.h1 {
+  font-size: var(--fs-2xl);
+}
+.h2 {
+  font-size: var(--fs-xl);
+}
 .h3 {
   font-size: var(--fs-lg);
 }

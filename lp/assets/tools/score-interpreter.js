@@ -2,7 +2,7 @@
 // Student Score Reports 2025–2026 (docs/sources.md): Oral 50L+50S, Literacy 50R+50W, Comprehension 70R+30L,
 // Overall 35R+35W+15L+15S. WIDA computes composites from SCALE scores; from proficiency levels this is an estimate,
 // and the page says so. Everything runs in the browser. Nothing is transmitted.
-import { $, escapeHtml, parseTable, printOnly, saveDraft, loadDraft } from "../lib.js";
+import { $, download, escapeHtml, loadDraft, parseTable, printOnly, saveDraft } from "../lib.js";
 
 export const WEIGHTS = {
   Oral: { listening: 0.5, speaking: 0.5 },
@@ -135,5 +135,20 @@ if (draft)
   for (const k of ["id", "grade", ...DOMAINS]) if (draft[k] != null && form.elements[k] && !Number.isNaN(draft[k])) form.elements[k].value = draft[k];
 form.addEventListener("input", renderOne);
 roster.addEventListener("input", renderClass);
+/* CSV upload: read in the browser, header row (no numbers) skipped. Template: a blank file to fill in. */
+$("#si-file")?.addEventListener("change", async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  if (file.size > 300_000) {
+    $("[data-si-class-out]").innerHTML = '<p class="note amber">That file is too large for a class roster.</p>';
+    return;
+  }
+  const rows = parseTable(await file.text()).filter((r) => r.slice(1).some((c) => /\d/.test(c)));
+  roster.value = rows.map((r) => r.slice(0, 5).join(", ")).join("\n");
+  renderClass();
+});
+$("[data-si-template]")?.addEventListener("click", () =>
+  download("access-roster-template.csv", "ID,Listening,Speaking,Reading,Writing\nA.B.,,,,\n", "text/csv"),
+);
 renderOne();
 renderClass();

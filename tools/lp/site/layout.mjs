@@ -1,6 +1,16 @@
 // Page shell: head, header with the five-item navigation, breadcrumbs, footer with the disclaimer.
+import fs from "node:fs";
 import { icon } from "./icons.mjs";
 import { esc, html, jsonBlock, raw, SITE } from "./util.mjs";
+
+// The reading font's files, read from the stylesheet so a re-hashed font cannot leave a stale preload behind.
+const READ_FONTS = [
+  ...fs
+    .readFileSync(new URL("../../../lp/assets/site.css", import.meta.url), "utf8")
+    .matchAll(/url\((\/assets\/fonts\/atkinson-hyperlegible-[0-9a-f]+\.woff2)\)/g),
+].map((m) => m[1]);
+if (READ_FONTS.length !== 2)
+  throw new Error(`layout: expected 2 reading-font files in site.css, found ${READ_FONTS.length}`);
 
 export const NAV = [
   { key: "practice", href: "/practice/", i18n: "nav.practice", label: "Practice" },
@@ -152,6 +162,14 @@ export function page(p) {
   const data = Object.entries(p.data || {}).map(([id, obj]) =>
     raw(`<script type="application/json" id="${id}">${jsonBlock(obj)}</script>`),
   );
+  // Pages that set reading text (passages, practice) preload the reading font so its late swap cannot shift the page.
+  const readFont = /class="(?:[^"]* )?(?:reading|passage|out)[" ]/.test(String(p.body))
+    ? raw(
+        READ_FONTS.map(
+          (f) => `<link rel="preload" href="${f}" as="font" type="font/woff2" crossorigin>`,
+        ).join("\n"),
+      )
+    : "";
   const ld = p.jsonld
     ? raw(`<script type="application/ld+json">${jsonBlock(p.jsonld)}</script>`)
     : "";
@@ -178,6 +196,7 @@ ${p.noindex ? raw('<meta name="robots" content="noindex">') : ""}
 <meta property="og:image:alt" content="${SITE.name}: ${SITE.promise}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="/assets/fonts/inter-1dc044f4.woff2" as="font" type="font/woff2" crossorigin>
+${readFont}
 <link rel="stylesheet" href="/lp/assets/site.css?v=${v.css}">
 <script src="/lp/assets/prefs.js?v=${v.prefs}"></script>
 <script type="module" src="/lp/assets/site.js?v=${v.site}"></script>

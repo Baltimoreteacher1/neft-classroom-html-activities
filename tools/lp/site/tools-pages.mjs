@@ -256,6 +256,8 @@ C.M., 5.1, 4.6, 4.8, 4.4
 D.L., 3.3, 3.0, 2.4, 2.2
 E.K., 4.0, 4.5, 3.8, 3.1
 F.N., 1.4, 1.2, 1.5, 1.3</textarea></div>
+  <div class="field"><label for="si-file">Or upload a CSV file (ID, Listening, Speaking, Reading, Writing)</label><input type="file" id="si-file" accept=".csv,.tsv,.txt,text/csv"><span class="hint">A header row is fine; it is skipped. The file is read in this browser only.</span></div>
+  <div class="btn-row"><button type="button" class="btn small secondary" data-si-template>Download a blank template</button></div>
 </form>
 <section aria-live="polite" data-si-class-out></section>
 </div>
@@ -285,7 +287,8 @@ predict, to say what you think will happen, predecir, I predict the ice will mel
   <label class="check"><input type="checkbox" name="cognates" checked><span>Mark Spanish cognates</span></label>
   <div class="btn-row"><button type="button" class="btn" data-vc-print>${raw(icon("print"))} Print cards</button></div>
 </form>
-<section class="preview" data-vc-out aria-live="polite"></section>
+<h2 id="vc-out-title" class="visually-hidden">Your cards</h2>
+<section class="preview" data-vc-out aria-live="polite" aria-labelledby="vc-out-title"></section>
 </div>
 ${privacyNote()}
 </div>`;
