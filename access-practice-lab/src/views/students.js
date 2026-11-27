@@ -9,7 +9,7 @@ import { keepInView } from "../keep-in-view.js";
 import { rememberAudience } from "../audience.js";
 import { isEarlyBand } from "../bands.js";
 import { bandDomains, findActivity, loadStudioIndex } from "../content.js";
-import { getEngagement, saveEngagement } from "../engagement.js";
+import { getEngagement, myWeek, saveEngagement } from "../engagement.js";
 import { activeGradeFocus } from "../grade-focus.js";
 import { GRADE_PICKS, currentPick, resolvePick } from "../grade-bands.js";
 import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
@@ -17,7 +17,6 @@ import { latestModuleResume } from "../home-resume.js";
 import { i18nFor } from "../i18n.js";
 import { loadStudio } from "../lang/studio.js";
 import { jumpSetAttrs, pickSet, practicePool } from "../quick-start.js";
-import { myWeek } from "../my-week.js";
 import { loadRecord, needsReview } from "../store.js";
 import { DEST_BY_ID, SECTION_BY_ID } from "../sitemap.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, TIERS, ensureStylesheet, html, icon, raw } from "../util.js";
@@ -187,7 +186,7 @@ async function resumeTarget(I, ctx, band) {
   return target && target.kind !== "start" && target.href?.startsWith(BASE) ? target : null;
 }
 
-/** "My week": practice days against the learner's own goal, the skills touched, and one next skill (src/my-week.js). */
+/** "My week": practice days against the learner's own goal, the skills touched, and one next skill (src/engagement.js myWeek). */
 function weekHTML(I, w, { pick, band }) {
   const goalLine = w.reached
     ? I.T(`Goal reached: ${w.done} of ${w.goal} practice days. Nice steady work!`, `Meta alcanzada: ${w.done} de ${w.goal} días de práctica. ¡Buen trabajo constante!`)

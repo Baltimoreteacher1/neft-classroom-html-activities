@@ -65,7 +65,7 @@ click also remembers the role (`data-door-role`), so the Hub opens in that view 
 
 `/access-practice-lab/students` (once a grade is chosen) shows the learner's week: practice days against their own goal
 (changeable there), the four skills practiced this week, and one "Next: try <skill>" link into the skill chooser.
-Counts only, from what the device records (`src/my-week.js`, `tools/access-my-week.test.mjs`); its styles load with
+Counts only, from what the device records (`myWeek` in `src/engagement.js`, `tools/access-my-week.test.mjs`); its styles load with
 the page (`my-week.css`), not in the shell.
 
 ## Not changed here (needs Joel)

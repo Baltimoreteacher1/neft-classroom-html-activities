@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Join the Tour · The Language Page</title>
+<meta name="description" content="Join a live tour of The Language Page from your phone: answer each stop's question and try the demos.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#17324D">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2317324D'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Georgia' font-weight='700' font-size='16' fill='%23F2C15B'%3EAa%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* The audience's half of the live tour: follow the stop on screen, answer its question, try the Upgrade Lab,
+   send a reaction. With #k=<token> it is the presenter's remote: next and back, notes, timer, counts. */
+@font-face{font-family:"Fraunces";font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/fraunces-175f6e93.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/atkinson-hyperlegible-ef295152.woff2) format("woff2")}
+:root{color-scheme:light;--paper:#F7F4EC;--card:#FFFDF8;--navy:#17324D;--navy3:#0F2438;--teal:#1FA6A2;--teal-ink:#0E6E6A;--teal-soft:#DFF2EE;--amber:#F2C15B;--amber-soft:#FFF3D8;--ink:#24323F;--muted:#55636F;--line:#E4DCCB;--ok:#1E7F4F;--warn:#A8432B}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif;min-height:100svh;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:4px solid var(--amber);outline-offset:2px}
+header{background:var(--navy);color:#fff;padding:calc(12px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px}
+header .mark{flex:none;width:38px;height:38px;border-radius:10px;background:var(--amber);color:var(--navy);display:grid;place-items:center;font:800 18px Fraunces,Georgia,serif}
+header b{font:600 18px Fraunces,Georgia,serif;display:block;line-height:1.1}
+header span{font-size:14px;color:#C9D4DE}
+header .code{margin-left:auto;font-weight:700;letter-spacing:.1em;background:rgba(255,255,255,.12);border-radius:999px;padding:6px 12px;font-size:15px;color:var(--amber)}
+main{max-width:640px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border-radius:22px;padding:20px;box-shadow:0 1px 0 var(--line),0 14px 30px -22px rgba(23,50,77,.5)}
+h1,h2{font-family:Fraunces,Georgia,serif;color:var(--navy);letter-spacing:-.01em;margin:0}
+h1{font-size:30px;line-height:1.08;font-weight:600}
+h2{font-size:23px;line-height:1.15;font-weight:600}
+.lbl{font-size:15px;font-weight:700;color:var(--teal-ink);margin-bottom:4px}
+p{margin:0}
+.muted{color:var(--muted);font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input.codein{flex:1;min-width:0;font:800 30px Fraunces,Georgia,serif;letter-spacing:.2em;text-transform:uppercase;text-align:center;border:3px solid var(--navy);border-radius:16px;padding:10px;background:#fff;min-height:60px}
+.btn{border:0;border-radius:14px;min-height:52px;padding:12px 20px;font-weight:700;background:var(--navy);color:#fff}
+.btn.amber{background:var(--amber);color:var(--navy3)}
+.btn.ghost{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.btn:disabled{opacity:.5;cursor:default}
+.choices{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.choice{display:flex;align-items:center;gap:12px;text-align:left;border:3px solid var(--line);background:#fff;border-radius:16px;padding:12px 16px;min-height:56px;font-weight:700;font-size:18px;transition:border-color .2s,background .2s,transform .2s}
+.choice i{flex:none;width:24px;height:24px;border-radius:50%;border:3px solid var(--line);transition:all .2s}
+.choice[aria-pressed=true]{border-color:var(--teal);background:var(--teal-soft)}
+.choice[aria-pressed=true] i{border-color:var(--teal);background:var(--teal);box-shadow:inset 0 0 0 4px #fff}
+.choice:active{transform:scale(.98)}
+.sent{margin-top:12px;font-weight:700;color:var(--ok);min-height:1.5em}
+.bars{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;font-size:15px}
+.bar .tr{grid-column:1/-1;height:10px;border-radius:5px;background:var(--paper);overflow:hidden}
+.bar .tr i{display:block;height:100%;width:0;background:var(--teal);border-radius:5px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.bar.mine .tr i{background:var(--amber)}
+textarea{width:100%;min-height:120px;border:3px solid var(--navy);border-radius:16px;padding:12px 14px;font-size:17px;background:#fff;resize:vertical;margin-top:12px}
+.plain{font:600 22px Fraunces,Georgia,serif;color:var(--navy);background:var(--paper);border-radius:14px;padding:10px 14px;margin-top:10px}
+.plain s{text-decoration-color:#C8553D;text-decoration-thickness:3px}
+.lamps{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.lamp{display:flex;align-items:center;gap:12px;font-weight:700;font-size:16px}
+.lamp i{flex:none;width:30px;height:30px;border-radius:50%;background:#D9CFBD;color:#fff;display:grid;place-items:center;font-style:normal}
+.lamp.ok i{background:var(--ok)}
+.lamp.no i{background:var(--warn)}
+.msgs{margin-top:10px;font-size:16px;display:flex;flex-direction:column;gap:6px}
+.msgs .good{color:var(--ok);font-weight:700}
+.dock{position:fixed;left:0;right:0;bottom:0;background:var(--navy);padding:10px max(12px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;z-index:5}
+.react{border:0;border-radius:16px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;font-size:12px;font-weight:700;background:rgba(255,255,255,.1)}
+.react svg{width:26px;height:26px}
+.react:active{transform:scale(.94)}
+.react.pop{animation:pop .5s ease}
+@keyframes pop{40%{transform:scale(1.18)}}
+.status{font-size:15px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.status .dot{width:10px;height:10px;border-radius:50%;background:var(--ok)}
+.status.off .dot{background:var(--warn)}
+a.try{display:inline-flex;align-items:center;gap:8px;margin-top:14px;min-height:48px;padding:10px 18px;border-radius:14px;background:var(--teal-soft);color:var(--teal-ink);font-weight:700;text-decoration:none}
+/* remote */
+.remote .stop{font:600 28px/1.1 Fraunces,Georgia,serif;color:var(--navy)}
+.remote .pad{display:grid;grid-template-columns:1fr 1.6fr;gap:10px}
+.remote .pad .btn{min-height:96px;font-size:22px}
+.notes p{margin:0 0 10px;font-size:17px}
+.meta{display:flex;justify-content:space-between;gap:10px;font-size:15px;color:var(--muted)}
+.meta b{color:var(--navy);font-variant-numeric:tabular-nums}
+select{width:100%;min-height:52px;border:2px solid var(--line);border-radius:14px;padding:10px;background:#fff;font-size:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header><span class="mark" aria-hidden="true">Aa</span><div><b>The Language Page</b><span id="h-sub">Live tour</span></div><span class="code" id="h-code" hidden></span></header>
+<main id="main">
+  <section class="card" id="v-join" hidden>
+    <div class="lbl">Live tour</div>
+    <h1>Join the tour</h1>
+    <p style="margin:8px 0 14px">Type the 5-letter code on the screen.</p>
+    <form id="join-form" class="row" novalidate>
+      <label for="code" class="muted" style="width:100%">Room code</label>
+      <input id="code" class="codein" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="5" placeholder="ABCDE" aria-describedby="join-msg">
+      <button class="btn amber" type="submit">Join</button>
+    </form>
+    <p id="join-msg" class="muted" role="status" style="margin-top:10px"></p>
+  </section>
+
+  <div id="v-room" hidden>
+    <p class="status" id="status" role="status"><span class="dot"></span><span id="status-text">Connected</span></p>
+    <section class="card" id="c-stop" style="margin-top:10px">
+      <div class="lbl" id="s-num">On screen now</div>
+      <h2 id="s-title">Waiting for the tour to start</h2>
+      <p id="s-sum" style="margin-top:6px"></p>
+      <a class="try" id="s-try" href="#" target="_blank" rel="noopener" hidden>Try it on this phone ↗</a>
+    </section>
+    <section class="card" id="c-q" hidden aria-labelledby="q-text">
+      <div class="lbl">Your answer</div>
+      <h2 id="q-text"></h2>
+      <div id="q-body"></div>
+      <p class="sent" id="q-sent" role="status"></p>
+      <div class="bars" id="q-bars" hidden></div>
+    </section>
+    <p class="muted" style="padding:0 4px">No name and no account. Answers are counted with everyone else’s and never shown with a name. The room closes after 6 hours.</p>
+  </div>
+
+  <div id="v-remote" class="remote" hidden>
+    <section class="card">
+      <div class="meta"><span>Presenter remote · room <b id="rm-code"></b></span><span>Timer <b id="rm-timer">00:00</b></span></div>
+      <div class="lbl" id="rm-num" style="margin-top:10px"></div>
+      <div class="stop" id="rm-title"></div>
+      <div class="meta" style="margin-top:6px"><span id="rm-build"></span><span><b id="rm-people">0</b> here · <b id="rm-answers">0</b> answers</span></div>
+    </section>
+    <div class="pad" style="margin:12px 0"><button class="btn ghost" id="rm-prev">← Back</button><button class="btn amber" id="rm-next">Next →</button></div>
+    <section class="card notes"><div class="lbl">Speaker notes</div><div id="rm-notes"></div></section>
+    <section class="card" style="margin-top:12px"><label class="lbl" for="rm-jump">Jump to a stop</label><select id="rm-jump"></select></section>
+    <p class="status" id="rm-status" role="status" style="margin-top:12px"><span class="dot"></span><span id="rm-status-text">Connected</span></p>
+  </div>
+</main>
+<nav class="dock" id="dock" aria-label="Send a reaction to the screen" hidden></nav>
+
+<script type="module">
+import * as live from "../live.js";
+import { STOPS } from "../stops.js";
+import { ITEM, checkUpgrade, resultBits } from "../upgrade-check.js";
+import { PROMPTS, REACTIONS } from "/shared/tour-live/prompts.js";
+{
+const $ = (s) => document.querySelector(s);
+const params = new URLSearchParams(location.search);
+let code = live.cleanCode(params.get("r"));
+let token = "";
+const hashKey = /(?:^#|&)k=([0-9a-f]{32})/.exec(location.hash || "");
+try {
+  if (hashKey) { token = hashKey[1]; sessionStorage.setItem("tourLive:v1:remote", JSON.stringify({ code, token })); history.replaceState(null, "", location.pathname + location.search); }
+  else { const saved = JSON.parse(sessionStorage.getItem("tourLive:v1:remote") || "null"); if (saved && saved.code === code && /^[0-9a-f]{32}$/.test(saved.token)) token = saved.token; }
+} catch (e) { if (hashKey) token = hashKey[1]; }
+const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const mine = {};
+try { Object.assign(mine, JSON.parse(localStorage.getItem(`tourLive:v1:answers:${code}`) || "{}")); } catch (e) {}
+const keepMine = () => { try { localStorage.setItem(`tourLive:v1:answers:${code}`, JSON.stringify(mine)); } catch (e) {} };
+let state = null, results = null, shownPrompt = null, timers = [];
+
+function status(ok, text, el = "#status", txt = "#status-text") {
+  $(el).classList.toggle("off", !ok); $(txt).textContent = text;
+}
+
+/* ---------- joining ---------- */
+function showJoinForm(msg = "") {
+  $("#v-join").hidden = false; $("#v-room").hidden = true; $("#dock").hidden = true;
+  $("#code").value = code; $("#join-msg").textContent = msg;
+  setTimeout(() => $("#code").focus(), 50);
+}
+$("#code").addEventListener("input", (e) => { e.target.value = live.cleanCode(e.target.value); });
+$("#join-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const c = live.cleanCode($("#code").value);
+  if (!live.CODE_RE.test(c)) { $("#join-msg").textContent = "A code is 5 letters and numbers, as shown on the screen."; return; }
+  code = c; history.replaceState(null, "", `?r=${code}`); start();
+});
+
+async function start() {
+  if (!live.CODE_RE.test(code)) return showJoinForm();
+  const s = await live.getState(code);
+  if (s.status === 404) return showJoinForm("That room is not open. Check the code on the screen.");
+  if (!s.ok) return showJoinForm("Could not reach the room. Check your connection and try again.");
+  $("#h-code").hidden = false; $("#h-code").textContent = code;
+  if (token) return startRemote(s);
+  $("#v-join").hidden = true; $("#v-room").hidden = false;
+  buildDock();
+  live.join(code);
+  timers.push(setInterval(() => { if (!document.hidden) live.join(code); }, 30000));
+  timers.push(setInterval(refresh, 3000));
+  apply(s);
+}
+async function refresh() {
+  if (document.hidden) return;
+  const s = await live.getState(code);
+  if (s.status === 404) { timers.forEach(clearInterval); return showJoinForm("The room has closed. Thank you for joining."); }
+  if (!s.ok) { status(false, "Reconnecting…"); return; }
+  status(true, `Connected · ${s.people || 0} here`);
+  apply(s);
+  if (shownPrompt && mine[shownPrompt] !== undefined) loadResults();
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("#v-room").hidden) refresh(); });
+
+/* ---------- following the stop on screen ---------- */
+function apply(s) {
+  state = s;
+  const stop = STOPS[s.stop] || STOPS[0];
+  $("#s-num").textContent = `On screen now · stop ${s.stop + 1} of ${STOPS.length}`;
+  $("#s-title").textContent = stop.t;
+  $("#s-sum").textContent = stop.s || "";
+  const tr = $("#s-try");
+  if (stop.u) { tr.href = stop.u; tr.hidden = false; } else tr.hidden = true;
+  if (s.prompt !== shownPrompt) showPrompt(s.prompt);
+}
+function showPrompt(id) {
+  shownPrompt = id || null;
+  const card = $("#c-q");
+  if (!id || !PROMPTS[id]) { card.hidden = true; return; }
+  card.hidden = false;
+  const p = PROMPTS[id];
+  $("#q-text").textContent = p.q;
+  $("#q-sent").textContent = mine[id] !== undefined ? "Sent. You can change your answer." : "";
+  $("#q-bars").hidden = true;
+  if (p.kind === "upgrade") return showUpgrade();
+  $("#q-body").innerHTML = `<div class="choices" role="group" aria-label="Choices">${p.choices
+    .map(([v, label]) => `<button class="choice" type="button" data-v="${esc(v)}" aria-pressed="${mine[id] === v}"><i aria-hidden="true"></i>${esc(label)}</button>`)
+    .join("")}</div>`;
+  for (const b of document.querySelectorAll(".choice")) b.addEventListener("click", () => send(id, b.dataset.v));
+  if (mine[id] !== undefined) loadResults();
+}
+async function send(id, value) {
+  for (const b of document.querySelectorAll(".choice")) b.setAttribute("aria-pressed", b.dataset.v === value);
+  $("#q-sent").textContent = "Sending…";
+  const r = await live.answer(code, id, value);
+  if (r.ok) { mine[id] = value; keepMine(); $("#q-sent").textContent = "Sent. You can change your answer."; loadResults(); }
+  else $("#q-sent").textContent = r.status === 429 ? "One moment, then try again." : "Not sent. Check your connection and tap again.";
+}
+async function loadResults() {
+  const id = shownPrompt;
+  const r = await live.getResults(code);
+  if (!r.ok || id !== shownPrompt) return;
+  results = r;
+  const cell = r.prompts?.[id] || { total: 0, counts: {} };
+  const box = $("#q-bars");
+  box.hidden = false;
+  if (PROMPTS[id].kind === "upgrade") {
+    const pass = (i) => Object.entries(cell.counts).reduce((a, [b, n]) => a + (b[i] === "1" ? n : 0), 0);
+    const rows = [["All three checks", cell.counts["111"] || 0], ["New information", pass(0)], ["A precise word", pass(1)], ["Two ideas joined", pass(2)]];
+    box.innerHTML = `<div class="muted">The room so far: ${cell.total} ${cell.total === 1 ? "result" : "results"}</div>` + rows.map(([l, n]) => `<div class="bar"><span>${esc(l)}</span><b>${n}</b><div class="tr"><i style="width:${cell.total ? (n / cell.total) * 100 : 0}%"></i></div></div>`).join("");
+    return;
+  }
+  const max = Math.max(1, ...Object.values(cell.counts));
+  box.innerHTML = `<div class="muted">The room so far: ${cell.total} ${cell.total === 1 ? "answer" : "answers"}</div>` + PROMPTS[id].choices.map(([v, l]) => {
+    const n = cell.counts[v] || 0;
+    return `<div class="bar${mine[id] === v ? " mine" : ""}"><span>${esc(l)}${mine[id] === v ? " (you)" : ""}</span><b>${n}</b><div class="tr"><i style="width:${(n / max) * 100}%"></i></div></div>`;
+  }).join("");
+}
+
+/* ---------- the Upgrade Lab on the phone: checked here, only the three results are sent ---------- */
+function showUpgrade() {
+  $("#q-body").innerHTML = `<div class="plain">Phones in class are <s>bad</s>.</div>
+    <p class="muted" style="margin-top:8px">For an opinion essay to the school board. Frame: <i>Phones in class can be ___ because ___.</i></p>
+    <label for="up" class="muted" style="display:block;margin-top:10px">Your revision. It stays on this phone.</label>
+    <textarea id="up" spellcheck="true" autocomplete="off" placeholder="Phones in class can be …"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn" type="button" id="up-check">Check my work</button><button class="btn amber" type="button" id="up-send" disabled>Send my result</button></div>
+    <div class="lamps"><div class="lamp" id="l-detail"><i>·</i>New information added</div><div class="lamp" id="l-precision"><i>·</i>A precise word, the general one gone</div><div class="lamp" id="l-connector"><i>·</i>Two ideas joined by a connector</div></div>
+    <div class="msgs" id="up-msgs" aria-live="polite"></div>`;
+  let last = null;
+  try { $("#up").value = sessionStorage.getItem("tourLive:v1:upgrade") || ""; } catch (e) {}
+  $("#up").addEventListener("input", () => { try { sessionStorage.setItem("tourLive:v1:upgrade", $("#up").value); } catch (e) {} $("#up-send").disabled = true; });
+  $("#up-check").onclick = () => {
+    if (!$("#up").value.trim()) { $("#up-msgs").innerHTML = "<p>Type a revision first.</p>"; return; }
+    const r = checkUpgrade(ITEM, $("#up").value);
+    last = resultBits(r.checks);
+    for (const k of ["detail", "precision", "connector"]) {
+      const l = $(`#l-${k}`); l.classList.toggle("ok", r.checks[k]); l.classList.toggle("no", !r.checks[k]); l.querySelector("i").textContent = r.checks[k] ? "✓" : "!";
+    }
+    $("#up-msgs").innerHTML = r.messages.map((m) => `<p class="${r.ok ? "good" : ""}">${esc(m)}</p>`).join("");
+    $("#up-send").disabled = false;
+  };
+  $("#up-send").onclick = async () => {
+    if (!last) return;
+    $("#up-send").disabled = true;
+    const r = await live.answer(code, "upgrade", last);
+    if (r.ok) { mine.upgrade = last; keepMine(); $("#q-sent").textContent = "Sent: only which checks passed, not your sentence."; loadResults(); }
+    else { $("#q-sent").textContent = "Not sent. Check your connection and tap again."; $("#up-send").disabled = false; }
+  };
+  if (mine.upgrade !== undefined) loadResults();
+}
+
+/* ---------- reactions ---------- */
+let lastReact = 0;
+function buildDock() {
+  const dock = $("#dock");
+  dock.hidden = false;
+  dock.innerHTML = REACTIONS.map(([k, label]) => `<button class="react" type="button" data-k="${k}" style="background:${live.REACTION_COLORS[k]}">${live.REACTION_ICONS[k]}<span>${esc(label)}</span></button>`).join("");
+  for (const b of dock.querySelectorAll(".react")) b.addEventListener("click", () => {
+    const now = Date.now();
+    if (now - lastReact < 1200) return;
+    lastReact = now;
+    b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+    if (navigator.vibrate) try { navigator.vibrate(18); } catch (e) {}
+    live.react(code, b.dataset.k);
+  });
+}
+
+/* ---------- presenter remote ---------- */
+let rs = { stop: 0, build: 0 }, t0 = Date.now(), pending = false;
+function startRemote(s) {
+  $("#v-join").hidden = true; $("#v-room").hidden = true; $("#v-remote").hidden = false; $("#dock").hidden = true;
+  $("#h-sub").textContent = "Presenter remote";
+  $("#rm-code").textContent = code;
+  $("#rm-jump").innerHTML = STOPS.map((st, i) => `<option value="${i}">${i + 1}. ${esc(st.t)}</option>`).join("");
+  rs = { stop: s.stop || 0, build: s.build || 0 }; drawRemote(s.people || 0);
+  timers.push(setInterval(pollRemote, 1500));
+  timers.push(setInterval(() => { const x = Math.floor((Date.now() - t0) / 1000); $("#rm-timer").textContent = `${String(Math.floor(x / 60)).padStart(2, "0")}:${String(x % 60).padStart(2, "0")}`; }, 1000));
+}
+function drawRemote(people) {
+  const st = STOPS[rs.stop];
+  $("#rm-num").textContent = `Stop ${rs.stop + 1} of ${STOPS.length}`;
+  $("#rm-title").textContent = st.t;
+  $("#rm-build").textContent = st.b ? `Build ${rs.build} of ${st.b}` : "No builds";
+  $("#rm-notes").innerHTML = st.n.map((p) => `<p>${esc(p)}</p>`).join("");
+  $("#rm-jump").value = String(rs.stop);
+  if (people !== undefined) $("#rm-people").textContent = people;
+  $("#rm-prev").disabled = rs.stop === 0 && rs.build === 0;
+  $("#rm-next").disabled = rs.stop === STOPS.length - 1 && rs.build >= st.b;
+}
+async function push() {
+  pending = true; drawRemote();
+  const r = await live.setState(code, token, { stop: rs.stop, build: rs.build, prompt: promptFor(rs.stop), from: "remote" });
+  pending = false;
+  if (r.status === 401) { status(false, "This remote code no longer works. Open a new one from the projector.", "#rm-status", "#rm-status-text"); }
+  else if (!r.ok) status(false, "Not sent. Check your connection.", "#rm-status", "#rm-status-text");
+  else status(true, "Connected", "#rm-status", "#rm-status-text");
+}
+const promptFor = (stop) => Object.entries(PROMPTS).find(([, p]) => p.stop === stop)?.[0] || "";
+$("#rm-next").onclick = () => {
+  const st = STOPS[rs.stop];
+  if (rs.build < st.b) rs.build++; else if (rs.stop < STOPS.length - 1) rs = { stop: rs.stop + 1, build: 0 };
+  push();
+};
+$("#rm-prev").onclick = () => {
+  if (rs.build > 0) rs.build--; else if (rs.stop > 0) rs = { stop: rs.stop - 1, build: STOPS[rs.stop - 1].b };
+  push();
+};
+$("#rm-jump").onchange = (e) => { rs = { stop: +e.target.value, build: 0 }; push(); };
+async function pollRemote() {
+  if (document.hidden || pending) return;
+  const [s, r] = await Promise.all([live.getState(code), live.getResults(code)]);
+  if (s.status === 404) { timers.forEach(clearInterval); status(false, "The room has closed.", "#rm-status", "#rm-status-text"); return; }
+  if (!s.ok) return;
+  if (!pending) rs = { stop: s.stop, build: s.build };
+  const id = promptFor(rs.stop);
+  $("#rm-answers").textContent = id && r.ok ? r.prompts?.[id]?.total || 0 : 0;
+  drawRemote(s.people || 0);
+}
+
+start();
+}
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// "My week" on the Student Hub (access-practice-lab/src/my-week.js): counts only, from what the device records.
+// "My week" on the Student Hub (access-practice-lab/src/engagement.js myWeek): counts only, from what the device records.
 // Practice days against the learner's own goal, the four skills this week, and one next skill.
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -13,7 +13,7 @@ globalThis.localStorage ??= {
     return mem.size;
   },
 };
-const { myWeek } = await import("../access-practice-lab/src/my-week.js");
+const { myWeek } = await import("../access-practice-lab/src/engagement.js");
 
 const FRI = new Date("2026-11-27T15:00:00"); // a Friday; the week starts Monday 2026-11-23
 const at = (iso) => new Date(`${iso}T10:00:00`).toISOString();

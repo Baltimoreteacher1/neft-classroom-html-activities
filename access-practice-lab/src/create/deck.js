@@ -6,6 +6,7 @@
 
 import { answerText } from "../studio/core/check.js";
 import { PLAY_CSS, playHtml, playJs } from "./deck-play.js";
+import { TALK_CSS, talkHtml, talkJs } from "./deck-talk.js";
 
 const MARK = /\[\[([^\]]*)\]\]/g;
 const LETTERS = "ABCDEFGHIJ";
@@ -106,9 +107,20 @@ function questionAnswer(q) {
   return answerText(q);
 }
 
+/** Positions of the right option(s) for a choice or multi question; [] for every other format. */
+function correctIndexes(q) {
+  if (q.format === "choice") {
+    const i = q.options.findIndex((o) => o.id === q.answer);
+    return i >= 0 ? [i] : [];
+  }
+  if (q.format === "multi")
+    return q.options.map((o, i) => (q.answers.includes(o.id) ? i : -1)).filter((i) => i >= 0);
+  return [];
+}
+
 /**
  * @returns {{kind: "title"|"text"|"passage"|"vocab"|"question"|"table"|"math"|"organizer"|"image", title: string,
- *   lines: string[], answer?: string, n?: number, tiles?: boolean, sub?: string, def?: string, example?: string,
+ *   lines: string[], answer?: string, n?: number, tiles?: boolean, correct?: number[], sub?: string, def?: string, example?: string,
  *   es?: string, image?: {src: string, alt: string}}[]}
  */
 export function deckSlides(activity, { lang = "en" } = {}) {
@@ -161,6 +173,7 @@ export function deckSlides(activity, { lang = "en" } = {}) {
         title: `${n}. ${studentText(b.prompt, b.format)}`,
         lines: questionLines(b),
         tiles: b.format === "choice" || b.format === "multi",
+        correct: correctIndexes(b),
         image: img(b.image),
         answer: questionAnswer(b),
       });
@@ -275,7 +288,13 @@ function slideHtml(sl, L, es, k, total) {
     body = `${head}${pic(sl.image)}${lines}`;
   }
   const ans = sl.answer ? `<p class="ans" hidden><strong>${es ? "Respuesta" : "Answer"}:</strong> ${esc(sl.answer)}</p>` : "";
-  return `<section class="slide ${sl.kind}"${style} aria-roledescription="slide">${kind}${body}${ans}${num}</section>`;
+  // a choice slide carries its option count and right positions for the vote tally (deck-play.js); the answer is
+  // already on the slide in the hidden .ans, so this reveals nothing a presenter's file did not already hold
+  const vote =
+    sl.tiles && sl.correct?.length
+      ? ` data-choices="${sl.lines.length}" data-correct="${sl.correct.join(",")}"`
+      : "";
+  return `<section class="slide ${sl.kind}"${style}${vote} aria-roledescription="slide">${kind}${body}${ans}${num}</section>`;
 }
 
 /** One self-contained presentation page. */
@@ -285,6 +304,7 @@ export function deckHtml(activity, { lang = "en" } = {}) {
   const slides = deckSlides(activity, { lang });
   const body = slides.map((sl, k) => slideHtml(sl, L, es, k, slides.length)).join("\n");
   const play = playHtml(es);
+  const talk = talkHtml(es);
   return `<!doctype html>
 <html lang="${es ? "es" : "en"}">
 <head>
@@ -292,7 +312,7 @@ export function deckHtml(activity, { lang = "en" } = {}) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:">
 <title>${esc(activity.title || "Slides")}</title>
-<style>${CSS}${PLAY_CSS}</style>
+<style>${CSS}${PLAY_CSS}${TALK_CSS}</style>
 </head>
 <body>
 <div class="bar" id="bar"></div>
@@ -300,6 +320,7 @@ export function deckHtml(activity, { lang = "en" } = {}) {
 ${body}
 </main>
 ${play.panel}
+${talk.panel}
 <nav aria-label="${es ? "Diapositivas" : "Slides"}">
 <button type="button" id="prev" aria-label="${es ? "Anterior" : "Previous"}">‹</button>
 <span id="pos" aria-live="polite"></span>
@@ -307,8 +328,9 @@ ${play.panel}
 <button type="button" id="rev">${es ? "Mostrar respuesta (A)" : "Show answer (A)"}</button>
 <button type="button" id="full">${es ? "Pantalla completa" : "Full screen"}</button>
 ${play.nav}
+${talk.nav}
 </nav>
-<script>${JS}${playJs(play.left)}</script>
+<script>${JS}${playJs(play.left)}${talkJs(es)}</script>
 </body>
 </html>
 `;

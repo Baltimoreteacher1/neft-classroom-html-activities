@@ -201,11 +201,35 @@ try {
       page.waitForEvent("download"),
       d.getByRole("button", { name: /^Editable Word file/ }).click(),
     ]);
-    for (const name of [/^Word bingo/, /^I have… Who has\?/])
+    for (const name of [/^Word bingo/, /^I have… Who has\?/, /^Card sort/])
       assert.ok(
         await d.getByRole("button", { name }).isVisible(),
         `vocabulary page offers ${name}`,
       );
+    // the lesson kit: one ZIP, a start page that links exactly the files in it
+    const [kitDl] = await Promise.all([
+      page.waitForEvent("download"),
+      d.getByRole("button", { name: /^Lesson kit/ }).click(),
+    ]);
+    const kit = await (await import("jszip")).default.loadAsync(readFileSync(await kitDl.path()));
+    const names = Object.keys(kit.files).sort();
+    assert.ok(
+      names.includes("00-start-here.html") && names.includes("01-slides.html"),
+      names.join(),
+    );
+    assert.ok(
+      names.includes("06-word-bingo.html") && names.includes("08-card-sort.html"),
+      names.join(),
+    );
+    const start = await kit.file("00-start-here.html").async("string");
+    const links = [...start.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).sort();
+    assert.deepEqual(
+      links,
+      names.filter((n) => n !== "00-start-here.html"),
+      "start page links = folder",
+    );
+    const student = await kit.file("02-student-page.html").async("string");
+    assert.ok(student.length > 20000, "the kit carries the real offline student page");
     clicks++;
     const file = join(SHOTS, "s2-vocab-worksheet.docx");
     await dl.saveAs(file);

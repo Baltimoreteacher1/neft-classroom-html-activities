@@ -51,7 +51,7 @@ function piece(card, vocab, name, shown) {
     ],
     picture: [`Picture idea`, esc(card.cue || "Draw something that shows the word.")],
   }[name];
-  return `<div class="${cls}" ${style}><h5>${body[0]}</h5><p>${body[1]}</p></div>`;
+  return `<div class="${cls}" ${style}><h5>${body[0]}</h5><p${shown && ["meaning", "example"].includes(name) ? " data-cp-speak" : ""}>${body[1]}</p></div>`;
 }
 
 export function render(st, detail) {
