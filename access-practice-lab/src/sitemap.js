@@ -1478,7 +1478,6 @@ export const DESTINATIONS = Object.freeze([
     top: true,
     href: "math-literacy",
     icon: "reading",
-    match: [],
     title: P("Math Literacy Studio", "Estudio de lectoescritura matemática"),
     text: P(
       "Grades 1 to 8: teach a skill, create a resource, or support a learner, with vocabulary, reading, writing, speaking and listening built in.",
