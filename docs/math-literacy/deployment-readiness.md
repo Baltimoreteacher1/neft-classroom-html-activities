@@ -1,6 +1,10 @@
 # Math Literacy Studio: deployment readiness
 
-Status at 2026-11-28: gates green on the source tree; shipping is a separate, authorized step (`ALLOW_DEPLOY=1 npm run ship -- <sha>`). Update this file with the production check results after the ship.
+Status at 2026-11-28: shipped to production with `ALLOW_DEPLOY=1 npm run ship -- <sha>` as a single commit on top of `origin/main` (`2d609d301`, tree identical to the development branch). The ship's 41 live checks passed and the build stamp reports that commit on thelanguagepage.com and eduwonderlab.com.
+
+## Production check, 2026-11-28
+
+On both hosts, in Chromium: `/access-practice-lab/math-literacy` shows the three doors; `/skill/g6-ratios` (dash id) opens; `/resource/g6-ratios/worksheet` renders its preview; a game page mounts; `/access-practice-lab/quest` still answers 200; no page or console errors (the `web-vitals` and CSP-report noise is filtered).
 
 ## Decisions for the owner (Joel)
 
