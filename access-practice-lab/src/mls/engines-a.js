@@ -1063,7 +1063,7 @@ function anatomy(el, opts) {
     showBtn.hidden = true;
   }
   function sortPart() {
-    const items = [...A.known.slice(0, 4).map((k) => ({ label: `${k.value} ${k.label}`.trim(), known: true })), { label: A.unknown, known: false }];
+    const items = [...A.known.slice(0, 4).map((k) => ({ label: k.label && k.label !== "number" ? `${k.value} ${k.label}` : String(k.value), known: true })), { label: A.unknown, known: false }];
     const rows = items.map((it, i) => {
       const state = { v: null };
       const kb = h("button", { type: "button", class: "mlea-opt", "aria-pressed": "false", onclick: () => set("known") }, "Known");
@@ -1102,7 +1102,7 @@ function anatomy(el, opts) {
     reveal.hidden = false;
     const rows = [
       ["What is happening", A.happening],
-      ["What is known", A.known.map((k) => `${k.value} ${k.label}`.trim()).join("; ") || "No quantities are written as numbers."],
+      ["What is known", A.known.map((k) => (k.label && k.label !== "number" ? `${k.value} ${k.label}` : String(k.value))).join("; ") || "No quantities are written as numbers."],
       ["What is unknown", cap(A.unknown)],
       ["How the quantities relate", cap(A.relationship)],
       ["What model fits", cap(A.model)],
@@ -1808,7 +1808,7 @@ function vocabExplorer(el, opts) {
     if (!tabs.some((t) => t.id === tab)) tab = "meaning";
     for (const t of tabs) tabBar.append(h("button", { type: "button", class: "btn small", "aria-pressed": String(t.id === tab), onclick: () => { tab = t.id; paint(); E.say(`${t.label} for ${v.term}`); } }, t.label));
     clear(host);
-    host.append(h("section", { class: "mlea-panel", "data-mlea-stage": "vocab", "aria-labelledby": "mlea-vx-h" }, h("h3", { id: "mlea-vx-h", tabindex: "-1" }, v.term, h("span", { class: "mlea-kind" }, ` ${v.kind || ""}`)), ...body(v)));
+    host.append(h("section", { class: "mlea-panel", "data-mlea-stage": "vocab", "aria-labelledby": "mlea-vx-h" }, h("h3", { id: "mlea-vx-h", tabindex: "-1" }, v.term, ), ...body(v)));
     counter.textContent = `Words explored: ${seen.size} of ${vocab.length}`;
   }
   function go(i) {
@@ -1823,6 +1823,7 @@ function vocabExplorer(el, opts) {
     stopSpeech();
     quizDone = 0;
     host.hidden = true;
+    for (const x of E.root.querySelectorAll(".mlea-label")) x.hidden = true;
     termBar.hidden = true;
     tabBar.hidden = true;
     quiz.hidden = false;
@@ -1870,13 +1871,16 @@ function vocabExplorer(el, opts) {
   function backToExplore() {
     quiz.hidden = true;
     host.hidden = false;
+    for (const x of E.root.querySelectorAll(".mlea-label")) x.hidden = false;
     termBar.hidden = false;
     tabBar.hidden = false;
     paint();
   }
   E.root.append(
     h("p", { class: "mlea-note" }, "Learn each word from many sides: meaning, example, what it is not, a picture and a sentence of your own."),
+    h("p", { class: "mlea-label" }, "Choose a word"),
     termBar,
+    h("p", { class: "mlea-label" }, "Choose a way to learn it"),
     tabBar,
     counter,
     host,
@@ -1908,7 +1912,7 @@ function talkStudio(el, opts) {
     const bs = labels.map((l, i) => h("button", { type: "button", class: "mlea-opt", "aria-pressed": "false", onclick: () => {
       bs.forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
       onPick(i);
-    } }, h("span", { class: "mlea-opt-body" }, l)));
+    } }, h("span", { class: "mlea-letter", "aria-hidden": "true" }, `${String.fromCharCode(65 + i)}.`), h("span", { class: "mlea-opt-body" }, l)));
     g.append(...bs);
     return g;
   };
