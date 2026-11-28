@@ -156,6 +156,40 @@ describe("My finished work document", () => {
   });
 });
 
+describe("Published piece document (writing-published)", () => {
+  test("all units x all levels: HTML and Word carry the paragraph and byline, not the plan", async () => {
+    for (const id of UNITS) {
+      const { detail } = await getUnitDetail({}, id);
+      const work = sanitizeWork(fullWork(detail.writing)).work;
+      for (const wida of WIDA) {
+        const html = renderStudioPart(detail, { part: "writing-published", level: wida, work });
+        assert.ok(html.includes("by Alex Q"), `${id} ${wida} byline`);
+        assert.ok(html.includes("My first sentence."), `${id} ${wida} paragraph`);
+        assert.ok(
+          !html.includes("TS mine"),
+          `${id} ${wida} plan must not be in the published piece`,
+        );
+        assert.ok(
+          !html.includes("My self-check"),
+          `${id} ${wida} self-check must not be in the published piece`,
+        );
+        const bytes = renderStudioDocx(detail, { part: "writing-published", wida, work });
+        assert.equal(String.fromCharCode(bytes[0], bytes[1]), "PK");
+        if (id === UNITS[0])
+          assert.ok(
+            (await docxXml(bytes)).includes("My second paragraph line."),
+            `${id} ${wida} docx`,
+          );
+      }
+    }
+  });
+  test("an unsigned, empty piece prints lines and a name field, not an error", async () => {
+    const { detail } = await getUnitDetail({}, UNITS[0]);
+    const html = renderStudioPart(detail, { part: "writing-published", level: "1_2", work: {} });
+    assert.ok(html.includes("Write your paragraph"));
+  });
+});
+
 describe("POST /api/bcpss/export/<unit>", () => {
   let ip = 0;
   const call = (method, url, body) =>
@@ -182,6 +216,23 @@ describe("POST /api/bcpss/export/<unit>", () => {
     );
   });
 
+  test("POST ?part=writing-published returns the published piece as Word", async () => {
+    const res = await call(
+      "POST",
+      `/api/bcpss/export/${UNITS[0]}?format=docx&wida=3_4&part=writing-published`,
+      {
+        work: { draft: { text: "Published paragraph." }, pub: { name: "Sam Secret" } },
+      },
+    );
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get("cache-control"), "no-store");
+    assert.match(res.headers.get("content-disposition"), /writing-published/);
+    assert.ok(!res.headers.get("content-disposition").includes("Sam"));
+    assert.ok(
+      (await docxXml(new Uint8Array(await res.arrayBuffer()))).includes("Published paragraph."),
+    );
+  });
+
   test("PDF without Browser Rendering falls back to a print page that carries the work", async () => {
     const res = await call("POST", `/api/bcpss/export/${UNITS[0]}?format=pdf&wida=1_2`, {
       work: { draft: { text: "Print me." } },
@@ -198,6 +249,11 @@ describe("POST /api/bcpss/export/<unit>", () => {
     );
     assert.equal(
       (await call("GET", `/api/bcpss/export/${UNITS[0]}?format=docx&part=writing-work`)).status,
+      400,
+    );
+    assert.equal(
+      (await call("GET", `/api/bcpss/export/${UNITS[0]}?format=docx&part=writing-published`))
+        .status,
       400,
     );
   });

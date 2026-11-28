@@ -403,7 +403,10 @@ export const FAQ = [
       `${FACTS.saving} “Move my progress” moves it to another device.`,
       "El trabajo guardado se queda en el dispositivo y el navegador que usaron. No pasa a otro dispositivo, y si borran los datos del sitio, se borra. El Pasaporte puede exportarlo, y “Move my progress” lo mueve a otro dispositivo.",
     ),
-    links: [{ route: "/passport", label: P("Open the Passport", "Abrir el Pasaporte") }],
+    links: [
+      { route: "/passport", label: P("Open the Passport", "Abrir el Pasaporte") },
+      { route: "/move", label: P("Move my progress to another device", "Mover mi progreso a otro dispositivo") },
+    ],
   },
   {
     id: "device",
@@ -431,6 +434,9 @@ export const FAQ = [
       FACTS.microphone,
       "Nunca se necesita un micrófono. La grabación empieza solo cuando alguien toca Grabar, y las grabaciones se quedan en la pestaña abierta.",
     ),
+    links: [
+      { route: "/tools", label: P("Help and device check", "Ayuda y revisión del dispositivo") },
+    ],
   },
   {
     id: "norecord",

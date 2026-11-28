@@ -4,6 +4,7 @@
 // in scope here. No network requests, no external libraries.
 
 import { generate, lineAccepts, matches } from "./generators.js";
+import { CODE_RE, decodeInsight, encodeInsight, TAG_LIST } from "./insight-code.js";
 import { bi, genBody, genCheck, h, workedExample } from "./problem-view.js";
 import { t, UI } from "./strings.js";
 
@@ -103,6 +104,7 @@ function initPlayer(pl) {
     (a, b) => Number(a.dataset.step) - Number(b.dataset.step),
   );
   const status = pl.querySelector(".player-status");
+  const pips = [...pl.querySelectorAll(".pip")];
   const n = items.length;
   let i = n; // fully shown until the student asks to step through it
   let timer = null;
@@ -118,6 +120,11 @@ function initPlayer(pl) {
     });
     const share = n ? Math.ceil((marks.length * i) / n) : marks.length;
     marks.forEach((m, k) => m.classList.toggle("is-hidden", k >= share));
+    pips.forEach((p, k) => {
+      p.classList.toggle("is-on", k < i);
+      if (k === i - 1) p.setAttribute("aria-current", "step");
+      else p.removeAttribute("aria-current");
+    });
     if (status) status.textContent = t("stepOf", lang(), { i: Math.max(1, i), n });
   }
   function stop() {
@@ -143,6 +150,10 @@ function initPlayer(pl) {
     const b = e.target.closest("[data-player]");
     if (!b) return;
     const a = b.dataset.player;
+    if (a === "pip") {
+      stop();
+      go(Number(b.dataset.k));
+    }
     if (a === "next") go(i + 1);
     if (a === "prev") go(i - 1);
     if (a === "again" || a === "replay") {
@@ -200,6 +211,7 @@ function updateProgress() {
   if (lab) lab.innerHTML = bi("progress", "span", { done, total: counted.length });
   const bar = doc.querySelector(".progress-track");
   if (bar) bar.setAttribute("aria-valuenow", String(done));
+  doc.dispatchEvent(new CustomEvent("pfa:progress"));
 }
 
 function readValue(card, d) {
@@ -235,6 +247,16 @@ function judge(d, v) {
   }
   if (d.kind === "line") return { ok: lineAccepts(d, v) };
   return { ok: matches(d.answerType, d.answer, v) };
+}
+
+// The misconception tag of a wrong answer, when the answer matches a known mistake.
+function wrongTag(d, v) {
+  if (d.kind === "mc" && v != null) return d.tags?.[Number(v)] || null;
+  if ((d.kind === "entry" || d.kind === "mc-gen" || d.kind === "line") && d.known) {
+    const hit = d.known.find((k) => matches(d.answerType, k.value, v));
+    return hit?.tag || null;
+  }
+  return null;
 }
 
 // Wrong-answer feedback that names the misconception when the answer matches a known one.
@@ -273,7 +295,7 @@ function showHint(card, d, level, pid) {
   } else {
     title = "hint3";
     const seed = (hashSeed(pid) + 7919 * level) % 100000;
-    body = `<p class="hint-note">${bi("hint3Note")}</p>${workedExample(DATA.similar, seed)}`;
+    body = `<p class="hint-note">${bi("hint3Note")}</p>${workedExample(d.similarSpec || DATA.similar, seed)}`;
   }
   slot.innerHTML = `<div class="hint" role="note">${DATA.guideThink || ""}<h4>${bi(title)}</h4>${body}</div>`;
   announce(visibleText(slot));
@@ -354,6 +376,13 @@ function check(card) {
     void card.offsetWidth;
     if (!reduced()) card.classList.add("shake");
     const mis = misconceptionFeedback(d, v);
+    // Remember WHICH mistake this was (as a TAG_LIST index, to keep the save small) for the
+    // finish-card coach and the class code. Only answers that match a known mistake count.
+    const tag = wrongTag(d, v);
+    if (tag && !card._extra) {
+      const ti = TAG_LIST.indexOf(tag);
+      if (ti >= 0) rec.m = [...(rec.m || []), ti].slice(-3);
+    }
     let extra = mis ? `<p>${bi(mis)}</p>` : "";
     if (d.kind === "table") {
       const right = res.cells.filter(Boolean).length;
@@ -455,17 +484,23 @@ function initMatch(card) {
 }
 
 // "Try a similar problem": extra practice card from the lesson's generator, never counted.
-function addSimilar(afterCard) {
+function addSimilar(afterCard, opts = {}) {
   extraSeed = (extraSeed * 1103515245 + 12345) % 100000;
-  const p = generate(DATA.similar, extraSeed);
+  const origin = problems[afterCard.dataset.pid] || afterCard._data || {};
+  const spec = opts.spec || origin.similarSpec || DATA.similar;
+  const p = opts.problem || generate(spec, extraSeed);
   const pid = `x${extraSeed}`;
   const card = doc.createElement("article");
   card.className = "problem extra";
   card.dataset.pid = pid;
   card._extra = true;
-  card._data = { ...genCheck(p), hints: DATA.lessonHints };
+  card._data = {
+    ...genCheck(p),
+    hints: origin.review ? origin.hints : DATA.lessonHints,
+    similarSpec: spec,
+  };
   card.setAttribute("aria-labelledby", `${pid}-h`);
-  card.innerHTML = `<div class="p-top"><span class="p-num" aria-hidden="true">+</span><h3 id="${pid}-h" class="sr">${bi("extra")}</h3><span>${bi("extra")}</span></div>${genBody(p, pid)}<div class="actions"><button class="btn primary" type="button" data-act="check">${bi("check")}</button></div><div class="feedback" id="${pid}-fb" aria-live="off"></div><div class="hint-slot"></div>`;
+  card.innerHTML = `<div class="p-top"><span class="p-num" aria-hidden="true">+</span><h3 id="${pid}-h" class="sr">${bi("extra")}</h3><span>${bi("extra")}</span></div>${opts.note ? `<p class="tier-note">${bi(opts.note)}</p>` : ""}${genBody(p, pid)}<div class="actions"><button class="btn primary" type="button" data-act="check">${bi("check")}</button></div><div class="feedback" id="${pid}-fb" aria-live="off"></div><div class="hint-slot"></div>`;
   afterCard.after(card);
   card.querySelector("input,button")?.focus();
 }
@@ -615,9 +650,165 @@ function finish() {
   card.querySelector(".tc-revisit").textContent = revisit.length
     ? revisit.map((id) => problems[id].n).join(", ")
     : "—";
+  renderCoach(sec);
+  const tags = mistakeTags()
+    .slice(0, 3)
+    .map(([tag]) => tag);
+  const review = Object.keys(problems).filter(
+    (id) => problems[id].review && state.p[id]?.ok && state.p[id]?.tries === 1,
+  ).length;
+  const code = encodeInsight({
+    lessonId: LESSON,
+    score: first,
+    total,
+    conf: state.conf,
+    revisit: revisit.map((id) => problems[id].n),
+    tags,
+    review,
+  });
+  const codeEl = sec.querySelector(".code");
+  if (codeEl) codeEl.textContent = code;
   confetti(sec);
+  doc.dispatchEvent(new CustomEvent("pfa:finish"));
   sec.querySelector("h2")?.focus();
 }
+
+// Which misconceptions the wrong answers matched, most frequent first.
+function mistakeTags() {
+  const count = {};
+  for (const id of Object.keys(state.p))
+    for (const i of state.p[id].m || []) {
+      const tag = TAG_LIST[i];
+      if (tag) count[tag] = (count[tag] || 0) + 1;
+    }
+  return Object.entries(count).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+}
+function renderCoach(sec) {
+  const body = sec.querySelector(".coach-body");
+  if (!body) return;
+  const top = mistakeTags()
+    .filter(([tag]) => DATA.tips?.[tag])
+    .slice(0, 2);
+  body.innerHTML = top.length
+    ? `<p>${bi("coachIntro")}</p>${top
+        .map(
+          ([tag, n]) =>
+            `<div class="coach-item"><h4>${bi(DATA.tips[tag].label)}</h4><p class="tier-note">${bi("coachSeen", "span", { n })}</p><p>${bi(DATA.tips[tag].student)}</p><button class="btn primary" type="button" data-act="coach-try" data-tag="${h(tag)}">${bi(DATA.tips[tag].tempt ? "coachTry" : "similar")}</button></div>`,
+        )
+        .join("")}`
+    : `<p>${bi("coachNone")}</p>`;
+}
+// A fresh problem whose wrong answers include THIS mistake, so the student meets the trap again with
+// the coaching fresh in mind. Falls back to an ordinary similar problem when no generator makes it.
+function coachTry(btn) {
+  const tag = btn.dataset.tag;
+  const specs = [
+    DATA.similar,
+    ...Object.values(problems)
+      .map((d) => d.similarSpec)
+      .filter(Boolean),
+  ].filter(Boolean);
+  const item = btn.closest(".coach-item");
+  const start = 1 + (Date.now() % 500);
+  if (DATA.tips?.[tag]?.tempt)
+    for (const spec of specs)
+      for (let k = 0; k < 400; k++) {
+        const p = generate(spec, start + k);
+        if ((p.distractors || []).some((x) => x.tag === tag))
+          return addSimilar(item, { spec, problem: p, note: "coachTryNote" });
+      }
+  // No generator here builds this mistake in: an ordinary similar problem, with no claim about it.
+  return addSimilar(item);
+}
+
+// ---- class insights (teacher page) --------------------------------------------------------------
+function pct(a, b) {
+  return b ? Math.round((100 * a) / b) : 0;
+}
+function insights(text) {
+  const out = doc.getElementById("ins-out");
+  if (!out) return;
+  const found = [];
+  const bad = [];
+  text.split(/\r?\n/).forEach((line, k) => {
+    for (const m of line.matchAll(CODE_RE)) {
+      const r = decodeInsight(m[0]);
+      if (r.ok) found.push(r);
+      else bad.push({ line: k + 1, code: m[0] });
+    }
+  });
+  if (!found.length && !bad.length) {
+    out.innerHTML = `<section class="section"><p>${bi("insNone")}</p></section>`;
+    announce(L(UI.insNone));
+    return;
+  }
+  const byLesson = {};
+  for (const r of found) (byLesson[r.lessonId] ||= []).push(r);
+  const sections = Object.entries(byLesson)
+    .sort((a, b) => b[1].length - a[1].length)
+    .map(([lid, rs]) => insightSection(lid, rs))
+    .join("");
+  const invalid = bad.length
+    ? `<section class="section ins-invalid"><h2>${bi("insInvalid")}</h2><p class="tier-note">${bi("insInvalidNote")}</p><ul>${bad.map((b) => `<li>${bi({ en: "Line", es: "Línea" })} ${b.line}: <code>${h(b.code)}</code></li>`).join("")}</ul></section>`
+    : "";
+  out.innerHTML = sections + invalid;
+  out.querySelector("h2")?.focus();
+}
+function insightSection(lid, rs) {
+  const L1 = DATA.lessons?.[lid];
+  const n = rs.length;
+  const avg = Math.round(rs.reduce((s, r) => s + pct(r.score, r.total), 0) / n);
+  const confs = rs.filter((r) => r.conf);
+  const conf = confs.length
+    ? (confs.reduce((s, r) => s + r.conf, 0) / confs.length).toFixed(1)
+    : "—";
+  const review = (rs.reduce((s, r) => s + r.review, 0) / n).toFixed(1);
+  const bins = [0, 0, 0, 0];
+  for (const r of rs) bins[Math.min(3, Math.floor(pct(r.score, r.total) / 25))]++;
+  const binLabel = ["0–24%", "25–49%", "50–74%", "75–100%"];
+  const maxBin = Math.max(1, ...bins);
+  const spread = `<ul class="ins-bars">${bins.map((b, i) => `<li><span class="ins-bar-label">${binLabel[i]}</span><span class="ins-bar"><span class="ins-bar-fill" style="width:${(100 * b) / maxBin}%"></span></span><span class="ins-bar-n">${b}</span></li>`).join("")}</ul>`;
+  const miss = {};
+  for (const r of rs) for (const p of r.revisit) miss[p] = (miss[p] || 0) + 1;
+  const missList = Object.entries(miss)
+    .sort((a, b) => b[1] - a[1] || a[0] - b[0])
+    .slice(0, 6)
+    .map(
+      ([p, c]) =>
+        `<li>${bi("problem")} ${h(p)}: ${bi(c === 1 ? "insStudent1" : "insStudentsN", "span", { n: c })} (${pct(c, n)}%)</li>`,
+    )
+    .join("");
+  const mc = {};
+  for (const r of rs) for (const tag of r.tags) mc[tag] = (mc[tag] || 0) + 1;
+  const miscList = Object.entries(mc)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 5)
+    .map(([tag, c]) => {
+      const tx = DATA.tax?.[tag];
+      return `<li class="ins-misc"><h4>${tx ? bi(tx.label) : h(tag)} <span class="ins-count">${bi(c === 1 ? "insStudent1" : "insStudentsN", "span", { n: c })}</span></h4>${tx?.watch ? `<p><strong>${bi("insWatch")}:</strong> <span lang="en">${h(tx.watch)}</span></p>` : ""}</li>`;
+    })
+    .join("");
+  const title = L1 ? bi(L1.title) : "";
+  return `<section class="section ins-lesson" aria-labelledby="ins-${h(lid)}"><h2 id="ins-${h(lid)}" tabindex="-1"><span>${bi({ en: `Lesson ${lid}`, es: `Lección ${lid}` })}: ${title}</span></h2>
+<div class="ins-tiles"><div class="ins-tile"><span class="ins-big">${n}</span><span>${bi("insStudents")}</span></div><div class="ins-tile"><span class="ins-big">${avg}%</span><span>${bi("insAverage")}</span></div><div class="ins-tile"><span class="ins-big">${conf}</span><span>${bi("insConf")} (1–4)</span></div><div class="ins-tile"><span class="ins-big">${review}</span><span>${bi("insReview")} (0–2)</span></div></div>
+<h3>${bi("insSpread")}</h3>${spread}
+<h3>${bi("insRevisit")}</h3><p class="tier-note">${bi("insRevisitNote")}</p>${missList ? `<ul>${missList}</ul>` : `<p>—</p>`}
+<h3>${bi("insMisc")}</h3>${miscList ? `<ul class="ins-misc-list">${miscList}</ul>` : `<p>${bi("insNoMisc")}</p>`}
+<p class="no-print"><a class="btn quiet" href="/lessons/${h(lid)}/practice">${bi("insOpen")}</a></p></section>`;
+}
+
+// Shared with client-premium.js, which is concatenated after this file into the same module.
+export const runtime = {
+  LESSON,
+  storage,
+  state,
+  problems,
+  counted,
+  announce,
+  reduced,
+  lang,
+  confetti,
+};
 
 // ---- boot ------------------------------------------------------------------------------------
 function boot() {
@@ -672,6 +863,32 @@ function boot() {
         return addSimilar(card);
       case "finish":
         return finish();
+      case "coach-try":
+        return coachTry(b);
+      case "copy-code": {
+        const code = doc.querySelector("#finish .code")?.textContent || "";
+        navigator.clipboard?.writeText(code).then(
+          () => {
+            b.querySelector(".lbl").innerHTML = bi("copied");
+            announce(L(UI.copied));
+          },
+          () => prompt("", code),
+        );
+        return;
+      }
+      case "ins-show":
+        return insights(doc.getElementById("ins-codes")?.value || "");
+      case "ins-sample": {
+        const ta = doc.getElementById("ins-codes");
+        if (ta) ta.value = (DATA.sample || []).join("\n");
+        insights(ta?.value || "");
+        const out = doc.getElementById("ins-out");
+        out?.insertAdjacentHTML(
+          "afterbegin",
+          `<p class="section tier-note">${bi("insSampleNote")}</p>`,
+        );
+        return;
+      }
       case "reset": {
         const dlg = doc.getElementById("reset-dialog");
         if (dlg?.showModal) dlg.showModal();

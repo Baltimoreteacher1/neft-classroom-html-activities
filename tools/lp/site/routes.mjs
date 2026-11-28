@@ -7,11 +7,14 @@ import { page, t } from "./layout.mjs";
 import {
   clusterPage,
   domainPage,
+  myPracticePage,
   onPageDisclaimer,
+  playlistPage,
   practiceHome,
   setClientData,
   setPage,
   setPath,
+  setsIndex,
 } from "./practice.mjs";
 import * as tp from "./tools-pages.mjs";
 import { CLUSTERS, DOMAINS, ELD, html, LEVEL_NAMES, raw, SITE } from "./util.mjs";
@@ -26,6 +29,7 @@ const TOOL_RENDER = {
   "graphic-organizers": tp.organizersPage,
   "readiness-kit": tp.readinessPage,
   "warm-ups": tp.warmupsPage,
+  "playlist-maker": tp.playlistMakerPage,
 };
 
 /* ---------- home ---------- */
@@ -263,7 +267,7 @@ function styleguide() {
   return html`<div class="wrap">
 <div class="page-head"><span class="eyebrow">Design system</span><h1>Style guide</h1><p class="lede">Tokens and components used by every front-layer page. One stylesheet: <code>/lp/assets/site.css</code>. No purple, violet or lavender anywhere.</p></div>
 <section class="section"><h2>Colors</h2><div class="grid">${sw("Navy (primary)", "#17324d")}${sw("Teal (fill only)", "#1fa6a2")}${sw("Teal ink (text)", "#0b6e6a")}${sw("Amber (fill only)", "#f2c15b")}${sw("Background", "#f7f4ec")}${sw("Text", "#24323f")}${sw("Success", "#1b7a4b")}${sw("Error", "#b42318")}</div></section>
-<section class="section"><h2>Type</h2><h1>Heading 1</h1><h2>Heading 2</h2><h3>Heading 3</h3><p>Body text is Inter at 18px. Reading passages use <span class="reading">Atkinson Hyperlegible, a font made for low vision readers.</span></p></section>
+<section class="section"><h2>Type</h2><p class="specimen h1">Heading 1</p><p class="specimen h2">Heading 2</p><p class="specimen h3">Heading 3</p><p>Body text is Inter at 18px. Reading passages use <span class="reading">Atkinson Hyperlegible, a font made for low vision readers.</span></p></section>
 <section class="section"><h2>Buttons</h2><div class="btn-row"><button class="btn" type="button">Primary</button><button class="btn secondary" type="button">Secondary</button><button class="btn ghost" type="button">Ghost</button><button class="btn small" type="button">Small</button><button class="btn" type="button" disabled>Disabled</button></div></section>
 <section class="section"><h2>Cards and chips</h2><div class="grid cols-3"><article class="card"><span class="card-icon">${raw(icon("book"))}</span><h3><a class="card-link" href="#">A card</a></h3><p>The whole card is one link target.</p><div class="meta"><span class="chip">Chip</span><span class="chip teal">Teal</span><span class="chip amber">Amber</span></div></article></div></section>
 <section class="section"><h2>Tabs</h2><div class="tabs" data-tabs><div role="tablist" aria-label="Demo tabs"><button type="button" role="tab" id="sg-t1" aria-controls="sg-p1" aria-selected="true">First</button><button type="button" role="tab" id="sg-t2" aria-controls="sg-p2" aria-selected="false" tabindex="-1">Second</button></div><div role="tabpanel" id="sg-p1" aria-labelledby="sg-t1"><p>First panel.</p></div><div role="tabpanel" id="sg-p2" aria-labelledby="sg-t2" hidden><p>Second panel.</p></div></div></section>
@@ -321,6 +325,29 @@ export function renderAll(data, assets) {
     navKey: "practice",
     crumbs: [crumb("Practice", "/practice/")],
     body: practiceHome(data),
+  });
+  data.setsIndex = setsIndex(data);
+  add({
+    path: "/practice/playlist/",
+    title: "Practice playlist",
+    description: "A practice playlist from your teacher. Your progress stays on this device.",
+    navKey: "practice",
+    crumbs: [crumb("Practice", "/practice/"), crumb("Playlist", "/practice/playlist/")],
+    body: playlistPage(),
+    scripts: ["/lp/assets/playlist.js"],
+    data: { "sets-index": data.setsIndex },
+    noindex: true,
+  });
+  add({
+    path: "/practice/my-practice/",
+    title: "My practice",
+    description:
+      "Every practice set you finished on this device, ready to print for your teacher. Nothing is collected.",
+    navKey: "practice",
+    crumbs: [crumb("Practice", "/practice/"), crumb("My practice", "/practice/my-practice/")],
+    body: myPracticePage(),
+    scripts: ["/lp/assets/my-practice.js"],
+    data: { "sets-index": data.setsIndex },
   });
   for (const c of CLUSTERS) {
     add({
@@ -424,7 +451,9 @@ export function renderAll(data, assets) {
         tool.slug === "warm-ups" ||
         tool.slug === "scaffold-generator"
           ? { banks: data.banks }
-          : undefined,
+          : tool.slug === "playlist-maker"
+            ? { "sets-index": data.setsIndex }
+            : undefined,
     });
     searchIndex.push({ k: "tool", t: tool.title, u: `/tools/${tool.slug}/`, d: tool.summary });
   }

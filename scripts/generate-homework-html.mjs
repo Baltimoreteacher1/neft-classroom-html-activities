@@ -50,7 +50,7 @@ import {
 } from "./homework-guided-notes.mjs";
 import { MATH_INPUT_JS, renderMathKeypad } from "./homework-math-input.mjs";
 import { STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
-import { renderVisualMathLab, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
+import { renderVisualMathLab, SAME_VALUE_LAB_JS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { renderIconSprite } from "./lib/family-icons.mjs";
 import { vocabKey, withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
 import { WEB_PRINT_CSS } from "./lib/family-takehome-css.mjs";
@@ -1649,7 +1649,7 @@ ${CASE_FILE_JS}
 ${V3_LEARN_JS}
 ${HERO_JS}
 ${DOMINO_DUO_JS}
-${VISUAL_LABS_JS}
+${VISUAL_LABS_JS}${lessonId === "6-6" ? `\n${SAME_VALUE_LAB_JS}` : ""}
 ${MATH_INPUT_JS}
 // Sound engine
 let soundEnabled = true;

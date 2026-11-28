@@ -182,6 +182,27 @@ export function validateSet(set, errs) {
           );
         if (c.icon && !ICONS.has(c.icon)) errs.push(`${where}: unknown choice icon "${c.icon}"`);
       }
+      // Test-wise tell: the key is much longer than every distractor. A quoted sentence from the text is exempt.
+      const key = choices.find((c) => c.correct === true);
+      if (key && choices.length > 1) {
+        const keyLen = String(key.text).length;
+        const maxOther = Math.max(
+          ...choices.filter((c) => c !== key).map((c) => String(c.text).length),
+        );
+        if (
+          !/^["“]/.test(String(key.text).trim()) &&
+          keyLen > maxOther * 1.3 &&
+          keyLen - maxOther >= 12
+        )
+          errs.push(
+            `${where}: the answer is much longer than every distractor (${keyLen} vs ${maxOther} characters)`,
+          );
+      }
+      // The glossary must not define the very word an item asks about (it hands the student the answer).
+      const asked = (/what does (?:the word )?["“']?([a-z-]+)["”']? mean/i.exec(it.stem) ||
+        /["“]([a-z-]+)["”]/i.exec(it.stem))?.[1];
+      if (asked && set.passage?.glossary?.some((g) => g.term.toLowerCase() === asked.toLowerCase()))
+        errs.push(`${where}: the glossary defines "${asked}", which this item asks about`);
       checkVisual(it.visual, where, errs);
     });
     if (items.length && !items.some((it) => it.pl === "1-2" && it.visual))

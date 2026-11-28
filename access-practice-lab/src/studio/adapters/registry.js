@@ -45,6 +45,7 @@ import conversationSim from "./conversation-sim.js";
 import constructionLab from "./construction-lab.js";
 import dialogueStudio from "./dialogue-studio.js";
 import sentenceArchitect from "./sentence-architect.js";
+import k2Starters from "./k2-starters.js";
 import { normalizeActivity } from "../core/schema.js";
 import { validateActivity } from "../core/validate.js";
 
@@ -93,6 +94,7 @@ export const ADAPTERS = Object.freeze({
   [constructionLab.family]: constructionLab,
   [dialogueStudio.family]: dialogueStudio,
   [sentenceArchitect.family]: sentenceArchitect,
+  [k2Starters.family]: k2Starters,
 });
 
 export class CustomizeError extends Error {

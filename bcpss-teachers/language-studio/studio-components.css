@@ -69,6 +69,22 @@
   background: var(--st-accent-soft);
   border-color: transparent;
 }
+/* In-activity secondary controls (speed, transcript, hints, teacher tip) read as plain text with no edge, so
+   students and teachers missed them. Give them a quiet outline; pressed choices fill. The run-bar back link stays a link. */
+.st-btn--ghost:not(.st-run__bar *) {
+  border-color: var(--st-line-strong);
+  background: var(--st-surface);
+}
+.st-btn--ghost:not(.st-run__bar *):hover:not(:disabled) {
+  border-color: var(--st-accent);
+  background: var(--st-accent-soft);
+}
+.st-btn--ghost[aria-pressed="true"],
+.st-btn--ghost[aria-expanded="true"] {
+  border-color: var(--st-accent);
+  background: var(--st-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--st-accent);
+}
 .st-btn--sm {
   padding: 6px 14px;
   font-size: 0.9rem;
@@ -308,7 +324,6 @@ button.st-chip[aria-pressed="true"]:hover:not(:disabled) {
     transform: scale(1);
   }
 }
-
 
 /* K-2 band: bigger touch targets and type */
 :root[data-band="k2"] .st-btn,

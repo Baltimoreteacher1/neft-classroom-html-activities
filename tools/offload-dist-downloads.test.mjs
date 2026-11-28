@@ -11,10 +11,20 @@ const keep = [
   P("1-1/downloads/1-1-notes-l1.docx"),
   P("2-3-group1/downloads/reveal/x.pdf"),
   P("5-6/downloads/deck.PPTX"),
+  // Lesson-level binaries the build copies beside index.html, and readiness worksheets.
+  P("1-1/homework.docx"),
+  P("1-1/homework-answer-key.docx"),
+  P("1-1/homework-es.docx"),
+  P("1-1/slides.pptx"),
+  P("2-1/readiness/2-1-readiness-practice.docx"),
 ];
 const notOffloadable = [
   P("1-1/index.html"),
-  P("1-1/homework.docx"), // lesson root, not /downloads/
+  P("1-1/config.json"),
+  P("1-1/homework.html"), // a page, never a download
+  P("1-1/handout.docx"), // lesson root, but not one of the named binaries
+  P("2-1/readiness/index.html"),
+  P("2-1/readiness/nested/x.docx"), // readiness is one level only
   P("1-1/downloads/readme.txt"),
   "curriculum/x/downloads/a.pdf",
   P("1-1/downloads/../../secret.pdf"),

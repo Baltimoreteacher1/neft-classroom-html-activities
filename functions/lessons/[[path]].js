@@ -10,7 +10,10 @@ import { pfaResponse } from "../_lib/pfa/render.js";
 // in dist/ is served exactly as before, so deploying this Function with nothing uploaded changes nothing.
 // Teacher-only downloads stay gated: functions/_middleware.js runs before this handler on every request.
 
-const DOWNLOAD_PATH = /^\/lessons\/[^/]+\/downloads\/.+\.(docx|pdf|pptx|xlsx|zip)$/i;
+// Same paths as OFFLOAD_RE in tools/lib/r2-offload.mjs (pinned by tools/offload-dist-downloads.test.mjs):
+// lesson downloads, the lesson-level homework/slides binaries, and readiness worksheets.
+const DOWNLOAD_PATH =
+  /^\/lessons\/[^/]+\/(?:downloads\/.+|readiness\/[^/]+|homework(?:-answer-key|-es)?|slides)\.(docx|pdf|pptx|xlsx|zip)$/i;
 
 const TYPES = {
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",

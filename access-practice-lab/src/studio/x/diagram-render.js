@@ -10,6 +10,7 @@
 
 import { DiagramError } from "./diagram-kit.js";
 import { barChartSvg, dotPlotSvg, histogramSvg } from "./diagrams-charts.js";
+import { tenFrameSvg } from "./diagrams-counting.js";
 import { foodWebSvg, timelineSvg } from "./diagrams-graphs.js";
 import {
   coordinatePlaneSvg,
@@ -69,6 +70,7 @@ const GENERATE = {
     { events: s.events.map((e) => ({ year: blank(e.year), label: e.label })) },
   ],
   foodweb: (s) => [foodWebSvg, { relationships: s.relationships }],
+  tenframe: (s) => [tenFrameSvg, { count: blank(s.count), add: s.add }],
 };
 
 /** The generator's own result for a spec, in `lang`. Throws DiagramError when the figure cannot be drawn. */

@@ -1,7 +1,7 @@
 // Practice engine for every set page. The page is complete without this script (all items listed, printable);
 // this adds: student mode (one item per screen, progress, calm feedback), teacher view (answer key and notes),
 // project view, listening audio (device voice), glossary popovers, local-only speaking recorder, writing helpers.
-import { $, $$, escapeHtml, readJson, speech, store, toast, tr } from "./lib.js";
+import { $, $$, download, escapeHtml, readJson, speech, store, toast, tr } from "./lib.js";
 
 const root = document.documentElement;
 const app = $("[data-practice]");
@@ -52,6 +52,7 @@ function init() {
   function go(i) {
     if (i >= steps.length) return finish();
     index = Math.max(0, i);
+    store.set(`pos:${data.id}`, index);
     done.hidden = true;
     list.hidden = false;
     render();
@@ -67,15 +68,38 @@ function init() {
     nav.hidden = true;
     done.hidden = false;
     done.innerHTML = data.items
-      ? `<h2>${escapeHtml(tr("practice.done", "You finished this set."))}</h2><p class="stat">${right} / ${total}</p><p>Right on the first try. Every question you tried again counts as practice too.</p>`
-      : `<h2>${escapeHtml(tr("practice.done", "You finished this set."))}</h2><p>Look back at your checklist. Which part will you practice next time?</p>`;
+      ? `<h2>${escapeHtml(tr("practice.done", "You finished this set."))}</h2><p class="stat">${right} / ${total}</p><p>${escapeHtml(tr("practice.firstTry", "Right on the first try. Every question you tried again counts as practice too."))}</p>`
+      : `<h2>${escapeHtml(tr("practice.done", "You finished this set."))}</h2><p>${escapeHtml(tr("practice.checkNext", "Look back at your checklist. Which part will you practice next time?"))}</p>`;
+    store.remove(`pos:${data.id}`);
     const again = document.createElement("button");
     again.type = "button";
     again.className = "btn";
     again.textContent = tr("practice.restart", "Practice again");
     again.addEventListener("click", restart);
     done.append(again);
-    store.set(`done:${data.id}`, { at: Date.now(), right, total });
+    store.set(`done:${data.id}`, data.items ? { at: Date.now(), right, total } : { at: Date.now() });
+    // On a teacher's playlist: offer the next unfinished set, or the way back once all are done.
+    const pl = store.get("playlist");
+    if (pl?.code && Array.isArray(pl.items) && pl.items.some((x) => x.id === data.id)) {
+      const next = pl.items.find((x) => x.id !== data.id && !store.get(`done:${x.id}`));
+      const link = document.createElement("a");
+      link.className = "btn secondary";
+      link.href = next ? next.u : `/practice/playlist/#p=${pl.code}`;
+      link.textContent = next
+        ? `${tr("playlist.nextIn", "Next in your playlist")}: ${next.t}`
+        : tr("playlist.backTo", "Back to your playlist");
+      const row = document.createElement("p");
+      row.className = "btn-row no-print";
+      row.append(link);
+      if (next) {
+        const back = document.createElement("a");
+        back.className = "btn ghost";
+        back.href = `/practice/playlist/#p=${pl.code}`;
+        back.textContent = tr("playlist.backTo", "Back to your playlist");
+        row.append(back);
+      }
+      done.append(row);
+    }
     done.setAttribute("tabindex", "-1");
     done.focus();
   }
@@ -139,15 +163,69 @@ function init() {
         btn.classList.add("right");
         for (const other of $$(".choice", card)) if (other !== btn) other.disabled = true;
         fb.className = "feedback right";
-        fb.innerHTML = `<strong>Yes.</strong> ${escapeHtml(choice.why)}`;
+        fb.innerHTML = `<strong>${escapeHtml(tr("practice.yes", "Yes."))}</strong> ${escapeHtml(choice.why)}`;
       } else {
         btn.classList.add("wrong");
         btn.disabled = true;
         fb.className = "feedback wrong";
-        fb.innerHTML = `<strong>Not quite.</strong> ${escapeHtml(choice.why)} <span>${escapeHtml(tr("practice.tryAgain", "Try again"))}.</span>`;
+        fb.innerHTML = `<strong>${escapeHtml(tr("practice.notQuite", "Not quite."))}</strong> ${escapeHtml(choice.why)} <span>${escapeHtml(tr("practice.tryAgain", "Try again"))}.</span>`;
       }
       fb.hidden = false;
       render();
+    });
+    // Keyboard: in student view, 1-4 or A-D chooses an answer on the question on screen.
+    document.addEventListener("keydown", (e) => {
+      if (mode !== "student" || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.target.closest?.("input, textarea, select, [contenteditable]")) return;
+      const k = e.key.toLowerCase();
+      const n = "1234".indexOf(k) >= 0 ? "1234".indexOf(k) : "abcd".indexOf(k);
+      if (n < 0) return;
+      const btn = $$(".choice", steps[index])[n];
+      if (btn && !btn.disabled) {
+        e.preventDefault();
+        btn.click();
+        btn.focus();
+      }
+    });
+  }
+
+  /* ---------- reading: listen to the passage, Spanish help ---------- */
+  const readBtn = $("[data-read-passage]", app);
+  if (readBtn) {
+    let reading = false;
+    const label = readBtn.querySelector("[data-i18n]");
+    const stop = () => {
+      reading = false;
+      speech.stop();
+      for (const s of $$(".passage .sentence", app)) s.classList.remove("speaking-now");
+      label.textContent = tr("practice.listenPassage", "Listen to the passage");
+    };
+    if (!speech.supported) readBtn.hidden = true;
+    readBtn.addEventListener("click", () => {
+      if (reading) return stop();
+      reading = true;
+      label.textContent = tr("practice.stop", "Stop");
+      const parts = $$(".passage h2, .passage .sentence", app).map((el) => ({ el, text: el.textContent }));
+      speech.speakChunks(parts, {
+        onChunk: (c) => {
+          for (const s of $$(".passage .speaking-now", app)) s.classList.remove("speaking-now");
+          c.el.classList.add("speaking-now");
+        },
+        onDone: stop,
+      });
+    });
+  }
+  const esBtn = $("[data-spanish-help]", app);
+  if (esBtn) {
+    const apply = (on) => {
+      app.classList.toggle("show-es", on);
+      esBtn.setAttribute("aria-pressed", String(on));
+    };
+    apply(!!store.get("spanishHelp"));
+    esBtn.addEventListener("click", () => {
+      const on = esBtn.getAttribute("aria-pressed") !== "true";
+      store.set("spanishHelp", on);
+      apply(on);
     });
   }
 
@@ -174,7 +252,8 @@ function init() {
       pop.className = "gloss-pop";
       pop.setAttribute("role", "dialog");
       pop.setAttribute("aria-label", g.term);
-      pop.innerHTML = `<p><strong>${escapeHtml(g.term)}</strong>: ${escapeHtml(g.definition)}</p><p lang="es" class="muted">${escapeHtml(g.es)}: ${escapeHtml(g.esDefinition)}</p><div class="btn-row"><button type="button" class="btn small ghost" data-gloss-say>${escapeHtml(tr("read.listen", "Listen"))}</button><button type="button" class="btn small secondary" data-gloss-close>${escapeHtml(tr("display.close", "Close"))}</button></div>`;
+      const es = app.classList.contains("show-es") ? `<p lang="es" class="muted">${escapeHtml(g.es)}: ${escapeHtml(g.esDefinition)}</p>` : "";
+      pop.innerHTML = `<p><strong>${escapeHtml(g.term)}</strong>: ${escapeHtml(g.definition)}</p>${es}<div class="btn-row"><button type="button" class="btn small ghost" data-gloss-say>${escapeHtml(tr("read.listen", "Listen"))}</button><button type="button" class="btn small secondary" data-gloss-close>${escapeHtml(tr("display.close", "Close"))}</button></div>`;
       document.body.append(pop);
       const r = term.getBoundingClientRect();
       pop.style.top = `${window.scrollY + r.bottom + 6}px`;
@@ -252,6 +331,12 @@ function init() {
   }
 
   root.classList.add("student-mode");
+  // Pick up where the student left off on this device (cleared when the set is finished).
+  const saved = Number(store.get(`pos:${data.id}`, 0)) || 0;
+  if (saved > 0 && saved < steps.length) {
+    index = saved;
+    toast(`${tr("practice.resumed", "Picked up where you left off")}: ${saved + 1} / ${steps.length}`);
+  }
   render();
 }
 
@@ -345,7 +430,12 @@ function writing(task) {
     store.set(`writing:${id}`, { text: area.value, org: Object.fromEntries(orgFields.map((f) => [f.dataset.org, f.value])) });
   const update = () => {
     const n = area.value.trim() ? area.value.trim().split(/\s+/).length : 0;
-    const status = n < min ? "Keep going." : n > max ? "That is more than the goal. Check that every sentence helps." : "Right in the goal range.";
+    const status =
+      n < min
+        ? tr("practice.keepGoing", "Keep going.")
+        : n > max
+          ? tr("practice.tooLong", "That is more than the goal. Check that every sentence helps.")
+          : tr("practice.inRange", "Right in the goal range.");
     count.textContent = `${n} ${tr("practice.words", "words")} (goal: ${min}–${max}). ${status}`;
   };
   area.addEventListener("input", () => {
@@ -365,8 +455,23 @@ function writing(task) {
       if (blank >= 0) area.setSelectionRange(blank, blank + 3);
       update();
       save();
-      toast("Starter added. Replace ___ with your words.");
+      toast(tr("practice.starterAdded", "Starter added. Replace ___ with your words."));
     });
   }
+  // Keep a copy: a plain-text file with the prompt, the plan and the writing. Made on the device; nothing is sent.
+  const dl = document.createElement("button");
+  dl.type = "button";
+  dl.className = "btn small secondary no-print";
+  dl.textContent = tr("practice.downloadWriting", "Download my writing");
+  dl.addEventListener("click", () => {
+    const prompt = $(".q-stem", task)?.textContent.trim() || "";
+    const plan = orgFields
+      .map((f) => `${task.querySelector(`label[for="${f.id}"]`)?.textContent.trim() || "Plan"}: ${f.value.trim()}`)
+      .join("\n");
+    const text = `${prompt}\n\n${plan}\n\n${area.value.trim()}\n`;
+    download(`my-writing-${id}.txt`, text, "text/plain");
+  });
+  count.after(dl);
+  document.addEventListener("lp:lang", update);
   update();
 }

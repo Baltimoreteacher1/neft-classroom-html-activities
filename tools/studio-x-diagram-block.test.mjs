@@ -75,6 +75,7 @@ const SPECS = {
       { eats: "Fox", eaten: "Rabbit" },
     ],
   },
+  tenframe: { kind: "tenframe", count: 8, add: 5 },
 };
 const block = (spec, over = {}) => ({ id: "d1", type: "diagram", spec, ...over });
 const activity = (blocks, over = {}) =>
@@ -94,9 +95,9 @@ const dom = (svg) => new JSDOM(svg, { contentType: "image/svg+xml" }).window.doc
 
 // ── schema ───────────────────────────────────────────────────────────────────
 
-test("diagram is a block type with the nine kinds, and the caps equal the wave-1 limits", () => {
+test("diagram is a block type with the ten kinds, and the caps equal the wave-1 limits", () => {
   assert.ok(BLOCK_TYPES.includes("diagram"));
-  assert.equal(DIAGRAM_KINDS.length, 9);
+  assert.equal(DIAGRAM_KINDS.length, 10);
   assert.equal(DIAGRAM_LIMITS.categories, CAPS.categories);
   assert.equal(DIAGRAM_LIMITS.points, CAPS.points);
   assert.equal(DIAGRAM_LIMITS.events, CAPS.events);
@@ -627,4 +628,31 @@ test("editor: numbers box for dot plots, Spanish wording, no markup from typed t
   const h = await editorFor({ ...SPECS.bar, title: '<img src=x onerror="alert(1)">' });
   assert.equal(h.el.querySelectorAll("img").length, 0);
   assert.equal(h.el.querySelector("input").value, '<img src=x onerror="alert(1)">');
+});
+
+// ── ten frame (K-2 counting) ─────────────────────────────────────────────────
+
+test("ten frame: counters fill left to right, a second frame appears past ten, groups differ in shape", () => {
+  const draw = (spec) => dom(renderDiagram(block({ kind: "tenframe", ...spec })).svg);
+  const seven = draw({ count: 7 });
+  assert.equal(seven.querySelectorAll("rect[data-frame]").length, 1);
+  assert.equal(seven.querySelectorAll('[data-counter="count"]').length, 7);
+  assert.equal(seven.querySelectorAll('[data-counter="add"]').length, 0);
+  const sum = draw({ count: 8, add: 5 });
+  assert.equal(sum.querySelectorAll("rect[data-frame]").length, 2);
+  assert.equal(sum.querySelectorAll("circle[data-counter=count]").length, 8);
+  assert.equal(sum.querySelectorAll("rect[data-counter=add]").length, 5);
+  assert.equal(draw({ count: 10 }).querySelectorAll("rect[data-frame]").length, 1);
+  assert.equal(draw({ count: 0 }).querySelectorAll("[data-counter]").length, 0);
+  const r = renderDiagram(block({ kind: "tenframe", count: 8, add: 5 }), { lang: "es" });
+  assert.match(r.alt, /8 círculos azules y 5 cuadrados anaranjados/);
+  assert.doesNotMatch(r.alt, /13/, "the alt text never states the total (that is the question)");
+  for (const bad of [
+    { count: 21 },
+    { count: 15, add: 6 },
+    { count: -1 },
+    { count: 2.5 },
+    { count: null },
+  ])
+    assert.equal(renderDiagram(block({ kind: "tenframe", ...bad })).ok, false, JSON.stringify(bad));
 });

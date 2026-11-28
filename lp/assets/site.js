@@ -41,6 +41,8 @@ function applyLang(lang) {
     el.setAttribute("placeholder", lang === "es" && s?.es ? s.es : el.dataset.enPh);
   }
   root.lang = lang;
+  // Right-to-left interface languages (Arabic, Dari, Pashto, Urdu) flip the layout (the design system uses logical properties for it).
+  root.dir = ["ar", "fa", "prs", "ps", "ur"].includes(lang) ? "rtl" : "ltr";
   if (lang === "es") root.setAttribute("data-ui-lang", "es");
   else root.removeAttribute("data-ui-lang");
   const toggle = $("[data-lang-toggle]");
@@ -58,7 +60,14 @@ $("[data-lang-toggle]")?.addEventListener("click", () => {
 if (uiLang() === "es") applyLang("es");
 
 /* ---------- display panel ---------- */
-const DEFAULTS = { size: "18", theme: "light", font: "standard", spacing: "normal", ruler: "off", tapHear: "off" };
+const DEFAULTS = {
+  size: "18",
+  theme: "light",
+  font: "standard",
+  spacing: "normal",
+  ruler: "off",
+  tapHear: "off",
+};
 const display = { ...DEFAULTS, ...(store.get("display", {}) || {}) };
 const dialog = $("#display-dialog");
 let lastOpener = null;
@@ -75,7 +84,8 @@ function applyDisplay() {
   else root.removeAttribute("data-tap-hear");
   setRuler(display.ruler === "on");
   for (const group of $$("[data-setting]", dialog || document)) {
-    for (const b of $$("button", group)) b.setAttribute("aria-pressed", String(b.dataset.value === display[group.dataset.setting]));
+    for (const b of $$("button", group))
+      b.setAttribute("aria-pressed", String(b.dataset.value === display[group.dataset.setting]));
   }
 }
 function saveDisplay() {
@@ -116,7 +126,9 @@ function fillVoices() {
   voiceSelect.innerHTML = "";
   if (!voices.length) {
     const o = document.createElement("option");
-    o.textContent = speech.supported ? "Device voice" : "Read-aloud is not available in this browser";
+    o.textContent = speech.supported
+      ? "Device voice"
+      : "Read-aloud is not available in this browser";
     voiceSelect.append(o);
     voiceSelect.disabled = !speech.supported;
     return;
@@ -149,14 +161,21 @@ const light = (el) => {
 function readableBlocks() {
   const main = $("main");
   return $$("h1, h2, h3, p, li, td, th, blockquote, .q-stem, .choice", main).filter(
-    (el) => el.offsetParent !== null && el.textContent.trim() && !el.closest("[aria-hidden='true'], .no-read, dialog, .teacher-only[hidden]"),
+    (el) =>
+      el.offsetParent !== null &&
+      el.textContent.trim() &&
+      !el.closest("[aria-hidden='true'], .no-read, dialog, .teacher-only[hidden]"),
   );
 }
 function stopReading() {
   speech.stop();
   reading = false;
   light(null);
-  if (readBtn) readBtn.querySelector("[data-i18n]").textContent = tr("display.readPage", "Read this page aloud");
+  if (readBtn)
+    readBtn.querySelector("[data-i18n]").textContent = tr(
+      "display.readPage",
+      "Read this page aloud",
+    );
 }
 readBtn?.addEventListener("click", () => {
   if (!speech.supported) return toast("Read-aloud is not available in this browser.");
@@ -164,14 +183,19 @@ readBtn?.addEventListener("click", () => {
   dialog?.close();
   reading = true;
   readBtn.querySelector("[data-i18n]").textContent = tr("display.stopReading", "Stop reading");
-  const blocks = readableBlocks().map((el) => ({ el, text: el.textContent.replace(/\s+/g, " ").trim() }));
+  const blocks = readableBlocks().map((el) => ({
+    el,
+    text: el.textContent.replace(/\s+/g, " ").trim(),
+  }));
   speech.speakChunks(blocks, { onChunk: (c) => light(c.el), onDone: () => stopReading() });
 });
 // Tap to hear: a click on a sentence or paragraph inside main reads it (when the setting is on).
 document.addEventListener("click", (e) => {
   if (root.getAttribute("data-tap-hear") !== "on" || !speech.supported) return;
   if (e.target.closest("a, button, input, textarea, select, label, summary, dialog")) return;
-  const el = e.target.closest("main .sentence, main p, main li, main td, main h1, main h2, main h3");
+  const el = e.target.closest(
+    "main .sentence, main p, main li, main td, main h1, main h2, main h3",
+  );
   if (!el) return;
   light(el);
   speech.speak(el.textContent.replace(/\s+/g, " ").trim(), { onEnd: () => light(null) });
@@ -187,6 +211,18 @@ document.addEventListener("click", (e) => {
   if (!speech.supported) return toast("Read-aloud is not available in this browser.");
   speech.speak(b.getAttribute("data-say"));
 });
+
+/* ---------- progress on this device: a "Done" chip on practice set cards ---------- */
+for (const card of $$("[data-set-card]")) {
+  const done = store.get(`done:${card.dataset.setCard}`);
+  if (!done) continue;
+  const chip = document.createElement("span");
+  chip.className = "chip done-chip";
+  chip.textContent = done.total
+    ? `${tr("practice.doneChip", "Done")} ✓ ${done.right}/${done.total}`
+    : `${tr("practice.doneChip", "Done")} ✓`;
+  card.querySelector(".meta")?.prepend(chip);
+}
 
 /* ---------- print buttons and tabs (shared components) ---------- */
 document.addEventListener("click", (e) => {
@@ -212,7 +248,9 @@ for (const tabs of $$("[data-tabs]")) {
   list.addEventListener("keydown", (e) => {
     const i = tabButtons.indexOf(document.activeElement);
     if (i < 0) return;
-    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabButtons.length - 1 }[e.key];
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabButtons.length - 1 }[
+      e.key
+    ];
     if (next === undefined) return;
     e.preventDefault();
     select(tabButtons[(next + tabButtons.length) % tabButtons.length], true);
@@ -255,6 +293,71 @@ function setRuler(on) {
 }
 
 applyDisplay();
+
+/* ---------- Quick Find (Ctrl/Cmd+K or "/") ---------- */
+const typing = (el) => el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
+const quickFind = (from) => import("./palette.js").then((m) => m.openPalette(from));
+// Warm the module while idle so Ctrl+K opens at once and the first typed letters land in the box.
+(window.requestIdleCallback || ((f) => setTimeout(f, 2000)))(() =>
+  import("./palette.js").catch(() => {}),
+);
+document.addEventListener("keydown", (e) => {
+  const k = e.key.toLowerCase();
+  const slash = e.key === "/" && !typing(e.target) && !e.metaKey && !e.ctrlKey && !e.altKey;
+  if ((k === "k" && (e.metaKey || e.ctrlKey)) || slash) {
+    e.preventDefault();
+    quickFind(document.activeElement);
+  }
+});
+for (const a of $$(".search-btn, .nav-search a")) {
+  a.addEventListener("click", (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; // keep "open in new tab"
+    e.preventDefault();
+    quickFind(a);
+  });
+}
+
+/* ---------- project a tool's result: [data-project-target="<selector>"] puts that panel full screen ---------- */
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("[data-project-target]");
+  if (!btn) return;
+  const target = $(btn.dataset.projectTarget);
+  if (!target) return;
+  if (document.fullscreenElement || target.classList.contains("projecting")) {
+    if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
+    target.classList.remove("projecting");
+    root.classList.remove("project-mode");
+    return;
+  }
+  target.classList.add("projecting");
+  root.classList.add("project-mode");
+  try {
+    await target.requestFullscreen();
+  } catch {
+    // No Fullscreen API (some iPads): the larger type and hidden chrome still apply; Esc or the button exits.
+  }
+});
+document.addEventListener("fullscreenchange", () => {
+  if (document.fullscreenElement) return;
+  for (const el of $$(".projecting")) el.classList.remove("projecting");
+  root.classList.remove("project-mode");
+});
+
+/* ---------- My class: every tool opens with the teacher's class filled in ---------- */
+// The tool's own draft time, read now: site.js runs before the tool's module, which re-saves its draft on first
+// render. Read after the lazy import instead, every draft looked newer than My class and nothing was filled.
+const draftAtLoad = Object.fromEntries(
+  $$("[data-tool]").map((el) => [
+    el.dataset.tool,
+    store.get(`draft:${el.dataset.tool}`)?.savedAt || 0,
+  ]),
+);
+// Made while site.js runs, so before DOMContentLoaded, which fires only after every page module (the tool's too).
+const scriptsRan = new Promise((r) =>
+  document.addEventListener("DOMContentLoaded", r, { once: true }),
+);
+if ($("[data-tool]") || $("[data-class-profile]"))
+  import("./class-profile.js").then((m) => m.start?.(draftAtLoad, scriptsRan));
 
 /* ---------- offline: cache the front layer after the first visit ---------- */
 if ("serviceWorker" in navigator && location.protocol === "https:") {

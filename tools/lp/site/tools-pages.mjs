@@ -34,22 +34,95 @@ const GRADE_OPTS = [
   ["6-8", "Grades 6–8"],
 ];
 
+// "What do you need right now?": one task per tile, in a teacher's words, each landing on the tool that does it.
+const TASKS = [
+  ["warm-ups", "task.warmup", "Warm up my class", "A 5-minute language warm-up to project."],
+  [
+    "game-maker",
+    "task.game",
+    "Turn my word list into a game",
+    "Six game styles; play on the board or share a link.",
+  ],
+  [
+    "frame-generator",
+    "task.frames",
+    "Write today's objectives and frames",
+    "Content + language objective, frames at 3 levels.",
+  ],
+  [
+    "scaffold-generator",
+    "task.scaffold",
+    "Make a reading or task easier",
+    "Chunked text, simpler directions, a glossary.",
+  ],
+  [
+    "vocabulary-cards",
+    "task.vocab",
+    "Print vocabulary cards",
+    "Frayer or picture cards with Spanish and cognates.",
+  ],
+  [
+    "score-interpreter",
+    "task.scores",
+    "Make sense of ACCESS scores",
+    "Plain-language meaning, groups and a family letter.",
+  ],
+];
+
+function myClassPanel() {
+  const sel = (name, label, list, i18n) =>
+    html`<div class="field"><label for="mc-${name}" data-i18n="${i18n}">${label}</label><select id="mc-${name}" name="${name}"><option value="">—</option>${opts(list, "")}</select></div>`;
+  return html`<section class="panel my-class" id="my-class" data-class-profile aria-labelledby="mc-title">
+<div class="my-class-head"><span class="card-icon">${raw(icon("teacher"))}</span><div><h2 class="h3" id="mc-title" data-i18n="class.title">My class</h2>
+<p class="muted" data-i18n="class.lede">Set it once. Every tool opens with your grade, subject, level and words already filled in.</p></div></div>
+<form autocomplete="off">
+<div class="field my-class-unit"><label for="mc-unit" data-i18n="class.unit">Start from a unit (optional)</label><select id="mc-unit" name="unit"><option value="">—</option></select></div>
+<div class="my-class-grid">
+${sel("grade", "Grade band", GRADE_OPTS, "class.grade")}
+${sel("area", "Content area", AREA_OPTS, "class.area")}
+${sel("band", "Most students are at", BAND_OPTS, "class.band")}
+${sel("klu", "Key Language Use", KLU_OPTS, "class.klu")}
+<div class="field"><label for="mc-topic" data-i18n="class.topic">This week's topic</label><input type="text" id="mc-topic" name="topic" placeholder="ratios"></div>
+<div class="field"><label for="mc-terms" data-i18n="class.terms">Key words (commas between)</label><input type="text" id="mc-terms" name="terms" placeholder="ratio, rate, per, equivalent"></div>
+</div>
+<div class="btn-row"><button type="submit" class="btn small" data-i18n="class.save">Save my class</button><button type="button" class="btn small secondary" data-class-clear data-i18n="class.clear">Clear</button><span class="muted" data-class-status aria-live="polite"></span></div>
+</form></section>`;
+}
+
 export function toolsHome(data) {
-  const [flag, ...rest] = data.tools.tools;
+  const bySlug = Object.fromEntries(data.tools.tools.map((t) => [t.slug, t]));
   return html`<div class="wrap">
 <div class="page-head"><span class="eyebrow">Teacher Tools</span><h1 data-i18n="nav.tools">Teacher Tools</h1>
-<p class="lede">Every tool works the same way: pick, customize, preview, export. Each one opens with an example already filled in. They work offline, save drafts on your device and never need an account.</p></div>
-<article class="card door"><span class="card-icon">${raw(icon(flag.icon))}</span><h2><a class="card-link" href="/tools/${flag.slug}/">${flag.title}</a></h2><p>${flag.summary}</p>
-<div class="meta">${flag.outputs.map((o) => html`<span class="chip teal">${o}</span>`)}</div></article>
-<div class="grid cols-3 section">${rest.map(
+<p class="lede">Every tool works the same way: pick, customize, preview, export. Each one opens with an example already filled in. They work offline, save drafts on your device and never need an account.</p>
+<p class="muted kbd-hint no-print"><span data-i18n="palette.hint">Know what you want? Press</span> <kbd>Ctrl</kbd> <kbd>K</kbd> <span data-i18n="palette.hint2">to jump straight to it.</span></p></div>
+<section aria-labelledby="task-title"><h2 class="h3" id="task-title" data-i18n="task.title">What do you need right now?</h2>
+<div class="task-grid">${TASKS.map(
+    ([slug, key, label, sub]) =>
+      html`<a class="task" href="/tools/${slug}/"><span class="task-icon">${raw(icon(bySlug[slug].icon))}</span><span class="task-text"><strong data-i18n="${key}">${label}</strong><small>${sub}</small></span><span class="task-time">${bySlug[slug].minutes} min</span></a>`,
+  )}</div></section>
+${myClassPanel()}
+<h2 class="h3 section" data-i18n="tools.all">All tools</h2>
+<div class="grid cols-3 tool-cards">${data.tools.tools.map(
     (
       tool,
-    ) => html`<article class="card"><span class="card-icon">${raw(icon(tool.icon))}</span><h2 class="h3"><a class="card-link" href="/tools/${tool.slug}/">${tool.title}</a></h2><p>${tool.summary}</p>
-<div class="meta">${tool.outputs.map((o) => html`<span class="chip">${o}</span>`)}</div></article>`,
+    ) => html`<article class="card${tool.flagship ? " flagship" : ""}"><span class="card-icon">${raw(icon(tool.icon))}</span><h3 class="h3"><a class="card-link" href="/tools/${tool.slug}/">${tool.title}</a></h3><p>${tool.summary}</p>
+<div class="meta"><span class="chip amber">${tool.minutes} min</span>${tool.outputs.map((o) => html`<span class="chip">${o}</span>`)}</div></article>`,
   )}</div>
 ${privacyNote()}
 </div>`;
 }
+
+// Activity Builder accent swatches: each has 4.5:1 or more with white text (no purple family: gate G-06).
+const SWATCHES = [
+  ["#17324d", "Navy"],
+  ["#0b6e6a", "Teal"],
+  ["#166534", "Forest"],
+  ["#1e40af", "Ocean"],
+  ["#9a3412", "Brick"],
+  ["#991b1b", "Red"],
+  ["#334155", "Slate"],
+  ["#1f2937", "Charcoal"],
+];
 
 /* ---------- Game Maker ---------- */
 export const GAME_TEMPLATES = [
@@ -169,7 +242,8 @@ ${steps(["Add blocks", "Fill them in", "Check accessibility", "Export"])}
 <div class="tool-layout" data-tool="activity-builder">
 <div class="panel no-print">
   <div class="field"><label for="ab-title">Activity title</label><input type="text" id="ab-title" value="Why do some ice cubes melt faster?"></div>
-  <div class="field"><label for="ab-accent">Accent color</label><input type="text" id="ab-accent" value="#17324d" inputmode="text" aria-describedby="ab-accent-hint"><span class="hint" id="ab-accent-hint">A hex color. The checker warns if white text on it is hard to read.</span></div>
+  <fieldset class="field swatches"><legend>Accent color</legend><div class="swatch-row">${SWATCHES.map(([hex, name]) => html`<button type="button" class="swatch" data-swatch="${hex}" aria-pressed="false" aria-label="${name}" title="${name}"></button>`)}</div>
+  <label class="hint" for="ab-accent">Or type any hex color</label><input type="text" id="ab-accent" value="#17324d" inputmode="text" aria-describedby="ab-accent-hint"><span class="hint" id="ab-accent-hint">Every swatch passes 4.5:1 with white text. The checker warns if a typed color does not.</span></fieldset>
   <div class="field"><label for="ab-add">Add a block</label><div class="btn-row"><select id="ab-add">${opts(BLOCK_TYPES, "passage")}</select><button type="button" class="btn small" data-ab-add>Add</button></div></div>
   <ol class="ab-blocks" data-ab-blocks aria-label="Blocks"></ol>
   <div class="btn-row"><button type="button" class="btn secondary small" data-ab-example>${t("tool.example", "Load the example")}</button><button type="button" class="btn ghost small" data-ab-reset>${t("tool.reset", "Start over")}</button></div>
@@ -201,7 +275,7 @@ ${head(tool, "Choose a content area, grade, topic and Key Language Use. You get 
   <div class="field"><label for="fg-klu">Key Language Use</label><select id="fg-klu" name="klu">${opts(KLU_OPTS, "Explain")}</select></div>
   <fieldset><legend>Proficiency bands to show</legend>${BAND_OPTS.map(([v, l]) => html`<label class="check"><input type="checkbox" name="bands" value="${v}" checked><span>${l}</span></label>`)}</fieldset>
 </form>
-<section class="preview" aria-live="polite" data-fg-out></section>
+<section class="preview"><div class="btn-row no-print fg-actions"><button type="button" class="btn small" data-project-target="[data-fg-out]">${raw(icon("project"))} <span data-i18n="practice.project">Project this</span></button></div><div aria-live="polite" data-fg-out></div></section>
 </div>
 ${privacyNote()}
 </div>`;
@@ -256,6 +330,8 @@ C.M., 5.1, 4.6, 4.8, 4.4
 D.L., 3.3, 3.0, 2.4, 2.2
 E.K., 4.0, 4.5, 3.8, 3.1
 F.N., 1.4, 1.2, 1.5, 1.3</textarea></div>
+  <div class="field"><label for="si-file">Or upload a CSV file (ID, Listening, Speaking, Reading, Writing)</label><input type="file" id="si-file" accept=".csv,.tsv,.txt,text/csv"><span class="hint">A header row is fine; it is skipped. The file is read in this browser only.</span></div>
+  <div class="btn-row"><button type="button" class="btn small secondary" data-si-template>Download a blank template</button></div>
 </form>
 <section aria-live="polite" data-si-class-out></section>
 </div>
@@ -285,7 +361,8 @@ predict, to say what you think will happen, predecir, I predict the ice will mel
   <label class="check"><input type="checkbox" name="cognates" checked><span>Mark Spanish cognates</span></label>
   <div class="btn-row"><button type="button" class="btn" data-vc-print>${raw(icon("print"))} Print cards</button></div>
 </form>
-<section class="preview" data-vc-out aria-live="polite"></section>
+<h2 id="vc-out-title" class="visually-hidden">Your cards</h2>
+<section class="preview" data-vc-out aria-live="polite" aria-labelledby="vc-out-title"></section>
 </div>
 ${privacyNote()}
 </div>`;
@@ -466,7 +543,59 @@ ${head(tool, "A five-minute language warm-up for any class. Pick a type, add you
   <label class="check"><input type="checkbox" name="timer"><span>Show a 5-minute timer (off by default)</span></label>
 </form>
 <section class="preview" aria-live="polite"><div class="panel warmup-slide" data-wu-out></div>
-<div class="btn-row no-print section"><button type="button" class="btn" data-project>${raw(icon("project"))} <span data-i18n="practice.project">Project this</span></button><button type="button" class="btn secondary" data-print>${raw(icon("print"))} <span data-i18n="tool.print">Print</span></button><button type="button" class="btn secondary" data-wu-copy>${raw(icon("copy"))} <span data-i18n="tool.copy">Copy</span></button></div></section>
+<div class="btn-row no-print section"><button type="button" class="btn" data-project-target="[data-wu-out]">${raw(icon("project"))} <span data-i18n="practice.project">Project this</span></button><button type="button" class="btn secondary" data-print>${raw(icon("print"))} <span data-i18n="tool.print">Print</span></button><button type="button" class="btn secondary" data-wu-copy>${raw(icon("copy"))} <span data-i18n="tool.copy">Copy</span></button></div></section>
+</div>
+${privacyNote()}
+</div>`;
+}
+
+/* Practice Playlist Maker: a teacher orders practice sets; the playlist travels inside the student link. */
+export function playlistMakerPage(tool, data) {
+  const groups = [];
+  for (const s of data.setsIndex) {
+    let g = groups.find((x) => x.c === s.c && x.d === s.d);
+    if (!g) groups.push((g = { c: s.c, d: s.d, label: `${s.cl} · ${s.dl}`, sets: [] }));
+    g.sets.push(s);
+  }
+  const clusters = [...new Map(data.setsIndex.map((s) => [s.c, s.cl])).entries()];
+  const domains = [...new Map(data.setsIndex.map((s) => [s.d, s.dl])).entries()];
+  return html`<div class="wrap">
+${head(tool, "Choose practice sets in the order you want students to do them. Share one link or QR code. Each student sees their own progress on their own device.")}
+${steps(["Choose sets", "Put them in order", "Share"])}
+<div class="tool-layout" data-tool="playlist-maker">
+<form class="panel no-print" data-pl-form autocomplete="off">
+  <div class="field"><label for="pl-title">Playlist name</label><input type="text" id="pl-title" name="title" maxlength="80" value="This week's practice"></div>
+  <div class="field"><label for="pl-note">Note to students (optional)</label><textarea id="pl-note" name="note" rows="2" maxlength="240" placeholder="Do the first two sets by Friday."></textarea></div>
+  <fieldset><legend>Choose practice sets (up to 12)</legend>
+    <div class="grid cols-2">
+      <div class="field"><label for="pl-cluster">Grades</label><select id="pl-cluster" data-pl-filter="c"><option value="">All grades</option>${opts(clusters, "")}</select></div>
+      <div class="field"><label for="pl-domain">Skill</label><select id="pl-domain" data-pl-filter="d"><option value="">All skills</option>${opts(domains, "")}</select></div>
+    </div>
+    <div class="pl-pick">${groups.map(
+      (g) =>
+        html`<div class="pl-group" data-c="${g.c}" data-d="${g.d}"><p class="label">${g.label}</p>${g.sets.map(
+          (s) =>
+            html`<label class="check"><input type="checkbox" name="set" value="${s.id}"><span>${s.t} <span class="muted">· ${s.m} min</span></span></label>`,
+        )}</div>`,
+    )}</div>
+  </fieldset>
+  <p class="muted" data-pl-count aria-live="polite"></p>
+  <div class="btn-row"><button type="button" class="btn ghost small" data-pl-reset>${t("tool.reset", "Start over")}</button></div>
+</form>
+<section class="preview" aria-labelledby="pl-preview-title">
+  <h2 id="pl-preview-title" class="h3" data-pl-heading>This week's practice</h2>
+  <p class="muted" data-pl-note-preview></p>
+  <p class="empty" data-pl-empty>Choose sets on the left. They appear here in the order you pick them, and you can move them up or down.</p>
+  <ol class="pl-order" data-pl-order></ol>
+  <div class="panel no-print section"><h3 class="h4">Share</h3>
+    <div class="btn-row"><button type="button" class="btn" data-pl-link>${raw(icon("link"))} Copy student link</button>
+    <a class="btn secondary" href="/practice/playlist/" target="_blank" rel="noopener" data-pl-open>${raw(icon("student"))} Open as a student</a>
+    <button type="button" class="btn secondary" data-print>${raw(icon("print"))} <span data-i18n="tool.print">Print</span></button></div>
+    <p class="muted" data-pl-errors aria-live="polite"></p>
+    <div class="qr-box" data-pl-qr hidden><p class="label">Scan to open the playlist</p><div data-pl-qr-svg></div><p class="muted" data-pl-qr-note></p></div>
+    <p class="muted">The playlist lives inside the link; nothing is stored on a server. Students' progress stays on their own device and is never sent to you. To see it, ask students to show or print their playlist page.</p>
+  </div>
+</section>
 </div>
 ${privacyNote()}
 </div>`;

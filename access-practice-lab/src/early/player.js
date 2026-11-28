@@ -19,6 +19,7 @@ import { isRecording } from "../recorder.js";
 import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
 import { recorderHTML } from "../components.js";
 import { asList, BASE, announce, html, icon, raw } from "../util.js";
+import { storyPrintHTML } from "../lesson-frame.js";
 import { GUIDE_NAME, guideSVG, sceneSVG } from "./scenes.js";
 
 /** Activity types the audio-first player can present. Anything else opens in the classic page. */
@@ -234,6 +235,7 @@ function stageHTML(a, cur, I) {
   const passage = asList(a.passage);
   return html`${a.scene ? html`<figure class="early-scene">${raw(sceneSVG(a.scene, I.mode === "es" ? "es" : "en"))}</figure>` : ""}
   ${listening ? html`<p class="early-actions"><button type="button" class="btn early-big" data-early-story>${icon("listening")} ${I.T("Hear the story again", "Escuchar el cuento otra vez")}</button></p>` : ""}
+  ${listening ? storyPrintHTML(I, a) : ""}
   ${
     !listening && passage.length
       ? html`<div class="early-passage" lang="en">

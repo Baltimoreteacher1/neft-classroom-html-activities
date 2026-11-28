@@ -7,6 +7,10 @@ const server = spawn(
   ["vite", "preview", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
   {
     stdio: ["ignore", "pipe", "pipe"],
+    // Its own process group, so stop() can end `npx` AND the `vite preview` it starts. Killing only the
+    // npx wrapper left vite running with this process's output pipes open: the journey printed PASS and
+    // the runner then never exited, so the full gate killed it after 900 s and reported a failure.
+    detached: true,
   },
 );
 let serverOutput = "";
@@ -17,7 +21,16 @@ server.stderr.on("data", (chunk) => {
   serverOutput += chunk;
 });
 const stop = () => {
-  if (!server.killed) server.kill("SIGTERM");
+  if (server.exitCode === null) {
+    try {
+      process.kill(-server.pid, "SIGTERM");
+    } catch {
+      server.kill("SIGTERM");
+    }
+  }
+  // Even if something outlives the signal, do not let its pipes keep this process alive.
+  server.stdout.destroy();
+  server.stderr.destroy();
 };
 try {
   let ready = false;

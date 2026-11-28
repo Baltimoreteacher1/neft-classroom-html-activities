@@ -73,6 +73,7 @@ const VIEW_LOADERS = {
   packs: () => import("./views/packs.js"),
   room: () => import("./views/room.js"),
   activity: () => import("./views/activity.js"),
+  "listen-for-clue": () => import("./views/listen-for-clue.js"),
   test: () => import("./views/test.js"),
   tests: () => import("./views/tests.js"),
   road: () => import("./views/road.js"),
@@ -217,6 +218,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "reading" || a === "reading-room")
     return { ...r, view: "reading-room", id: b || "" };
   if (a === "test") return { ...r, view: "test", testId: b || "" };
+  if (a === "listen-for-clue") return { ...r, view: a, round: Number(q.get("round") || 0) };
   // Access Prep skill builders: /access-prep/<skill>/<set> (src/prep/view.js); /access-prep alone is the hub.
   if (a === "access-prep") return { ...r, view: a, id: b || "", setId: c || "", tab: q.get("tab") || "" };
   // TWR: /twr, /twr/<strategy>, /twr/<strategy>/<set> (src/views/twr.js, src/twr/view.js).

@@ -11,19 +11,19 @@ import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 import {
   BADGES,
-  FOCUS,
-  QUICK,
-  GOALS,
   badgeFacts,
+  FOCUS,
   focusFrom,
+  GOALS,
   goalProgress,
   goalsFor,
   isQuickKey,
   newBadges,
+  QUICK,
   quickKey,
   quickWrites,
-  surpriseTask,
   studioStats,
+  surpriseTask,
 } from "../access-practice-lab/src/views/write.js";
 
 const lab = new URL("../access-practice-lab/", import.meta.url);

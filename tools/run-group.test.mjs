@@ -3,6 +3,7 @@
  * or execFile's callback waits on the pipe they hold (a 15 min timeout ran 49). */
 
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { execGroup } from "../scripts/lib/run-group.mjs";
 
 const run = (file, args, opts) =>
@@ -12,14 +13,24 @@ const run = (file, args, opts) =>
       resolve({ err, stdout, stderr, ms: Date.now() - t0 }),
     );
   });
+// A killed process that nothing has reaped yet is a ZOMBIE, and kill(pid, 0) still succeeds on one. In a
+// container whose PID 1 does not reap orphans (most CI containers, and this repo's cloud sessions) the
+// grandchild is therefore "alive" to kill(0) long after it was killed, which failed this test while
+// run-group worked. Linux says so in /proc; elsewhere (macOS) orphans are reaped, so kill(0) is enough.
 const alive = (pid) => {
   try {
     process.kill(pid, 0);
-    return true;
   } catch {
     return false;
   }
+  try {
+    const state = readFileSync(`/proc/${pid}/stat`, "utf8").split(") ").pop().split(" ")[0];
+    return state !== "Z" && state !== "X";
+  } catch {
+    return true;
+  }
 };
+assert.equal(alive(process.pid), true, "the probe must be able to say a live process is alive");
 
 {
   const r = await run("sh", ["-c", "echo hi; exit 0"], { timeout: 5000 });

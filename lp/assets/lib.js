@@ -254,15 +254,26 @@ export function parseTable(text) {
 
 /** Debounced draft saver: `saveDraft("game-maker", data)`. */
 const timers = {};
+const pending = {};
+const writeDraft = (key) => {
+  if (!(key in pending)) return;
+  store.set(`draft:${key}`, { savedAt: Date.now(), data: pending[key] });
+  delete pending[key];
+};
 export function saveDraft(key, data, { quiet = false } = {}) {
   clearTimeout(timers[key]);
+  pending[key] = data;
   timers[key] = setTimeout(() => {
-    store.set(`draft:${key}`, { savedAt: Date.now(), data });
+    writeDraft(key);
     if (!quiet) {
       const el = document.querySelector("[data-draft-status]");
       if (el) el.textContent = tr("tool.draftSaved", "Draft saved on this device");
     }
   }, 400);
 }
+// A draft typed in the last 400 ms is written when the page is hidden or closed, so it is never lost.
+addEventListener("pagehide", () => {
+  for (const key of Object.keys(pending)) writeDraft(key);
+});
 export const loadDraft = (key) => store.get(`draft:${key}`)?.data ?? null;
 export const clearDraft = (key) => store.remove(`draft:${key}`);

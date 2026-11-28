@@ -61,6 +61,8 @@ const onDisk = (path) =>
 /** True when a lab route opens a view main.js routes, or a folder the lab serves from disk. */
 const opens = (route) => VIEWS.has(stem(route)) || onDisk(`/access-practice-lab${route}`);
 const FLIGHT_DECK = /flight[\s-]*deck/i;
+/** A site path served from its own folder, or from the front layer's generated pages (lp/<path>). */
+const siteOnDisk = (path) => onDisk(path) || onDisk(`/lp${path}`);
 
 /** Content ids a route names, searched in the real content files (the e2e opens each in a browser). */
 const CONTENT = [
@@ -105,6 +107,11 @@ test("every route the guide can link to is a lab view, and the named content exi
       assert.ok(onDisk(r), `${r} is a folder with an index.html`);
       continue;
     }
+    if (DIR.siteRoutes().includes(r)) {
+      // a site path outside the lab (BCPSS bridges, the Teacher Tools front pages under lp/): its folder must exist
+      assert.ok(siteOnDisk(r), `${r} is a site folder with an index.html`);
+      continue;
+    }
     assert.ok(opens(r), `${r}: "${stem(r)}" is not a view in main.js or a folder on disk`);
   }
   for (const [route, file, id] of CONTENT) {
@@ -144,8 +151,10 @@ test("no new file or route contains the substring teacher", () => {
   for (const f of readdirSync(new URL("src/intro/", LAB)))
     if (f.startsWith("site-guide")) assert.ok(!/teacher/i.test(f), f);
   for (const f of readdirSync(new URL("pictures/guide/", LAB))) assert.ok(!/teacher/i.test(f), f);
+  // Existing public site paths (Teacher Hub, BCPSS bridges) keep their names; new lab routes never say "teacher".
   for (const r of S.allGuideRoutes())
-    if (!r.startsWith("/access-teacher")) assert.ok(!/teacher/i.test(r), r);
+    if (!r.startsWith("/access-teacher") && !DIR.siteRoutes().includes(r))
+      assert.ok(!/teacher/i.test(r), r);
   for (const id of G.SECTION_IDS) assert.ok(!/teacher/i.test(id));
   for (const shot of M.SCREENSHOTS)
     assert.ok(existsSync(new URL(`pictures/guide/${shot.file}`, LAB)), shot.file);
@@ -153,7 +162,7 @@ test("no new file or route contains the substring teacher", () => {
 
 // ── audiences ─────────────────────────────────────────────────────────────────────────────────
 
-test("the directory: three plain groups, each entry a name, one sentence and a link that opens", () => {
+test("the directory: three groups (teacher and student split into steps), each entry a name, one sentence and a link", () => {
   assert.deepEqual(
     DIR.DIRECTORY.map((g) => g.id),
     ["teacher", "student", "family"],
@@ -170,6 +179,7 @@ test("the directory: three plain groups, each entry a name, one sentence and a l
     assert.ok(e.route.startsWith("/"), e.id);
     assert.doesNotMatch(e.route, FLIGHT_DECK, e.id);
     if (e.route.startsWith("/access-teacher/")) assert.ok(onDisk(e.route), `${e.route} exists`);
+    else if (e.site) assert.ok(siteOnDisk(e.route), `${e.id}: ${e.route} is a site folder`);
     else assert.ok(opens(e.route), `${e.id}: ${e.route} opens a lab view or a file on disk`);
   }
   // The surfaces a teacher looks for are all listed.
@@ -188,8 +198,17 @@ test("the directory: three plain groups, each entry a name, one sentence and a l
     "/family-tour/",
     "/practice-together",
     "/explore",
+    "/access-teacher/classroom/",
+    "/bcpss-teachers/",
   ])
     assert.ok(routes.includes(r), `${r} is in the directory`);
+  // Every entry of a group with steps belongs to one of its steps, so nothing silently drops off the page.
+  for (const g of DIR.DIRECTORY.filter((x) => x.subs)) {
+    const ids = new Set(g.subs.map((x) => x.id));
+    for (const e of g.entries) assert.ok(ids.has(e.sub), `${g.id}/${e.id} has a step`);
+  }
+  // The Teacher Tools front pages live on thelanguagepage.com only: off that host (this test) they are not listed.
+  assert.ok(!DIR.directoryGroups("teacher")[0].entries.some((e) => e.id === "teacher-tools"));
   // Choosing an audience keeps only that group; the Family Tour shows only on its own host.
   assert.deepEqual(
     DIR.directoryGroups("family").map((g) => g.id),
@@ -282,12 +301,13 @@ test("every audience, in English and Spanish, renders valid structure", async ()
           `${label}: alt`,
         );
       assert.doesNotMatch(doc.body.textContent, FLIGHT_DECK, label);
-      // every link is a lab link, the teacher entry, or a handout
+      // every link is a lab link, the teacher entry, a listed site path (BCPSS bridges), or a handout
       for (const a of doc.querySelectorAll("a[href]")) {
         const href = a.getAttribute("href");
         assert.ok(
           href.startsWith("/access-practice-lab/") ||
             href.startsWith("/access-teacher/") ||
+            DIR.siteRoutes().includes(href) ||
             href.startsWith("#"),
           `${label}: ${href}`,
         );
@@ -295,6 +315,7 @@ test("every audience, in English and Spanish, renders valid structure", async ()
           assert.ok(
             opens(href.replace("/access-practice-lab", "")) ||
               href.startsWith("/access-teacher/") ||
+              (DIR.siteRoutes().includes(href) && siteOnDisk(href)) ||
               /\.(pdf|docx)$/.test(href),
             `${label}: ${href}`,
           );

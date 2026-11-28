@@ -338,6 +338,16 @@ async function enter(page) {
   return false;
 }
 
+/** End the preview AND the vite process npx started. proc.kill() reaches only the npx wrapper: vite was left
+ * running on the port, and with --strictPort the next run of this gate failed with "port in use". */
+function stopPreview(proc) {
+  try {
+    process.kill(-proc.pid, "SIGTERM");
+  } catch {
+    proc.kill();
+  }
+}
+
 async function startPreview(port) {
   const proc = spawn(
     "npx",
@@ -345,6 +355,7 @@ async function startPreview(port) {
     {
       cwd: REPO,
       stdio: "ignore",
+      detached: true, // its own process group, so stopPreview can end npx and the vite it spawned
     },
   );
   const base = `http://127.0.0.1:${port}`;
@@ -354,7 +365,7 @@ async function startPreview(port) {
     } catch {}
     await new Promise((r) => setTimeout(r, 500));
   }
-  proc.kill();
+  stopPreview(proc);
   throw new Error("vite preview did not come up");
 }
 
@@ -478,7 +489,7 @@ async function main() {
           process.stderr.write(`  palette browser: ${done}/${lessons.length} lessons\n`);
       },
     });
-    preview?.proc.kill();
+    if (preview) stopPreview(preview.proc);
     if (r.skip) {
       const code = skipExit(
         `palette browser half: ${r.skip}`,

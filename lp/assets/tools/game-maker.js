@@ -1,7 +1,6 @@
 // Game Maker: pick a game style, paste words, preview live, export one offline .html file, a share link (the game
 // lives inside the link) with a QR code, or printable cards. Nothing is uploaded.
 import { $, copyText, decodeShare, download, encodeShare, escapeHtml, loadDraft, parseTable, saveDraft, toast } from "../lib.js";
-import qrcode from "../vendor/qrcode.js";
 
 const form = $("[data-gm-form]");
 const preview = $("[data-gm-preview]");
@@ -211,6 +210,8 @@ $("[data-gm-link]").addEventListener("click", async () => {
     return;
   }
   try {
+    // The QR encoder (56 KB) loads only when a teacher asks for a share link.
+    const { default: qrcode } = await import("../vendor/qrcode.js");
     const q = qrcode(0, "L");
     q.addData(url);
     q.make();

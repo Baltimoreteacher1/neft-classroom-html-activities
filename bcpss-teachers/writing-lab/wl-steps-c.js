@@ -478,6 +478,7 @@ export function stepRevise(root) {
         "Copy my paragraph",
       ),
     ),
+    workDownloads(reviseDone, { published: true }),
     h("h3", { class: "wl-sub" }, "Download my work"),
     h("p", { class: "wl-field__hint" }, "Your paragraph, plan and practice as a file you can print, edit or turn in."),
     workDownloads(reviseDone),

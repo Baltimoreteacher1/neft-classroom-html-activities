@@ -5610,6 +5610,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/access-teacher/classroom/",
+    title: "Classroom teachers — Teacher Hub",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/access-teacher/maker/",
     title: "Sheet & Card Maker — ACCESS Teacher Hub",
     category: "Tool",
@@ -6042,6 +6048,54 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/lp/",
+    title: "The Language Page · English for school, in your language",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lp/about/",
+    title: "About · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lp/access-guide/",
+    title: "ACCESS Guide · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lp/content/",
+    title: "Content + Language · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lp/practice/",
+    title: "Practice · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lp/search/",
+    title: "Search · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lp/styleguide/",
+    title: "Style guide · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lp/tools/",
+    title: "Teacher Tools · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/lumen-harbor/",
     title: "Lumen Harbor Graphic Novels",
     category: "Tool",
@@ -6438,6 +6492,18 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/teachers/",
+    title: "Teacher resources — The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/teachers/math-literacy/",
+    title: "Math Literacy & Fluency, K–8: a complete program for teachers",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/videos/",
     title: "Videos",
     category: "Tool",
@@ -6470,6 +6536,12 @@ export const ACTIVITIES = [
   {
     path: "/access-practice-lab/arcade/",
     title: "Activity Arcade · The Language Page",
+    category: "Practice",
+    unit: null,
+  },
+  {
+    path: "/access-practice-lab/audio-practice/",
+    title: "Audio Practice · The Language Page",
     category: "Practice",
     unit: null,
   },

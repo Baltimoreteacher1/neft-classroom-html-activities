@@ -156,6 +156,11 @@ export const EXPECTED = {
   },
   ...EXPECTED_C,
 };
+// K-2 starters are authored whole: one question per question block of the source starter.
+EXPECTED["k2-starters"] = async (ref) => {
+  const { findStarter } = await import("../access-practice-lab/src/content/k2-studio/index.js");
+  return findStarter(ref).activity.blocks.filter((b) => b.type === "question").length;
+};
 // Families added for the Create route sweep (tools/create-adapters-b.test.mjs has their faithfulness checks).
 const LAB = "/access-practice-lab/content";
 const sets = (n) => Math.ceil(n / 6);
@@ -210,7 +215,8 @@ export const LISTED = {
   "newsroom-prompts": 48,
   "reading-path": 15,
   "newcomer-packs": 14,
-  "quest-missions": 10,
+  "quest-missions": 17,
+  "k2-starters": 15,
   ...LISTED_C,
   ...(await listedA()),
 };

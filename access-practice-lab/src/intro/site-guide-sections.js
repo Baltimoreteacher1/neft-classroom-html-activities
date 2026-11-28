@@ -9,22 +9,33 @@ import { directoryGroups, ELSEWHERE } from "./site-guide-directory.js";
 import { AUDIENCES, GUIDE, HOME, SECTIONS, START_FACTS, START_STEPS, STARTERS } from "./site-guide-data.js";
 import { AREAS, FAQ, SCREENSHOTS, WAYS } from "./site-guide-more.js";
 
+const entryHTML = (I, e) =>
+  html`<li class="sg-entry" data-sg-entry="${e.id}">
+    ${linkHTML(e.route, I.TO(e.title), "sg-entry-name", e.site)}
+    <p>${I.TO(e.text)}</p>
+  </li>`;
+
+/** One audience group. Groups with `subs` show each step under its own small heading, in the order people use them. */
+function groupHTML(I, g) {
+  const body = g.subs
+    ? g.subs
+        .map((sub) => ({ sub, entries: g.entries.filter((e) => e.sub === sub.id) }))
+        .filter((x) => x.entries.length)
+        .map(
+          ({ sub, entries }) => html`<div class="sg-subgroup" data-sg-sub="${sub.id}">
+            <h3 class="sg-subhead">${I.TO(sub.title)}</h3>
+            <ul class="sg-entries">${entries.map((e) => entryHTML(I, e))}</ul>
+          </div>`,
+        )
+    : html`<ul class="sg-entries">${g.entries.map((e) => entryHTML(I, e))}</ul>`;
+  return html`<section class="sg-dir" id="sg-dir-${g.id}" data-sg-group="${g.id}" aria-labelledby="sg-dir-${g.id}-h">
+    <h2 id="sg-dir-${g.id}-h"><span class="sg-ic" aria-hidden="true">${icon(g.icon)}</span>${I.TO(g.title)}</h2>
+    ${body}
+  </section>`;
+}
+
 export function directoryHTML(I, audience) {
-  return html`${directoryGroups(audience).map(
-      (g) =>
-        html`<section class="sg-dir" id="sg-dir-${g.id}" data-sg-group="${g.id}" aria-labelledby="sg-dir-${g.id}-h">
-          <h2 id="sg-dir-${g.id}-h"><span class="sg-ic" aria-hidden="true">${icon(g.icon)}</span>${I.TO(g.title)}</h2>
-          <ul class="sg-entries">
-            ${g.entries.map(
-              (e) =>
-                html`<li class="sg-entry" data-sg-entry="${e.id}">
-                  ${linkHTML(e.route, I.TO(e.title), "sg-entry-name")}
-                  <p>${I.TO(e.text)}</p>
-                </li>`,
-            )}
-          </ul>
-        </section>`,
-    )}
+  return html`${directoryGroups(audience).map((g) => groupHTML(I, g))}
     <p class="sg-elsewhere">
       ${I.T("Looking for something else?", "¿Buscan otra cosa?")}
       ${ELSEWHERE.map((e, i) => html`${i ? " · " : " "}${linkHTML(e.route, I.TO(e.title), "sg-textlink")}`)}

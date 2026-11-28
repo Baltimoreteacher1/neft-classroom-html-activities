@@ -84,8 +84,18 @@ export function rt(tag, cls, text, attrs) {
 /** Activity text as plain text for aria-labels and speech fallbacks. */
 export const plainText = (text) => plainMath(String(text ?? "").replace(/\*\*/g, ""));
 
+// Picture characters (emoji) are for the eyes: a voice would read "red apple red apple red apple" before "How many
+// apples?" and give the count away, or say "dog face" before the word "dog". Speech skips them; the screen keeps them.
+const PICTURES = /[\p{Extended_Pictographic}\p{Regional_Indicator}\u{1F3FB}-\u{1F3FF}\u200d\ufe0e\ufe0f\u20e3]/gu;
+
 /** Activity text as speakable text. */
-export const spokenText = (text) => spokenMath(String(text ?? "").replace(/\*\*/g, ""));
+export const spokenText = (text) =>
+  spokenMath(
+    String(text ?? "")
+      .replace(/\*\*/g, "")
+      .replace(PICTURES, "")
+      .replace(/[ \t]{2,}/g, " "),
+  );
 
 let idCounter = 0;
 export const nid = (prefix = "sp") => `${prefix}-${++idCounter}`;

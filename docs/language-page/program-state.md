@@ -76,6 +76,19 @@ D7 band label, D8 language packs, D9 reviewers, D10 award targets, D11–D16.
 and what Joel decides. The official pages could not be read from the cloud container, so every program row is marked "confirm on the official page".
 Nothing is submitted. Tech & Learning "Best of 2026" is the only program with a deadline inside two months (2027-01-08, as summarized).
 
+**Lab CSS weight, measured (2026-11-27, nothing changed).** Of the 120 distinct stylesheets the shell links, none is dead: every one has class
+names the lab's code references. Attributing a sheet to the views that use it by class name is too coarse to prove anything, because generic names
+(card, button, row) appear in code that loads on every page: only 2 sheets (`demand.css` 3.8 KB, `vocab-curriculum.css` 2.3 KB, of about 1,600 KB raw)
+were provably used by three views or fewer. So the weight cannot be cut safely by analysis alone. The real fix is to load each view's sheet when
+that view opens (`ensureStylesheet`, as `city.css` already does) and check every one of the 113 views against screenshots; that needs a performance
+owner and a visual-regression harness, and a mistake shows students an unstyled page. Bundling the files into one would cut requests, not the
+385 KB of blocking CSS. The ratchet in `data/language-page-perf-budget.json` still holds the line.
+
+**Curriculum map (2026-11-27):** `curriculum-map.md` is generated from the content files: a grade-by-grade spine (Vocabulary Academy K-8, thematic units 3-8, phonics path),
+a band-by-band parity table, and the differences between bands, with a ratchet so no share can fall (`tools/language-page-curriculum-map.test.mjs`). It shows that
+bands K-3 have no thematic units, no `picture` field with alt text and no listen-for cues, and that 19% (3-5) and 11% (6-8) of activities sit in a unit. Whether
+each difference is a gap is a curriculum decision for Joel and a reviewer; nothing was authored.
+
 ## Not started
 WS2 chrome-budget browser gate and the newcomer door · WS3 curriculum spine, crosswalks, phonics single scope, backfilling tags (a reviewer's job, H-03), K–2 parity,
 sustained reading · WS4 recorded audio (H-19), Spanish activity titles and review (the grade 3–8 directions already exist in `es-guide.json`; audit E3 corrected), language packs, SLIFE path · WS5 writing volume and
@@ -96,3 +109,14 @@ sessions (`usability-protocol.md`), agree the pilot (`efficacy-plan.md`, `pilot-
 | Cloudflare changes how it injects Web Analytics | low | privacy text untrue | live gate in the release routine; H-15 fallback |
 | CI still too slow at 75 min | medium | gate cancelled again | split the test suite; do not shrink the budget |
 | Machine-drafted Spanish published as reviewed | medium | trust | draft labels; H-05 and H-13 |
+
+## Leveled writing assignments (2026-11-27)
+
+A teacher can choose a **support level 1–6** for any Writing Studio task (`?level=N` on the writing link, or the
+"Writing assignment" block in the Teacher Hub's Plan & assign builder). The plan is cut only from the task's own authored
+frames, word bank, model and Spanish glosses (`access-practice-lab/src/lang/write-level.js`): level 1 offers frames, Spanish
+words and directions, a model and a shorter length; level 3 sentence starters; levels 5–6 no frames and the full length.
+Learners see "Support level N" only. The teacher sees the six names, six copy-link buttons, a printable sheet per level and a
+six-level comparison (`sheet=level&level=N`, `sheet=levels`). The level is the teacher's choice. It is not an official WIDA
+level or score, and it is never inferred from a student's work. Checks: `tools/access-write-levels.test.mjs`,
+`tools/access-write-levels-e2e.mjs`.

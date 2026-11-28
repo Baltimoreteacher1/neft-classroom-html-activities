@@ -267,6 +267,7 @@ export const PRINT_PARTS = [
   "writing",
   "writing-key",
   "writing-work",
+  "writing-published",
   ...ROUTINE_PART_IDS,
 ];
 const KITS = new Set(["cards", "bingo", "wall", "poster", "strips", "talk"]);
@@ -295,6 +296,7 @@ function buildStudioDocumentBody(
   if (part === "writing") return buildWriting(detail, opts);
   if (part === "writing-key") return buildWritingKey(detail, opts);
   if (part === "writing-work") return buildWritingWork(detail, opts);
+  if (part === "writing-published") return buildWritingWork(detail, { ...opts, published: true });
   if (!detail?.studio) throw new Error("studio content not authored for this unit");
   if (isRoutinePart(part)) return buildRoutinePart(detail, opts);
   if (part === "packet") return buildPacket(detail, opts);

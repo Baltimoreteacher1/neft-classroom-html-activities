@@ -118,6 +118,17 @@ try {
   });
   const session = attached.sessionId;
   await send("Runtime.enable", {}, session);
+  // Emulate the phone explicitly and reload. `--window-size=390,844` is a request, not a guarantee: headless
+  // Chrome on Linux clamps the window to a 500 px minimum width (the viewport came out 500 x 701), where the
+  // shared dock really does sit over the start button, so the first measurement judged a viewport that is not
+  // the 390 px phone this test is about. The 360 px check below already emulates; this one now does too.
+  await send(
+    "Emulation.setDeviceMetricsOverride",
+    { width: 390, height: 844, deviceScaleFactor: 1, mobile: false },
+    session,
+  );
+  await send("Page.enable", {}, session);
+  await send("Page.reload", {}, session);
   await new Promise((resolveWait) => setTimeout(resolveWait, 1500));
 
   const initial = await evaluate(

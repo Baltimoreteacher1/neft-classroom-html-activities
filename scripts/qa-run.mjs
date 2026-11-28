@@ -266,6 +266,14 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // PRACTICE / FAMILY / ASSIGNMENTS (PFA): the Pages-Function-rendered /lessons/<id>/practice, /family-guide,
+  // /assignment pages and /practice-hub/. Before this rule a change here fell through to the broad `functions/`
+  // rule (test + data-contracts) and never ran validate:pfa; a change to the bundle builder or the gate escalated
+  // to the full sweep. validate:pfa rebuilds and --checks the generated bundle, so it covers the builder too.
+  [
+    /^(functions\/_lib\/pfa\/|functions\/(lessons|practice-hub)\/\[\[path\]\]\.js$|scripts\/pfa\/|tools\/pfa\/|data\/(practice|family)\/|data\/assignments\.json$|docs\/PRACTICE_FAMILY_ASSIGNMENTS_REPORT\.md$)/,
+    ["validate:pfa", "validate:pfa-browser", "test", "validate:js-syntax", "check"],
+  ],
   // CONTENT REVIEW (Prompt 3): the review workflow, queue, provenance badges and release trains. Migration 0022,
   // the review library and API, the review modules of the content schema, the Studio's review views and their
   // tests. `bundle-syntax` proves the Functions still compile; the privacy pair covers the new tables.
@@ -321,6 +329,14 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // The Language Page front layer (thelanguagepage.com): generated pages in lp/, their generator, data and gates in
+  // tools/lp/, and the generated route table. validate:lp is the browser-free half of check:lp (links, URL
+  // preservation, no purple, content, math, privacy, disclaimer, i18n, freshness); `npm run check:lp` adds axe,
+  // Lighthouse, network, exports and visual checks before a ship.
+  [
+    /^(lp\/.*|tools\/lp\/.*|docs\/lp\/.*|functions\/_lib\/lp-(front|routes)\.js)$/,
+    ["validate:lp", "validate:js-syntax", "check"],
+  ],
   [
     /^((language-adventures|language-studio)\/.*|data\/static-app-mounts\.json|curriculum\/index\.html|functions\/_lib\/language-page\.js|functions\/language-page-host\.test\.mjs)$/,
     ["validate:static", "validate:catalog", "test", "check"],
@@ -334,7 +350,7 @@ const COVERAGE = [
   // registry, the AI model cards, the performance budget, and the /method page. Tests run in npm test; the browser pieces
   // run inside validate:access-lab.
   [
-    /^(tools\/(generate-language-page-(tag-coverage|audio-manifest)|language-page-(tag-coverage|audio|ai-cards)\.test|validate-language-page-performance|access-method-e2e)\.mjs|data\/language-page-(perf-budget|tag-coverage-baseline|audio-manifest|audio-recordings)\.json|access-practice-lab\/(content\/metadata\/vocab\.json|src\/views\/method\.js)|docs\/language-page\/(ai-model-cards|coverage-matrix)\.md)$/,
+    /^(tools\/(generate-language-page-(tag-coverage|audio-manifest|curriculum-map)|language-page-(tag-coverage|audio|ai-cards|curriculum-map)\.test|validate-language-page-performance|access-method-e2e)\.mjs|data\/language-page-(perf-budget|tag-coverage-baseline|audio-manifest|audio-recordings|parity-baseline)\.json|access-practice-lab\/(content\/metadata\/vocab\.json|src\/views\/method\.js)|docs\/language-page\/(ai-model-cards|coverage-matrix|curriculum-map)\.md)$/,
     ["validate:access-lab", "test", "check"],
   ],
   // THE LANGUAGE PAGE TRUST GATES: what the host sends over the network, what its copy claims, and what its docs say
@@ -708,7 +724,16 @@ const COVERAGE = [
   ],
   [
     /^(access-practice-lab\/|access-teacher\/|access-expedition\/|access-family-expedition\/|access-family-tour\/|docs\/access-reading-room-2\/|docs\/languageos\/(intro-curated-activities|pd-presenter-notes)\.md$|scripts\/generate-intro-guide\.mjs$|tools\/paper-passport\/|tools\/(generate-intro-curated-list|access-lab-(?:integrity|baseline|inventory)|access-intro-[a-z-]+-e2e|access-intro-e2e|access-tour2-e2e|validate-access-units|validate-access-game-studio|access-game-studio-e2e|access-language-city-e2e|access-living-studio-e2e|access-move-e2e|access-move|access-path-e2e|(?:demand|teach-back|claim-check|teacher-links)-e2e|lib\/lab-e2e|access-experience-e2e|access-axe-sweep|access-hall-art|access-visual-qa|validate-access-lab|access-lab-index|access-lab-e2e|access-grade-focus-e2e|access-engagement-e2e|access-studio-e2e|studio-customize-e2e|access-lingua-e2e|access-publisher-e2e|access-reality-e2e|access-lab-sweep|validate-publisher-journey|access-evidence-e2e|access-predictive-e2e|access-family-e2e|access-journey-e2e|access-journey-routes-e2e|gen-journey-inventory|access-es-leak-scan|generate-access-printables|gen-access-inventory|sync-access-shell|bundle-access-styles|access-critical-styles(?:-e2e|\.test)?|validate-reading-room|validate-reading-adventures|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads|access-comfort-e2e|access-reader-e2e)\.mjs$|tools\/lib\/(access-units-rules|access-lab-content|access-early-rules|access-serve|access-hub|journey-routes|journey-inventory-rows)\.mjs$|tools\/access-early-content\/[a-z0-9-]+\.mjs$|tools\/build-access-(?:early|g68)-content\.mjs$|tools\/access-early-[a-z-]+\.test\.mjs$|tools\/(access-acc-[a-z-]+\.(test\.)?mjs|validate-access-bank\.mjs)$|\.access_upgrade_(state\.json|checkpoint\.md)$|tools\/(access-reader|access-language-city|access-lab|access-grade-focus|access-living-studio|access-path|access-move|access-design-system|access-engagement|access-skill-graph|access-teacher-evidence|access-i18n|access-calibration|access-evidence-tools|access-student-tools|access-game-studio-contract|access-reality|access-journey|access-predict|access-units|access-experience|access-intro)[^/]*\.test\.mjs$)/,
-    ["validate:access-lab", "test", "validate:js-syntax", "check"],
+    // validate:language-page-performance is also inside validate:access-lab, a ~35 minute chain that nobody
+    // waits for, so the lab shell's weight budget was overrun three times in one day (385.1 -> 386.1 KB) with
+    // every commit green. It is browser-free and takes 0.2 s, so it is named here to run on every lab change.
+    [
+      "validate:access-lab",
+      "validate:language-page-performance",
+      "test",
+      "validate:js-syntax",
+      "check",
+    ],
   ],
 
   // TEACHER UPGRADES (vocabulary sets, assignment status, book editions, presentation mode) — the unit tests are in `npm test`; the browser test needs a server, so (like the other
@@ -721,6 +746,12 @@ const COVERAGE = [
   // CREATE (Project Studio): the coverage sweep, browser e2e and export lab need a server, Chromium or LibreOffice, so they
   // are run by hand before shipping (see access-practice-lab/CREATE.md); the unit test is in `npm test`.
   [/^tools\/create-(coverage|e2e|export-lab)\.mjs$/, ["test", "validate:js-syntax", "check"]],
+  // ACTIVITY STUDIO: the customize-adapter sweep's shared helpers (read by the adapter tests in `npm test`) and the K-2
+  // starters browser run (needs Chromium; run by hand before shipping: `node tools/studio-k2-e2e.mjs`).
+  [
+    /^tools\/(studio-customize-adapters-helpers|studio-k2-e2e)\.mjs$/,
+    ["test", "validate:js-syntax", "check"],
+  ],
   [
     /^tools\/(vocab-sets|assign-status|book-editions|present-mode)-e2e\.mjs$|^tools\/vocab-sets\.test\.mjs$/,
     ["test", "validate:js-syntax", "check"],

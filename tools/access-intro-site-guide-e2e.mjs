@@ -11,6 +11,7 @@
  * A missing browser is a SKIP locally and a FAIL in CI.
  */
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { serveAccess } from "./lib/access-serve.mjs";
 
 let chromium;
@@ -272,8 +273,20 @@ await check(
       if (/\.(pdf|docx|png)$/.test(raw)) continue;
       const lab = raw.replace(LAB, "");
       if (raw.startsWith("/access-teacher/")) continue;
+      if (raw === "/tools/") {
+        // Teacher Tools: front-layer pages production serves from lp/ (functions/_lib/lp-front.js), not this server
+        assert.ok(existsSync(new URL("../lp/tools/index.html", import.meta.url)), raw);
+        opened += 1;
+        continue;
+      }
       const res = await p.goto(`${base}${raw}`, { waitUntil: "networkidle" });
       await p.waitForTimeout(150);
+      if (raw.startsWith("/bcpss-teachers/")) {
+        // the BCPSS curriculum bridges: a site page of its own, not a lab view
+        assert.equal(res?.status(), 200, raw);
+        opened += 1;
+        continue;
+      }
       if (new URL(p.url()).pathname === `${LAB}/family-tour/`) {
         // a static page of its own, not a lab view (on this host /practice-together opens it too)
         assert.equal(res?.status(), 200, raw);

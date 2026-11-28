@@ -61,14 +61,22 @@ function axisTicks(sx, y, min, max, step, labelEvery = 1) {
 
 const R = {};
 
+// A part is { v, l } or a bare number (some authored refreshers write parts: [4, 4, 4]). A part whose
+// value is symbolic ("12t") has no length of its own, so every part in that diagram is drawn equal.
+const tapePart = (p) => (p && typeof p === "object" ? p : { v: p, l: p });
 R.tape = (s) => {
-  const rows = s.rows || [{ label: s.label || "", parts: s.parts, total: s.total }];
+  const raw = s.rows || [{ label: s.label || "", parts: s.parts, total: s.total }];
+  const symbolic = raw.some((r) => r.parts.some((p) => !Number.isFinite(Number(tapePart(p).v))));
+  const rows = raw.map((r) => ({
+    ...r,
+    parts: r.parts.map(tapePart).map((p) => (symbolic ? { ...p, w: 1 } : { ...p, w: Number(p.v) })),
+  }));
   const W = 640;
   const left = 110;
   const width = W - left - 20;
   const rowH = 56;
   let body = "";
-  const maxTotal = Math.max(...rows.map((r) => r.parts.reduce((a, p) => a + Number(p.v || 0), 0)));
+  const maxTotal = Math.max(...rows.map((r) => r.parts.reduce((a, p) => a + (p.w || 0), 0)));
   rows.forEach((row, ri) => {
     const y = 20 + ri * (rowH + 18);
     const sum = row.parts.reduce((a, p) => a + Number(p.v || 0), 0);
@@ -76,8 +84,9 @@ R.tape = (s) => {
     let x = left;
     body += tx(row.label, 10, y + rowH / 2 + 6, 'class="mv-label"');
     row.parts.forEach((p, pi) => {
-      const w = sx(Number(p.v)) - left;
-      body += `<g class="mv-step" data-step="${ri * 10 + pi + 1}" data-v="${Number(p.v)}"><rect class="mv-part${p.shade ? " is-shaded" : ""}" x="${x}" y="${y}" width="${Math.max(w, 2)}" height="${rowH}" rx="6"/>${p.l !== "" && p.l != null ? tx(p.l, x + w / 2, y + rowH / 2 + 6, 'class="mv-in" text-anchor="middle"') : ""}</g>`;
+      const w = sx(p.w) - left;
+      const dv = Number.isFinite(Number(p.v)) ? ` data-v="${Number(p.v)}"` : "";
+      body += `<g class="mv-step" data-step="${ri * 10 + pi + 1}"${dv}><rect class="mv-part${p.shade ? " is-shaded" : ""}" x="${x}" y="${y}" width="${Math.max(w, 2)}" height="${rowH}" rx="6"/>${p.l !== "" && p.l != null ? tx(p.l, x + w / 2, y + rowH / 2 + 6, 'class="mv-in" text-anchor="middle"') : ""}</g>`;
       x += w;
     });
     if (row.total != null && row.total !== "")
@@ -87,7 +96,7 @@ R.tape = (s) => {
         y - 4,
         'class="mv-num" text-anchor="end"',
       );
-    body += `<desc>${esc(`${plain(row.label)}: ${row.parts.map((p) => p.v).join(" + ")} = ${sum}`)}</desc>`;
+    body += `<desc>${esc(`${plain(row.label)}: ${row.parts.map((p) => p.v).join(" + ")}${symbolic ? "" : ` = ${sum}`}`)}</desc>`;
   });
   const H = 20 + rows.length * (rowH + 18);
   return frame(

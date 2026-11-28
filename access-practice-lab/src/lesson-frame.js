@@ -5,7 +5,8 @@
 // per-skill data in content/lesson-learn.json; no activity was edited to use it.
 // Rules it keeps: "Try independently" renders no key words, model or language frame; nothing here states a
 // level, a score or a prediction; the only thing saved is which skill lessons were seen and what helped.
-import { asList, html, icon, raw } from "./util.js";
+import { listeningSegments } from "./learning.js";
+import { asList, html, icon, raw, toHtml } from "./util.js";
 
 export const FRAME_KEY = "accessPracticeLab:lessonFrame:v1";
 export const STEPS = [
@@ -212,6 +213,38 @@ export const printHeadHTML = (I, title) =>
     </p>
     <p class="lf-print-title">${title}</p>
   </div>`;
+/**
+ * Print-only story text for a Listening activity: on screen the story is heard, not shown, so a printed page
+ * would have the question with nothing to answer from. Dialogues print one speaker turn per line.
+ * The page only carries an empty slot: the text is written in on "beforeprint" and removed on "afterprint", so
+ * the heard words are never in the page while a learner is answering (no reading the answer instead of listening).
+ */
+const printStories = new Map();
+export function storyPrintHTML(I, activity) {
+  if (!listeningSegments(activity?.script).length) return "";
+  printStories.set(String(activity.id), { I, activity });
+  return html`<section class="story-print" data-story-print="${activity.id}"></section>`;
+}
+export function storyPrintBody(I, activity) {
+  const parts = listeningSegments(activity?.script);
+  if (!parts.length) return "";
+  const turns = parts[0].kind === "turn";
+  return html`<p class="story-print-label">
+      ${I.T("The story (read aloud to the student, or read it together)", "El cuento (léelo en voz alta al estudiante, o léanlo juntos)")}
+    </p>
+    ${turns ? parts.map((p) => html`<p lang="en">${p.text}</p>`) : html`<p lang="en">${parts.map((p) => p.text).join(" ")}</p>`}`;
+}
+/** Fill (on) or empty (off) every story slot on the page. Exported for tests; wired to the print events below. */
+export function fillStoryPrint(on, doc = globalThis.document) {
+  for (const slot of doc?.querySelectorAll?.("[data-story-print]") || []) {
+    const story = printStories.get(slot.dataset.storyPrint);
+    slot.innerHTML = on && story ? toHtml(storyPrintBody(story.I, story.activity)) : "";
+  }
+}
+if (typeof window !== "undefined" && window.addEventListener) {
+  window.addEventListener("beforeprint", () => fillStoryPrint(true));
+  window.addEventListener("afterprint", () => fillStoryPrint(false));
+}
 export const printFootHTML = (I) =>
   html`<p class="lf-print-foot">
     ${I.T("Practice sheet. This is not an official WIDA or ACCESS test and gives no score or level.", "Hoja de práctica. No es una prueba oficial de WIDA ni de ACCESS y no da puntaje ni nivel.")}

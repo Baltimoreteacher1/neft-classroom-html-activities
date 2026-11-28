@@ -149,12 +149,23 @@ browser suites; `npm run check:pfa` runs both. The brief asked for the gates in 
 - **17 learning objectives** (1-1 to 1-6, 4-1 to 4-5, 10-1 to 10-6) had no Spanish anywhere. I
   wrote them (`data/practice/_objectives-es.json`). They render with
   `data-translation="needs-review"` and **need a native reviewer**.
-- **Per-choice Spanish wrong-answer feedback** is rarely authored in the source configs (25 of 784
-  items). Where it is missing, the Spanish feedback is the taxonomy's authored Spanish message for
-  that misconception, or the item's own Spanish hint. English shows the item's specific feedback.
-  This is not machine translation, but it is less specific than the English. Counts by unit
-  (taxonomy / hint): 1: 40/47, 2: 78/138, 3: 69/129, 4: 39/57, 5: 55/152, 6: 111/174, 7: 26/184,
-  8: 118/44, 9: 31/113, 10: 14/70.
+- **Per-choice Spanish wrong-answer feedback** is rarely authored in the source configs. Where an
+  item has specific English feedback (`choiceFeedback`) but no Spanish, the Spanish now comes from
+  `data/practice/_feedback-es.json`: 1,108 machine-assisted translations of those exact English
+  lines, written against `docs/family-homework-v3/es-style-guide.md` (tú register, the glossary
+  terms such as "parte a total" and "tasa unitaria", `60%`). Before this, a Spanish speaker who
+  picked a wrong answer saw a general hint where English named the mistake. `validate:pfa` checks
+  every line: the same set of numbers as the English (none dropped, none added), not the English
+  copied over, the family Spanish style detectors, and no stale entry. Six seeded defects prove
+  those checks fire. 701 of these lines show on the practice pages, where students get instant
+  feedback. The other 407 belong to assignment items, which are graded paper work and show no
+  per-answer feedback, so no page displays them today. Where an item has no specific English
+  either, both languages show the taxonomy message or the item's hint. These translations are
+  **machine-assisted and need native review**.
+- Translating the feedback turned up one wrong English line in the source. Lesson 7-8, "reflect
+  (3, -6) across the x-axis", told a student who picked (-3, -6) that they had changed both signs.
+  They changed only x, which is a reflection across the y-axis. Fixed in `lessons/7-8/config.json`,
+  its group 2 variant, the 7-8 Studio page and `data/homework-feedback-spanish.json`.
 - 344 source items were skipped because they had no Spanish. 9 orphan misconception tags in source
   items were dropped, not propagated.
 - 488 of 1,340 problems carry the lesson's main misconception tag (from its generator) because the
@@ -266,10 +277,86 @@ All of these reproduce on a clean `origin/main`.
   trace to this work. The "Claude pre-deploy verification" run hit an API usage limit (429), and
   the rest reproduce on `main` or are base drift; details are in the PR comment.
 
+## 10b. Decisions made after "you decide everything"
+
+- **`/lessons/<id>/homework` stays the family homework page; nothing redirects to the new
+  template.** It is a different product: the Family Math Studio page with its own v3 content, held
+  by about 20 gates. The Family Take-Home Sheet QR codes, the homework SCORM packages in Canvas and
+  families' bookmarks all point at it. Pointing that URL at the new practice page would change
+  what all of those open, and the CLAUDE.md rule on existing URLs exists because of the
+  2026-08-25 `/curriculum/` revert. The new pages stay at `/practice`, `/family-guide` and
+  `/assignment`, linked from the units page and `/practice-hub/`.
+- **Spanish feedback translated** (section 7) rather than left on the fallbacks.
+- **Spanish objectives:** reviewed against the style guide and left as written, still marked
+  needs-review, because no native speaker has checked them.
+- **Baltimoreteacher1/neft-classroom-html-activities#234 closed** with a comment. Its content is
+  on `main`.
+
+## 10c. Closing the loop: mistake coach, class codes, spiral review (2026-11-28)
+
+Three additions, each closing a loop the pages left open.
+
+- **Mistake-pattern coach.** Every wrong answer that matches a known mistake is recorded (as an
+  index into the misconception taxonomy, so the save stays small: 624 characters for a full 6-6
+  run, against the 4,096 SCORM ceiling). The finish card now names the top one or two in plain
+  words, English and Spanish, with the taxonomy's own student message. "Try one where this mistake
+  is tempting" builds a fresh problem whose wrong answers include that exact mistake. It is offered
+  only for mistakes a generator on the page can actually build; otherwise the button is an ordinary
+  "Try a similar problem" with no claim attached.
+- **Class Insight codes.** The finish card shows a 15-character code (`XXXXX-XXXXX-XXXXX`) holding
+  the lesson, first-try score, confidence, problems to revisit, up to three misconception tags and
+  the spiral-review result, with a CRC-8. It holds no name. A teacher pastes a class's codes (names
+  or other text on the same line are fine) into the new `/practice-hub/insights`, linked from the
+  practice hub. The page shows, per lesson: students, first-try average, average confidence, the
+  score spread, the problems most often missed and the misconceptions ranked, each with the
+  taxonomy's "watch for" teacher move. It decodes in the browser; nothing is sent or stored. Every
+  single-character typo is refused (465 of 465 tested), so a mistyped code is listed as unreadable
+  instead of being read as a different result. "Try with sample codes" fills a made-up class of 24,
+  labelled as sample data.
+- **Spiral review ("Keep it fresh").** Each practice page adds two problems from lessons taught
+  EARLIER in the district pacing order (`data/pacing-unit-ranges.json`: 1, 3, 4, 6, 7, 8, 9, 5, 2,
+  10): the lesson just before and one about six lessons back. They never use the lesson's own
+  generator, never change the score, and carry their own lesson's hints and worked example. 83 of 84
+  lessons get them (1-1 is first in the year). They are screen-only, so the printed set keeps its
+  two-page budget.
+- **Gates.** `validate:pfa` gained REVIEW and CODES with four seeded defects;
+  `tools/pfa/insight-code.test.mjs` (in `npm test`) round-trips 5,000 results; `validate:pfa-browser`
+  drives the whole loop (a deliberate wrong answer, the coach naming it, the code decoding, a typo
+  refused, the Spanish class summary) and runs axe on the finish card and the insights page.
+
+## 10d. Premium graphics and interaction layer (2026-11-28)
+
+Screen-only (every piece is `.no-print`, so the print budgets are unchanged). Markup in
+`functions/_lib/pfa/premium.js`, behaviour in `functions/_lib/pfa/client-premium.js` (concatenated
+after `client-runtime.js` into both inline bundles), styles in `design-system.css`. No problem,
+answer, standard or image changed.
+
+- **Homework (`/lessons/<id>/practice`, all 84):** a progress trail in the header, one stop per
+  counted problem (a link to it; check when solved, star when solved first try, ring on the next
+  one), a medal gate between tiers and a finish flag; three tier medals that unlock (with a shine)
+  when every problem in a tier is solved, plus an inline "medal earned" card; step pips on the
+  worked-example player; a per-problem scratch pad (canvas, three pens, eraser, grid, undo, clear;
+  not saved, not checked); a finish trophy and a ring chart of first try / after another try / not
+  solved yet.
+- **Family guide (`/lessons/<id>/family-guide`, all 84):** "Tonight's plan", four illustrated steps
+  with Done toggles and a plant that grows one stage per step and blooms when all four are done
+  (saved as `ewl_pfa_<id>_fam`, annotated in the privacy inventory); a checked-answers meter on
+  "Try it together" that completes the Try step; conversation starters as a swipeable card deck
+  (arrows and buttons too; the list prints as before).
+- **Family hubs:** each unit page shows "Our unit path" with a check on every lesson whose plan was
+  finished on this device; the family index shows unit art and a per-unit meter; the unit letter
+  shows the unit art on screen.
+- **Living art:** the people in the scenes breathe and the unit badge bobs (stops under reduced
+  motion like everything else).
+- **Fix found by the sweep:** the tape-diagram renderer read only `{ v, l }` parts, so the
+  refreshers of 6-3, 6-12 and 6-15 (bare-number parts) and 6-5 (a symbolic `12t` part) drew
+  `NaN` rectangles on screen and in print. Bare numbers are now parts; a symbolic part draws all
+  parts equal.
+
 ## 11. Next 10
 
-1. Decide whether `/lessons/<id>/homework` should become the new template (section 1).
-2. Native-speaker review of the 17 objectives and of the per-choice Spanish feedback fallbacks.
+1. Done in 10b: `/lessons/<id>/homework` stays as it is (decision and reasons in 10b).
+2. Native-speaker review of the 17 objectives and the 1,108 translated feedback lines.
 3. Author per-choice Spanish feedback (`choiceFeedbackEs`) in the lesson configs. The compiler
    picks it up automatically.
 4. Add a tape-diagram input item (number-line and table-completion inputs shipped in 10a).

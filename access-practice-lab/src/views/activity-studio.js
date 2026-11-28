@@ -12,6 +12,7 @@ import { SUBJECTS } from "../studio/core/curriculum.js";
 import { ID_RE, getLocal, knownClasses, listLocal, newActivityId, saveLocal, siteKey } from "../studio/drafts.js";
 import { KIND_IDS, chooseScreen, contentScreen } from "../studio/editor/create.js";
 import { mountEditor } from "../studio/editor/shell.js";
+import { k2Callout, k2Screen } from "../studio/editor/k2-starters.js";
 import { chooserScreen, customizeCallout } from "../studio/editor/source-chooser.js";
 import { fetchJson, handoff } from "../studio/editor/source-banner.js";
 import { h, say } from "../studio/editor/ui.js";
@@ -19,7 +20,7 @@ import { mountLibrary } from "../studio/library.js";
 import { BASE, html, storage } from "../util.js";
 
 const HOME = `${BASE}/activity-studio`;
-const GOTO = { mine: `${HOME}/mine`, new: `${HOME}/new`, customize: `${HOME}/customize`, edit: (id) => `${HOME}/${id}` };
+const GOTO = { mine: `${HOME}/mine`, new: `${HOME}/new`, customize: `${HOME}/customize`, k2: `${HOME}/k2`, edit: (id) => `${HOME}/${id}` };
 const WELCOME_KEY = "accessPracticeLab:v1:studio-welcome";
 
 let current = null; // { destroy }
@@ -55,11 +56,11 @@ export async function render(ctx) {
   const { id } = ctx.route;
   return {
     title,
-    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/`], [title, id ? HOME : null], ...(id === "mine" ? [[I.S("My activities", "Mis actividades"), null]] : [])])}
+    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/`], [title, id ? HOME : null], ...(id === "mine" ? [[I.S("My activities", "Mis actividades"), null]] : []), ...(id === "k2" ? [[I.S("K-2 starters", "Inicio rápido K-2"), null]] : [])])}
       <div
         class="st-root"
         id="st-root"
-        data-studio="${id === "mine" || id === "customize" || ID_RE.test(id) ? id : "create"}"
+        data-studio="${id === "mine" || id === "customize" || id === "k2" || ID_RE.test(id) ? id : "create"}"
       >
         <p class="st-loading" role="status">${I.S("Loading…", "Cargando…")}</p>
       </div>`,
@@ -102,6 +103,11 @@ export async function mount(rootEl, ctx) {
     return;
   }
   if (id === "customize") return mountCustomize(host, { S, q, nav });
+  if (id === "k2") {
+    host.replaceChildren(k2Screen({ S, q, onUse: (ref) => nav(`${GOTO.customize}?family=k2-starters&ref=${encodeURIComponent(ref)}`) }));
+    host.querySelector("h1")?.focus();
+    return;
+  }
   if (id === "mine") {
     current = {
       destroy() {},
@@ -161,7 +167,11 @@ export async function mount(rootEl, ctx) {
             onDismissWelcome: () => (storage.set(WELCOME_KEY, "1"), redraw()),
           }),
     );
-    if (!wizard.kind) host.append(customizeCallout({ S, onGo: () => nav(GOTO.customize) }));
+    // K-2 starters lead the home page so a teacher of young children finds them first; customizing follows the kinds.
+    if (!wizard.kind) {
+      host.prepend(k2Callout({ S, onGo: () => nav(GOTO.k2) }));
+      host.append(customizeCallout({ S, onGo: () => nav(GOTO.customize) }));
+    }
   };
   function onCreate(res) {
     const activity = {

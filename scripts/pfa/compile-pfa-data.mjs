@@ -17,6 +17,7 @@
 // an item without complete Spanish is never selected: the brief allows no missing ES strings.
 // A file with "authored": true (hand-polished, e.g. 6-6) is left alone unless --force.
 
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -36,6 +37,16 @@ const taxonomy = read("data/misconception-taxonomy.json").taxonomy;
 const glossary = read("data/family-glossary.json").terms;
 const titlesEs = read("data/family-homework-titles-es.json");
 const objectivesEsReview = read("data/practice/_objectives-es.json");
+// Spanish for the item-specific wrong-answer feedback the configs carry in English only
+// (choiceFeedback without choiceFeedbackEs). Keyed by feedbackKey(); machine-assisted, so every
+// use is counted as needs-review. An entry no item uses is a stale translation: validate:pfa fails.
+const feedbackEs = read("data/practice/_feedback-es.json");
+export const feedbackKey = (lessonId, stem, choice) =>
+  `${lessonId}|${createHash("sha1")
+    .update(`${String(stem).trim()}\u0000${String(choice).trim()}`)
+    .digest("hex")
+    .slice(0, 10)}`;
+const feedbackEsUsed = new Set();
 // Spanish objective: the lesson's own Practice Studio target, else a reviewed-pending translation.
 function objectiveEs(id) {
   const studio = `data/practice-studio/${id}.json`;
@@ -162,9 +173,10 @@ const stats = {
   itemsSkippedNoSpanish: 0,
   whyEsFromTaxonomy: 0,
   whyEsFromHint: 0,
+  whyEsFromTranslation: 0,
 };
 
-function mcChoices(it) {
+function mcChoices(it, lessonId) {
   const choicesEs = it.choicesEs || it.choices.map((c) => (wordy(c) ? null : c));
   if (choicesEs.some((c) => c == null)) return null;
   return it.choices.map((c, i) => {
@@ -174,7 +186,14 @@ function mcChoices(it) {
     const tag = correct ? null : validTag(tagRaw);
     let whyEs = it.choiceFeedbackEs?.[i];
     let whyEsSource = "authored";
-    if (!correct && !whyEs) {
+    const fbKey = feedbackKey(lessonId, it.stem, c);
+    if (!correct && !whyEs && it.choiceFeedback?.[i] && feedbackEs[fbKey]) {
+      // The English line names this exact mistake; its translation beats the general message.
+      whyEs = feedbackEs[fbKey];
+      whyEsSource = "translated";
+      feedbackEsUsed.add(fbKey);
+      stats.whyEsFromTranslation++;
+    } else if (!correct && !whyEs) {
       if (tag && taxonomy[tag].studentEs) {
         whyEs = taxonomy[tag].studentEs;
         whyEsSource = "taxonomy";
@@ -223,7 +242,7 @@ function convert(it, tier, std, lessonId, idx) {
   };
   if (it.type === "multiple-choice") {
     if (!it.stemEs || !it.explanationEs) return { skip: "no Spanish stem/explanation" };
-    const choices = mcChoices(it);
+    const choices = mcChoices(it, lessonId);
     if (!choices) return { skip: "choices need Spanish" };
     const solution = { en: sentences(it.explanation), es: sentences(it.explanationEs) };
     const tags = choices.map((c) => c.tag).filter(Boolean);

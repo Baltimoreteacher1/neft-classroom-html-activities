@@ -25,6 +25,8 @@ collection. The lab, the Teacher Hub, the WIDA studios and BCPSS bridges keep ev
 - **Change wording in the interface:** `tools/lp/data/i18n.json` (English and Spanish together; G-12 fails on a missing language).
 - **Preview locally:** `node tools/lp/server.mjs` and open http://localhost:4810/.
 - **Check production after a deploy:** `node tools/lp/check.mjs --live --base https://thelanguagepage.com`.
+- **Fast check on every change:** `npm run validate:lp` (the nine browser-free gates, about 2 seconds; part of the repo's
+  `npm run validate`). Run the full `npm run check:lp` before a ship.
 
 ## Gates (`npm run check:lp`)
 
@@ -35,11 +37,11 @@ its detector on a known-bad fixture and FAILS if that control passes.
 | --- | --- |
 | G-01 | Every internal link on every page resolves (front pages, assets, or a URL that answered 200 at baseline). |
 | G-02 | Every one of the 649 baseline URLs (`docs/audit/url-inventory.json`) still resolves; `--live` follows every hop over HTTP. |
-| G-03 | axe-core (WCAG 2.0–2.2 A/AA) on all pages, plus dark and high-contrast themes on a sample: zero serious or critical. |
+| G-03 | axe-core (WCAG 2.0–2.2 A/AA) on all pages, plus dark and high-contrast themes on a sample: zero serious or critical, and no `heading-order` or `page-has-heading-one` violation at any impact (axe files those under best practice). |
 | G-04 | Lighthouse (mobile and desktop) on the home page and every section landing page: Perf ≥ 95, A11y 100, BP ≥ 95, SEO 100, home < 500 KB. Needs `LIGHTHOUSE_DIR`. |
 | G-05 | Playwright network log on every page and tool interaction: same-origin requests only. |
 | G-06 | No purple, violet or lavender (hex, rgb, hsl, named) in the layer's CSS, JS, HTML, SVG, JSON or renderers. |
-| G-07 | Content schema: answer key, a reason for every choice, a misconception for every distractor, level, ELD Standard, KLU; no duplicate ids, stems or slugs; 3 sets per cluster and domain; all 5 ELD Standards per domain. |
+| G-07 | Content schema: answer key, a reason for every choice, a misconception for every distractor, level, ELD Standard, KLU; no duplicate ids, stems or slugs; 3 sets per cluster and domain; all 5 ELD Standards per domain; no answer much longer than every distractor (a test-wise tell); no glossary entry for the word an item asks about. |
 | G-08 | Every computed answer is recomputed with exact fractions and must appear in the keyed text. |
 | G-09 | Six game exports and the activity export open from `file://` with zero console errors, zero requests, under 300 KB. |
 | G-10 | No third-party fetch/XHR/beacon/socket, no trackers, no forms that post. |

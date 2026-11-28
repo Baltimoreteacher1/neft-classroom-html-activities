@@ -23,12 +23,25 @@ import {
 } from "./generated/bundle.generated.js";
 import { generate, lineTask, tableTask } from "./generators.js";
 import { guide, icon, scene, sceneFor, unitArt } from "./illustrations.js";
+import { encodeInsight, TAG_LIST } from "./insight-code.js";
 import { renderVisual } from "./math-visuals.js";
+import {
+  familyPlan,
+  medalShelf,
+  ring,
+  tierDone,
+  trail,
+  trophy,
+  unitMeter,
+  unitPath,
+} from "./premium.js";
 import { bi, biMath, genBody, genCheck, h, lineBody, mathText, tableBody } from "./problem-view.js";
 import { t, UI } from "./strings.js";
 
 const ORIGIN = "https://eduwonderlab.com";
 const TAXONOMY_LABELS = MAP.taxonomyLabels || {};
+const TAXONOMY_STUDENT = MAP.taxonomyStudent || {};
+const TAXONOMY_WATCH = MAP.taxonomyWatch || {};
 
 function seededShuffle(arr, seedStr) {
   let s = 0;
@@ -121,7 +134,8 @@ function player(ref, id, { narrateLabel = "listen" } = {}) {
     ? `<div class="player-figure">${renderVisual({ ...ref.visual, alt: ref.vizAlt?.en || ref.visual.alt })}</div>`
     : "";
   const steps = `<ol class="steps">${ref.steps.map((s) => `<li>${biMath(s)}</li>`).join("")}</ol>`;
-  return `<div class="player" id="${id}">${vis}${steps}
+  const pips = `<div class="pips no-print" role="group" aria-label="${UI.stepOf.en.replace(/ \{.*$/, "")}">${ref.steps.map((_, k) => `<button class="pip" type="button" data-player="pip" data-k="${k + 1}"><span class="sr">${bi("goStep", "span", { k: k + 1 })}</span></button>`).join("")}</div>`;
+  return `<div class="player" id="${id}">${vis}${steps}${pips}
 <div class="row player-controls no-print" role="group" aria-label="${UI.refresher.en}">
 <button class="btn amber" type="button" data-player="again">${icon("replay")}<span>${bi("showAgain")}</span></button>
 <button class="btn quiet" type="button" data-player="prev" aria-label="${UI.prevStep.en}">${icon("prev")}<span class="sr">${bi("prevStep")}</span></button>
@@ -155,6 +169,7 @@ function problemCard(p, n, lessonId) {
       kind: "mc",
       correct: p.choices.findIndex((c) => c.correct),
       why: p.choices.map((c) => c.why),
+      tags: p.choices.map((c) => c.tag || null),
     };
   } else if (p.type === "numeric") {
     body = `${art(p.prompt.en)}<p class="p-prompt" id="${pid}-q">${biMath(p.prompt)}</p><div class="answer-row"><label class="sr" for="${pid}-in">${bi("yourAnswer")}</label><input type="text" id="${pid}-in" inputmode="decimal" autocomplete="off" aria-describedby="${pid}-q ${pid}-fb"></div>`;
@@ -216,7 +231,7 @@ function problemCard(p, n, lessonId) {
   const html = `<article class="problem" id="p-${pid}" data-pid="${pid}" data-type="${p.type}" aria-labelledby="${pid}-h">
 <h3 class="sr" id="${pid}-h">${bi("problem")} ${n}</h3>${top}${body}
 <div class="print-lines" aria-hidden="true"><div class="answer-line"></div></div>
-<div class="actions no-print"><button class="btn primary" type="button" data-act="check">${icon("check")}<span>${bi(checkLabel)}</span></button><button class="btn quiet" type="button" data-act="hint">${icon("hint")}<span>${bi("hint")}</span></button><button class="btn quiet" type="button" data-act="say">${icon("audio")}<span>${bi("readAloud")}</span></button><button class="btn quiet" type="button" data-act="similar">${icon("retry")}<span>${bi("similar")}</span></button></div>
+<div class="actions no-print"><button class="btn primary" type="button" data-act="check">${icon("check")}<span>${bi(checkLabel)}</span></button><button class="btn quiet" type="button" data-act="hint">${icon("hint")}<span>${bi("hint")}</span></button><button class="btn quiet" type="button" data-act="say">${icon("audio")}<span>${bi("readAloud")}</span></button><button class="btn quiet" type="button" data-act="similar">${icon("retry")}<span>${bi("similar")}</span></button><button class="btn quiet" type="button" data-act="sketch" data-n="${n}" aria-expanded="false">${icon("pencil")}<span>${bi("sketch")}</span></button></div>
 <div class="feedback" id="${pid}-fb"></div><div class="hint-slot"></div></article>`;
   return { html, check };
 }
@@ -248,29 +263,111 @@ function hero(d, kindKey, extraMeta = "") {
 ${extraMeta}</div><div>${unitArt(d.unit)}</div></section>`;
 }
 
+// Spiral review: two problems from lessons taught EARLIER in the district pacing order (MAP.sequence,
+// from data/pacing-unit-ranges.json), never from the same generator as this lesson: the lesson just
+// before and one about six lessons back (spaced retrieval). Uncounted; they never change the score.
+export function reviewSources(id) {
+  const seq = MAP.sequence || [];
+  const i = seq.indexOf(id);
+  if (i <= 0) return [];
+  const spec = (lid) => JSON.stringify(PRACTICE[lid]?.similar || null);
+  const own = spec(id);
+  const picks = [];
+  const usable = (lid) =>
+    PRACTICE[lid]?.similar && spec(lid) !== own && !picks.some((x) => spec(x) === spec(lid));
+  for (let k = i - 1; k >= 0 && picks.length < 1; k--) if (usable(seq[k])) picks.push(seq[k]);
+  for (let k = i - 6; k >= 0 && picks.length < 2; k--) if (usable(seq[k])) picks.push(seq[k]);
+  for (let k = i - 2; k >= 0 && picks.length < 2; k--) if (usable(seq[k])) picks.push(seq[k]);
+  return picks;
+}
+function seedOf(s) {
+  let x = 7;
+  for (const ch of String(s)) x = (x * 31 + ch.charCodeAt(0)) % 99991;
+  return x;
+}
+// The student-facing misconception messages this page can need: every tag on its problems, plus every
+// tag the lesson's similar-problem generators produce (the coach's "tempting" problem uses them).
+function tipsFor(checks, specs) {
+  const tags = new Set();
+  const tempt = new Set(); // tags a generator here can build a problem around
+  for (const c of Object.values(checks)) {
+    for (const t of c.tags || []) if (t) tags.add(t);
+    for (const k of c.known || []) if (k.tag) tags.add(k.tag);
+  }
+  for (const spec of specs)
+    for (let seed = 1; seed <= 60; seed++) {
+      const g = generate(spec, seed);
+      for (const d of g.distractors || [])
+        if (d.tag) {
+          tags.add(d.tag);
+          tempt.add(d.tag);
+        }
+    }
+  return Object.fromEntries(
+    [...tags]
+      .filter((t) => TAXONOMY_LABELS[t] && TAXONOMY_STUDENT[t])
+      .sort()
+      .map((t) => [
+        t,
+        { label: TAXONOMY_LABELS[t], student: TAXONOMY_STUDENT[t], tempt: tempt.has(t) },
+      ]),
+  );
+}
+
 export function renderHomework(id) {
   const d = PRACTICE[id];
   if (!d) return null;
   const cards = [];
   const checks = {};
   let n = 0;
+  const stops = [];
+  const present = [1, 2, 3].filter((tier) => d.problems.some((p) => p.tier === tier));
   const tiers = [1, 2, 3].map((tier) => {
     const items = d.problems.filter((p) => p.tier === tier);
+    if (!items.length) return "";
     const html = items
       .map((p) => {
         n += 1;
         const c = problemCard(p, n, id);
         checks[p.id] = c.check;
+        stops.push({ pid: p.id, n, tier });
         return c.html;
       })
       .join("");
     const badge = { 1: "warm", 2: "build", 3: "stretch" }[tier];
-    return `<section class="tier tier-${tier}" aria-labelledby="tier-${tier}"><div class="tier-head"><h2 id="tier-${tier}" class="tier-badge">${icon(badge)}${bi(`tier${tier}`)}</h2><p class="tier-note">${bi(`tier${tier}Note`)}</p></div>${html}</section>`;
+    return `<section class="tier tier-${tier}" aria-labelledby="tier-${tier}"><div class="tier-head"><h2 id="tier-${tier}" class="tier-badge">${icon(badge)}${bi(`tier${tier}`)}</h2><p class="tier-note">${bi(`tier${tier}Note`)}</p></div>${html}${tierDone(tier, tier === present.at(-1))}</section>`;
   });
   cards.push(...tiers);
+  // Spiral review from earlier lessons.
+  const reviewSpecs = [];
+  const reviewHtml = reviewSources(id)
+    .map((src, j) => {
+      const s = PRACTICE[src];
+      const p = {
+        id: `${id}-r${j + 1}`,
+        type: "gen",
+        gen: s.similar,
+        seed: seedOf(`${id}>${src}`),
+        hints: lessonHints(src),
+      };
+      reviewSpecs.push(s.similar);
+      const c = problemCard(p, `R${j + 1}`, src);
+      checks[p.id] = { ...c.check, counted: false, review: true, similarSpec: s.similar };
+      const from = bi({
+        en: `${UI.reviewFrom.en} ${src}: ${s.title.en}`,
+        es: `${UI.reviewFrom.es} ${src}: ${s.title.es || s.title.en}`,
+      });
+      return `<p class="review-from"><a href="/lessons/${src}/practice">${from}</a></p>${c.html}`;
+    })
+    .join("");
+  if (reviewHtml)
+    cards.push(
+      `<section class="tier tier-review" aria-labelledby="review-h"><div class="tier-head"><h2 id="review-h" class="tier-badge">${icon("retry")}${bi("reviewTitle")}</h2><p class="tier-note">${bi("reviewNote")}</p></div>${reviewHtml}</section>`,
+    );
   const goal = `<p class="goal"${d.objective.translation ? ` data-translation="${d.objective.translation}"` : ""}>${bi({ en: d.objective.en, es: d.objective.es || d.objective.en })}</p>`;
   const meta = `<ul class="meta"><li>${bi("minutes", "span", { n: d.minutes })}</li><li>${bi("problemsCount", "span", { n })}</li><li>${bi("savedHere")}</li><li class="streak" hidden></li></ul>
-<div class="progress"><div class="progress-track" role="progressbar" aria-label="${UI.progress.en.replace(/\{.*$/, "").trim() || "Progress"}" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="0"><div class="progress-fill"></div></div><div class="progress-label" aria-hidden="true"></div></div>`;
+<div class="progress"><div class="progress-track" role="progressbar" aria-label="${UI.progress.en.replace(/\{.*$/, "").trim() || "Progress"}" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="0"><div class="progress-fill"></div></div><div class="progress-label" aria-hidden="true"></div></div>
+${trail(stops)}${medalShelf(present)}`;
   const vocab = d.vocab.length
     ? `<section class="section print-hide" aria-labelledby="vocab-h"><h2 id="vocab-h">${icon("book")}${bi("vocab")}</h2><div class="vocab">${d.vocab
         .map(
@@ -282,10 +379,12 @@ export function renderHomework(id) {
   const reflect = `<section class="section reflect-section" aria-labelledby="reflect-h"><h2 id="reflect-h">${icon("pencil")}${bi("reflect")}</h2>
 <fieldset class="rating"><legend>${bi("confidence")}</legend>${[1, 2, 3, 4].map((k) => `<label><input type="radio" name="conf" value="${k}"> ${bi(`conf${k}`)}</label>`).join("")}</fieldset>
 <p class="frame">${bi(d.reflect.frame)}</p><label for="reflect-text">${bi("writeReflection")}</label><textarea id="reflect-text"></textarea></section>`;
-  const finish = `<div class="row no-print" style="margin-top:24px"><button class="btn amber" type="button" data-act="finish">${icon("star")}<span>${bi("finish")}</span></button><a class="btn quiet" href="/lessons/${id}/family-guide">${icon("family")}<span>${bi("familyGuide")}</span></a><a class="btn quiet" href="/lessons/${id}/">${icon("book")}<span>${bi("lessonLink")}</span></a><button class="btn quiet" type="button" data-act="reset">${icon("retry")}<span>${bi("startOver")}</span></button></div>
-<section class="section finish" id="finish" hidden aria-labelledby="finish-h">${guide("cheer")}<h2 id="finish-h" tabindex="-1" style="justify-content:center">${bi("finishTitle")}</h2>
-<p class="score"><span class="score-num">0</span> / <span class="score-total">${n}</span></p><p>${bi("firstTry")}</p>
+  const finish = `<div class="row no-print" id="finish-row" style="margin-top:24px"><button class="btn amber" type="button" data-act="finish">${icon("star")}<span>${bi("finish")}</span></button><a class="btn quiet" href="/lessons/${id}/family-guide">${icon("family")}<span>${bi("familyGuide")}</span></a><a class="btn quiet" href="/lessons/${id}/">${icon("book")}<span>${bi("lessonLink")}</span></a><button class="btn quiet" type="button" data-act="reset">${icon("retry")}<span>${bi("startOver")}</span></button></div>
+<section class="section finish" id="finish" hidden aria-labelledby="finish-h"><div class="finish-art">${trophy()}${guide("cheer")}</div><h2 id="finish-h" tabindex="-1" style="justify-content:center">${bi("finishTitle")}</h2>
+<p class="score"><span class="score-num">0</span> / <span class="score-total">${n}</span></p><p>${bi("firstTry")}</p>${ring()}<div class="finish-medals">${medalShelf(present, "finish")}</div>
 <h3>${bi("revisit")}</h3><ul class="revisit"></ul>
+<div class="coach" aria-labelledby="coach-h"><h3 id="coach-h">${icon("hint")}${bi("coachTitle")}</h3><div class="coach-body"></div></div>
+<div class="code-box" aria-labelledby="code-h"><h3 id="code-h">${icon("key")}${bi("codeTitle")}</h3><p class="code" translate="no"></p><p class="tier-note">${bi("codeNote")}</p><button class="btn quiet" type="button" data-act="copy-code">${icon("copy")}<span class="lbl">${bi("copyCode")}</span></button></div>
 <div class="teacher-card"><h3>${icon("star")} ${bi("showTeacher")}</h3><dl><dt>${bi("lesson")}</dt><dd>${h(id)} · ${bi(d.title.es ? d.title : { en: d.title.en, es: d.title.en })}</dd><dt>${bi("date")}</dt><dd class="tc-date"></dd><dt>${bi("score")}</dt><dd class="tc-score"></dd><dt>${bi("confidenceShort")}</dt><dd class="tc-conf"></dd><dt>${bi("revisit")}</dt><dd class="tc-revisit"></dd></dl><p class="tier-note">${bi("showTeacherNote")}</p></div></section>
 <dialog id="reset-dialog"><p>${bi("confirmStart")}</p><div class="row"><button class="btn primary" type="button" data-act="reset-yes">${bi("yes")}</button><button class="btn quiet" type="button" data-act="reset-no">${bi("no")}</button></div></dialog>`;
   const body = `${topBar()}<main id="main">${hero(d, "homework", goal + meta)}
@@ -305,6 +404,7 @@ ${cards.join("")}${vocab}${reflect}${finish}</main>
       problems: checks,
       lessonHints: lessonHints(id),
       guideThink: `<span class="hint-guide">${guide("think")}</span>`,
+      tips: tipsFor(checks, [d.similar, ...reviewSpecs].filter(Boolean)),
     },
   });
 }
@@ -330,11 +430,12 @@ export function renderFamily(id) {
     .join("");
   const body = `${topBar()}<main id="main">
 <section class="hero family-hero" aria-labelledby="title"><div><p class="eyebrow">${bi({ en: `Unit ${f.unit} · Lesson ${id}`, es: `Unidad ${f.unit} · Lección ${id}` })} · ${bi("forFamilies")}</p><h1 id="title">${bi({ en: f.title.en, es: f.title.es || f.title.en })}</h1><p class="goal">${bi("famOptional")}</p></div><div>${scene("home", null)}</div></section>
+${familyPlan()}
 <section class="section" aria-labelledby="learn-h"><h2 id="learn-h">${icon("book")}${bi("famLearning")}</h2><p>${biMath(f.learning)}</p><h3>${bi("famWhy")}</h3><p>${biMath(f.whyItMatters)}</p></section>
 <section class="section" aria-labelledby="how-h"><h2 id="how-h">${icon("play")}${bi("famHow")}</h2>${player(d.refresher, "family-example")}${doDont}</section>
 <section class="section" aria-labelledby="words-h"><h2 id="words-h">${icon("lang")}${bi("famWords")}</h2>${words}</section>
-<section class="section" aria-labelledby="try-h"><h2 id="try-h">${icon("family")}${bi("famTry")}</h2>${tryIt}<p class="print-only fam-answers"><strong>${bi({ en: "Answers for the grown-up:", es: "Respuestas para el adulto:" })}</strong> ${f.tryIt.map((q, i) => `${i + 1}) ${biMath(q.answer)}`).join(" · ")}</p></section>
-<section class="section" aria-labelledby="talk-h"><h2 id="talk-h">${icon("explain")}${bi("famTalk")}</h2><p class="tier-note">${bi("famTalkNote")}</p><ul class="talk">${f.conversation.map((c) => `<li>${icon("explain")}<span>${biMath(c)}</span></li>`).join("")}</ul></section>
+<section class="section try-section" aria-labelledby="try-h"><h2 id="try-h">${icon("family")}${bi("famTry")}</h2><p class="tried-meter no-print" aria-live="polite" hidden></p>${tryIt}<p class="print-only fam-answers"><strong>${bi({ en: "Answers for the grown-up:", es: "Respuestas para el adulto:" })}</strong> ${f.tryIt.map((q, i) => `${i + 1}) ${biMath(q.answer)}`).join(" · ")}</p></section>
+<section class="section" aria-labelledby="talk-h"><h2 id="talk-h">${icon("explain")}${bi("famTalk")}</h2><p class="tier-note">${bi("famTalkNote")}</p><ul class="talk" data-deck>${f.conversation.map((c) => `<li>${icon("explain")}<span>${biMath(c)}</span></li>`).join("")}</ul></section>
 <section class="section" aria-labelledby="stuck-h"><h2 id="stuck-h">${icon("hint")}${bi("famStuck")}</h2><ol>${f.stuck.map((s) => `<li>${biMath(s)}</li>`).join("")}</ol>
 <div class="row no-print"><a class="btn primary" href="/lessons/${id}/practice">${icon("pencil")}<span>${bi("famPractice")}</span></a><button class="btn quiet" type="button" data-act="print">${icon("print")}<span>${bi("famPrint")}</span></button><a class="btn quiet" href="/practice-hub/family/unit-${f.unit}">${icon("family")}<span>${bi("familyHub")}</span></a></div></section>
 </main><footer class="foot"><p>${bi("famOptional")} · ${h(f.standard)}</p></footer>`;
@@ -571,7 +672,7 @@ export function renderHub() {
       return `<section class="section hub-unit" aria-labelledby="u${u.number}"><h2 id="u${u.number}">${bi("unit")} ${u.number}: ${bi(unitTitle(u))}</h2><p><a class="btn quiet" href="${u.familyHub}">${icon("family")}<span>${bi("familyHub")}</span></a></p><table class="hub-table"><thead><tr><th scope="col">${bi("lesson")}</th><th scope="col">${bi("standard")}</th><th scope="col">${bi("homework")} · ${bi("familyGuide")} · ${bi("assignment")} · ${bi("answerKey")}</th></tr></thead><tbody>${rows}</tbody></table></section>`;
     })
     .join("");
-  const body = `${topBar("/curriculum/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi({ en: "For teachers", es: "Para docentes" })}</p><h1 id="title">${bi("hubTitle")}</h1><p>${bi("hubIntro")}</p><p><a class="btn amber" href="/practice-hub/family/">${icon("family")}<span>${bi({ en: "Family pages by unit", es: "Páginas para familias por unidad" })}</span></a></p></div><div>${guide("happy")}</div></section>${units}</main>`;
+  const body = `${topBar("/curriculum/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi({ en: "For teachers", es: "Para docentes" })}</p><h1 id="title">${bi("hubTitle")}</h1><p>${bi("hubIntro")}</p><p class="row"><a class="btn amber" href="/practice-hub/family/">${icon("family")}<span>${bi({ en: "Family pages by unit", es: "Páginas para familias por unidad" })}</span></a><a class="btn primary" href="/practice-hub/insights">${icon("star")}<span>${bi("insOpenHub")}</span></a></p></div><div>${guide("happy")}</div></section>${units}</main>`;
   return shell({
     title: "Practice, family and assignments · EduWonderLab",
     description:
@@ -589,7 +690,7 @@ export function renderFamilyHub(n, letter = false) {
   const ut = unitTitle(u);
   const items = u.lessons.map((lid) => ({ lid, f: FAMILY[lid] })).filter((x) => x.f);
   if (letter) {
-    const body = `${topBar(`/practice-hub/family/unit-${n}`)}<main id="main"><section class="section"><p class="eyebrow">${bi("unit")} ${n}</p><h1 id="title">${bi(ut)}</h1><p>${bi("famLetterGreeting")}</p><p>${bi({ en: UI.famLetterBody.en.replace("{title}", ut.en), es: UI.famLetterBody.es.replace("{title}", ut.es) })}</p>
+    const body = `${topBar(`/practice-hub/family/unit-${n}`)}<main id="main"><section class="section"><div class="letter-art no-print">${unitArt(n)}</div><p class="eyebrow">${bi("unit")} ${n}</p><h1 id="title">${bi(ut)}</h1><p>${bi("famLetterGreeting")}</p><p>${bi({ en: UI.famLetterBody.en.replace("{title}", ut.en), es: UI.famLetterBody.es.replace("{title}", ut.es) })}</p>
 <ol>${items.map(({ lid, f }) => `<li><strong>${h(lid)} ${bi({ en: f.title.en, es: f.title.es || f.title.en })}:</strong> ${biMath(f.bigIdea)}</li>`).join("")}</ol>
 <p>${bi("famOptional")}</p><p>${bi("famLetterClose")}</p><p class="tier-note">${ORIGIN.replace("https://", "")}/practice-hub/family/unit-${n}</p>
 <div class="row no-print"><button class="btn primary" type="button" data-act="print">${icon("print")}<span>${bi("print")}</span></button></div></section></main>`;
@@ -609,7 +710,7 @@ export function renderFamilyHub(n, letter = false) {
     )
     .join("");
   const body = `${topBar("/curriculum/units/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi("forFamilies")}</p><h1 id="title">${bi("famHubTitle", "span", { n })}</h1><p class="goal">${bi(ut)}</p></div><div>${unitArt(n)}</div></section>
-<section class="section" aria-labelledby="howto"><h2 id="howto">${icon("hint")}${bi("famHubHow")}</h2><p>${bi("famHubHowBody")}</p><p><a class="btn amber" href="/practice-hub/family/unit-${n}/letter">${icon("print")}<span>${bi("famLetter")}</span></a></p></section>${cards}</main>`;
+<section class="section" aria-labelledby="howto"><h2 id="howto">${icon("hint")}${bi("famHubHow")}</h2><p>${bi("famHubHowBody")}</p><p><a class="btn amber" href="/practice-hub/family/unit-${n}/letter">${icon("print")}<span>${bi("famLetter")}</span></a></p></section>${unitPath(items.map(({ lid, f }) => ({ lid, title: { en: f.title.en, es: f.title.es || f.title.en } })))}${cards}</main>`;
   return shell({
     title: `Unit ${n} family practice · EduWonderLab`,
     description: `Family pages for every lesson in Unit ${n}, English and Spanish, plus a printable unit letter.`,
@@ -624,10 +725,10 @@ export function renderFamilyIndex() {
   const cards = MAP.units
     .map(
       (u) =>
-        `<article class="section"><p class="eyebrow">${bi("unit")} ${u.number}</p><h2>${bi(unitTitle(u))}</h2><div class="row"><a class="btn primary" href="${u.familyHub}">${icon("family")}<span>${bi("famHubTitle", "span", { n: u.number })}</span></a><a class="btn quiet" href="${u.familyHub}/letter">${icon("print")}<span>${bi("famLetter")}</span></a></div></article>`,
+        `<article class="section unit-card"><div class="unit-card-art">${unitArt(u.number)}</div><div><p class="eyebrow">${bi("unit")} ${u.number}</p><h2>${bi(unitTitle(u))}</h2>${unitMeter(u.lessons.filter((lid) => FAMILY[lid]))}<div class="row"><a class="btn primary" href="${u.familyHub}">${icon("family")}<span>${bi("famHubTitle", "span", { n: u.number })}</span></a><a class="btn quiet" href="${u.familyHub}/letter">${icon("print")}<span>${bi("famLetter")}</span></a></div></div></article>`,
     )
     .join("");
-  const body = `${topBar("/curriculum/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi("forFamilies")}</p><h1 id="title">${bi({ en: "Family practice at home", es: "Práctica en familia en casa" })}</h1><p class="goal">${bi("famOptional")}</p><p>${bi("famHubHowBody")}</p></div><div>${scene("home")}</div></section>${cards}</main>`;
+  const body = `${topBar("/curriculum/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi("forFamilies")}</p><h1 id="title">${bi({ en: "Family practice at home", es: "Práctica en familia en casa" })}</h1><p class="goal">${bi("famOptional")}</p><p>${bi("famHubHowBody")}</p></div><div>${scene("home")}</div></section><div class="unit-grid">${cards}</div></main>`;
   return shell({
     title: "Family practice at home · EduWonderLab",
     description: "Bilingual family pages for every Grade 6 math unit, with printable unit letters.",
@@ -635,6 +736,60 @@ export function renderFamilyIndex() {
     page: "pfa-family-index",
     canonical: "/practice-hub/family/",
     data: { lessonId: "families", problems: {} },
+  });
+}
+
+// Class insights: a teacher pastes the class codes students got on their finish cards; the page
+// decodes them in the browser (insight-code.js) and shows what the class understands and what to
+// reteach. No request is made with the codes, nothing is stored, and the codes hold no names.
+function sampleCodes() {
+  // A made-up class of 24 for Lesson 6-6, so a teacher can see the page before real codes exist.
+  const tags = [
+    "op-multiplied-instead-of-added",
+    "algebra-distributive-partial",
+    "property-order-vs-grouping",
+  ];
+  const total = PRACTICE["6-6"]?.problems.length || 9; // the real page's problem count
+  return Array.from({ length: 24 }, (_, k) => {
+    const missed = [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 1, 2, 3, 4, 0, 7, 2, 3][k];
+    const score = Math.max(0, total - missed);
+    const miss = Array.from({ length: total - score }, (__, j) => 1 + ((k * 3 + j * 4) % total));
+    return encodeInsight({
+      lessonId: "6-6",
+      score,
+      total,
+      conf: 1 + (k % 4),
+      revisit: [...new Set(miss)],
+      tags: missed <= 1 ? [] : tags.slice(k % 2, (k % 2) + 1 + (missed >= 4 ? 1 : 0)),
+      review: k % 3,
+    });
+  });
+}
+export function renderInsights() {
+  const lessons = Object.fromEntries(
+    MAP.lessons.map((L) => [
+      L.id,
+      { title: { en: L.title, es: PRACTICE[L.id]?.title?.es || L.title }, standard: L.standard },
+    ]),
+  );
+  const tax = Object.fromEntries(
+    TAG_LIST.filter((t) => TAXONOMY_LABELS[t]).map((t) => [
+      t,
+      { label: TAXONOMY_LABELS[t], watch: TAXONOMY_WATCH[t] || "" },
+    ]),
+  );
+  const body = `${topBar("/practice-hub/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi({ en: "For teachers", es: "Para docentes" })}</p><h1 id="title">${bi("insTitle")}</h1><p>${bi("insIntro")}</p><p class="tier-note">${bi("insPrivacy")}</p></div><div>${guide("think")}</div></section>
+<section class="section no-print" aria-labelledby="paste-h"><h2 id="paste-h">${icon("pencil")}<label for="ins-codes">${bi("insPaste")}</label></h2><textarea id="ins-codes" rows="8" spellcheck="false" autocomplete="off"></textarea>
+<div class="row"><button class="btn primary" type="button" data-act="ins-show">${icon("check")}<span>${bi("insShow")}</span></button><button class="btn quiet" type="button" data-act="ins-sample">${icon("retry")}<span>${bi("insSample")}</span></button><button class="btn quiet" type="button" data-act="print">${icon("print")}<span>${bi("print")}</span></button></div></section>
+<div id="ins-out" aria-live="polite"></div></main>`;
+  return shell({
+    title: "Class insights from practice codes · EduWonderLab",
+    description:
+      "Paste the class codes students get when they finish a practice page to see the class average, the problems to reteach and the misconceptions to address. Decoded in the browser; nothing is sent.",
+    body,
+    page: "pfa-insights",
+    canonical: "/practice-hub/insights",
+    data: { lessonId: "insights", problems: {}, lessons, tax, sample: sampleCodes() },
   });
 }
 
@@ -661,6 +816,8 @@ export function routePfa(pathname) {
   }
   if (/^\/practice-hub\/?$/.test(pathname))
     return { status: 200, type: "text/html; charset=utf-8", body: renderHub() };
+  if (/^\/practice-hub\/insights\/?$/.test(pathname))
+    return { status: 200, type: "text/html; charset=utf-8", body: renderInsights() };
   if (/^\/practice-hub\/family\/?$/.test(pathname))
     return { status: 200, type: "text/html; charset=utf-8", body: renderFamilyIndex() };
   m = pathname.match(/^\/practice-hub\/family\/unit-(\d{1,2})(\/letter)?\/?$/);

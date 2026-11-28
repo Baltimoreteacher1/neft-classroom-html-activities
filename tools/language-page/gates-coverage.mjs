@@ -78,8 +78,18 @@ export const g13 = {
       m.delete(path);
       return m;
     };
-    // 1. Remove a routine renderer: the doctor block stops being registered, so its populated data has no renderer.
-    const noRoutine = evaluate(data, { ...base, registered: dropRegistered("esol_pack.doctor") });
+    // 1. Remove a routine renderer: a block that ONLY the routine registry draws stops being registered, so its
+    //    populated data has no renderer. The block is chosen here, not hard-coded: esol_pack.doctor stopped being
+    //    registry-only when bcpss-teachers/companion/teach-week.js began reading it, which silently turned this
+    //    control into one that could not fail. With no registry-only block left it produces NO errors, so the
+    //    runner reports "negative control did NOT fail" instead of passing vacuously.
+    const registryOnly = [...base.registered.keys()].filter(
+      (p) => !base.client.some((s) => readsPath(s.text, p)),
+    );
+    const routinePath = registryOnly[0];
+    const noRoutine = routinePath
+      ? evaluate(data, { ...base, registered: dropRegistered(routinePath) })
+      : { errors: [] };
     // 2. Remove every client file that reads writing.bbs (the Writing Lab steps and coach): nothing draws it any more.
     const noClientFile = evaluate(data, {
       ...base,
@@ -115,7 +125,10 @@ export const g13 = {
       ),
     });
     return [
-      { name: "routine renderer removed (esol_pack.doctor)", errors: noRoutine.errors },
+      {
+        name: `routine renderer removed (${routinePath ?? "no registry-only block left"})`,
+        errors: noRoutine.errors,
+      },
       { name: "every client reader of writing.bbs removed", errors: noClientFile.errors },
       { name: "populated block with no renderer", errors: noRenderer.errors },
       { name: "stale allowlist entries", errors: stale.errors },
