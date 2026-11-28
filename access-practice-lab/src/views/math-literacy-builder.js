@@ -107,7 +107,7 @@ function problemEditor() {
 }
 
 function previewFrame(resource, label) {
-  return html`<iframe class="ml-frame" title="${label}" sandbox="allow-same-origin" data-mlb-frame srcdoc="${Exp.printDocument(resource, { key: false })}"></iframe>`;
+  return html`<iframe class="ml-frame" title="${label}" sandbox="allow-same-origin" data-mlb-frame srcdoc="${Exp.printDocument(resource, { key: false, preview: true })}"></iframe>`;
 }
 
 function comparePanel() {
@@ -234,7 +234,7 @@ async function doDownload(fmt, key) {
 let editT = 0;
 function refreshPreview() {
   const frame = document.querySelector("[data-mlb-frame]");
-  if (frame) frame.srcdoc = Exp.printDocument(cur.resource, { key: false });
+  if (frame) frame.srcdoc = Exp.printDocument(cur.resource, { key: false, preview: true });
   const kf = document.querySelector(".ml-frame-key");
   if (kf) kf.srcdoc = keyHtml(cur.resource);
 }
@@ -253,6 +253,7 @@ export function onClick(e, ctx) {
   if (a === "dl") return (doDownload(act.dataset.fmt, false), true);
   if (a === "keydl") return (doDownload(act.dataset.fmt, true), true);
   if (a === "save") {
+    flushEdits();
     const item = Store.saveResource({ skillId: cur.skill.id, type: cur.type, opts: cur.opts, edits: cur.edits }, `${cur.skill.title}: ${cur.resource.title.split(": ").pop()}`);
     cur.savedId = item.id;
     Store.noteCreated();
@@ -311,20 +312,29 @@ export function onChange(e, ctx) {
   navigate(o, ctx);
   return true;
 }
+/** Edits typed within the debounce window all apply: a shared timer must never drop the first field's change. */
+const pendingEdits = new Map();
 export function onInput(e) {
   const t = e.target.closest("[data-mlb-edit],[data-mlb-pedit]");
   if (!t || !cur?.skill) return false;
+  const key = t.dataset.mlbEdit ? `e:${t.dataset.mlbEdit}` : `p:${t.closest("[data-mlb-prob]").dataset.mlbProb}:${t.dataset.mlbPedit}`;
+  pendingEdits.set(key, t);
   clearTimeout(editT);
-  editT = setTimeout(() => {
+  editT = setTimeout(flushEdits, 350);
+  return true;
+}
+function flushEdits() {
+  if (!cur?.skill) return pendingEdits.clear();
+  for (const t of pendingEdits.values()) {
     if (t.dataset.mlbEdit) cur.edits[t.dataset.mlbEdit] = t.value;
     else {
       const k = t.closest("[data-mlb-prob]").dataset.mlbProb;
       cur.edits.problems = { ...(cur.edits.problems || {}), [k]: { ...(cur.edits.problems?.[k] || {}), [t.dataset.mlbPedit]: t.value } };
     }
-    rebuild();
-    refreshPreview();
-  }, 350);
-  return true;
+  }
+  pendingEdits.clear();
+  rebuild();
+  refreshPreview();
 }
 export function mount(root) {
   if (root.dataset.mlbToggle) return;
@@ -338,8 +348,9 @@ export function mount(root) {
     true,
   );
 }
+// The router calls unmount() on EVERY URL change, and each dial change rewrites the query string, so unmount must keep the teacher's edits and
+// open panels. State is replaced when a different resource opens (render()), not when this view is left.
 export const unmount = () => {
   clearTimeout(editT);
-  cur = null;
-  compare = false;
+  if (pendingEdits.size) flushEdits();
 };
