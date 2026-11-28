@@ -36,13 +36,15 @@ import { readAudience } from "../audience.js";
 import { isEarlyBand } from "../bands.js";
 import { revealFoldsFor } from "../fold.js";
 import { cancelDictation, dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
+import { levelPlan, parseLevel } from "../lang/write-level.js";
+import { levelBannerHTML, levelSheetHTML, levelsGlanceHTML, levelSupportsHTML, teacherLevelsHTML } from "./write-level-ui.js";
 
 /**
  * write-studio.css loads here, on /write only, so the lab shell does not carry it on every other page. The version is
  * the first 12 hex of the file's sha256 (tools/access-writing-plus.test.mjs fails when it is stale), so a returning
  * learner never gets new markup with an old cached sheet.
  */
-export const WRITE_STYLES_VERSION = "48c31782efe5";
+export const WRITE_STYLES_VERSION = "1ce9eaeb3011";
 let sheet = null;
 function ensureStyles() {
   if (typeof document === "undefined") return Promise.resolve();
@@ -429,7 +431,19 @@ export async function render(ctx) {
       title: I.S("Not found", "No se encontró"),
       html: html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h1 tabindex="-1">${I.T("We could not find that task.", "No pudimos encontrar esa tarea.")}</h1><a class="btn" href="${BASE}/write?grades=${ctx.band}">${I.T("Writing Studio", "Estudio de escritura")}</a></section>`,
     };
-  const { task, mission } = found;
+  const { task: baseTask, mission } = found;
+  // A teacher's link may carry ?level=1..6 (src/lang/write-level.js): that level sets the starting help, the length target and
+  // which supports are open. The plan is cut from the task's own content; the level is never inferred from the learner's work.
+  const plan = levelPlan(baseTask, parseLevel(location.search));
+  const task = plan ? { ...baseTask, expected: plan.expected } : baseTask;
+  if (q.get("sheet") === "level" && plan) {
+    S.task = null;
+    return { title: task.title, html: levelSheetHTML(I, ctx, baseTask, plan) };
+  }
+  if (q.get("sheet") === "levels") {
+    S.task = null;
+    return { title: task.title, html: levelsGlanceHTML(I, ctx, baseTask) };
+  }
   if (q.get("sheet") === "conference") {
     S.task = null;
     return { title: task.title, html: conferenceSheetHTML(I, ctx, task) };
@@ -471,7 +485,16 @@ export async function render(ctx) {
   const transferStage = Boolean(task.transfer || linkedTransfer);
   S.transferFrom = linkedTransfer ? source.id : "";
   S.isTransfer = transferStage;
-  const sug = missionStage
+  S.level = plan ? plan.level : 0;
+  const sug = plan
+    ? {
+        stage: plan.stage,
+        reason: I.S(
+          `Your teacher set this task for support level ${plan.level}. You can choose a different setting.`,
+          `Tu docente preparó esta tarea para el nivel de apoyo ${plan.level}. Puedes elegir otra opción.`,
+        ),
+      }
+    : missionStage
     ? {
         stage: missionStage,
         reason: I.S(
@@ -518,6 +541,7 @@ export async function render(ctx) {
         </header>
         ${teacherTaskHTML(I, ctx, task, teacherAssignHTML(I, ctx, task))}
         ${focusBannerHTML(I, task, focusFrom(location.search))}
+        ${plan ? levelBannerHTML(I, plan, { changedStage: S.stage !== plan.stage }) : ""}
         ${nextStepHTML(I, ctx, task, S.state, text, analyzed)}
         ${stepperHTML(stepsFor(S.state, text, analyzed), { label: I.S("Writing steps", "Pasos de escritura") })}
         ${S.state.versions.length ? stageLockedHTML(S.stage) : stagePickerHTML(S.stage, sug)}
@@ -550,7 +574,7 @@ ${text}</textarea></label>
               </div>
             </section>
             ${conferenceHTML(I, S.state, Boolean(text.trim()))}
-            ${supportsHTML(task)}
+            ${plan && S.stage === plan.stage ? levelSupportsHTML(I, task, plan) : supportsHTML(task)}
             ${disclosure(
               "wrt-tools",
               html`${icon("tools")} ${I.T("More language tools", "Más herramientas de lenguaje")}`,
@@ -597,6 +621,7 @@ const meterText = (n, min, max) => I.S(`${n} words · usually about ${min}–${m
 function lockStage() {
   if (S.state.stage) return;
   S.state.stage = S.stage;
+  if (S.level) S.state.level = S.level;
   // Keep what was opened before the first feedback (the model, speech to text); set what the stage provides.
   S.state.used = { ...S.state.used, frames: S.stage === "guided", bank: S.stage !== "independent" };
 }
@@ -2059,7 +2084,7 @@ const link = (ctx, id, extra = "") => `${location.origin}${BASE}/write/${id}?gra
 export function teacherAssignHTML(I, ctx, task) {
   const offered = Object.keys(FOCUS).filter((k) => (task.revisionPrompts || []).some((p) => p.focus === k));
   const list = offered.length ? offered : Object.keys(FOCUS);
-  return html`<div class="teacher-assign">
+  return html`${teacherLevelsHTML(I, ctx, task)}<div class="teacher-assign">
     <h4>${I.T("Assign with a focus", "Asignar con un enfoque")}</h4>
     <p class="fine">${I.T("Pick one focus. Students who open the link see it above the steps. The link carries no student information.", "Elija un enfoque. Los estudiantes que abren el enlace lo ven sobre los pasos. El enlace no lleva información de estudiantes.")}</p>
     <p class="focus-links">${list.map((k) => html`<button type="button" class="btn small" data-copy-link="${link(ctx, task.id, `&focus=${k}`)}">${icon("copy")} ${I.T(FOCUS[k][0], FOCUS[k][1])}</button>`)}</p>

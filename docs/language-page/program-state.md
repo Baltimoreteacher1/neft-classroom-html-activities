@@ -109,3 +109,14 @@ sessions (`usability-protocol.md`), agree the pilot (`efficacy-plan.md`, `pilot-
 | Cloudflare changes how it injects Web Analytics | low | privacy text untrue | live gate in the release routine; H-15 fallback |
 | CI still too slow at 75 min | medium | gate cancelled again | split the test suite; do not shrink the budget |
 | Machine-drafted Spanish published as reviewed | medium | trust | draft labels; H-05 and H-13 |
+
+## Leveled writing assignments (2026-11-27)
+
+A teacher can choose a **support level 1–6** for any Writing Studio task (`?level=N` on the writing link, or the
+"Writing assignment" block in the Teacher Hub's Plan & assign builder). The plan is cut only from the task's own authored
+frames, word bank, model and Spanish glosses (`access-practice-lab/src/lang/write-level.js`): level 1 offers frames, Spanish
+words and directions, a model and a shorter length; level 3 sentence starters; levels 5–6 no frames and the full length.
+Learners see "Support level N" only. The teacher sees the six names, six copy-link buttons, a printable sheet per level and a
+six-level comparison (`sheet=level&level=N`, `sheet=levels`). The level is the teacher's choice. It is not an official WIDA
+level or score, and it is never inferred from a student's work. Checks: `tools/access-write-levels.test.mjs`,
+`tools/access-write-levels-e2e.mjs`.

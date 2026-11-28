@@ -6,6 +6,7 @@ import { assignmentLink, KINDS, selectItems, validateSpec } from "/access-practi
 import { bandOptions } from "/access-practice-lab/src/bands.js";
 import { earlyAssign, isEarlyBand, loadLabIndex } from "./early-activities.js";
 import { openStorage } from "/access-practice-lab/src/acc/storage/access-db.js";
+import { LEVEL_NOTE, leveledLink, levelPlan, WRITE_LEVELS, levelName } from "/access-practice-lab/src/lang/write-level.js";
 
 const BASE = "/access-practice-lab";
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing"];
@@ -23,9 +24,15 @@ export async function mountAssignPanel(root, doc = document) {
   }
   // K, 1 and 2-3 are audio-first lab activities, listed from the lab's activity index (early-activities.js).
   const labIndex = await loadLabIndex().catch(() => null);
+  // Writing Studio tasks (grades 3-8) can be assigned at a support level: the link opens the task with that level's frames,
+  // word bank, length and Spanish help already set (access-practice-lab/src/lang/write-level.js).
+  let writingTasks = [];
+  try {
+    writingTasks = (await (await fetch(`${BASE}/content/studio/writing.json`)).json()).tasks || [];
+  } catch {}
   const bank = index.sets.flatMap((s) => s.items.map((i) => ({ ...i, setId: s.id, grade: s.grade, domain: s.domain })));
   const fns = [...new Set(bank.flatMap((i) => i.functions || []))].sort();
-  const state = { kind: "domain", grade: "3-5", domain: "Reading", context: "Science", klu: "Explain", fn: fns[0] || "", setId: index.sets[0].id, count: 8, includeProductive: false, title: "", earlyDomain: "Reading", earlyPick: 0 };
+  const state = { kind: "domain", grade: "3-5", domain: "Reading", context: "Science", klu: "Explain", fn: fns[0] || "", setId: index.sets[0].id, count: 8, includeProductive: false, title: "", earlyDomain: "Reading", earlyPick: 0, writeTask: "", writeLevel: "3" };
   let saved = (await store.settings.get("assignments", [])) || [];
   const urlAssignIds = (new URLSearchParams(location.search).get("assignIds") || "").split(",").filter(Boolean);
   let pendingAssignIds = [];
@@ -77,6 +84,35 @@ export async function mountAssignPanel(root, doc = document) {
     );
   }
 
+  function writingBlock() {
+    const tasks = writingTasks.filter((t) => t.band === state.grade);
+    if (!tasks.length) return h(doc, "span");
+    if (!tasks.some((t) => t.id === state.writeTask)) state.writeTask = tasks[0].id;
+    const task = tasks.find((t) => t.id === state.writeTask);
+    const n = Number(state.writeLevel);
+    const plan = levelPlan(task, n);
+    const wLink = leveledLink(location.origin, BASE, state.grade, task.id, n);
+    const sheet = `${BASE}/write/${task.id}?grades=${encodeURIComponent(state.grade)}&sheet=level&level=${n}`;
+    const compare = `${BASE}/write/${task.id}?grades=${encodeURIComponent(state.grade)}&sheet=levels`;
+    const status = h(doc, "p", { class: "acc-hint", role: "status", id: "asWriteStatus" });
+    const copy = h(doc, "button", { type: "button", class: "acc-btn primary", id: "asWriteCopy", text: "Copy writing link" });
+    copy.addEventListener("click", async () => { try { await navigator.clipboard.writeText(wLink); status.textContent = "Link copied. Students open it on their own device."; } catch { status.textContent = wLink; } });
+    const save = h(doc, "button", { type: "button", class: "acc-btn", id: "asWriteSave", text: "Save on this device" });
+    save.addEventListener("click", async () => { await saveAssignment(`${task.title} · support level ${n}`, wLink, null); status.textContent = "Saved on this device."; draw(); });
+    return h(doc, "section", { class: "acc-writing-assign", id: "asWriting", "aria-labelledby": "asWriteH" },
+      h(doc, "h3", { id: "asWriteH", text: "Writing assignment at a support level" }),
+      h(doc, "p", { class: "acc-hint", text: "Choose a Writing Studio task and a support level. The student link opens that task with the level's frames, word bank, length and Spanish help already set. Students can still ask for more or less help." }),
+      h(doc, "div", { class: "acc-filters" },
+        sel("asWriteTask", "Writing task", tasks.map((t) => [t.id, `${t.title} (${t.keyUse})`]), "writeTask"),
+        sel("asWriteLevel", "Support level", WRITE_LEVELS.map((v) => [String(v), `${v} · ${levelName(v).en}`]), "writeLevel")),
+      h(doc, "ul", { class: "acc-assign-list", id: "asWriteChanges" }, ...plan.changes.map(([en]) => h(doc, "li", { text: en }))),
+      h(doc, "div", { class: "acc-actions no-print" }, copy, save,
+        h(doc, "a", { class: "acc-btn", href: sheet, target: "_blank", rel: "noopener", id: "asWriteSheet", text: "Print this level's sheet" }),
+        h(doc, "a", { class: "acc-btn", href: compare, target: "_blank", rel: "noopener", id: "asWriteCompare", text: "Compare all six levels" })),
+      status,
+      h(doc, "p", { class: "acc-hint", text: LEVEL_NOTE[0] }));
+  }
+
   function draw() {
     if (isEarlyBand(state.grade)) return drawEarly();
     const need = KINDS[state.kind].needs;
@@ -115,6 +151,7 @@ export async function mountAssignPanel(root, doc = document) {
       v.ok ? h(doc, "p", { class: "acc-hint", id: "asCountMsg", text: spec.kind === "simulation" ? "The whole set will be taken as a test simulation." : picks.length < spec.count ? `Only ${picks.length} matching ${picks.length === 1 ? "question exists" : "questions exist"} for these choices.` : `${picks.length} questions chosen across the matching sets.` }) : h(doc, "p", { class: "acc-state is-error", role: "alert", text: v.errors.join(" ") }),
       preview,
       h(doc, "div", { class: "acc-actions no-print" }, copy, save, print), status,
+      writingBlock(),
       savedList());
   }
   draw();
