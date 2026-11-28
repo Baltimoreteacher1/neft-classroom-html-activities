@@ -60,7 +60,10 @@ mkdirSync(join(OUT, "assets"), { recursive: true });
 copyFileSync(join(ROOT, "scripts/lib/math-literacy/gen.mjs"), join(OUT, "assets", "gen.mjs"));
 
 if (noDocs) {
-  console.log(`generate-math-literacy: pages done (${changed} written); docs skipped`);
+  // --no-docs asks for the pages alone, and they are complete, so exit 0 is a true pass.
+  console.log(
+    `generate-math-literacy: pages done (${changed} written); Word and PDF files not built (--no-docs)`,
+  );
   process.exit(0);
 }
 
