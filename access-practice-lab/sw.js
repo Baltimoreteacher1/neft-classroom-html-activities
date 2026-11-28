@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "754c4ef6efbf";
+const BUILD_HASH = "c901d205ee9e";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=2c8320b3",
@@ -918,14 +918,14 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/live/rooms.js?v=751403fd",
   "/access-practice-lab/src/media.js?v=cae85355",
   "/access-practice-lab/src/mls/content.js?v=4f14bf76",
-  "/access-practice-lab/src/mls/engines-a.js?v=f0620f82",
+  "/access-practice-lab/src/mls/engines-a.js?v=f0e52929",
   "/access-practice-lab/src/mls/engines-b.js?v=ff847d65",
   "/access-practice-lab/src/mls/engines.js?v=26ce9665",
   "/access-practice-lab/src/mls/export/docx.js?v=91fb2abe",
   "/access-practice-lab/src/mls/export/html.js?v=1a024aa6",
   "/access-practice-lab/src/mls/export/index.js?v=726bd8ae",
   "/access-practice-lab/src/mls/export/pptx.js?v=a1315c9a",
-  "/access-practice-lab/src/mls/export/print.js?v=58342b55",
+  "/access-practice-lab/src/mls/export/print.js?v=8c308b76",
   "/access-practice-lab/src/mls/export/raster.js?v=ac18d1a4",
   "/access-practice-lab/src/mls/families/g12.js?v=b580dda5",
   "/access-practice-lab/src/mls/families/g34.js?v=f7a42cfc",
@@ -940,7 +940,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/mls/manips-b.js?v=75f5aa87",
   "/access-practice-lab/src/mls/manips.js?v=09c28355",
   "/access-practice-lab/src/mls/merge.js?v=cd5ce2af",
-  "/access-practice-lab/src/mls/model.js?v=fff79f1e",
+  "/access-practice-lab/src/mls/model.js?v=a45300a1",
   "/access-practice-lab/src/mls/navigator.js?v=4d21f411",
   "/access-practice-lab/src/mls/roles.js?v=d09b3023",
   "/access-practice-lab/src/mls/search.js?v=9fea2e39",
@@ -1387,7 +1387,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/lesson-builder.js?v=768ebe64",
   "/access-practice-lab/src/views/library.js?v=7954b694",
   "/access-practice-lab/src/views/lingua.js?v=bc7c2023",
-  "/access-practice-lab/src/views/math-literacy-builder.js?v=3433c68e",
+  "/access-practice-lab/src/views/math-literacy-builder.js?v=f51b6295",
   "/access-practice-lab/src/views/math-literacy-play.js?v=1d6f688c",
   "/access-practice-lab/src/views/math-literacy.js?v=a41261c5",
   "/access-practice-lab/src/views/mentor.js?v=118cb5b5",
@@ -1767,6 +1767,8 @@ const PRECACHE_MORE = [
   "/access-practice-lab/content/missions/space-colony.json",
   "/access-practice-lab/content/missions/watershed-mystery.json",
   "/access-practice-lab/content/missions/welcoming-reading-nook.json",
+  "/access-practice-lab/content/mls/coverage-content.json",
+  "/access-practice-lab/content/mls/coverage.json",
   "/access-practice-lab/content/mls/index.json",
   "/access-practice-lab/content/mls/inventory.json",
   "/access-practice-lab/content/mls/progressions.json",

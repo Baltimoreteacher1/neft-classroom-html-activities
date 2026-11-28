@@ -99,7 +99,9 @@ async function newPage(ctxOpts = {}) {
   page.on("console", (m) => {
     if (
       m.type() === "error" &&
-      !/favicon|Failed to load resource|sw\.js|manifest|net::ERR|web-vitals/.test(m.text())
+      !/favicon|Failed to load resource|sw\.js|manifest|net::ERR|web-vitals/.test(m.text()) &&
+      // axe injects itself into every frame; the preview frames are sandboxed without allow-scripts on purpose, so it is refused there.
+      !/Blocked script execution in 'about:srcdoc'/.test(m.text())
     )
       errs.push(m.text());
   });
@@ -319,7 +321,7 @@ const scenarios = {
     ).replace(/\s+/g, " ");
     ok(
       /Mina mixes paint/.test(again) && /Work with a partner/.test(again),
-      "saved resource reopens with the teacher's edits",
+      `saved resource reopens with the teacher's edits (mina=${/Mina mixes paint/.test(again)} partner=${/Work with a partner/.test(again)} recipe=${await page.evaluate(() => JSON.stringify(JSON.parse(localStorage.getItem('accessPracticeLab:v1:mls')).saved[0].recipe))})`,
     );
     await axe(page, "builder");
     await noOverflow(page, "builder");

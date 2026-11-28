@@ -276,7 +276,8 @@ const PRINT_CSS = `
 // ── documents ───────────────────────────────────────────────────────────────
 
 /** A complete HTML document for the browser's print dialog. `key: true` prints the teacher answer key instead. */
-export function printDocument(resource, { key = false, renderVisual = null } = {}) {
+// `button: false` omits the Print button and its script, for the sandboxed in-page preview (scripts are blocked there by design).
+export function printDocument(resource, { key = false, renderVisual = null, button = true } = {}) {
   const r = key ? keyResource(resource) : normalizeResource(resource);
   const { html } = bodyHtml(r, { interactive: false, renderVisual });
   const title = `${r.title}`;
@@ -291,11 +292,11 @@ export function printDocument(resource, { key = false, renderVisual = null } = {
 </head>
 <body class="${key ? "is-key" : "is-student"}">
 <svg class="defs" aria-hidden="true" focusable="false"><defs><pattern id="mls-grid" width="0.25in" height="0.25in" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="0.25in" stroke="#9aa5ad" stroke-width="1"/><line x1="0" y1="0" x2="0.25in" y2="0" stroke="#9aa5ad" stroke-width="1"/></pattern></defs></svg>
-<div class="bar no-print"><button type="button" id="mls-print">Print or Save as PDF</button><span>In the print window, choose &ldquo;Save as PDF&rdquo; as the destination to keep a file.</span></div>
+${button ? `<div class="bar no-print"><button type="button" id="mls-print">Print or Save as PDF</button><span>In the print window, choose &ldquo;Save as PDF&rdquo; as the destination to keep a file.</span></div>` : ""}
 <main class="sheet" aria-labelledby="doc-title">
 ${html}
 </main>
-<script>document.getElementById("mls-print").addEventListener("click",function(){window.print()});</script>
+${button ? `<script>document.getElementById("mls-print").addEventListener("click",function(){window.print()});</script>` : ""}
 </body>
 </html>
 `;

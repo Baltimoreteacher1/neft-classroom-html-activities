@@ -15,6 +15,9 @@ const ENGINE_NAME = { "reading-lab": "Reading Lab", anatomy: "Word Problem Anato
 
 /** What is on screen: the skill, the recipe, the built Resource and any packet parts. */
 let cur = null;
+// unmount() runs on every re-render, so edits are stashed here when the page re-renders itself (a dial changed, a question regenerated) and are
+// picked up once by the next render of the same skill and type. Opening any other resource starts clean.
+let carry = null;
 let compare = false;
 /** Which details panels the teacher has open; kept across re-renders so a change never closes the panel being used. */
 const openPanels = { adjust: false, questions: false };
@@ -107,7 +110,7 @@ function problemEditor() {
 }
 
 function previewFrame(resource, label) {
-  return html`<iframe class="ml-frame" title="${label}" sandbox="allow-same-origin" data-mlb-frame srcdoc="${Exp.printDocument(resource, { key: false })}"></iframe>`;
+  return html`<iframe class="ml-frame" title="${label}" sandbox="allow-same-origin" data-mlb-frame srcdoc="${Exp.printDocument(resource, { key: false, button: false })}"></iframe>`;
 }
 
 function comparePanel() {
@@ -129,7 +132,8 @@ export async function render(ctx, I, id, sub, sub2, h) {
   }
   const type = sub2;
   let opts = optsFromUrl();
-  let edits = cur?.skill?.id === skill.id && cur?.type === type && cur.edits ? cur.edits : {};
+  let edits = carry && carry.skillId === skill.id && carry.type === type ? carry.edits : {};
+  carry = null;
   let savedId = "";
   const sv = q("saved") ? Store.load().saved.find((x) => x.id === q("saved")) : null;
   if (sv && sv.recipe.skillId === sub) {
@@ -234,12 +238,13 @@ async function doDownload(fmt, key) {
 let editT = 0;
 function refreshPreview() {
   const frame = document.querySelector("[data-mlb-frame]");
-  if (frame) frame.srcdoc = Exp.printDocument(cur.resource, { key: false });
+  if (frame) frame.srcdoc = Exp.printDocument(cur.resource, { key: false, button: false });
   const kf = document.querySelector(".ml-frame-key");
   if (kf) kf.srcdoc = keyHtml(cur.resource);
 }
 function navigate(opts, ctx) {
   cur.opts = opts;
+  carry = { skillId: cur.skill.id, type: cur.type, edits: cur.edits };
   const path = location.pathname;
   history.replaceState({}, "", urlFor(path, { ...opts, variant: opts.variant || "" }));
   ctx.rerender();
@@ -264,7 +269,7 @@ export function onClick(e, ctx) {
     say(c ? "Duplicated. Find the copy under Saved and collections." : "Save it first.");
     return true;
   }
-  if (a === "compare") return ((compare = !compare), ctx.rerender(), true);
+  if (a === "compare") return ((compare = !compare), (carry = { skillId: cur.skill.id, type: cur.type, edits: cur.edits }), ctx.rerender(), true);
   if (a === "newset") return (navigate({ ...cur.opts, seed: (cur.norm.seed || 1) + 1, pseed: {} }, ctx), true);
   const li = act.closest("[data-mlb-prob]");
   if (li && a === "regen") {
