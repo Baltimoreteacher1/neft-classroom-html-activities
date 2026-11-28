@@ -36,6 +36,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { frontRoute } from "../functions/_lib/lp-front.js";
 import { routePfa } from "../functions/_lib/pfa/render.js";
 import { STUDIOS_BASE } from "../functions/_lib/studios-proxy.js";
 import { assertNonEmpty } from "../tools/lib/non-empty.mjs";
@@ -85,6 +86,9 @@ function walk(dir, out = []) {
     }
     if (IGNORE_DIRS.has(entry.name)) continue;
     const full = join(dir, entry.name);
+    // tools/lp/fixtures are pages that are broken ON PURPOSE, to prove the Language Page gates fail when
+    // they should (broken link, overflow). They are not part of any site, so they are not audited.
+    if (full === join(root, "tools", "lp", "fixtures")) continue;
     if (entry.isDirectory()) walk(full, out);
     else out.push(full);
   }
@@ -297,6 +301,15 @@ for (const file of htmlFiles) {
     seenBroken.add(key);
     if (!targetExists(abs)) {
       if (isFunctionBackedRoute(link)) continue;
+      // The Language Page (lp/) is served on thelanguagepage.com from this project: its clean URLs
+      // (/practice/, /content/...) are answered by functions/_lib/lp-front.js, so a link inside an lp/
+      // page also resolves when the front router has that exact route (an unknown one is `missing`).
+      if (
+        relFile.startsWith("lp/") &&
+        link.startsWith("/") &&
+        frontRoute(link.split("#")[0].split("?")[0]).kind === "page"
+      )
+        continue;
       add("error", "link", `broken link → ${link}`, relFile);
     } else if (
       link.startsWith("/") &&
