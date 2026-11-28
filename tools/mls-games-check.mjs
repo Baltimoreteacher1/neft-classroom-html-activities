@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Math Literacy Studio: the twelve reasoning games (access-practice-lab/src/mls/games.js), proved in three layers.
- *   node tools/mls-games-check.mjs [--quick] [--no-browser] [--grades 1,3,6,8] [--only <game id>] [--keep-going]
+ *   node tools/mls-games-check.mjs [--quick] [--no-browser] [--skip-jsdom] [--grades 1,3,6,8] [--only <game id>] [--keep-going]
  *
  *  1. PURE (node): exactly the twelve inventory game ids; every skill has at least three eligible games; the family-specific games are
  *     eligible for exactly the families the directive names; defaultGameFor always names an eligible game.
@@ -122,7 +122,7 @@ const TIMER_WORDS = /\b(timer|countdown|stopwatch|seconds? left|time left|time r
 const BANDS = ["1-2", "3-4", "5-6"];
 const COMBOS = [["1-2", 1], ["3-4", 2], ["5-6", 3], ["3-4", 1], ["1-2", 3], ["5-6", 2], ["3-4", 3], ["1-2", 2], ["5-6", 1]];
 
-await group("jsdom", async () => {
+if (!flag("skip-jsdom")) await group("jsdom", async () => {
   const { JSDOM } = require("jsdom");
   const dom = new JSDOM("<!doctype html><html lang=en><body></body></html>", { url: "http://localhost/" });
   const g = globalThis;

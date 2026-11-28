@@ -4191,7 +4191,7 @@ const scAssoc = {
 };
 
 function pointsAround(rng, m, b, xs, noise) {
-  return xs.map((x) => m.mul(fr(x)).add(b).n / m.mul(fr(x)).add(b).d + rng.int(-noise, noise)).map((y) => Math.round(y));
+  return xs.map((x) => m.mul(fr(x)).add(b).n / m.mul(fr(x)).add(b).d + rng.int(-noise, noise)).map((y) => Math.max(0, Math.round(y)));
 }
 const scPredict = {
   lv: [1, 2, 3],
