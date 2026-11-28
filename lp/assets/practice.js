@@ -78,6 +78,28 @@ function init() {
     again.addEventListener("click", restart);
     done.append(again);
     store.set(`done:${data.id}`, data.items ? { at: Date.now(), right, total } : { at: Date.now() });
+    // On a teacher's playlist: offer the next unfinished set, or the way back once all are done.
+    const pl = store.get("playlist");
+    if (pl?.code && Array.isArray(pl.items) && pl.items.some((x) => x.id === data.id)) {
+      const next = pl.items.find((x) => x.id !== data.id && !store.get(`done:${x.id}`));
+      const link = document.createElement("a");
+      link.className = "btn secondary";
+      link.href = next ? next.u : `/practice/playlist/#p=${pl.code}`;
+      link.textContent = next
+        ? `${tr("playlist.nextIn", "Next in your playlist")}: ${next.t}`
+        : tr("playlist.backTo", "Back to your playlist");
+      const row = document.createElement("p");
+      row.className = "btn-row no-print";
+      row.append(link);
+      if (next) {
+        const back = document.createElement("a");
+        back.className = "btn ghost";
+        back.href = `/practice/playlist/#p=${pl.code}`;
+        back.textContent = tr("playlist.backTo", "Back to your playlist");
+        row.append(back);
+      }
+      done.append(row);
+    }
     done.setAttribute("tabindex", "-1");
     done.focus();
   }

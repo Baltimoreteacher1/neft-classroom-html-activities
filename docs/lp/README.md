@@ -25,6 +25,8 @@ collection. The lab, the Teacher Hub, the WIDA studios and BCPSS bridges keep ev
 - **Change wording in the interface:** `tools/lp/data/i18n.json` (English and Spanish together; G-12 fails on a missing language).
 - **Preview locally:** `node tools/lp/server.mjs` and open http://localhost:4810/.
 - **Check production after a deploy:** `node tools/lp/check.mjs --live --base https://thelanguagepage.com`.
+- **Fast check on every change:** `npm run validate:lp` (the nine browser-free gates, about 2 seconds; part of the repo's
+  `npm run validate`). Run the full `npm run check:lp` before a ship.
 
 ## Gates (`npm run check:lp`)
 

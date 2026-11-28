@@ -2,6 +2,8 @@
 export const LP_ROUTES = [
   "/",
   "/practice/",
+  "/practice/playlist/",
+  "/practice/my-practice/",
   "/practice/grades-2-3/",
   "/practice/grades-2-3/listening/",
   "/practice/grades-2-3/reading/",
@@ -63,6 +65,7 @@ export const LP_ROUTES = [
   "/tools/graphic-organizers/",
   "/tools/readiness-kit/",
   "/tools/warm-ups/",
+  "/tools/playlist-maker/",
   "/tools/game-maker/play/",
   "/content/",
   "/content/math/",
@@ -107,6 +110,7 @@ export const LP_ROUTES = [
 export const LP_SITEMAP = [
   "/",
   "/practice/",
+  "/practice/my-practice/",
   "/practice/grades-2-3/",
   "/practice/grades-2-3/listening/",
   "/practice/grades-2-3/reading/",
@@ -168,6 +172,7 @@ export const LP_SITEMAP = [
   "/tools/graphic-organizers/",
   "/tools/readiness-kit/",
   "/tools/warm-ups/",
+  "/tools/playlist-maker/",
   "/content/",
   "/content/math/",
   "/content/math/grade-6/",
