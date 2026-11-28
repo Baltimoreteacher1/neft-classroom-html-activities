@@ -253,6 +253,17 @@ export function languagePageRoute(url) {
       status: 302,
       location: `${url.origin}${LAB_BASE}${url.pathname.replace(/\/$/, "")}${url.search}`,
     };
+  // Math Literacy Studio: the teacher-facing address (Joel, 2026-11-28: "Yes" to a /teachers/ alias) opens the Studio inside the lab.
+  // Only this path is claimed; every other /teachers/ path still goes to eduwonderlab.com.
+  if (
+    url.pathname === "/teachers/math-literacy" ||
+    url.pathname.startsWith("/teachers/math-literacy/")
+  )
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}/math-literacy${url.pathname.slice("/teachers/math-literacy".length).replace(/\/$/, "")}${url.search}`,
+    };
   // Activity Studio: a teacher's short address and the student links they share (/do/<id>) live inside the lab.
   if (
     url.pathname === "/activity-studio" ||

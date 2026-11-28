@@ -1,10 +1,14 @@
 # Math Literacy Studio: deployment readiness
 
-Status at 2026-11-28: gates green on the source tree; shipping is a separate, authorized step (`ALLOW_DEPLOY=1 npm run ship -- <sha>`). Update this file with the production check results after the ship.
+Status at 2026-11-28: shipped to production with `ALLOW_DEPLOY=1 npm run ship -- <sha>` as a single commit on top of `origin/main` (`2d609d301`, tree identical to the development branch). The ship's 41 live checks passed and the build stamp reports that commit on thelanguagepage.com and eduwonderlab.com.
+
+## Production check, 2026-11-28
+
+On both hosts, in Chromium: `/access-practice-lab/math-literacy` shows the three doors; `/skill/g6-ratios` (dash id) opens; `/resource/g6-ratios/worksheet` renders its preview; a game page mounts; `/access-practice-lab/quest` still answers 200; no page or console errors (the `web-vitals` and CSP-report noise is filtered).
 
 ## Decisions for the owner (Joel)
 
-1. **Route.** The Studio is at `/access-practice-lab/math-literacy`, listed for teachers. thelanguagepage.com redirects paths not on its allow-list to eduwonderlab.com, and adding a path changes the public route contract, so a `/teachers/math-literacy/` alias was **not** added. Decide whether you want one (H-24).
+1. **Route.** The Studio is at `/access-practice-lab/math-literacy`, listed for teachers. On 2026-11-28 Joel approved a teacher-facing alias: `thelanguagepage.com/teachers/math-literacy[/...]` redirects (302) into the lab address, query kept. No other `/teachers/` path on that host is claimed; they still go to eduwonderlab.com (H-24).
 2. **Shell-weight ratchet raised once**, from 29.3 to 29.8 KB gzip, in `data/language-page-perf-budget.json`, with a note. Cause: 34 new import-map entries. Review and decide whether to bundle lab modules instead.
 3. **Skill ids in URLs use a dash** (`g6-ratios`), not a dot, because static servers read `.ratios` as a file extension.
 4. **Picture descriptions** are always available to assistive technology (see `accessibility-and-performance.md`).
