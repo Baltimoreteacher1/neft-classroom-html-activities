@@ -161,6 +161,12 @@ browser, and is now a member of the repo's `npm run validate`, so CI's Pre-Deplo
 rule sends changes under `lp/`, `tools/lp/` and `docs/lp/` to it instead of escalating every commit to the full repo
 gate. Lighthouse now also measures the playlist maker.
 
+**Production check after the third deploy:** the live gates pass (links, 649 baseline URLs, axe on all 106 pages, no
+outside requests, disclaimer, security headers). G-15 had been checking `/`, which since Joel's change answers with a
+302 to the Practice Lab, so it now checks front pages only. Production Lighthouse: playlist maker and My practice
+100/100/100/100 on phone and desktop; the playlist page scores SEO 58 only because it is deliberately `noindex` (each
+playlist link belongs to one teacher's class).
+
 ## Redirects and changed answers (thelanguagepage.com only)
 
 | Path | Before | After |
