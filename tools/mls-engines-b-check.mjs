@@ -57,14 +57,15 @@ async function jsdomPart() {
   const { JSDOM, VirtualConsole } = require("jsdom");
   const errors = [];
   const vc = new VirtualConsole();
-  vc.on("jsdomError", (e) => errors.push(String(e.stack || e.message || e)));
+  let where = "";
+  vc.on("jsdomError", (e) => errors.push(`[${where}] ${String(e.message || e)}\n${String(e.detail?.stack || e.stack || "").split("\n").slice(0, 5).join("\n")}`));
   const dom = new JSDOM("<!doctype html><html lang=\"en\"><body></body></html>", { url: "http://localhost/", pretendToBeVisual: true, virtualConsole: vc });
   const w = dom.window;
   globalThis.window = w;
   globalThis.document = w.document;
   let printed = 0;
   w.print = () => printed++;
-  w.addEventListener("error", (e) => errors.push(`window error: ${e.message}`));
+  w.addEventListener("error", (e) => errors.push(`[${where}] window error: ${e.message}`));
   const spoken = [];
   const voiceOn = () => {
     w.speechSynthesis = { speak: (u) => spoken.push(u.text), cancel() {} };
@@ -126,6 +127,7 @@ async function jsdomPart() {
         if ((si + mounts) % 2) voiceOn();
         else voiceOff();
         let handle = null;
+        where = `mount ${id} ${skill.id} ${band}`;
         try {
           handle = ENGINES[id].mount(c, { skill, band, level, seed: 1 + (si % 7), support: "standard", ctx: skill.contexts?.[0] || "store" });
         } catch (e) {
@@ -164,6 +166,7 @@ async function jsdomPart() {
   skills.forEach((skill, si) => {
     for (const id of ENGINE_IDS) {
       const band = ["1-2", "3-4", "5-6"][(si + id.length) % 3];
+      where = `fuzz ${id} ${skill.id} ${band}`;
       const c = w.document.createElement("div");
       w.document.body.append(c);
       if ((si + id.length) % 2) voiceOn();

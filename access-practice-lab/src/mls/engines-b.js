@@ -581,7 +581,7 @@ function listeningLab(el, opts) {
     const p = gen.get(base);
     if (!p || !p.work?.length) return null;
     const kind = p.expr ? "expr" : p.visual ? "visual" : "text";
-    const rep = (q) => (kind === "expr" ? q.expr : kind === "visual" ? JSON.stringify(q.visual) : `${q.stem.standard}|${q.ask.standard}`);
+    const rep = (q) => (kind === "expr" ? q.expr || "" : kind === "visual" ? (q.visual ? JSON.stringify(q.visual) : "") : `${q.stem.standard}|${q.ask.standard}`);
     if (!rep(p)) return null;
     const seen = new Set([rep(p)]);
     const foils = [];
