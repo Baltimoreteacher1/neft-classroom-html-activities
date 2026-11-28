@@ -6492,6 +6492,18 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/teachers/",
+    title: "Teacher resources — The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/teachers/math-literacy/",
+    title: "Math Literacy & Fluency, K–8: a complete program for teachers",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/videos/",
     title: "Videos",
     category: "Tool",
