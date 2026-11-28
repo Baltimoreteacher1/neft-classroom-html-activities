@@ -98,7 +98,12 @@ test("builds are deterministic, edits and regeneration address the right problem
   const withDir = M.applyEdits(a, { directions: "Work with a partner." });
   assert.equal(withDir.sections[0].heading, "Directions from your teacher");
   assert.match(JSON.stringify(withDir.sections[0]), /Work with a partner/);
-  assert.equal(M.applyEdits(withDir, { directions: "Again." }).sections.filter((x) => x.heading === "Directions from your teacher").length, 1);
+  assert.equal(
+    M.applyEdits(withDir, { directions: "Again." }).sections.filter(
+      (x) => x.heading === "Directions from your teacher",
+    ).length,
+    1,
+  );
 });
 
 test("every resource type builds for every grade with sections, a key where there are problems, and no broken text", () => {

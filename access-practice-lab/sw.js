@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "82cd41bbfa5b";
+const BUILD_HASH = "372cdf877ef7";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=9edfb6eb",
@@ -533,7 +533,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/create/page.js?v=f747045b",
   "/access-practice-lab/src/create/panel.js?v=053b0c6d",
   "/access-practice-lab/src/create/print-games.js?v=98511d23",
-  "/access-practice-lab/src/create/routes.js?v=87566ccf",
+  "/access-practice-lab/src/create/routes.js?v=ffda3820",
   "/access-practice-lab/src/create/scorm.js?v=61a352e8",
   "/access-practice-lab/src/create/session.js?v=1ec3bd7f",
   "/access-practice-lab/src/create/supports-ui.js?v=4c6c98fa",
@@ -1422,7 +1422,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/lingua.js?v=bc7c2023",
   "/access-practice-lab/src/views/listen-for-clue.js?v=5cb6c610",
   "/access-practice-lab/src/views/math-literacy-builder.js?v=9a7aeea8",
-  "/access-practice-lab/src/views/math-literacy-fluency.js?v=9e26cb21",
+  "/access-practice-lab/src/views/math-literacy-fluency.js?v=c009039d",
   "/access-practice-lab/src/views/math-literacy-play.js?v=3ed2a0ee",
   "/access-practice-lab/src/views/math-literacy.js?v=79480917",
   "/access-practice-lab/src/views/mentor.js?v=118cb5b5",

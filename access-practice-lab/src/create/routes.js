@@ -338,6 +338,9 @@ export const ROUTES = Object.freeze({
   "experience-builder": workspace("Experience Builder has its own authoring workflow."),
   "lesson-builder": workspace("The Lesson Builder has its own resource studio and planner."),
   pathways: workspace("Pathways has its own builder."),
+  "math-literacy": workspace(
+    "Math Literacy Studio has its own resource builder, with preview, print and share.",
+  ),
   "task-packs": workspace("Task Packs is a speaking task builder with its own drafts."),
   "vocab-sets": workspace("Vocabulary Sets is a word-list builder with its own practice, print and share."),
 

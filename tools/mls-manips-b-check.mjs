@@ -27,7 +27,10 @@ async function pressOnSelect(page, key) {
   const moved = await page.evaluate((k) => {
     const el = document.activeElement;
     if (!el || el.tagName !== "SELECT") return false;
-    const next = Math.max(0, Math.min(el.options.length - 1, el.selectedIndex + (k === "ArrowUp" ? -1 : 1)));
+    const next = Math.max(
+      0,
+      Math.min(el.options.length - 1, el.selectedIndex + (k === "ArrowUp" ? -1 : 1)),
+    );
     if (next === el.selectedIndex) return true;
     el.selectedIndex = next;
     el.dispatchEvent(new Event("input", { bubbles: true }));
@@ -36,7 +39,6 @@ async function pressOnSelect(page, key) {
   }, key);
   if (!moved) await page.keyboard.press(key);
 }
-
 
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -2181,6 +2183,7 @@ async function runBrowser() {
         if (axeSrc) {
           await page.evaluate(axeSrc);
           const res = await page.evaluate(() =>
+            // biome-ignore lint/correctness/noUndeclaredVariables: axe-core is injected into the page above
             axe.run(document, {
               runOnly: {
                 type: "tag",

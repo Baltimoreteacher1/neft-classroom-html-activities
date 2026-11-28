@@ -31,7 +31,7 @@ export function skillPractice(ctx, skill, h) {
     <div class="ml-fluency-actions">
       <a class="btn" href="${h.mh("tool/auto", { skill: skill.id, ...settings })}">${icon("tools")} Explore a model</a>
       ${source ? html`<a class="btn" href="${guided}">See a guided example</a>
-        <a class="btn primary" href="${href}">${icon("pencil")} Practice this skill</a>` : ""}
+        <a class="btn primary" href="${href}">${icon("writing")} Practice this skill</a>` : ""}
       ${race
         ? html`<a class="btn" href="${race}">${icon("play")} Play a math race</a>`
         : html`<a class="btn" href="${h.mh(`play/${skill.id}/auto`, settings)}">${icon("play")} Play a skill game</a>`}
