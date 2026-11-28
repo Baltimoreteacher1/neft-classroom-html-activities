@@ -16,19 +16,46 @@ export const everything = {
   type: "worksheet",
   title: "Every Block: Multiplication & Division",
   subtitle: "A fixture with one of every block type",
-  meta: { minutes: 25, support: "standard", mathLevel: 2, langBand: 3, roles: ["practice"], standards: ["3.OA.A.1"], objective: "I can use arrays.", seed: 7 },
+  meta: {
+    minutes: 25,
+    support: "standard",
+    mathLevel: 2,
+    langBand: 3,
+    roles: ["practice"],
+    standards: ["3.OA.A.1"],
+    objective: "I can use arrays.",
+    seed: 7,
+  },
   sections: [
     {
       heading: "Getting started",
       blocks: [
-        { t: "p", style: "directions", text: `Read each problem. Show your thinking. Use ${TIMES}, ${DIVIDE} and ${MINUS} when you need them.` },
-        { t: "p", text: "A plain paragraph. It has an ampersand (Tom & Jerry), angle brackets (3 < 5 > 2), quotes (“smart” and \"straight\") and an apostrophe (it's)." },
+        {
+          t: "p",
+          style: "directions",
+          text: `Read each problem. Show your thinking. Use ${TIMES}, ${DIVIDE} and ${MINUS} when you need them.`,
+        },
+        {
+          t: "p",
+          text: 'A plain paragraph. It has an ampersand (Tom & Jerry), angle brackets (3 < 5 > 2), quotes (“smart” and "straight") and an apostrophe (it\'s).',
+        },
         { t: "p", style: "note", text: "Note: you may use counters." },
         { t: "p", style: "quote", text: "“Mathematics is a language.”" },
-        { t: "p", style: "teacher", text: "Teacher view: this paragraph is authored with the teacher style, so it is drawn as a teacher box." },
-        { t: "list", items: ["First bullet", "Second bullet with ≤ and π", "Third bullet with 5²"] },
+        {
+          t: "p",
+          style: "teacher",
+          text: "Teacher view: this paragraph is authored with the teacher style, so it is drawn as a teacher box.",
+        },
+        {
+          t: "list",
+          items: ["First bullet", "Second bullet with ≤ and π", "Third bullet with 5²"],
+        },
         { t: "list", ordered: true, items: ["Read", "Think", "Solve", "Check"] },
-        { t: "list", ordered: true, items: ["Second ordered list restarts at one", "Another item"] },
+        {
+          t: "list",
+          ordered: true,
+          items: ["Second ordered list restarts at one", "Another item"],
+        },
         {
           t: "table",
           caption: "Multiplication facts",
@@ -39,9 +66,20 @@ export const everything = {
             ["4", "20", "AB & CD"],
           ],
         },
-        { t: "visual", spec: { kind: "tenframe", n: 7, alt: "A ten frame with seven dots." }, alt: "A ten frame with seven dots." },
-        { t: "wordbank", words: ["array", "factor", "product", "equal groups", "divide", "quotient", "row"] },
-        { t: "frames", level: "1-2", items: ["There are ___ rows of ___.", "___ × ___ = ___ because ___."] },
+        {
+          t: "visual",
+          spec: { kind: "tenframe", n: 7, alt: "A ten frame with seven dots." },
+          alt: "A ten frame with seven dots.",
+        },
+        {
+          t: "wordbank",
+          words: ["array", "factor", "product", "equal groups", "divide", "quotient", "row"],
+        },
+        {
+          t: "frames",
+          level: "1-2",
+          items: ["There are ___ rows of ___.", "___ × ___ = ___ because ___."],
+        },
       ],
     },
     {
@@ -78,7 +116,10 @@ export const everything = {
           ask: "Complete the sentence frame, then solve.",
           expr: `3 ${TIMES} 7`,
           choices: choicesFor(3, ["A:21", "B:10", "C:24", "D:18"]),
-          frames: ["There are ___ boxes with ___ muffins in each box.", "So there are ___ muffins in all."],
+          frames: [
+            "There are ___ boxes with ___ muffins in each box.",
+            "So there are ___ muffins in all.",
+          ],
           correct: 0,
           explain: "KEYONLY-explain-3",
           workspace: { kind: "box", size: 2 },
@@ -94,21 +135,71 @@ export const everything = {
           t: "problem",
           n: 5,
           ask: "What fraction of the circle is shaded?",
-          visual: { kind: "fracshape", shape: "circle", parts: 4, shaded: 3, alt: "A circle cut into 4 equal parts with 3 shaded." },
+          visual: {
+            kind: "fracshape",
+            shape: "circle",
+            parts: 4,
+            shaded: 3,
+            alt: "A circle cut into 4 equal parts with 3 shaded.",
+          },
           answer: "3/4",
           hint: "KEYONLY-hint-5",
           explain: "KEYONLY-explain-5: three of four equal parts.",
           workspace: { kind: "lines", size: 1 },
         },
         { t: "lines", prompt: "Write one sentence that uses the word product.", n: 3 },
-        { t: "check", items: ["I showed my work.", "I checked my answer.", "I used a word from the word bank."] },
+        {
+          t: "check",
+          items: ["I showed my work.", "I checked my answer.", "I used a word from the word bank."],
+        },
       ],
     },
-    { heading: "Cards", blocks: [
-      { t: "cards", cols: 2, items: [{ front: "factor", back: "a number you multiply" }, { front: "product", back: "the answer to a multiplication" }, { front: "array" }, { front: "quotient", back: "the answer to a division" }] },
-      { t: "cards", cols: 3, items: [{ front: "3 × 4" }, { front: "12 ÷ 3" }, { front: "2 × 6" }, { front: "20 ÷ 5" }, { front: "5 × 5" }] },
-      { t: "cards", cols: 2, items: [{ front: "Seven", back: "7 dots", visual: { kind: "tenframe", n: 7, alt: "A ten frame with seven dots." } }, { front: "Four rows", visual: { kind: "array", rows: 4, cols: 6, alt: "An array with 4 rows and 6 columns." } }] },
-    ] },
+    {
+      heading: "Cards",
+      blocks: [
+        {
+          t: "cards",
+          cols: 2,
+          items: [
+            { front: "factor", back: "a number you multiply" },
+            { front: "product", back: "the answer to a multiplication" },
+            { front: "array" },
+            { front: "quotient", back: "the answer to a division" },
+          ],
+        },
+        {
+          t: "cards",
+          cols: 3,
+          items: [
+            { front: "3 × 4" },
+            { front: "12 ÷ 3" },
+            { front: "2 × 6" },
+            { front: "20 ÷ 5" },
+            { front: "5 × 5" },
+          ],
+        },
+        {
+          t: "cards",
+          cols: 2,
+          items: [
+            {
+              front: "Seven",
+              back: "7 dots",
+              visual: { kind: "tenframe", n: 7, alt: "A ten frame with seven dots." },
+            },
+            {
+              front: "Four rows",
+              visual: {
+                kind: "array",
+                rows: 4,
+                cols: 6,
+                alt: "An array with 4 rows and 6 columns.",
+              },
+            },
+          ],
+        },
+      ],
+    },
     { heading: "", blocks: [{ t: "pagebreak" }, { t: "p", text: "After a page break." }] },
   ],
   key: [
@@ -118,7 +209,10 @@ export const everything = {
     { ref: "4", answer: "Order does not change the product", work: [] },
     { ref: "5", answer: "3/4", work: ["3 of 4 equal parts"] },
   ],
-  notes: ["KEYONLY-note-1: listen for the word factor.", "KEYONLY-note-2: watch for repeated addition."],
+  notes: [
+    "KEYONLY-note-1: listen for the word factor.",
+    "KEYONLY-note-2: watch for repeated addition.",
+  ],
 };
 
 /** Resource 2: long, so every format has to paginate; each problem is findable by its P<n>- tokens. */
@@ -146,25 +240,47 @@ export const long = {
   type: "worksheet",
   title: "A Long Worksheet That Must Paginate Across Many Pages",
   subtitle: "Thirty problems, a reading and a long table",
-  meta: { minutes: 45, support: "more", mathLevel: 1, langBand: 2, roles: ["practice"], standards: ["4.NBT.B.6"], objective: "I can divide.", seed: 3 },
+  meta: {
+    minutes: 45,
+    support: "more",
+    mathLevel: 1,
+    langBand: 2,
+    roles: ["practice"],
+    standards: ["4.NBT.B.6"],
+    objective: "I can divide.",
+    seed: 3,
+  },
   sections: [
     {
       heading: "Read first",
       blocks: [
         {
           t: "p",
-          text: Array.from({ length: 14 }, (_, k) => `Sentence ${k + 1} of the reading passage explains how a teacher shares a stack of cards among equal groups so that every group receives the same number.`).join(" "),
+          text: Array.from(
+            { length: 14 },
+            (_, k) =>
+              `Sentence ${k + 1} of the reading passage explains how a teacher shares a stack of cards among equal groups so that every group receives the same number.`,
+          ).join(" "),
         },
         {
           t: "table",
           headers: ["Row", "Cards", "Piles", "Each pile"],
-          rows: Array.from({ length: 24 }, (_, k) => [String(k + 1), String(20 + k), String(2 + (k % 5)), `about ${Math.round((20 + k) / (2 + (k % 5)))}`]),
+          rows: Array.from({ length: 24 }, (_, k) => [
+            String(k + 1),
+            String(20 + k),
+            String(2 + (k % 5)),
+            `about ${Math.round((20 + k) / (2 + (k % 5)))}`,
+          ]),
         },
       ],
     },
     { heading: "Practice", blocks: longProblems },
   ],
-  key: longProblems.map((p) => ({ ref: String(p.n), answer: `KEYONLY-long-answer-${p.n}`, work: [`${p.expr} = ...`] })),
+  key: longProblems.map((p) => ({
+    ref: String(p.n),
+    answer: `KEYONLY-long-answer-${p.n}`,
+    work: [`${p.expr} = ...`],
+  })),
   notes: ["KEYONLY-long-note"],
 };
 
@@ -176,18 +292,76 @@ export const special = {
   type: "quiz",
   title: `Ratios & Rates: 3 < 5 > 2 ≤ π ${TIMES} r² "quoted" <b>bold</b>`,
   subtitle: "Ampersands & angle brackets <script>alert(1)</script> stay text",
-  meta: { minutes: 10, support: "extension", mathLevel: 3, langBand: 5, roles: [], standards: [], objective: "x", seed: 1 },
+  meta: {
+    minutes: 10,
+    support: "extension",
+    mathLevel: 3,
+    langBand: 5,
+    roles: [],
+    standards: [],
+    objective: "x",
+    seed: 1,
+  },
   sections: [
     {
       heading: "Check your answers & reasoning",
       blocks: [
-        { t: "p", text: `Is 3 < 5 & 5 > 3? Is area = πr² ≤ 10? 6 ${DIVIDE} 2 = 3; 5 ${MINUS} 8 = ${MINUS}3. <img src=x onerror=alert(1)> is just text.` },
-        { t: "problem", n: 1, ask: "Type the product.", expr: `24 ${TIMES} 56`, answer: "1344", explain: "KEYONLY-s-explain-1", hint: "KEYONLY-s-hint-1", workspace: { kind: "none", size: 1 } },
-        { t: "problem", n: 2, ask: "Write one half as a decimal.", answer: "0.5", explain: "KEYONLY-s-explain-2", workspace: { kind: "none", size: 1 } },
-        { t: "problem", n: 3, ask: "Write the fraction three quarters.", answer: "3/4", explain: "KEYONLY-s-explain-3", workspace: { kind: "none", size: 1 } },
-        { t: "problem", n: 4, ask: `What is 5 ${MINUS} 8?`, answer: "-3", explain: "KEYONLY-s-explain-4", workspace: { kind: "none", size: 1 } },
-        { t: "problem", n: 5, ask: "Which is greater than 1/2?", choices: ["1/3", "2/3", "0.4", "25%"], correct: 1, explain: "KEYONLY-s-explain-5", hint: "KEYONLY-s-hint-5", workspace: { kind: "none", size: 1 } },
-        { t: "problem", n: 6, ask: "What is the point?", answer: "(2,5)", explain: "KEYONLY-s-explain-6", workspace: { kind: "none", size: 1 } },
+        {
+          t: "p",
+          text: `Is 3 < 5 & 5 > 3? Is area = πr² ≤ 10? 6 ${DIVIDE} 2 = 3; 5 ${MINUS} 8 = ${MINUS}3. <img src=x onerror=alert(1)> is just text.`,
+        },
+        {
+          t: "problem",
+          n: 1,
+          ask: "Type the product.",
+          expr: `24 ${TIMES} 56`,
+          answer: "1344",
+          explain: "KEYONLY-s-explain-1",
+          hint: "KEYONLY-s-hint-1",
+          workspace: { kind: "none", size: 1 },
+        },
+        {
+          t: "problem",
+          n: 2,
+          ask: "Write one half as a decimal.",
+          answer: "0.5",
+          explain: "KEYONLY-s-explain-2",
+          workspace: { kind: "none", size: 1 },
+        },
+        {
+          t: "problem",
+          n: 3,
+          ask: "Write the fraction three quarters.",
+          answer: "3/4",
+          explain: "KEYONLY-s-explain-3",
+          workspace: { kind: "none", size: 1 },
+        },
+        {
+          t: "problem",
+          n: 4,
+          ask: `What is 5 ${MINUS} 8?`,
+          answer: "-3",
+          explain: "KEYONLY-s-explain-4",
+          workspace: { kind: "none", size: 1 },
+        },
+        {
+          t: "problem",
+          n: 5,
+          ask: "Which is greater than 1/2?",
+          choices: ["1/3", "2/3", "0.4", "25%"],
+          correct: 1,
+          explain: "KEYONLY-s-explain-5",
+          hint: "KEYONLY-s-hint-5",
+          workspace: { kind: "none", size: 1 },
+        },
+        {
+          t: "problem",
+          n: 6,
+          ask: "What is the point?",
+          answer: "(2,5)",
+          explain: "KEYONLY-s-explain-6",
+          workspace: { kind: "none", size: 1 },
+        },
         { t: "table", headers: ["a & b", "<c>", "π"], rows: [["1 < 2", "≤", "r²"]] },
       ],
     },

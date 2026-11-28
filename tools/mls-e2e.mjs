@@ -250,15 +250,24 @@ const scenarios = {
     await frame().locator("body").waitFor();
     t = await text();
     ok(/word bank/i.test(t), "More support adds a word bank");
-    const answers = async () => (await page.frameLocator(".ml-frame-key").locator("td:nth-child(2)").allInnerTexts()).join("|");
+    const answers = async () =>
+      (await page.frameLocator(".ml-frame-key").locator("td:nth-child(2)").allInnerTexts()).join(
+        "|",
+      );
     const keyBefore = await answers();
     await page.locator("details.ml-adv summary").first().click();
     await page.locator('input[data-mlb="band"][value="5-6"]').check();
     await page.waitForFunction(() => location.search.includes("band=5-6"));
     await page.waitForTimeout(500);
-    ok(keyBefore.length > 3 && keyBefore === (await answers()), "changing ONLY the language band leaves the mathematics and the answers identical");
+    ok(
+      keyBefore.length > 3 && keyBefore === (await answers()),
+      "changing ONLY the language band leaves the mathematics and the answers identical",
+    );
     // the Adjust panel stays open while the teacher keeps changing dials
-    ok(await page.locator('details[data-mlb-adv="adjust"]').evaluate((d) => d.open), "the Adjust panel stays open after a change");
+    ok(
+      await page.locator('details[data-mlb-adv="adjust"]').evaluate((d) => d.open),
+      "the Adjust panel stays open after a change",
+    );
     // mathematics level changes the problems, not the language
     await page.locator('input[data-mlb="math"][value="3"]').check();
     await page.waitForFunction(() => location.search.includes("math=3"));

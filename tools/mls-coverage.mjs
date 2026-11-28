@@ -33,12 +33,15 @@ const gate = (name, ok, detail = "") => {
   return ok;
 };
 // "undefined" is real mathematics (the slope of a vertical line), so only the code-bug forms count: a bare value, or "undefined" as a whole line.
-const BAD = /^undefined$|(?:^|[\s:(,])undefined(?:[\s,.)]*$)(?<!slope is undefined)|NaN|\[object|\{\{|\}\}|\bnull\b/;
+const BAD =
+  /^undefined$|(?:^|[\s:(,])undefined(?:[\s,.)]*$)(?<!slope is undefined)|NaN|\[object|\{\{|\}\}|\bnull\b/;
 // Only the text a person would read: JSON punctuation such as "}}" at the end of nested objects is not broken text.
 const leaves = (v, out = []) => {
   if (typeof v === "string") out.push(v);
   else if (Array.isArray(v)) for (const x of v) leaves(x, out);
-  else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) if (!["spec", "visual", "t", "style", "kind"].includes(k)) leaves(x, out);
+  else if (v && typeof v === "object")
+    for (const [k, x] of Object.entries(v))
+      if (!["spec", "visual", "t", "style", "kind"].includes(k)) leaves(x, out);
   return out;
 };
 const flatText = (r) => leaves([r.sections, r.key, r.notes]).join("\n");

@@ -47,9 +47,18 @@ for (let g = 1; g <= 8; g++) {
     else skippedNoContent += 1;
   }
 }
-console.log(`skills with content: ${skills.length} of ${inventory.skills.length} (skipped for missing content: ${skippedNoContent})`);
+console.log(
+  `skills with content: ${skills.length} of ${inventory.skills.length} (skipped for missing content: ${skippedNoContent})`,
+);
 
-const ENGINE_IDS = ["listening-lab", "error-detective", "story-studio", "modeling-workshop", "concept-comics", "transfer-lab"];
+const ENGINE_IDS = [
+  "listening-lab",
+  "error-detective",
+  "story-studio",
+  "modeling-workshop",
+  "concept-comics",
+  "transfer-lab",
+];
 
 /* ================================================================== PART 1: jsdom */
 async function jsdomPart() {
@@ -58,8 +67,19 @@ async function jsdomPart() {
   const errors = [];
   const vc = new VirtualConsole();
   let where = "";
-  vc.on("jsdomError", (e) => errors.push(`[${where}] ${String(e.message || e)}\n${String(e.detail?.stack || e.stack || "").split("\n").slice(0, 5).join("\n")}`));
-  const dom = new JSDOM("<!doctype html><html lang=\"en\"><body></body></html>", { url: "http://localhost/", pretendToBeVisual: true, virtualConsole: vc });
+  vc.on("jsdomError", (e) =>
+    errors.push(
+      `[${where}] ${String(e.message || e)}\n${String(e.detail?.stack || e.stack || "")
+        .split("\n")
+        .slice(0, 5)
+        .join("\n")}`,
+    ),
+  );
+  const dom = new JSDOM('<!doctype html><html lang="en"><body></body></html>', {
+    url: "http://localhost/",
+    pretendToBeVisual: true,
+    virtualConsole: vc,
+  });
   const w = dom.window;
   globalThis.window = w;
   globalThis.document = w.document;
@@ -80,15 +100,28 @@ async function jsdomPart() {
   };
   const mod = await import(pathToFileURL(path.join(LAB, "src/mls/engines-b.js")));
   const { ENGINES } = mod;
-  ok(JSON.stringify(Object.keys(ENGINES)) === JSON.stringify(ENGINE_IDS), `ENGINES ids are exactly ${ENGINE_IDS.join(", ")} (got ${Object.keys(ENGINES).join(", ")})`);
-  for (const id of ENGINE_IDS) ok(ENGINES[id] && ENGINES[id].title && ENGINES[id].blurb && typeof ENGINES[id].mount === "function", `${id}: has title, blurb and mount`);
+  ok(
+    JSON.stringify(Object.keys(ENGINES)) === JSON.stringify(ENGINE_IDS),
+    `ENGINES ids are exactly ${ENGINE_IDS.join(", ")} (got ${Object.keys(ENGINES).join(", ")})`,
+  );
+  for (const id of ENGINE_IDS)
+    ok(
+      ENGINES[id] &&
+        ENGINES[id].title &&
+        ENGINES[id].blurb &&
+        typeof ENGINES[id].mount === "function",
+      `${id}: has title, blurb and mount`,
+    );
   const { FAMILIES } = await import(pathToFileURL(path.join(LAB, "src/mls/families.js")));
   const withGen = skills.filter((s) => FAMILIES[s.familyId]);
-  console.log(`skills whose problem family has a generator now: ${withGen.length} of ${skills.length} (${new Set(withGen.map((s) => s.familyId)).size} of ${new Set(skills.map((s) => s.familyId)).size} families); the rest mount in degraded mode`);
+  console.log(
+    `skills whose problem family has a generator now: ${withGen.length} of ${skills.length} (${new Set(withGen.map((s) => s.familyId)).size} of ${new Set(skills.map((s) => s.familyId)).size} families); the rest mount in degraded mode`,
+  );
 
   // exact-answer parser and checker
   const { parseNum, checkTyped, speakable, splitSentences } = mod;
-  const eq = (a, b, m) => ok(a === b, `${m}: expected ${JSON.stringify(b)}, got ${JSON.stringify(a)}`);
+  const eq = (a, b, m) =>
+    ok(a === b, `${m}: expected ${JSON.stringify(b)}, got ${JSON.stringify(a)}`);
   const fakeP = (kind, value) => ({ answer: { kind, value } });
   eq(checkTyped(fakeP("frac", "3/4"), "6/8"), true, "3/4 accepts 6/8");
   eq(checkTyped(fakeP("frac", "3/4"), "0.75"), true, "3/4 accepts 0.75");
@@ -105,15 +138,48 @@ async function jsdomPart() {
   eq(parseNum("abc"), null, "parseNum rejects words");
   eq(parseNum("1 1/2").n / parseNum("1 1/2").d, 1.5, "parseNum reads a mixed number");
   eq(speakable("14 ÷ ? = 2"), "14 divided by blank equals 2", "speakable says the symbols");
-  eq(splitSentences("It costs 3.5 dollars. Ask Ana!").length, 2, "sentences do not split inside 3.5");
+  eq(
+    splitSentences("It costs 3.5 dollars. Ask Ana!").length,
+    2,
+    "sentences do not split inside 3.5",
+  );
 
   const KEY = {
-    "listening-lab": (c) => ({ root: c.querySelector(".eb-listen"), nav: c.querySelectorAll(".eb-nav button").length >= 1, player: c.querySelector(".eb-player .eb-controls select"), transcript: c.querySelector(".eb-transcript"), live: true }),
-    "error-detective": (c) => ({ root: c.querySelector(".eb-detect"), steps: c.querySelectorAll(".eb-steps li").length >= 4, choices: c.querySelectorAll('[data-eb-step="0"] .eb-choice').length >= 2, teacher: c.querySelector(".eb-teacher summary") }),
-    "story-studio": (c) => ({ root: c.querySelector(".eb-story"), scene: c.querySelector(".eb-scene"), progress: c.querySelectorAll(".eb-progress li").length >= 3, begin: [...c.querySelectorAll("button")].some((b) => /Begin the story/.test(b.textContent)) }),
-    "modeling-workshop": (c) => ({ root: c.querySelector(".eb-model"), badge: /Invented|generic/.test(c.querySelector(".eb-badge")?.textContent || ""), next: [...c.querySelectorAll("button")].some((b) => /Next step/.test(b.textContent)) }),
-    "concept-comics": (c) => ({ root: c.querySelector(".eb-comic"), panel: c.querySelectorAll(".eb-panel").length === 1, label: /says:/.test(c.querySelector(".eb-panel")?.getAttribute("aria-label") || ""), next: [...c.querySelectorAll("button")].some((b) => /Next panel/.test(b.textContent)) }),
-    "transfer-lab": (c) => ({ root: c.querySelector(".eb-transfer"), items: c.querySelectorAll(".eb-sortitem").length >= 5, relation: c.querySelector(".eb-relation") }),
+    "listening-lab": (c) => ({
+      root: c.querySelector(".eb-listen"),
+      nav: c.querySelectorAll(".eb-nav button").length >= 1,
+      player: c.querySelector(".eb-player .eb-controls select"),
+      transcript: c.querySelector(".eb-transcript"),
+      live: true,
+    }),
+    "error-detective": (c) => ({
+      root: c.querySelector(".eb-detect"),
+      steps: c.querySelectorAll(".eb-steps li").length >= 4,
+      choices: c.querySelectorAll('[data-eb-step="0"] .eb-choice').length >= 2,
+      teacher: c.querySelector(".eb-teacher summary"),
+    }),
+    "story-studio": (c) => ({
+      root: c.querySelector(".eb-story"),
+      scene: c.querySelector(".eb-scene"),
+      progress: c.querySelectorAll(".eb-progress li").length >= 3,
+      begin: [...c.querySelectorAll("button")].some((b) => /Begin the story/.test(b.textContent)),
+    }),
+    "modeling-workshop": (c) => ({
+      root: c.querySelector(".eb-model"),
+      badge: /Invented|generic/.test(c.querySelector(".eb-badge")?.textContent || ""),
+      next: [...c.querySelectorAll("button")].some((b) => /Next step/.test(b.textContent)),
+    }),
+    "concept-comics": (c) => ({
+      root: c.querySelector(".eb-comic"),
+      panel: c.querySelectorAll(".eb-panel").length === 1,
+      label: /says:/.test(c.querySelector(".eb-panel")?.getAttribute("aria-label") || ""),
+      next: [...c.querySelectorAll("button")].some((b) => /Next panel/.test(b.textContent)),
+    }),
+    "transfer-lab": (c) => ({
+      root: c.querySelector(".eb-transfer"),
+      items: c.querySelectorAll(".eb-sortitem").length >= 5,
+      relation: c.querySelector(".eb-relation"),
+    }),
   };
   const BAD_TEXT = /undefined|(?<![A-Za-z])NaN(?![a-z])|\[object|(?<![A-Za-z])null(?![a-z])/;
   let mounts = 0;
@@ -129,37 +195,63 @@ async function jsdomPart() {
         let handle = null;
         where = `mount ${id} ${skill.id} ${band}`;
         try {
-          handle = ENGINES[id].mount(c, { skill, band, level, seed: 1 + (si % 7), support: "standard", ctx: skill.contexts?.[0] || "store" });
+          handle = ENGINES[id].mount(c, {
+            skill,
+            band,
+            level,
+            seed: 1 + (si % 7),
+            support: "standard",
+            ctx: skill.contexts?.[0] || "store",
+          });
         } catch (e) {
-          fail(`${id} ${skill.id} ${band} L${level}: mount threw ${e.message}\n${e.stack?.split("\n").slice(1, 4).join("\n")}`);
+          fail(
+            `${id} ${skill.id} ${band} L${level}: mount threw ${e.message}\n${e.stack?.split("\n").slice(1, 4).join("\n")}`,
+          );
           c.remove();
           continue;
         }
         mounts += 1;
-        if (!handle || typeof handle.destroy !== "function") fail(`${id} ${skill.id}: mount did not return { destroy }`);
+        if (!handle || typeof handle.destroy !== "function")
+          fail(`${id} ${skill.id}: mount did not return { destroy }`);
         const k = KEY[id](c);
-        for (const [name, v] of Object.entries(k)) if (!v) fail(`${id} ${skill.id} ${band} L${level}: missing key element "${name}"`);
-        if (BAD_TEXT.test(c.textContent)) fail(`${id} ${skill.id} ${band}: page text contains "${c.textContent.match(BAD_TEXT)[0]}"`);
+        for (const [name, v] of Object.entries(k))
+          if (!v) fail(`${id} ${skill.id} ${band} L${level}: missing key element "${name}"`);
+        if (BAD_TEXT.test(c.textContent))
+          fail(
+            `${id} ${skill.id} ${band}: page text contains "${c.textContent.match(BAD_TEXT)[0]}"`,
+          );
         // text size / structure sanity: every button has a name, every input has a label
-        c.querySelectorAll("button").forEach((b) => !(b.textContent.trim() || b.getAttribute("aria-label")) && fail(`${id} ${skill.id}: a button has no name`));
-        c.querySelectorAll("input:not([type=hidden]), textarea, select").forEach((i) => !(i.id && c.querySelector(`label[for="${i.id}"]`)) && !i.getAttribute("aria-label") && fail(`${id} ${skill.id}: a field has no label (${i.outerHTML.slice(0, 60)})`));
+        c.querySelectorAll("button").forEach(
+          (b) =>
+            !(b.textContent.trim() || b.getAttribute("aria-label")) &&
+            fail(`${id} ${skill.id}: a button has no name`),
+        );
+        c.querySelectorAll("input:not([type=hidden]), textarea, select").forEach(
+          (i) =>
+            !(i.id && c.querySelector(`label[for="${i.id}"]`)) &&
+            !i.getAttribute("aria-label") &&
+            fail(`${id} ${skill.id}: a field has no label (${i.outerHTML.slice(0, 60)})`),
+        );
         try {
           handle?.destroy();
         } catch (e) {
           fail(`${id} ${skill.id}: destroy threw ${e.message}`);
         }
-        if (c.childElementCount) fail(`${id} ${skill.id}: destroy left ${c.childElementCount} child elements`);
+        if (c.childElementCount)
+          fail(`${id} ${skill.id}: destroy left ${c.childElementCount} child elements`);
         c.remove();
       }
     }
   });
-  console.log(`mounted ${mounts} activities (${skills.length} skills x 3 bands x 6 engines) in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+  console.log(
+    `mounted ${mounts} activities (${skills.length} skills x 3 bands x 6 engines) in ${((Date.now() - t0) / 1000).toFixed(1)}s`,
+  );
   ok(errors.length === 0, `no jsdom error during mounts (${errors[0] || ""})`);
 
   // random-click fuzz: every engine on every skill (band and level rotate), half with a device voice
   const rng = (() => {
     let s = 12345;
-    return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+    return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
   })();
   let clicks = 0;
   let typed = 0;
@@ -173,13 +265,24 @@ async function jsdomPart() {
       else voiceOff();
       let handle;
       try {
-        handle = ENGINES[id].mount(c, { skill, band, level: 1 + (si % 3), seed: 2 + (si % 5), support: "standard", ctx: skill.contexts?.[0] || "store" });
+        handle = ENGINES[id].mount(c, {
+          skill,
+          band,
+          level: 1 + (si % 3),
+          seed: 2 + (si % 5),
+          support: "standard",
+          ctx: skill.contexts?.[0] || "store",
+        });
       } catch (e) {
         fail(`fuzz mount ${id} ${skill.id}: ${e.message}`);
         continue;
       }
       for (let n = 0; n < 70; n++) {
-        const targets = [...c.querySelectorAll("button:not([disabled]), input:not([type=checkbox]), input[type=checkbox], textarea, select")];
+        const targets = [
+          ...c.querySelectorAll(
+            "button:not([disabled]), input:not([type=checkbox]), input[type=checkbox], textarea, select",
+          ),
+        ];
         if (!targets.length) break;
         const t = targets[Math.floor(rng() * targets.length)];
         try {
@@ -193,21 +296,35 @@ async function jsdomPart() {
             t.checked = !t.checked;
             t.dispatchEvent(new w.Event("change", { bubbles: true }));
           } else {
-            t.value = ["7", "3/4", "(2, 5)", "I think because the numbers change, so it is different.", "", "12 cm", "-4"][Math.floor(rng() * 7)];
+            t.value = [
+              "7",
+              "3/4",
+              "(2, 5)",
+              "I think because the numbers change, so it is different.",
+              "",
+              "12 cm",
+              "-4",
+            ][Math.floor(rng() * 7)];
             t.dispatchEvent(new w.Event("input", { bubbles: true }));
-            if (t.tagName === "INPUT") t.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+            if (t.tagName === "INPUT")
+              t.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
             typed += 1;
           }
         } catch (e) {
           fail(`fuzz ${id} ${skill.id}: ${e.message}`);
         }
       }
-      if (BAD_TEXT.test(c.textContent)) fail(`fuzz ${id} ${skill.id}: text contains "${c.textContent.match(BAD_TEXT)[0]}" after clicking`);
+      if (BAD_TEXT.test(c.textContent))
+        fail(
+          `fuzz ${id} ${skill.id}: text contains "${c.textContent.match(BAD_TEXT)[0]}" after clicking`,
+        );
       handle.destroy();
       c.remove();
     }
   });
-  console.log(`fuzz: ${clicks} clicks and ${typed} typed values, ${spoken.length} device-voice utterances queued, window.print called ${printed} times`);
+  console.log(
+    `fuzz: ${clicks} clicks and ${typed} typed values, ${spoken.length} device-voice utterances queued, window.print called ${printed} times`,
+  );
   ok(errors.length === 0, `no jsdom error during fuzz (${errors.slice(0, 2).join(" | ")})`);
   ok(spoken.length > 0, "device voice was used when present");
 
@@ -218,13 +335,21 @@ async function jsdomPart() {
     w.document.body.append(c);
     const sk = skills.find((s) => s.id === "g6.ratios") || skills[0];
     const hd = ENGINES["listening-lab"].mount(c, { skill: sk, band: "5-6", level: 2, seed: 1 });
-    ok(!c.querySelector(".eb-transcript").hidden, "no device voice: the transcript is visible even for band 5-6");
-    ok(/no voice/i.test(c.querySelector(".eb-novoice")?.textContent || ""), "no device voice: the page says so");
+    ok(
+      !c.querySelector(".eb-transcript").hidden,
+      "no device voice: the transcript is visible even for band 5-6",
+    );
+    ok(
+      /no voice/i.test(c.querySelector(".eb-novoice")?.textContent || ""),
+      "no device voice: the page says so",
+    );
     hd.destroy();
     voiceOn();
     const hd2 = ENGINES["listening-lab"].mount(c, { skill: sk, band: "5-6", level: 2, seed: 1 });
     ok(c.querySelector(".eb-transcript").hidden, "band 5-6 with a voice: transcript starts off");
-    const tog = [...c.querySelectorAll("button")].find((b) => /Show transcript/.test(b.textContent));
+    const tog = [...c.querySelectorAll("button")].find((b) =>
+      /Show transcript/.test(b.textContent),
+    );
     ok(!!tog, "band 5-6: a Show transcript button is one click away");
     tog?.click();
     ok(!c.querySelector(".eb-transcript").hidden, "Show transcript reveals it");
@@ -240,9 +365,23 @@ async function jsdomPart() {
 }
 
 /* ================================================================== PART 2: browser */
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".woff2": "font/woff2", ".woff": "font/woff", ".ico": "image/x-icon", ".webmanifest": "application/manifest+json" };
+const MIME = {
+  ".html": "text/html",
+  ".js": "text/javascript",
+  ".mjs": "text/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".woff2": "font/woff2",
+  ".woff": "font/woff",
+  ".ico": "image/x-icon",
+  ".webmanifest": "application/manifest+json",
+};
 function serve() {
-  const page = (q) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>engines b</title>
+  const page = (
+    q,
+  ) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>engines b</title>
 <link rel="stylesheet" href="/access-practice-lab/ds.css"><link rel="stylesheet" href="/access-practice-lab/mls.css"><link rel="stylesheet" href="/access-practice-lab/mls-play.css"><link rel="stylesheet" href="/access-practice-lab/mls-play-engines-b.css"></head>
 <body><main><button id="eb-start" type="button">before the stage</button>
 <div class="ml-page ml-play ${q.grade <= 2 ? "ml-g12" : q.grade <= 5 ? "ml-g35" : "ml-g68"}"><section class="panel ml-stage" id="stage" aria-label="Activity"></section></div><button id="eb-end" type="button">after the stage</button></main>
@@ -278,7 +417,10 @@ window.__ready = true;
       res.writeHead(404);
       return res.end("not found");
     }
-    res.writeHead(200, { "content-type": MIME[path.extname(f)] || "application/octet-stream", "cache-control": "no-store" });
+    res.writeHead(200, {
+      "content-type": MIME[path.extname(f)] || "application/octet-stream",
+      "cache-control": "no-store",
+    });
     fs.createReadStream(f).pipe(res);
   });
   return new Promise((r) => srv.listen(0, "127.0.0.1", () => r(srv)));
@@ -307,17 +449,25 @@ async function browserPart() {
   const OUT = "/tmp/mls-engines-b";
   fs.mkdirSync(OUT, { recursive: true });
   const { FAMILIES, generate } = await import(pathToFileURL(path.join(LAB, "src/mls/families.js")));
-  const browser = await chromium.launch({ executablePath: fs.existsSync(exe) ? exe : undefined, args: ["--no-sandbox"] });
+  const browser = await chromium.launch({
+    executablePath: fs.existsSync(exe) ? exe : undefined,
+    args: ["--no-sandbox"],
+  });
 
   // choose skills: grades 1, 3, 6, 8 (prefer ones whose problem family has a generator now), plus mode extras (fraction, pair)
   const kindOf = (s) => {
     try {
-      return generate(s.familyId, s.params || {}, { seed: 3, level: 2, ctx: s.contexts?.[0] || "store" }).answer.kind;
+      return generate(s.familyId, s.params || {}, {
+        seed: 3,
+        level: 2,
+        ctx: s.contexts?.[0] || "store",
+      }).answer.kind;
     } catch {
       return null;
     }
   };
-  const pick = (g, pred = () => true) => skills.filter((s) => s.grade === g && FAMILIES[s.familyId] && pred(s))[0] || null;
+  const pick = (g, pred = () => true) =>
+    skills.filter((s) => s.grade === g && FAMILIES[s.familyId] && pred(s))[0] || null;
   const main = [
     { g: 1, band: "1-2", level: 1, skill: pick(1) || skills.find((s) => s.grade === 1) },
     { g: 3, band: "3-4", level: 2, skill: pick(3) || skills.find((s) => s.grade === 3) },
@@ -326,52 +476,105 @@ async function browserPart() {
   ];
   const extras = [];
   for (const kind of ["frac", "pair", "set", "dec", "text"]) {
-    const s = skills.find((x) => FAMILIES[x.familyId] && kindOf(x) === kind && !main.some((m) => m.skill.id === x.id));
-    if (s) extras.push({ g: s.grade, band: ["1-2", "3-4", "5-6"][extras.length % 3], level: 2, skill: s, kind });
+    const s = skills.find(
+      (x) => FAMILIES[x.familyId] && kindOf(x) === kind && !main.some((m) => m.skill.id === x.id),
+    );
+    if (s)
+      extras.push({
+        g: s.grade,
+        band: ["1-2", "3-4", "5-6"][extras.length % 3],
+        level: 2,
+        skill: s,
+        kind,
+      });
   }
-  for (const m of main) console.log(`  grade ${m.g}: ${m.skill.id} (${m.skill.title}) band ${m.band} level ${m.level}, generator: ${FAMILIES[m.skill.familyId] ? "yes" : "NOT YET (degraded mode)"}, answer kind ${kindOf(m.skill)}`);
+  for (const m of main)
+    console.log(
+      `  grade ${m.g}: ${m.skill.id} (${m.skill.title}) band ${m.band} level ${m.level}, generator: ${FAMILIES[m.skill.familyId] ? "yes" : "NOT YET (degraded mode)"}, answer kind ${kindOf(m.skill)}`,
+    );
   for (const m of extras) console.log(`  extra (${m.kind} answers): ${m.skill.id}`);
 
   const norm = (s) => String(s).replace(/\s+/g, " ").trim();
-  const labelOf = async (loc) => norm((await loc.innerText()).replace(/\((Yes|Not this one)\)/g, ""));
+  const labelOf = async (loc) =>
+    norm((await loc.innerText()).replace(/\((Yes|Not this one)\)/g, ""));
 
   async function session(m, engine, fn, { reduced = false, width = 375 } = {}) {
-    const ctx = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: reduced ? "reduce" : "no-preference" });
+    const ctx = await browser.newContext({
+      viewport: { width, height: 900 },
+      reducedMotion: reduced ? "reduce" : "no-preference",
+    });
     const page = await ctx.newPage();
     const problems = [];
     page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
-    page.on("console", (msg) => msg.type() === "error" && !/Failed to load resource|favicon/.test(msg.text()) && problems.push(`console: ${msg.text()}`));
+    page.on(
+      "console",
+      (msg) =>
+        msg.type() === "error" &&
+        !/Failed to load resource|favicon/.test(msg.text()) &&
+        problems.push(`console: ${msg.text()}`),
+    );
     await page.goto(`${base}/__eb/test.html?grade=${m.g}`);
     await page.waitForFunction(() => window.__ready === true);
-    const info = await page.evaluate(([e, s, b, l, sd]) => window.__mount(e, s, b, l, sd), [engine, m.skill.id, m.band, m.level, 1]);
-    await page.evaluate(() => (window.print = () => (window.__printed = (window.__printed || 0) + 1)));
+    const info = await page.evaluate(
+      ([e, s, b, l, sd]) => window.__mount(e, s, b, l, sd),
+      [engine, m.skill.id, m.band, m.level, 1],
+    );
+    await page.evaluate(
+      () => (window.print = () => (window.__printed = (window.__printed || 0) + 1)),
+    );
     const tag = `${engine} ${m.skill.id} ${m.band}`;
     const env = { page, m, engine, tag, info, shots: 0 };
     env.stage = page.locator("#stage");
     env.chk = async (label) => {
       const r = await page.evaluate(() => {
         const st = document.getElementById("stage");
-        return { doc: document.documentElement.scrollWidth, win: window.innerWidth, stage: st.scrollWidth, cw: st.clientWidth };
+        return {
+          doc: document.documentElement.scrollWidth,
+          win: window.innerWidth,
+          stage: st.scrollWidth,
+          cw: st.clientWidth,
+        };
       });
-      ok(r.doc <= r.win + 1 && r.stage <= r.cw + 1, `${tag} [${label}]: horizontal overflow at ${width}px (doc ${r.doc}/${r.win}, stage ${r.stage}/${r.cw})`);
-      const badText = await page.evaluate(() => (document.getElementById("stage").innerText.match(/undefined|(?<![A-Za-z])NaN(?![a-z])|\[object|(?<![A-Za-z])null(?![a-z])/) || [])[0]);
+      ok(
+        r.doc <= r.win + 1 && r.stage <= r.cw + 1,
+        `${tag} [${label}]: horizontal overflow at ${width}px (doc ${r.doc}/${r.win}, stage ${r.stage}/${r.cw})`,
+      );
+      const badText = await page.evaluate(
+        () =>
+          (document
+            .getElementById("stage")
+            .innerText.match(
+              /undefined|(?<![A-Za-z])NaN(?![a-z])|\[object|(?<![A-Za-z])null(?![a-z])/,
+            ) || [])[0],
+      );
       ok(!badText, `${tag} [${label}]: page text contains "${badText}"`);
       const small = await page.evaluate(() => {
         const bad = [];
-        document.querySelectorAll("#stage :is(button, select, input:not([type=checkbox]), textarea, summary)").forEach((el) => {
-          if (!el.checkVisibility?.()) return;
-          const r = el.getBoundingClientRect();
-          if (r.height < 43.5 || r.width < 43.5) bad.push(`${el.tagName} "${(el.textContent || el.id).trim().slice(0, 20)}" ${Math.round(r.width)}x${Math.round(r.height)}`);
-        });
+        document
+          .querySelectorAll(
+            "#stage :is(button, select, input:not([type=checkbox]), textarea, summary)",
+          )
+          .forEach((el) => {
+            if (!el.checkVisibility?.()) return;
+            const r = el.getBoundingClientRect();
+            if (r.height < 43.5 || r.width < 43.5)
+              bad.push(
+                `${el.tagName} "${(el.textContent || el.id).trim().slice(0, 20)}" ${Math.round(r.width)}x${Math.round(r.height)}`,
+              );
+          });
         return bad;
       });
-      ok(small.length === 0, `${tag} [${label}]: targets under 44px: ${small.slice(0, 3).join("; ")}`);
+      ok(
+        small.length === 0,
+        `${tag} [${label}]: targets under 44px: ${small.slice(0, 3).join("; ")}`,
+      );
       const tiny = await page.evaluate(() => {
         const bad = [];
         document.querySelectorAll("#stage *").forEach((el) => {
           if (!el.checkVisibility?.() || el.closest("svg")) return;
           const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
-          if (own && parseFloat(getComputedStyle(el).fontSize) < 15.95) bad.push(`${el.tagName}.${el.className} ${getComputedStyle(el).fontSize}`);
+          if (own && parseFloat(getComputedStyle(el).fontSize) < 15.95)
+            bad.push(`${el.tagName}.${el.className} ${getComputedStyle(el).fontSize}`);
         });
         return bad;
       });
@@ -379,8 +582,11 @@ async function browserPart() {
     };
     env.tab = async (label) => {
       const n = await page.evaluate(() => {
-        const sel = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, a[href], [tabindex="0"]';
-        const els = [...document.querySelectorAll(`#stage ${sel.split(", ").join(", #stage ")}`)].filter((e) => e.checkVisibility?.({ checkVisibilityCSS: true }));
+        const sel =
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, a[href], [tabindex="0"]';
+        const els = [
+          ...document.querySelectorAll(`#stage ${sel.split(", ").join(", #stage ")}`),
+        ].filter((e) => e.checkVisibility?.({ checkVisibilityCSS: true }));
         els.forEach((e, i) => e.setAttribute("data-tabidx", i));
         return els.length;
       });
@@ -394,21 +600,36 @@ async function browserPart() {
         if (atEnd) break;
       }
       const missing = [...Array(n).keys()].filter((i) => !seen.has(i));
-      ok(missing.length === 0, `${tag} [${label}]: Tab did not reach ${missing.length} of ${n} controls`);
-      await page.evaluate(() => document.querySelectorAll("[data-tabidx]").forEach((e) => e.removeAttribute("data-tabidx")));
+      ok(
+        missing.length === 0,
+        `${tag} [${label}]: Tab did not reach ${missing.length} of ${n} controls`,
+      );
+      await page.evaluate(() =>
+        document.querySelectorAll("[data-tabidx]").forEach((e) => e.removeAttribute("data-tabidx")),
+      );
     };
     env.axe = async (label) => {
       if (!AxeBuilder) return;
-      const r = await new AxeBuilder({ page }).include("#stage").withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
+      const r = await new AxeBuilder({ page })
+        .include("#stage")
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+        .analyze();
       const bad = r.violations.filter((v) => ["serious", "critical"].includes(v.impact));
-      ok(bad.length === 0, `${tag} [${label}]: axe ${bad.map((v) => `${v.id} (${v.nodes.length}: ${v.nodes[0]?.html?.slice(0, 80)})`).join("; ")}`);
+      ok(
+        bad.length === 0,
+        `${tag} [${label}]: axe ${bad.map((v) => `${v.id} (${v.nodes.length}: ${v.nodes[0]?.html?.slice(0, 80)})`).join("; ")}`,
+      );
     };
     env.shot = async (label) => {
       env.shots += 1;
-      await page.locator("#stage").screenshot({ path: `${OUT}/${engine}-g${m.g}-${label}-${width}.png` });
+      await page
+        .locator("#stage")
+        .screenshot({ path: `${OUT}/${engine}-g${m.g}-${label}-${width}.png` });
     };
     env.noAnim = async (label) => {
-      const n = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length);
+      const n = await page.evaluate(
+        () => document.getAnimations().filter((a) => a.playState === "running").length,
+      );
       ok(n === 0, `${tag} [${label}]: ${n} animations running under reduced motion`);
     };
     try {
@@ -424,17 +645,29 @@ async function browserPart() {
   }
 
   /* ---- shared drivers */
-  const fbText = async (scope) => norm((await scope.locator(".ml-fb:not(:empty)").allInnerTexts()).join(" "));
+  const fbText = async (scope) =>
+    norm((await scope.locator(".ml-fb:not(:empty)").allInnerTexts()).join(" "));
   const noLeak = (env, texts, secret, what) => {
     const s = norm(secret);
     if (s.length < 4) return;
-    for (const t of texts) ok(!norm(t).toLowerCase().includes(s.toLowerCase()), `${env.tag}: ${what}: a wrong-answer message contains the answer "${s.slice(0, 40)}"`);
+    for (const t of texts)
+      ok(
+        !norm(t).toLowerCase().includes(s.toLowerCase()),
+        `${env.tag}: ${what}: a wrong-answer message contains the answer "${s.slice(0, 40)}"`,
+      );
   };
   /** Solve a generated-problem item (multiple choice or typed). Wrong answers first, asserting hint and no answer. */
   async function solveProblem(env, item, { wrongFirst = true } = {}) {
-    const attrs = await item.evaluate((n) => ({ seed: n.dataset.seed, level: n.dataset.level, ctx: n.dataset.ctx }));
+    const attrs = await item.evaluate((n) => ({
+      seed: n.dataset.seed,
+      level: n.dataset.level,
+      ctx: n.dataset.ctx,
+    }));
     ok(attrs.seed !== undefined, `${env.tag}: problem item carries its seed`);
-    const ans = await env.page.evaluate(([sid, a]) => window.__answer(sid, a.seed, a.level, a.ctx), [env.m.skill.id, attrs]);
+    const ans = await env.page.evaluate(
+      ([sid, a]) => window.__answer(sid, a.seed, a.level, a.ctx),
+      [env.m.skill.id, attrs],
+    );
     const misses = [];
     const choices = item.locator(".eb-choice");
     const nChoices = await choices.count();
@@ -444,7 +677,9 @@ async function browserPart() {
       for (let i = 0; i < nChoices; i++) {
         const b = choices.nth(i);
         const label = await labelOf(b);
-        const isRight = norm(label) === norm(ans.text) || label.includes(ans.text) && label.length <= ans.text.length + 2;
+        const isRight =
+          norm(label) === norm(ans.text) ||
+          (label.includes(ans.text) && label.length <= ans.text.length + 2);
         if (wrongFirst && isRight && i < nChoices - 1) continue; // click right last, so every wrong one is tried
         await b.click();
         const t = await fbText(item);
@@ -452,7 +687,10 @@ async function browserPart() {
           right = label;
           break;
         }
-        ok(/Not yet/.test(t) && t.length > 20, `${env.tag}: a wrong choice gives a hint ("${t.slice(0, 60)}")`);
+        ok(
+          /Not yet/.test(t) && t.length > 20,
+          `${env.tag}: a wrong choice gives a hint ("${t.slice(0, 60)}")`,
+        );
         misses.push(t);
       }
       if (right == null) {
@@ -482,23 +720,51 @@ async function browserPart() {
       if (ans.kind === "int" || ans.kind === "dec") {
         await inputs.first().fill("");
         await item.getByRole("button", { name: /Add 1 to my answer/ }).click();
-        ok((await inputs.first().inputValue()) === "1", `${env.tag}: the +1 stepper builds the number`);
+        ok(
+          (await inputs.first().inputValue()) === "1",
+          `${env.tag}: the +1 stepper builds the number`,
+        );
       }
-      const wrongs = ["frac"].includes(ans.kind) ? ["9/1", "1/9", "7/3"] : ans.kind === "pair" ? ["(99, 98)", "(97, 96)", "(95, 94)"] : ans.kind === "set" ? ["99, 98", "97", "96, 95"] : ["987654", "654321", "321987"];
+      const wrongs = ["frac"].includes(ans.kind)
+        ? ["9/1", "1/9", "7/3"]
+        : ans.kind === "pair"
+          ? ["(99, 98)", "(97, 96)", "(95, 94)"]
+          : ans.kind === "set"
+            ? ["99, 98", "97", "96, 95"]
+            : ["987654", "654321", "321987"];
       for (let i = 0; i < 3; i++) {
         await type(wrongs[i]);
         const t = await fbText(item);
-        ok(/Not yet/.test(t) && t.length > 20, `${env.tag}: wrong typed answer ${i + 1} gives a hint ("${t.slice(0, 60)}")`);
+        ok(
+          /Not yet/.test(t) && t.length > 20,
+          `${env.tag}: wrong typed answer ${i + 1} gives a hint ("${t.slice(0, 60)}")`,
+        );
         misses.push(t);
-        if (i === 2) ok((await item.locator(".eb-worked").count()) > 0, `${env.tag}: a worked parallel example appears after 3 misses`);
+        if (i === 2)
+          ok(
+            (await item.locator(".eb-worked").count()) > 0,
+            `${env.tag}: a worked parallel example appears after 3 misses`,
+          );
       }
       noLeak(env, misses, ans.text, "typed problem");
       // the worked example must be a different problem: its prompt differs from the current one
-      const wk = await item.locator(".eb-worked").innerText().catch(() => "");
+      const wk = await item
+        .locator(".eb-worked")
+        .innerText()
+        .catch(() => "");
       ok(!wk || !/Now go back and try yours/.test(wk) || true, "worked example present");
-      await type(ans.kind === "frac" ? ans.value : ans.kind === "pair" || ans.kind === "set" ? ans.value : ans.value.replace("-", "−"));
+      await type(
+        ans.kind === "frac"
+          ? ans.value
+          : ans.kind === "pair" || ans.kind === "set"
+            ? ans.value
+            : ans.value.replace("-", "−"),
+      );
     }
-    ok((await item.locator(".ml-fb-ok").count()) === 1, `${env.tag}: the right answer completes the item`);
+    ok(
+      (await item.locator(".ml-fb-ok").count()) === 1,
+      `${env.tag}: the right answer completes the item`,
+    );
     return ans;
   }
 
@@ -508,7 +774,8 @@ async function browserPart() {
     const n = await choices.count();
     const misses = [];
     let idxRight = -1;
-    for (let i = 0; i < n; i++) if (norm(await labelOf(choices.nth(i))) === norm(rightText)) idxRight = i;
+    for (let i = 0; i < n; i++)
+      if (norm(await labelOf(choices.nth(i))) === norm(rightText)) idxRight = i;
     ok(idxRight >= 0, `${env.tag}: the right option "${rightText.slice(0, 40)}" is on the page`);
     for (let i = 0; i < n; i++) {
       if (i === idxRight) continue;
@@ -521,7 +788,10 @@ async function browserPart() {
     for (const s of secrets) noLeak(env, misses, s, "authored question");
     if (misses.length) noLeak(env, misses, rightText, "authored question");
     await choices.nth(idxRight).click();
-    ok((await item.locator(".ml-fb-ok").count()) === 1, `${env.tag}: the right option completes the question`);
+    ok(
+      (await item.locator(".ml-fb-ok").count()) === 1,
+      `${env.tag}: the right option completes the question`,
+    );
   }
 
   /* ---- engine drivers */
@@ -534,14 +804,20 @@ async function browserPart() {
       await env.axe("start");
       await env.shot("start");
       const tr = stage.locator(".eb-transcript");
-      ok((await tr.isHidden()) === (m.band !== "1-2"), `${env.tag}: transcript default is ${m.band === "1-2" ? "on" : "off"}`);
+      ok(
+        (await tr.isHidden()) === (m.band !== "1-2"),
+        `${env.tag}: transcript default is ${m.band === "1-2" ? "on" : "off"}`,
+      );
       const tog = stage.getByRole("button", { name: /transcript/i });
       if (m.band !== "1-2") {
         await tog.click();
         ok(await tr.isVisible(), `${env.tag}: transcript shows after one click`);
       }
       await stage.getByRole("button", { name: /Next sentence/ }).click();
-      ok(/Sentence 2 of/.test(await stage.locator(".eb-status").innerText()), `${env.tag}: Next sentence moves the player`);
+      ok(
+        /Sentence 2 of/.test(await stage.locator(".eb-status").innerText()),
+        `${env.tag}: Next sentence moves the player`,
+      );
       await stage.locator(".eb-speed select").selectOption({ label: "Slow" });
       const stationCount = await stage.locator(".eb-nav button").count();
       const seen = [];
@@ -568,23 +844,38 @@ async function browserPart() {
           await ch.nth(0).click();
           if (!(await item.locator(".ml-fb-ok").count())) {
             ok(/Not yet/.test(await fbText(item)), `${env.tag}: wrong match gives feedback`);
-            for (let i = 1; i < n && !(await item.locator(".ml-fb-ok").count()); i++) await ch.nth(i).click();
+            for (let i = 1; i < n && !(await item.locator(".ml-fb-ok").count()); i++)
+              await ch.nth(i).click();
           }
           ok((await item.locator(".ml-fb-ok").count()) === 1, `${env.tag}: match task completes`);
           await env.shot("match");
         } else if (id === "error") {
           const story = await stage.locator(".eb-transcript li").first().innerText();
-          const mc = sk.misconceptions.find((x) => x.errorCase && norm(x.errorCase.story) === norm(story));
+          const mc = sk.misconceptions.find(
+            (x) => x.errorCase && norm(x.errorCase.story) === norm(story),
+          );
           ok(!!mc, `${env.tag}: error station story is an errorCase of the skill`);
-          const item = stage.locator(".eb-item").filter({ hasText: "first one that is not correct" }).last();
+          const item = stage
+            .locator(".eb-item")
+            .filter({ hasText: "first one that is not correct" })
+            .last();
           const right = `Step ${mc.errorCase.firstWrong + 1}`;
           await solveAuthored(env, item, right, [mc.errorCase.explain]);
-          ok(norm(await item.locator(".ml-fb-ok").innerText()).includes(norm(mc.errorCase.explain).slice(0, 30)), `${env.tag}: the explanation appears after the right step`);
+          ok(
+            norm(await item.locator(".ml-fb-ok").innerText()).includes(
+              norm(mc.errorCase.explain).slice(0, 30),
+            ),
+            `${env.tag}: the explanation appears after the right step`,
+          );
         } else if (id === "argue") {
           const claim = await stage.locator(".eb-transcript li").nth(1).innerText();
           const a = sk.discourse.asn.find((x) => norm(x.claim) === norm(claim));
           ok(!!a, `${env.tag}: argue station claim is from the skill`);
-          const text = { always: "I agree: it is always true.", never: "I disagree: it is never true.", sometimes: "It depends: it is sometimes true." }[a.verdict];
+          const text = {
+            always: "I agree: it is always true.",
+            never: "I disagree: it is never true.",
+            sometimes: "It depends: it is sometimes true.",
+          }[a.verdict];
           const item1 = stage.locator(".eb-item").filter({ hasText: "Do you agree" }).first();
           await solveAuthored(env, item1, text, [a.why]);
           const item2 = stage.locator(".eb-item").filter({ hasText: "Which reason fits" }).first();
@@ -597,12 +888,18 @@ async function browserPart() {
           await env.shot("identify-done");
         }
       }
-      ok(/finished every listening task/.test(await stage.innerText()), `${env.tag}: all stations complete (${seen.join(", ")})`);
+      ok(
+        /finished every listening task/.test(await stage.innerText()),
+        `${env.tag}: all stations complete (${seen.join(", ")})`,
+      );
       await env.axe("end");
       await env.shot("end");
       // restart gives a fresh set
       await stage.getByRole("button", { name: "Start over" }).click();
-      ok((await stage.locator("[data-eb-station]").count()) === 1, `${env.tag}: Start over returns to the first task`);
+      ok(
+        (await stage.locator("[data-eb-station]").count()) === 1,
+        `${env.tag}: Start over returns to the first task`,
+      );
     },
 
     async "error-detective"(env) {
@@ -629,10 +926,16 @@ async function browserPart() {
           await choices.nth(i).click();
           wrong.push(await fbText(stage));
         }
-        ok(wrong.every((t) => /Not yet/.test(t)), `${env.tag}: a wrong step gives a hint`);
+        ok(
+          wrong.every((t) => /Not yet/.test(t)),
+          `${env.tag}: a wrong step gives a hint`,
+        );
         noLeak(env, wrong, ec.explain, "inspect");
         await choices.nth(ec.firstWrong).click();
-        ok((await stage.locator(".ml-fb-ok").count()) === 1, `${env.tag}: the first wrong step is accepted`);
+        ok(
+          (await stage.locator(".ml-fb-ok").count()) === 1,
+          `${env.tag}: the first wrong step is accepted`,
+        );
         if (ci === 0) await env.shot("step0");
         await stage.getByRole("button", { name: /Next: name the thinking/ }).click();
         // step 1: the belief
@@ -646,24 +949,44 @@ async function browserPart() {
         // step 2: explain with a frame (shape only)
         const ta = stage.locator("textarea");
         await stage.getByRole("button", { name: "Check my sentence" }).click();
-        ok(/Write a few words/.test(await fbText(stage)), `${env.tag}: empty explanation is asked to write`);
+        ok(
+          /Write a few words/.test(await fbText(stage)),
+          `${env.tag}: empty explanation is asked to write`,
+        );
         const frame = stage.locator(".eb-chips button").first();
         if (await frame.count()) await frame.click();
-        await ta.fill(`The student made a mistake because ${sk.vocab?.[0]?.term || "the numbers"} changed, so the answer is different.`);
+        await ta.fill(
+          `The student made a mistake because ${sk.vocab?.[0]?.term || "the numbers"} changed, so the answer is different.`,
+        );
         await stage.getByRole("button", { name: "Check my sentence" }).click();
         ok(/shape/.test(await fbText(stage)), `${env.tag}: the sentence check reports shape only`);
         if (ci === 0) await env.shot("step2");
         await stage.getByRole("button", { name: /Next: correct the solution/ }).click();
         // step 3: fix it, then the errorCase explanation appears
-        ok(!(await stage.innerText()).includes(ec.explain), `${env.tag}: the explanation is not shown before an attempt`);
+        ok(
+          !(await stage.innerText()).includes(ec.explain),
+          `${env.tag}: the explanation is not shown before an attempt`,
+        );
         await stage.getByRole("button", { name: "Compare with an explanation" }).click();
-        ok(!(await stage.locator(".eb-explain").count()), `${env.tag}: no explanation for an empty fix`);
-        await stage.locator("textarea").fill("The student should use the same factor on both numbers.");
+        ok(
+          !(await stage.locator(".eb-explain").count()),
+          `${env.tag}: no explanation for an empty fix`,
+        );
+        await stage
+          .locator("textarea")
+          .fill("The student should use the same factor on both numbers.");
         await stage.getByRole("button", { name: "Compare with an explanation" }).click();
-        ok(norm(await stage.locator(".eb-explain").innerText()).includes(norm(ec.explain).slice(0, 40)), `${env.tag}: the explanation shows after an attempt`);
+        ok(
+          norm(await stage.locator(".eb-explain").innerText()).includes(
+            norm(ec.explain).slice(0, 40),
+          ),
+          `${env.tag}: the explanation shows after an attempt`,
+        );
         if (ci === 0) await env.shot("step3");
         const hasApply = env.info.hasGen;
-        await stage.getByRole("button", { name: hasApply ? /Next: try a new problem/ : /Finish this case/ }).click();
+        await stage
+          .getByRole("button", { name: hasApply ? /Next: try a new problem/ : /Finish this case/ })
+          .click();
         if (hasApply) {
           await solveProblem(env, stage.locator(".eb-item[data-eb-problem]").first());
           if (ci === 0) {
@@ -673,17 +996,28 @@ async function browserPart() {
           await stage.getByRole("button", { name: /Finish this case/ }).click();
         }
         ci += 1;
-        if (await stage.getByRole("button", { name: "Next case" }).count()) await stage.getByRole("button", { name: "Next case" }).click();
+        if (await stage.getByRole("button", { name: "Next case" }).count())
+          await stage.getByRole("button", { name: "Next case" }).click();
         else break;
       }
-      ok(/All cases solved/.test(await stage.innerText()), `${env.tag}: all ${cases.length} cases complete`);
+      ok(
+        /All cases solved/.test(await stage.innerText()),
+        `${env.tag}: all ${cases.length} cases complete`,
+      );
       await env.axe("end");
       await env.shot("end");
       await stage.getByRole("button", { name: "Start over" }).first().click();
-      ok((await stage.locator('[data-eb-step="0"]').count()) === 1, `${env.tag}: Start over returns to step 1`);
+      ok(
+        (await stage.locator('[data-eb-step="0"]').count()) === 1,
+        `${env.tag}: Start over returns to step 1`,
+      );
       // teacher note
       await stage.locator(".eb-teacher summary").click();
-      ok(/conceptual/i.test(await stage.locator(".eb-teacher").innerText()) && /procedural/i.test(await stage.locator(".eb-teacher").innerText()), `${env.tag}: teacher note names the four error types`);
+      ok(
+        /conceptual/i.test(await stage.locator(".eb-teacher").innerText()) &&
+          /procedural/i.test(await stage.locator(".eb-teacher").innerText()),
+        `${env.tag}: teacher note names the four error types`,
+      );
       await env.chk("teacher note open");
     },
 
@@ -698,7 +1032,10 @@ async function browserPart() {
       await stage.getByRole("button", { name: "Begin the story" }).click();
       for (let b = 0; b < story.beats.length; b++) {
         const beat = story.beats[b];
-        ok((await stage.innerText()).includes(beat.lead), `${env.tag}: beat ${b + 1} shows its lead`);
+        ok(
+          (await stage.innerText()).includes(beat.lead),
+          `${env.tag}: beat ${b + 1} shows its lead`,
+        );
         const item = stage.locator(".eb-item[data-eb-problem]").first();
         if (await item.count()) {
           const seed0 = await item.getAttribute("data-seed");
@@ -706,14 +1043,27 @@ async function browserPart() {
           const ch = item.locator(".eb-choice");
           const n = await ch.count();
           if (n) {
-            const ans = await page.evaluate(([sid, a]) => window.__answer(sid, a.seed, a.level, a.ctx), [sk.id, await item.evaluate((x) => ({ seed: x.dataset.seed, level: x.dataset.level, ctx: x.dataset.ctx }))]);
+            const ans = await page.evaluate(
+              ([sid, a]) => window.__answer(sid, a.seed, a.level, a.ctx),
+              [
+                sk.id,
+                await item.evaluate((x) => ({
+                  seed: x.dataset.seed,
+                  level: x.dataset.level,
+                  ctx: x.dataset.ctx,
+                })),
+              ],
+            );
             let missed = false;
             for (let i = 0; i < n && !missed; i++) {
               const label = await labelOf(ch.nth(i));
               if (label === norm(ans.text)) continue;
               await ch.nth(i).click();
               const t = await fbText(item);
-              ok(t.includes(norm(beat.redirect).slice(0, 25)), `${env.tag}: a wrong choice shows the beat's redirect ("${t.slice(0, 50)}")`);
+              ok(
+                t.includes(norm(beat.redirect).slice(0, 25)),
+                `${env.tag}: a wrong choice shows the beat's redirect ("${t.slice(0, 50)}")`,
+              );
               ok(/Not yet/.test(t), `${env.tag}: a wrong choice in the story gets a hint`);
               noLeak(env, [t], ans.text, "story");
               missed = true;
@@ -726,18 +1076,27 @@ async function browserPart() {
             ok((await item2.getAttribute("data-seed")) !== seed0 || true, "new puzzle drawn");
             await solveProblem(env, item2, { wrongFirst: false });
           } else await solveProblem(env, item, { wrongFirst: false });
-          ok((await stage.locator(".eb-success").innerText()).includes(beat.success), `${env.tag}: beat ${b + 1} success text appears`);
+          ok(
+            (await stage.locator(".eb-success").innerText()).includes(beat.success),
+            `${env.tag}: beat ${b + 1} success text appears`,
+          );
           if (b === 0) await env.shot("beat-success");
           await env.chk(`beat ${b + 1}`);
         }
         await stage.getByRole("button", { name: /Continue the story|Finish the story/ }).click();
       }
-      ok((await stage.innerText()).includes(story.ending.split(". ")[0]) || m.g <= 2, `${env.tag}: the ending appears`);
+      ok(
+        (await stage.innerText()).includes(story.ending.split(". ")[0]) || m.g <= 2,
+        `${env.tag}: the ending appears`,
+      );
       ok(/The end/.test(await stage.innerText()), `${env.tag}: the story ends`);
       await env.axe("end");
       await env.shot("end");
       await stage.getByRole("button", { name: "Play the story again" }).click();
-      ok(await stage.getByRole("button", { name: "Begin the story" }).count(), `${env.tag}: the story can be replayed`);
+      ok(
+        await stage.getByRole("button", { name: "Begin the story" }).count(),
+        `${env.tag}: the story can be replayed`,
+      );
     },
 
     async "modeling-workshop"(env) {
@@ -748,62 +1107,114 @@ async function browserPart() {
       await env.tab("step 1");
       await env.axe("step 1");
       await env.shot("step1");
-      ok(/Invented|generic/.test(await stage.locator(".eb-badge").innerText()), `${env.tag}: data is marked invented`);
-      ok((await stage.locator(".eb-table caption").innerText()).includes("invented"), `${env.tag}: table caption says invented`);
+      ok(
+        /Invented|generic/.test(await stage.locator(".eb-badge").innerText()),
+        `${env.tag}: data is marked invented`,
+      );
+      ok(
+        (await stage.locator(".eb-table caption").innerText()).includes("invented"),
+        `${env.tag}: table caption says invented`,
+      );
       await next();
       // assumptions
       const cbs = stage.locator(".eb-assume input[type=checkbox]");
       ok((await cbs.count()) === M.assumptions.length, `${env.tag}: one checkbox per assumption`);
       await cbs.first().check();
-      ok(/Adopted/.test(await stage.locator(".eb-assume li").first().innerText()), `${env.tag}: the note says what adopting changes`);
-      ok(/Not adopted/.test(await stage.locator(".eb-assume li").nth(1).innerText()), `${env.tag}: the note says what not adopting changes`);
+      ok(
+        /Adopted/.test(await stage.locator(".eb-assume li").first().innerText()),
+        `${env.tag}: the note says what adopting changes`,
+      );
+      ok(
+        /Not adopted/.test(await stage.locator(".eb-assume li").nth(1).innerText()),
+        `${env.tag}: the note says what not adopting changes`,
+      );
       await env.shot("step2");
       await env.tab("step 2");
       await next();
-      await stage.locator("textarea").nth(0).fill("My model: total = batches times amount per batch.");
+      await stage
+        .locator("textarea")
+        .nth(0)
+        .fill("My model: total = batches times amount per batch.");
       await stage.locator("textarea").nth(1).fill("30 divided by 5 is 6, so 6 batches.");
       await stage.locator("textarea").nth(2).fill("6 batches.");
       await env.shot("step3");
       await env.tab("step 3");
       await next();
-      for (let i = 0; i < M.prompts.length; i++) await stage.locator("textarea").nth(i).fill(`Answer ${i + 1}: my own reasoning about the situation.`);
+      for (let i = 0; i < M.prompts.length; i++)
+        await stage
+          .locator("textarea")
+          .nth(i)
+          .fill(`Answer ${i + 1}: my own reasoning about the situation.`);
       await env.shot("step4");
       await next();
       // what if
       const nums = stage.locator(".eb-input");
       if (await nums.count()) {
         await nums.first().fill("45");
-        ok(/45/.test(await stage.locator(".eb-echo").innerText()), `${env.tag}: the what-if echo shows the new value`);
+        ok(
+          /45/.test(await stage.locator(".eb-echo").innerText()),
+          `${env.tag}: the what-if echo shows the new value`,
+        );
       }
-      await stage.locator("textarea").first().fill("With the new value the result changes because there are more batches.");
+      await stage
+        .locator("textarea")
+        .first()
+        .fill("With the new value the result changes because there are more batches.");
       await env.shot("step5");
       await env.tab("step 5");
       await next();
-      await stage.locator("textarea").first().fill("The result means about this many batches. It is reasonable for the situation.");
+      await stage
+        .locator("textarea")
+        .first()
+        .fill("The result means about this many batches. It is reasonable for the situation.");
       await next();
       // limits and self-check
       await stage.getByRole("button", { name: "Compare with other limits" }).click();
-      ok(!(await stage.locator(".eb-limits li").count()), `${env.tag}: limits are not shown before the learner writes any`);
+      ok(
+        !(await stage.locator(".eb-limits li").count()),
+        `${env.tag}: limits are not shown before the learner writes any`,
+      );
       await stage.locator("textarea").first().fill("Real materials differ.");
       await stage.getByRole("button", { name: "Compare with other limits" }).click();
-      ok((await stage.locator(".eb-limits li").count()) === M.limits.length, `${env.tag}: the skill's limits appear for comparison`);
+      ok(
+        (await stage.locator(".eb-limits li").count()) === M.limits.length,
+        `${env.tag}: the skill's limits appear for comparison`,
+      );
       const sc = stage.locator(".eb-selfcheck input");
       await sc.nth(0).check();
       await sc.nth(1).check();
       ok(/2 of 6/.test(await stage.innerText()), `${env.tag}: self-check counts ticks`);
-      ok(/does not mark open work/.test(await stage.innerText()), `${env.tag}: says open work is not auto-graded`);
+      ok(
+        /does not mark open work/.test(await stage.innerText()),
+        `${env.tag}: says open work is not auto-graded`,
+      );
       await env.shot("step7");
       await env.chk("last step");
       await env.tab("last step");
       await env.axe("last step");
       // print
       await stage.getByRole("button", { name: "Print my work" }).click();
-      ok((await page.evaluate(() => window.__printed)) === 1, `${env.tag}: Print my work calls window.print`);
+      ok(
+        (await page.evaluate(() => window.__printed)) === 1,
+        `${env.tag}: Print my work calls window.print`,
+      );
       const printed = await page.locator(".eb-print-root").evaluate((n) => n.textContent);
-      ok(printed.includes("total = batches times amount") && printed.includes("Real materials differ") && printed.includes(M.scenario.slice(0, 30)), `${env.tag}: the print sheet carries the learner's words and the scenario`);
+      ok(
+        printed.includes("total = batches times amount") &&
+          printed.includes("Real materials differ") &&
+          printed.includes(M.scenario.slice(0, 30)),
+        `${env.tag}: the print sheet carries the learner's words and the scenario`,
+      );
       await page.emulateMedia({ media: "print" });
-      const vis = await page.evaluate(() => ({ eb: getComputedStyle(document.querySelector(".eb")).display, root: getComputedStyle(document.querySelector(".eb-print-root")).display }));
-      ok(vis.eb === "none" || (await page.evaluate(() => document.querySelector(".eb").offsetParent === null)), `${env.tag}: the page is hidden when printing`);
+      const vis = await page.evaluate(() => ({
+        eb: getComputedStyle(document.querySelector(".eb")).display,
+        root: getComputedStyle(document.querySelector(".eb-print-root")).display,
+      }));
+      ok(
+        vis.eb === "none" ||
+          (await page.evaluate(() => document.querySelector(".eb").offsetParent === null)),
+        `${env.tag}: the page is hidden when printing`,
+      );
       ok(vis.root === "block", `${env.tag}: the print sheet is shown when printing`);
       await page.screenshot({ path: `${OUT}/modeling-workshop-g${m.g}-print.png`, fullPage: true });
       await page.emulateMedia({ media: "screen" });
@@ -822,16 +1233,31 @@ async function browserPart() {
       while (shown < C.panels.length - 1) {
         await nextP().click();
         shown += 1;
-        ok((await stage.locator(".eb-panel").count()) === shown, `${env.tag}: panel ${shown} opened`);
+        ok(
+          (await stage.locator(".eb-panel").count()) === shown,
+          `${env.tag}: panel ${shown} opened`,
+        );
         if (env_reduced) await env.noAnim(`panel ${shown}`);
       }
       // prediction before the story continues
-      ok((await stage.locator(".eb-predict").count()) === 1, `${env.tag}: the prediction card appears before the last panel`);
-      ok((await stage.locator(".eb-panel").count()) === C.panels.length - 1, `${env.tag}: the last panel is held back until the prediction`);
-      ok(!(await stage.innerText()).includes(C.predict.why), `${env.tag}: the reasoning is not shown before the prediction`);
+      ok(
+        (await stage.locator(".eb-predict").count()) === 1,
+        `${env.tag}: the prediction card appears before the last panel`,
+      );
+      ok(
+        (await stage.locator(".eb-panel").count()) === C.panels.length - 1,
+        `${env.tag}: the last panel is held back until the prediction`,
+      );
+      ok(
+        !(await stage.innerText()).includes(C.predict.why),
+        `${env.tag}: the reasoning is not shown before the prediction`,
+      );
       for (let i = 0; i < C.panels.length - 1; i++) {
         const lab = await stage.locator(".eb-panel").nth(i).getAttribute("aria-label");
-        ok(lab.includes(C.panels[i].who) && lab.includes(C.panels[i].says), `${env.tag}: panel ${i + 1} has the speaker and line as its text alternative`);
+        ok(
+          lab.includes(C.panels[i].who) && lab.includes(C.panels[i].says),
+          `${env.tag}: panel ${i + 1} has the speaker and line as its text alternative`,
+        );
       }
       await env.shot("predict");
       await env.tab("predict");
@@ -839,26 +1265,46 @@ async function browserPart() {
       const opts = stage.locator(".eb-predict .eb-choice");
       const miss = [];
       for (let i = 0; i < (await opts.count()); i++) {
-        if (norm(await labelOf(opts.nth(i))) === norm(C.predict.options[C.predict.answer])) continue;
+        if (norm(await labelOf(opts.nth(i))) === norm(C.predict.options[C.predict.answer]))
+          continue;
         await opts.nth(i).click();
         miss.push(await fbText(stage.locator(".eb-predict")));
       }
-      ok(miss.length >= 1 && miss.every((t) => /Not yet/.test(t)), `${env.tag}: a wrong prediction gets a hint`);
+      ok(
+        miss.length >= 1 && miss.every((t) => /Not yet/.test(t)),
+        `${env.tag}: a wrong prediction gets a hint`,
+      );
       noLeak(env, miss, C.predict.why, "prediction");
-      ok(!(await stage.locator(".eb-panel").count() === C.panels.length), `${env.tag}: still held back after a wrong prediction`);
-      for (let i = 0; i < (await opts.count()); i++) if (norm(await labelOf(opts.nth(i))) === norm(C.predict.options[C.predict.answer])) await opts.nth(i).click();
+      ok(
+        !((await stage.locator(".eb-panel").count()) === C.panels.length),
+        `${env.tag}: still held back after a wrong prediction`,
+      );
+      for (let i = 0; i < (await opts.count()); i++)
+        if (norm(await labelOf(opts.nth(i))) === norm(C.predict.options[C.predict.answer]))
+          await opts.nth(i).click();
       await stage.getByRole("button", { name: "Keep reading" }).click();
-      ok((await stage.locator(".eb-panel").count()) === C.panels.length, `${env.tag}: the story continues after the right prediction`);
+      ok(
+        (await stage.locator(".eb-panel").count()) === C.panels.length,
+        `${env.tag}: the story continues after the right prediction`,
+      );
       if (env_reduced) await env.noAnim("last panel");
-      ok((await stage.innerText()).includes(C.predict.why), `${env.tag}: the reasoning shows at the end`);
+      ok(
+        (await stage.innerText()).includes(C.predict.why),
+        `${env.tag}: the reasoning shows at the end`,
+      );
       ok(/Talk about it/.test(await stage.innerText()), `${env.tag}: a discussion prompt follows`);
       await env.shot("end");
       await env.chk("end");
       await env.tab("end");
       await env.axe("end");
       await stage.getByRole("button", { name: "Print the comic" }).click();
-      ok((await page.evaluate(() => window.__printed)) === 1, `${env.tag}: Print the comic calls window.print`);
-      const pr = await page.locator(".eb-print-root").evaluate((n) => ({ panels: n.querySelectorAll(".eb-panel").length, text: n.textContent }));
+      ok(
+        (await page.evaluate(() => window.__printed)) === 1,
+        `${env.tag}: Print the comic calls window.print`,
+      );
+      const pr = await page
+        .locator(".eb-print-root")
+        .evaluate((n) => ({ panels: n.querySelectorAll(".eb-panel").length, text: n.textContent }));
       ok(pr.panels === C.panels.length, `${env.tag}: the print sheet has every panel`);
       ok(!pr.text.includes(C.predict.why), `${env.tag}: the print sheet does not print the answer`);
       await page.emulateMedia({ media: "print" });
@@ -876,7 +1322,10 @@ async function browserPart() {
       await env.axe("sort");
       await env.shot("sort");
       const items = stage.locator(".eb-sortitem");
-      ok((await items.count()) === T.phrasings.length + T.decoys.length, `${env.tag}: every phrasing and decoy is offered`);
+      ok(
+        (await items.count()) === T.phrasings.length + T.decoys.length,
+        `${env.tag}: every phrasing and decoy is offered`,
+      );
       for (let i = 0; i < (await items.count()); i++) {
         const it = items.nth(i);
         const q = norm(await it.locator(".eb-q").innerText());
@@ -889,7 +1338,11 @@ async function browserPart() {
         if (dec) noLeak(env, [t], dec.why, "decoy");
         await btns.nth(same ? 0 : 1).click();
         ok((await it.locator(".ml-fb-ok").count()) === 1, `${env.tag}: right sort accepted`);
-        if (dec) ok(norm(await it.locator(".ml-fb-ok").innerText()).includes(norm(dec.why).slice(0, 30)), `${env.tag}: a decoy's why shows after the right sort`);
+        if (dec)
+          ok(
+            norm(await it.locator(".ml-fb-ok").innerText()).includes(norm(dec.why).slice(0, 30)),
+            `${env.tag}: a decoy's why shows after the right sort`,
+          );
       }
       await env.shot("sorted");
       await env.chk("sorted");
@@ -897,14 +1350,22 @@ async function browserPart() {
       // match
       const rounds = stage.locator(".eb-item[data-eb-problem]");
       const nr = await rounds.count();
-      if (!nr) ok(/could not be made/.test(await stage.innerText()), `${env.tag}: match step explains when no task can be made`);
+      if (!nr)
+        ok(
+          /could not be made/.test(await stage.innerText()),
+          `${env.tag}: match step explains when no task can be made`,
+        );
       for (let r = 0; r < nr; r++) {
         const it = rounds.nth(r);
         const ch = it.locator(".eb-choice");
         let n = await ch.count();
         ok(n >= 2, `${env.tag}: match round has options`);
-        for (let i = 0; i < n && !(await it.locator(".ml-fb-ok").count()); i++) await ch.nth(i).click();
-        ok((await it.locator(".ml-fb-ok").count()) === 1, `${env.tag}: match round ${r + 1} completes`);
+        for (let i = 0; i < n && !(await it.locator(".ml-fb-ok").count()); i++)
+          await ch.nth(i).click();
+        ok(
+          (await it.locator(".ml-fb-ok").count()) === 1,
+          `${env.tag}: match round ${r + 1} completes`,
+        );
       }
       if (nr) {
         await env.shot("match");
@@ -914,8 +1375,13 @@ async function browserPart() {
       }
       await stage.getByRole("button", { name: /Next: say it your way/ }).click();
       await stage.getByRole("button", { name: "Check my sentence" }).click();
-      ok(/Write a few words/.test(await fbText(stage)), `${env.tag}: empty answer is asked to write`);
-      await stage.locator("textarea").fill("It says that for every two of one thing there are three of the other.");
+      ok(
+        /Write a few words/.test(await fbText(stage)),
+        `${env.tag}: empty answer is asked to write`,
+      );
+      await stage
+        .locator("textarea")
+        .fill("It says that for every two of one thing there are three of the other.");
       await stage.getByRole("button", { name: "Check my sentence" }).click();
       ok(/shape/.test(await fbText(stage)), `${env.tag}: the check is shape only`);
       ok(/same relationship in many forms/.test(await stage.innerText()), `${env.tag}: finishes`);
@@ -948,12 +1414,19 @@ async function browserPart() {
     }
   }
   for (const id of ENGINE_IDS) {
-    await session(main[1], id, async (env) => {
-      await env.axe("desktop");
-      await env.shot("desktop");
-      const ov = await env.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
-      ok(ov, `${env.tag}: no horizontal scroll at desktop width`);
-    }, { width: 1100 });
+    await session(
+      main[1],
+      id,
+      async (env) => {
+        await env.axe("desktop");
+        await env.shot("desktop");
+        const ov = await env.page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth,
+        );
+        ok(ov, `${env.tag}: no horizontal scroll at desktop width`);
+      },
+      { width: 1100 },
+    );
   }
   // the skills that put a different answer kind in front of the problem items
   for (const m of extras) {
