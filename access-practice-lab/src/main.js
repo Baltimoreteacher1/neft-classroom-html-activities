@@ -101,6 +101,7 @@ const VIEW_LOADERS = {
   scenes: () => import("./views/scenes.js"),
   city: () => import("./views/city.js"),
   quest: () => import("./views/quest.js"),
+  "math-literacy": () => import("./views/math-literacy.js"),
   styleguide: () => import("./views/styleguide.js"),
   supports: () => import("./views/supports.js"),
   newsroom: () => import("./views/newsroom.js"),
@@ -289,6 +290,8 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "pairs" || a === "scenes") return { ...r, view: a, id: "" };
   if (a === "city") return { ...r, view: "city", id: b || "", missionId: c || "" };
   if (a === "quest") return { ...r, view: "quest", id: b || "", sub: c || "" };
+  // Math Literacy Studio (teachers): /math-literacy[/teach|create|support|search|skill/<id>|resource/<id>/<type>|learn/<id>/<engine>|play/<id>/<game>|tool/<id>|family/<id>|progressions|collections|guide]
+  if (a === "math-literacy") return { ...r, view: "math-literacy", id: b || "", sub: c || "", sub2: d || "" };
   if (a === "styleguide") return { ...r, view: "styleguide", id: "" };
   if (a === "supports") return { ...r, view: "supports", id: "" };
   if (a === "newsroom") return { ...r, view: "newsroom", id: b || "", tab: q.get("step") || "" };

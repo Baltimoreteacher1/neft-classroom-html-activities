@@ -1470,6 +1470,21 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "math-literacy",
+    section: "teach",
+    skill: "Mixed",
+    kind: "tool",
+    for: T_,
+    top: true,
+    href: "math-literacy",
+    icon: "reading",
+    title: P("Math Literacy Studio", "Estudio de lectoescritura matemática"),
+    text: P(
+      "Grades 1 to 8: teach a skill, create a resource, or support a learner, with vocabulary, reading, writing, speaking and listening built in.",
+      "Grados 1 a 8: enseña una destreza, crea un recurso o apoya a un estudiante, con vocabulario, lectura, escritura, expresión oral y comprensión auditiva integrados.",
+    ),
+  },
+  {
     id: "teacher-hub",
     section: "teach",
     skill: "Mixed",

@@ -707,6 +707,18 @@ export const HOME_CARDS = [
 
   // ── teach ──────────────────────────────────────────────────────────────────
   {
+    id: "math-literacy-studio",
+    group: "teach",
+    featured: true,
+    href: "math-literacy",
+    icon: "reading",
+    title: ["Math Literacy Studio", "Estudio de lectoescritura matemática"],
+    text: [
+      "Grades 1 to 8: teach a skill, create a resource or support a learner.",
+      "Grados 1 a 8: enseña una destreza, crea un recurso o apoya a un estudiante.",
+    ],
+  },
+  {
     id: "teacher-hub",
     group: "teach",
     featured: true,

@@ -1,0 +1,100 @@
+/* ACCESS Practice Lab: Math Literacy Studio (/math-literacy). Built on ds.css tokens.
+   Restrained palette: warm neutral paper, navy ink, teal accent, amber focus mark. No purple, no gradients, no decorative animation.
+   Targets are at least 44px, reading text is at least 16px, layouts hold at 320px and at 200% text. Colour is never the only signal.
+   Teacher screens look the same for every grade; student activities take an age-sensitive class (ml-g12, ml-g35, ml-g68). */
+
+.ml-page { --ml-navy: #17324d; --ml-teal: #0f7e7b; --ml-teal-fill: #1fa6a2; --ml-amber: #f2c15b; --ml-paper: #f7f4ec; --ml-line: #c9c3b4; --ml-ink: #24323f; color: var(--ml-ink); max-inline-size: 76rem; margin-inline: auto; }
+.ml-page h1 { color: var(--ml-navy); }
+.ml-page h2 { color: var(--ml-navy); margin-block: 1rem 0.5rem; font-size: 1.3rem; }
+.ml-page .fine, .ml-page small, .ml-meta { font-size: 1rem; color: #3c4b58; }
+.ml-page .lead { font-size: 1.15rem; max-inline-size: 48rem; }
+.ml-page .btn, .ml-page .ghost, .ml-page select, .ml-page input[type="search"], .ml-page input[type="text"], .ml-page input[type="number"], .ml-page textarea { min-block-size: 2.75rem; font: inherit; }
+.ml-page textarea, .ml-page input[type="text"], .ml-page input[type="search"] { inline-size: 100%; box-sizing: border-box; }
+.ml-page a:focus-visible, .ml-page button:focus-visible, .ml-page input:focus-visible, .ml-page select:focus-visible, .ml-page textarea:focus-visible, .ml-page summary:focus-visible { outline: 3px solid var(--ml-navy); outline-offset: 2px; box-shadow: 0 0 0 5px var(--ml-amber); }
+
+/* hero and search */
+.ml-hero { padding: 1.5rem; }
+.ml-search label { display: block; font-weight: 600; margin-block-end: 0.35rem; }
+.ml-search-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.ml-search-row input { flex: 1 1 16rem; }
+.ml-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.ml-chip { border: 1px solid var(--ml-navy); border-radius: 999px; padding: 0.15rem 0.7rem; background: #fff; }
+.ml-note { border-inline-start: 4px solid var(--ml-teal); padding: 0.6rem 0.9rem; background: #fff; }
+
+/* the three doors */
+.ml-doors { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; margin-block: 1rem; }
+.ml-door { display: flex; flex-direction: column; gap: 0.4rem; padding: 1.25rem; text-decoration: none; color: var(--ml-ink); border: 2px solid var(--ml-navy); background: #fff; border-radius: 12px; }
+.ml-door .ico { inline-size: 2rem; block-size: 2rem; color: var(--ml-navy); }
+.ml-door strong { font-size: 1.35rem; color: var(--ml-navy); }
+.ml-door:hover { background: #fffdf6; }
+
+/* grade chips, lists, cards */
+.ml-grades { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 0.6rem; }
+.ml-grade { display: flex; flex-direction: column; align-items: center; justify-content: center; inline-size: 100%; box-sizing: border-box; }
+.ml-grade[aria-current="true"], .ml-skill-link[aria-current="true"] { background: var(--ml-navy); color: #fff; border-color: var(--ml-navy); }
+.ml-skill-link[aria-current="true"] .fine { color: #fff; }
+.ml-grade-list, .ml-concerns, .ml-skills, .ml-ress, .ml-seqs { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 0.75rem; }
+.ml-gradecard, .ml-concern, .ml-skill-link, .ml-res-link { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.9rem; text-decoration: none; color: var(--ml-ink); border: 1px solid var(--ml-line); border-radius: 10px; background: #fff; block-size: 100%; box-sizing: border-box; }
+.ml-gradecard:hover, .ml-concern:hover, .ml-skill-link:hover, .ml-res-link:hover { border-color: var(--ml-navy); }
+.ml-gradecard strong, .ml-skill-link strong, .ml-res-link strong, .ml-concern strong { color: var(--ml-navy); font-size: 1.08rem; }
+.ml-list { padding-inline-start: 1.2rem; }
+.ml-list li { margin-block: 0.3rem; }
+.ml-criteria { padding-inline-start: 1.2rem; }
+.ml-foot, .ml-back { margin-block: 1rem; }
+.ml-steps li { margin-block: 0.4rem; }
+
+/* support control */
+.ml-support { border: 0; padding: 0; margin-block: 0.75rem; }
+.ml-support legend, .ml-fs legend { font-weight: 600; padding: 0; }
+.ml-seg { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.5rem; }
+.ml-seg-item { display: flex; gap: 0.5rem; align-items: flex-start; border: 1px solid var(--ml-line); border-radius: 10px; padding: 0.6rem 0.75rem; background: #fff; cursor: pointer; }
+.ml-seg-item:has(input:checked) { border: 2px solid var(--ml-navy); background: #fffdf6; padding: calc(0.6rem - 1px) calc(0.75rem - 1px); }
+.ml-seg-item input { margin-block-start: 0.3rem; inline-size: 1.25rem; block-size: 1.25rem; }
+.ml-seg-item span { display: flex; flex-direction: column; }
+
+/* builder */
+.ml-layout { display: grid; gap: 1rem; grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 62rem) { .ml-layout { grid-template-columns: minmax(20rem, 26rem) 1fr; } .ml-controls { position: sticky; inset-block-start: 4.5rem; max-block-size: calc(100vh - 5.5rem); overflow: auto; } }
+.ml-controls h2:first-child { margin-block-start: 0; }
+.ml-adv { margin-block: 0.5rem; border: 1px solid var(--ml-line); border-radius: 10px; padding: 0.4rem 0.75rem; background: #fff; }
+.ml-adv summary { min-block-size: 2.75rem; display: flex; align-items: center; cursor: pointer; font-weight: 600; }
+.ml-fs { border: 0; padding: 0; margin: 0.5rem 0; }
+.ml-opt { display: flex; gap: 0.5rem; align-items: flex-start; min-block-size: 2.75rem; padding-block: 0.2rem; }
+.ml-opt input { inline-size: 1.25rem; block-size: 1.25rem; margin-block-start: 0.35rem; }
+.ml-field { display: flex; flex-direction: column; gap: 0.25rem; margin-block: 0.6rem; font-weight: 600; }
+.ml-field input, .ml-field select, .ml-field textarea { font-weight: 400; }
+.ml-check { display: inline-flex; gap: 0.5rem; align-items: center; min-block-size: 2.75rem; }
+.ml-check input { inline-size: 1.25rem; block-size: 1.25rem; }
+.ml-use { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block: 0.5rem; }
+.ml-probs { padding-inline-start: 1.2rem; }
+.ml-probs li { border-block-end: 1px solid var(--ml-line); padding-block: 0.5rem; }
+.ml-frame { inline-size: 100%; block-size: 75vh; min-block-size: 28rem; border: 1px solid var(--ml-line); border-radius: 8px; background: #fff; }
+.ml-frame-key { block-size: 40vh; min-block-size: 16rem; }
+.ml-compare-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); }
+
+/* progression map */
+.ml-prog { list-style: none; padding: 0; display: grid; gap: 0.5rem; }
+.ml-prog li { display: grid; grid-template-columns: 6rem 1fr auto; gap: 0.75rem; align-items: center; border: 1px solid var(--ml-line); border-radius: 10px; padding: 0.6rem 0.9rem; background: #fff; }
+.ml-prog li.is-here { border: 2px solid var(--ml-navy); }
+@media (max-width: 36rem) { .ml-prog li { grid-template-columns: 1fr; } }
+
+/* family page */
+.ml-words dt { font-weight: 700; margin-block-start: 0.5rem; }
+.ml-words dd { margin: 0; }
+.ml-choices { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block: 0.5rem; }
+.ml-choice[aria-pressed="true"] { background: var(--ml-navy); color: #fff; }
+.ml-expr { font-size: 1.25rem; font-weight: 700; }
+
+/* student activities: age-sensitive reading size and density; the teacher screens above never change */
+.ml-play .ml-stage { padding: 1rem; background: #fff; }
+.ml-g12 .ml-stage { font-size: 1.35rem; line-height: 1.6; }
+.ml-g12 .ml-stage button, .ml-g12 .ml-stage .btn { min-block-size: 3.25rem; font-size: 1.2rem; }
+.ml-g35 .ml-stage { font-size: 1.15rem; line-height: 1.55; }
+.ml-g68 .ml-stage { font-size: 1.05rem; line-height: 1.5; }
+.ml-dials { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: end; }
+.ml-dials label { display: flex; flex-direction: column; gap: 0.25rem; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) { .ml-page *, .ml-page *::before, .ml-page *::after { animation: none !important; transition: none !important; } }
+html[data-comfort-motion="calm"] .ml-page *, html[data-comfort-motion="calm"] .ml-page *::before { animation: none !important; transition: none !important; }
+@media print { .ml-page .crumbs, .ml-controls, .ml-back, .ml-foot { display: none; } }
+@media (forced-colors: active) { .ml-door, .ml-res-link, .ml-skill-link, .ml-seg-item, .ml-choice { border: 2px solid CanvasText; } .ml-seg-item:has(input:checked) { border-color: Highlight; } }

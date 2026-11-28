@@ -45,6 +45,8 @@ export const EARLY_VIEWS = new Set([
   "practice-together",
   "family-start",
   "site-guide",
+  // Math Literacy Studio is a tool for adults that covers grades 1-8; it shows each grade's own content (src/views/math-literacy.js).
+  "math-literacy",
   // Premium K-8 ELL Lab modules (all include K-2 content):
   "bridge",
   "architect",

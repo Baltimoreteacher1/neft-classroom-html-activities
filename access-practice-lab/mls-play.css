@@ -1,0 +1,24 @@
+/* Math Literacy Studio: shared base for interactive activities (engines, games, manipulatives). Each group adds its own sheet.
+   44px targets, 16px text, visible focus, feedback with a word and a mark (never colour alone), calm motion only. */
+.ml-sr { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ml-stage .btn, .ml-stage button, .ml-stage select, .ml-stage input[type="text"], .ml-stage input[type="number"], .ml-stage textarea { min-block-size: 2.75rem; font: inherit; }
+.ml-stage textarea, .ml-stage input[type="text"] { inline-size: 100%; box-sizing: border-box; }
+.ml-stage :is(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid #17324d; outline-offset: 2px; box-shadow: 0 0 0 5px #f2c15b; }
+.ml-fb { margin-block: 0.5rem; padding: 0.6rem 0.8rem; border-radius: 8px; border: 2px solid #17324d; background: #fff; }
+.ml-fb-ok { border-style: solid; border-inline-start-width: 8px; }
+.ml-fb-try { border-style: dashed; }
+.ml-fb:empty { display: none; }
+/* manipulatives */
+.ml-man-purpose { font-weight: 600; }
+.ml-man-body { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 52rem) { .ml-man-body { grid-template-columns: 18rem 1fr; } }
+.ml-man-controls { display: flex; flex-direction: column; gap: 0.5rem; }
+.ml-man-row { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.ml-man-row label { flex: 1 1 100%; font-weight: 600; }
+.ml-man-row input[type="number"] { inline-size: 5.5rem; text-align: center; }
+.ml-man-row .btn.small { min-inline-size: 2.75rem; }
+.ml-man-svg svg { inline-size: 100%; max-inline-size: 40rem; block-size: auto; }
+.ml-man-sum { margin-block: 0.5rem; padding: 0.5rem 0.75rem; border-inline-start: 4px solid #0f7e7b; background: #f7f4ec; }
+.ml-man-err { padding: 0.6rem; border: 2px dashed #17324d; }
+.ml-man-notice { padding-inline-start: 1.2rem; }
+@media (prefers-reduced-motion: reduce) { .ml-stage * { animation: none !important; transition: none !important; } }
