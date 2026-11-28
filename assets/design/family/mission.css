@@ -395,6 +395,18 @@
   .fm-hero__action * {
     color: var(--fm-text);
   }
+  /* The scoreboard hook is the one DARK hook card (family.css gives it --fm-inverse with --fm-text-inverse).
+     The rule above makes every hook's text dark, which is right for a light card and unreadable on this one:
+     on all 30 lessons that use it (statistics and data) the scenario text rendered dark on navy, 1.00:1.
+     These selectors are more specific, so the variant keeps its own inverse text and kicker colors. */
+  .fm-hero .fm-hook[data-variant="scoreboard"],
+  .fm-hero .fm-hook[data-variant="scoreboard"] * {
+    color: var(--fm-text-inverse);
+  }
+  .fm-hero .fm-hook[data-variant="scoreboard"] .fm-hook__kicker,
+  .fm-hero .fm-hook[data-variant="scoreboard"] .fm-hook__kicker * {
+    color: var(--fm-focus-inverse);
+  }
   .fm-hero__title {
     font-size: var(--fm-fs-4xl);
     font-weight: var(--fm-fw-bold);
