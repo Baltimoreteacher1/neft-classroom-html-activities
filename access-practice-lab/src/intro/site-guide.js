@@ -1,6 +1,7 @@
 // The Site Guide (/site-guide, /site-guide/<section>, ?for=teacher|student|family, ?q=<search>).
-// The main page opens with "Common questions" (site-guide-faq.js), then a short directory: three plain groups (teachers, students, families), each entry a name, one
-// sentence and a link, then the Help questions and a list of step-by-step guides. Each guide opens on its own page
+// The main page: who the guide is for, one search box, then a short directory (three groups: teachers, students,
+// families; the teacher and student groups split into start / find / make / track steps), each entry a name, one
+// sentence and a link; then one Help and Common Questions list and the step-by-step guides. Each guide opens on its own page
 // (/site-guide/<section>). The reader can choose who they are (saved on this device in `accessPracticeLab:v1:intro`
 // under `siteGuideAudience`) to see only their group. Facts come from sitemap.js and data.js through the
 // site-guide-*.js data files.
@@ -23,7 +24,6 @@ import {
   SECTION_IDS,
   SPANISH_NOTE,
 } from "./site-guide-data.js";
-import { faqHTML } from "./site-guide-faq.js";
 import { buildIndex, resultLabel, searchGuide } from "./site-guide-search.js";
 import {
   aroundSection,
@@ -120,7 +120,7 @@ export async function render(ctx) {
   // A step-by-step guide: that one section on its own page.
   const body = section
     ? html`${spanishNote}${sectionHTML(I, section, audience)}${printButton(I)}`
-    : html`${faqHTML(I, ctx.band)}${searchHTML(I, q)}${spanishNote}${directoryHTML(I, audience)}
+    : html`${searchHTML(I, q)}${spanishNote}${directoryHTML(I, audience)}
         ${sectionHTML(I, SECTIONS.find((s) => s.id === "help"), audience)} ${guidesHTML(I)}
         ${printButton(I)}`;
   return {

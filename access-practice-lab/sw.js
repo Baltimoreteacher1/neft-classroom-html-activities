@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "f5440f2d29da";
+const BUILD_HASH = "0d1f36519f02";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=9edfb6eb",
@@ -181,7 +181,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/early.css?v=381e9b6f",
   "/access-practice-lab/intro.css?v=9c27baea",
   "/access-practice-lab/intro-guide.css?v=c8d4dbf2",
-  "/access-practice-lab/site-guide.css?v=47e5a2e4",
+  "/access-practice-lab/site-guide.css?v=90e96b3d",
   "/access-practice-lab/intro-tour.css?v=adf9a063",
   "/access-practice-lab/students.css?v=bfa9e9f8",
   "/access-practice-lab/family-hub.css?v=b21c3ab7",
@@ -742,14 +742,13 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/quick-start.js?v=a1d6cbcb",
   "/access-practice-lab/src/intro/shell.js?v=79cc90aa",
   "/access-practice-lab/src/intro/site-directory-model.js?v=a5121681",
-  "/access-practice-lab/src/intro/site-guide-cards.js?v=3bdeeca3",
+  "/access-practice-lab/src/intro/site-guide-cards.js?v=de4befb4",
   "/access-practice-lab/src/intro/site-guide-data.js?v=93358b05",
-  "/access-practice-lab/src/intro/site-guide-directory.js?v=51e55e53",
-  "/access-practice-lab/src/intro/site-guide-faq.js?v=ffbc0798",
-  "/access-practice-lab/src/intro/site-guide-more.js?v=3cca1ee2",
+  "/access-practice-lab/src/intro/site-guide-directory.js?v=9f9e7baa",
+  "/access-practice-lab/src/intro/site-guide-more.js?v=5a396f27",
   "/access-practice-lab/src/intro/site-guide-search.js?v=059136a7",
-  "/access-practice-lab/src/intro/site-guide-sections.js?v=5fa6593c",
-  "/access-practice-lab/src/intro/site-guide.js?v=f8004737",
+  "/access-practice-lab/src/intro/site-guide-sections.js?v=e0b17e69",
+  "/access-practice-lab/src/intro/site-guide.js?v=8b2b53c0",
   "/access-practice-lab/src/intro/start-overview.js?v=ee2b70cc",
   "/access-practice-lab/src/intro/start-resources.js?v=9ec5a4cb",
   "/access-practice-lab/src/intro/start.js?v=f078952f",

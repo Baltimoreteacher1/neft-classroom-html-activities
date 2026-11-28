@@ -11,14 +11,16 @@ import { GROUPINGS, OTHER_AREAS, PD_LINKS, ROUTINES, SHARING } from "./site-guid
 export const en = (text) => html`<span lang="en">${text}</span>`;
 
 /** A lab route as an href (the Teacher Hub lives outside the lab). */
-export const hrefFor = (route) => (route.startsWith("/access-teacher") ? route : `${BASE}${route}`);
+/** Site paths outside the lab: the Teacher Hub and the BCPSS bridges (a directory entry can also say `site: true`). */
+const isSitePath = (route, site) => site || /^\/(?:access-teacher|bcpss-teachers)(?:\/|$)/.test(route);
+export const hrefFor = (route, site = false) => (isSitePath(route, site) ? route : `${BASE}${route}`);
 /** The printed form of a link: thelanguagepage.com/access-practice-lab/... */
-export const printUrl = (route) =>
-  `${SITE.host.replace(/^https:\/\//, "")}${route.startsWith("/access-teacher") ? "" : SITE.base}${route}`;
+export const printUrl = (route, site = false) =>
+  `${SITE.host.replace(/^https:\/\//, "")}${isSitePath(route, site) ? "" : SITE.base}${route}`;
 
 /** An ordinary link (guide pages, rooms). `data-url` is what Print Guide shows after the link. */
-export const linkHTML = (route, label, cls = "") =>
-  html`<a class="${cls}" href="${hrefFor(route)}" data-url="${printUrl(route)}">${label}</a>`;
+export const linkHTML = (route, label, cls = "", site = false) =>
+  html`<a class="${cls}" href="${hrefFor(route, site)}" data-url="${printUrl(route, site)}">${label}</a>`;
 
 /** A link that opens an ACTIVITY: carries the return hint so the activity can lead back to the guide. */
 export const activityLink = (route, label, cls = "btn") =>
