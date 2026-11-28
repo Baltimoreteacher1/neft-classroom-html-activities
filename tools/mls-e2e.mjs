@@ -156,7 +156,8 @@ const noErrors = (page, label) =>
     (errorsOf.get(page) || []).length === 0,
     `${label}: console/page errors: ${(errorsOf.get(page) || []).slice(0, 2).join(" | ")}`,
   );
-const py = (code) => spawnSync(process.env.MLS_PYTHON || "python3", ["-I", "-c", code], { encoding: "utf8" });
+const py = (code) =>
+  spawnSync(process.env.MLS_PYTHON || "python3", ["-I", "-c", code], { encoding: "utf8" });
 
 const scenarios = {
   async landing() {
@@ -359,6 +360,96 @@ const scenarios = {
     await noOverflow(page, "builder");
     noErrors(page, "builder");
     void count;
+    await ctx.close();
+  },
+
+  async fluencyResource() {
+    const { ctx, page } = await newPage({ reducedMotion: "reduce" });
+    await ctx.addInitScript(() => {
+      window.print = () => {
+        window.parent.__mlsPrintTitle = document.title;
+      };
+    });
+    await go(page, `${LAB}/create?grade=6&skill=g6.ratios`);
+    await page.getByRole("link", { name: /Fluency practice set/ }).click();
+    await page.getByRole("heading", { name: /Fluency practice set/, level: 1 }).waitFor();
+
+    const preview = page.frameLocator('iframe[title="Resource preview"]');
+    const prompts = preview.locator(".problem .ask");
+    await prompts.first().waitFor();
+    const original = await prompts.allTextContents();
+    ok(original.length === 8, "Fluency worksheet starts with eight problems");
+    await page.getByText("Adjust (topic, language, length)", { exact: true }).click();
+    const seed = page.getByLabel("Set seed");
+    await seed.fill("42");
+    await seed.press("Tab");
+    await page.waitForURL(/seed=42/);
+    const count = page.getByLabel("Number of problems");
+    await count.fill("3");
+    await count.press("Tab");
+    await page.waitForURL(/count=3/);
+    await preview.getByText("Explain a strategy", { exact: true }).waitFor();
+    const seeded = await prompts.allTextContents();
+    ok(seeded.length === 3 && seeded[0] !== original[0], "a new seed and length change the set");
+    await page.reload();
+    await prompts.nth(2).waitFor();
+    ok(
+      JSON.stringify(await prompts.allTextContents()) === JSON.stringify(seeded),
+      "a seeded worksheet reloads with the identical problems",
+    );
+
+    await page.getByText("Questions (3): replace, regenerate, remove", { exact: true }).click();
+    const marker = "TEACHER_ONLY_EXAMPLE_MARKER";
+    await page.getByLabel("Teacher key answer").first().fill(marker);
+    const download = async (name) => {
+      const [file] = await Promise.all([
+        page.waitForEvent("download"),
+        page.getByRole("button", { name, exact: true }).click(),
+      ]);
+      return readFileSync(await file.path());
+    };
+    const student = (await download("Offline web worksheet")).toString("utf8");
+    ok(
+      !student.includes(marker) && /id="mls-data">\{\}<\/script>/.test(student),
+      "student worksheet download contains no automatic checker or teacher answer",
+    );
+    ok(
+      (await download("Web page")).includes(marker),
+      "teacher key alone contains the edited answer",
+    );
+    ok(
+      (await download("Word (.docx)")).subarray(0, 2).toString() === "PK",
+      "Fluency set downloads as Word",
+    );
+    ok(
+      (await download("PowerPoint (.pptx)")).subarray(0, 2).toString() === "PK",
+      "Fluency set downloads as PowerPoint",
+    );
+
+    await page.getByRole("button", { name: "Print or save as PDF", exact: true }).click();
+    await page.waitForFunction(() => window.__mlsPrintTitle?.includes("Fluency practice set"));
+    ok(
+      !/Answer key/.test(await page.evaluate(() => window.__mlsPrintTitle)),
+      "student print starts without the teacher key",
+    );
+    await page.getByRole("button", { name: "Print", exact: true }).click();
+    await page.waitForFunction(() => window.__mlsPrintTitle?.includes("Answer key"));
+    ok(true, "the teacher print action opens the standalone answer key");
+
+    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await page
+      .locator("#ml-status")
+      .getByText(/Saved on this device/)
+      .waitFor();
+    await go(page, `${LAB}/collections`);
+    await page.getByRole("link", { name: /Fluency practice set/ }).click();
+    await page
+      .frameLocator('iframe[title="Answer key preview"]')
+      .getByText(marker, { exact: true })
+      .waitFor();
+    ok(true, "a saved Fluency worksheet reopens with the edited teacher key");
+    await noOverflow(page, "Fluency worksheet");
+    noErrors(page, "Fluency worksheet");
     await ctx.close();
   },
 

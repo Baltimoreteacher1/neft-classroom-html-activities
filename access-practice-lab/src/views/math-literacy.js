@@ -29,6 +29,8 @@ import { optsFromParsed, parseQuery, searchResources } from "../mls/search.js";
 import * as Store from "../mls/store.js";
 import * as Builder from "./math-literacy-builder.js";
 import * as Play from "./math-literacy-play.js";
+import * as Fluency from "./math-literacy-fluency.js";
+import { fluencyForSkill } from "../mls/fluency-map.js";
 import { generate } from "../mls/families.js";
 
 export const ROOT = `${BASE}/math-literacy`;
@@ -124,6 +126,11 @@ function crumbs(I, ...trail) {
   return crumbsHTML(items, { i18n: I });
 }
 const backLink = (label = "Back to Math Literacy Studio", href = ROOT) => html`<p class="ml-back"><a class="btn small" href="${href}">${icon("arrow-left")} ${label}</a></p>`;
+const fluencyHelpers = { mh, param, supportOf };
+const savedHref = (x) => x.recipe.type === "fluency-activity"
+  ? Fluency.recipeLink(x.recipe)
+  : mh(`resource/${x.recipe.skillId}/${x.recipe.type}`, { saved: x.id });
+
 function resourceHref(skillId, type, variant = "", extra = {}) {
   return mh(`resource/${skillId}/${type}`, { variant, support: supportOf() === "standard" ? "" : supportOf(), ...extra });
 }
@@ -174,7 +181,7 @@ async function landing(ctx, I) {
     </section>
     ${last ? html`<section class="panel ml-resume"><h2>Continue where you left off</h2><p><a class="btn primary" href="${recipeHref(last)}">${icon("arrow-right")} ${await recipeTitle(last)}</a></p></section>` : ""}
     ${recents.length ? html`<section class="panel"><h2>Recent</h2><ul class="ml-list">${recents.map((x) => html`<li><a href="${recipeHref(x.r)}">${x.title}</a></li>`)}</ul></section>` : ""}
-    ${st.saved.length ? html`<section class="panel"><h2>Saved</h2><ul class="ml-list">${st.saved.slice(0, 4).map((x) => html`<li><a href="${mh(`resource/${x.recipe.skillId}/${x.recipe.type}`, { saved: x.id })}">${x.name}</a></li>`)}</ul><p><a href="${mh("collections")}">All saved resources and collections</a></p></section>` : ""}
+    ${st.saved.length ? html`<section class="panel"><h2>Saved</h2><ul class="ml-list">${st.saved.slice(0, 4).map((x) => html`<li><a href="${savedHref(x)}">${x.name}</a></li>`)}</ul><p><a href="${mh("collections")}">All saved resources and collections</a></p></section>` : ""}
     ${st.favorites.length ? html`<section class="panel"><h2>Favorite skills</h2><ul class="ml-skills">${st.favorites.slice(0, 6).map((id) => skillFromIndex(idx, id)).filter(Boolean).map((s) => skillCard(s))}</ul></section>` : ""}
     <section class="panel"><h2>Browse by grade</h2><ul class="ml-grades">${[1, 2, 3, 4, 5, 6, 7, 8].map((g) => html`<li><a class="btn ml-grade" href="${mh("teach", { grade: g })}"><strong>Grade ${g}</strong><span class="fine">${idx.filter((s) => s.grade === g).length} skills</span></a></li>`)}</ul></section>
     <p class="ml-foot"><a href="${mh("guide")}">New here? A two-minute guide</a> · <a href="${mh("progressions")}">How math communication grows, grades 1 to 8</a> · <a href="${mh("collections")}">Saved resources and collections</a></p>`;
@@ -183,17 +190,21 @@ async function landing(ctx, I) {
 // ---------------------------------------------------------------------------------------------------------------- teach
 async function teachPage(ctx, I) {
   const idx = await loadIndex();
-  const g = Number(param("grade"));
-  if (!(g >= 1 && g <= 8)) {
+  const exactGrade = param("grade");
+  const g = Number(exactGrade);
+  if (exactGrade === "0") return html`${crumbs(I, ["Teach a skill", mh("teach")], ["Kindergarten", null])}<header class="panel"><h1 tabindex="-1">Kindergarten practice</h1></header>${Fluency.extraPractice(ctx, 0, fluencyHelpers)}${backLink("Choose another grade", mh("teach"))}`;
+  if (!Number.isInteger(g) || !(g >= 1 && g <= 8)) {
     return html`${crumbs(I, ["Teach a skill", null])}
       <header class="panel"><h1 tabindex="-1">Teach a skill</h1><p class="lead">Step 1 of 2: choose a grade.</p></header>
-      <ul class="ml-grade-list">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => html`<li><a class="card ml-gradecard" href="${mh("teach", { grade: n })}"><strong>Grade ${n}</strong><span>${GRADE_NOTE[n]}</span><span class="fine">${idx.filter((s) => s.grade === n).length} skills</span></a></li>`)}</ul>`;
+      <ul class="ml-grade-list">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => html`<li><a class="card ml-gradecard" href="${mh("teach", { grade: n })}"><strong>Grade ${n}</strong><span>${GRADE_NOTE[n]}</span><span class="fine">${idx.filter((s) => s.grade === n).length} skills</span></a></li>`)}</ul>
+      <p class="fine"><a href="${mh("teach", { grade: 0 })}">Supplemental Kindergarten practice</a></p>`;
   }
   const skills = idx.filter((s) => s.grade === g);
   const domains = [...new Set(skills.map((s) => s.domain))];
   return html`${crumbs(I, ["Teach a skill", mh("teach")], [`Grade ${g}`, null])}
     <header class="panel"><h1 tabindex="-1">Grade ${g}: choose a skill</h1><p class="lead">${GRADE_NOTE[g]}</p>${supportControl()}</header>
     ${domains.map((d) => html`<section class="panel"><h2>${d}</h2><ul class="ml-skills">${skills.filter((s) => s.domain === d).map((s) => skillCard(s))}</ul></section>`)}
+    ${Fluency.extraPractice(ctx, g, fluencyHelpers)}
     ${backLink("Choose another grade", mh("teach"))}`;
 }
 
@@ -221,11 +232,11 @@ async function skillPage(ctx, I, id) {
       <section class="panel"><h2>How much time do you have?</h2>
         <ul class="ml-seqs">${seqIds.map((s) => html`<li><a class="ml-res-link" href="${mh(`resource/${id}/lesson-sequence`, { variant: s, support: supportOf() === "standard" ? "" : supportOf() })}"><strong>${SEQ[s]}</strong><span class="fine">${sequenceSteps(skill, s).reduce((a, x) => a + x.minutes, 0)} minutes · ${sequenceSteps(skill, s).length} step${sequenceSteps(skill, s).length > 1 ? "s" : ""}</span></a></li>`)}</ul>
         <p class="fine">Take any step on its own. You do not have to follow the whole sequence.</p></section>
-      ${GROUPS.map((g) => html`<section class="panel"><h2>${g.title}</h2><ul class="ml-ress">${g.items.map(([t, v]) => resCard(skill, t, v || ""))}</ul>${g.id === "home" ? html`<p><a class="btn" href="${mh(`family/${id}`)}">${icon("home")} Open the family page (English and Spanish)</a></p>` : ""}</section>`)}
+      ${GROUPS.map((g) => html`<section class="panel"><h2>${g.title}</h2><ul class="ml-ress">${g.items.map(([t, v]) => resCard(skill, t, v || ""))}</ul>${g.id === "home" ? html`<p><a class="btn" href="${mh(`family/${id}`)}">${icon("home")} Open the family page (English and Spanish)</a></p>` : ""}</section>${g.id === "practice" ? Fluency.skillPractice(ctx, skill, fluencyHelpers) : ""}`)}
       <section class="panel"><h2>Interactive activities for students</h2>
         <p class="fine">Work on a device. Nothing is timed, answers are never shown after a wrong try, and no student data leaves the device.</p>
         <ul class="ml-ress">${ENGINES.map(([e, t, d]) => html`<li class="ml-res"><a class="ml-res-link" href="${mh(`learn/${id}/${e}`, { support: supportOf() === "standard" ? "" : supportOf() })}"><strong>${t}</strong><span class="fine">${d}</span></a></li>`)}</ul>
-        <p><a class="btn" href="${mh(`tool/auto`, { skill: id })}">${icon("tools")} Open the manipulative for this skill</a> <a class="btn" href="${mh(`play/${id}/auto`)}">${icon("play")} Play a practice game</a></p></section>
+      </section>
       <section class="panel"><h2>Around this skill</h2>
         <ul class="ml-list"><li><a href="${mh("support", { skill: id })}">Support a learner with this skill</a></li>
           ${pre.length ? html`<li>Skills to check first: ${pre.map((p, i) => html`${i ? ", " : ""}<a href="${mh(`skill/${p}`)}">${p}</a>`)}</li>` : ""}
@@ -247,7 +258,8 @@ async function createPage(ctx, I) {
     <header class="panel"><h1 tabindex="-1">Create a resource</h1><p class="lead">Three quick choices: a grade, a skill and a material. Then adjust and preview.</p></header>
     <section class="panel"><h2>1. Grade</h2><ul class="ml-grades">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => html`<li><a class="btn ml-grade" aria-current="${g === n ? "true" : "false"}" href="${mh("create", { grade: n, skill: chosen?.grade === n ? sk : "" })}"><strong>${n}</strong></a></li>`)}</ul></section>
     ${g ? html`<section class="panel"><h2>2. Skill</h2><ul class="ml-skills">${gSkills.map((s) => html`<li class="ml-skill"><a class="ml-skill-link" aria-current="${sk === s.id ? "true" : "false"}" href="${mh("create", { grade: g, skill: s.id })}"><strong>${s.title}</strong><span class="fine">${s.domain}</span></a></li>`)}</ul></section>` : ""}
-    ${chosen ? html`<section class="panel"><h2>3. Material</h2>${supportControl()}<ul class="ml-ress">${types.map((t) => html`<li class="ml-res"><a class="ml-res-link" href="${resourceHref(sk, t)}"><strong>${TYPE_LABEL[t]}</strong><span class="fine">${TYPE_BLURB[t]}</span><span class="ml-meta">${TYPE_META[t].minutes} min</span></a></li>`)}</ul></section>` : ""}
+    ${chosen ? html`<section class="panel"><h2>3. Material</h2>${supportControl()}<ul class="ml-ress">${types.map((t) => html`<li class="ml-res"><a class="ml-res-link" href="${resourceHref(sk, t)}"><strong>${TYPE_LABEL[t]}</strong><span class="fine">${TYPE_BLURB[t]}</span><span class="ml-meta">${TYPE_META[t].minutes} min</span></a></li>`)}
+      ${fluencyForSkill(chosen.id).length ? html`<li class="ml-res"><a class="ml-res-link" href="${resourceHref(chosen.id, "fluency-practice")}"><strong>Fluency practice set</strong><span class="fine">Create a printable set with a strategy prompt and a separate teacher key.</span></a></li>` : ""}</ul></section>` : ""}
     ${backLink()}`;
 }
 
@@ -278,7 +290,7 @@ async function supportPage(ctx, I) {
   return html`${crumbs(I, ["Support a learner", mh("support")], [c.title, mh("support", { concern: cid, grade: skill.grade })], [skill.title, null])}
     <header class="panel"><p class="eyebrow">Grade ${skill.grade} · ${skill.title}</p><h1 tabindex="-1">${plan.title}</h1><p class="fine">${plan.note}</p></header>
     <section class="panel"><h2>1. What to look for</h2><p>${plan.notice}</p><h3>Barriers to investigate</h3><ul>${plan.barriers.map((b) => html`<li>${b}</li>`)}</ul></section>
-    <section class="panel"><h2>2. A short check</h2><p>${plan.diagnostic}</p><p class="fine">Task from this skill: ${plan.diagnosticTask.prompt}</p><p class="fine">Look for: ${plan.diagnosticTask.lookFor.join("; ")}.</p><p class="fine">${plan.diagnosticTask.language}</p></section>
+    <section class="panel"><h2>2. A short check</h2><p>${plan.diagnostic}</p><p class="fine">Task from this skill: ${plan.diagnosticTask.prompt}</p><p class="fine">Look for: ${plan.diagnosticTask.lookFor.join("; ")}.</p><p class="fine">${plan.diagnosticTask.language}</p>${cid === "prereq" ? Fluency.prerequisitePractice(ctx, skill, fluencyHelpers) : ""}</section>
     <section class="panel"><h2>3. Resources</h2><ul class="ml-ress">${plan.resources.map((r) => html`<li class="ml-res"><a class="ml-res-link" href="${mh(`resource/${skill.id}/${r.type}`, { variant: r.variant, support: "more" })}"><strong>${r.label}</strong><span class="fine">${r.why}</span></a></li>`)}${plan.engine ? html`<li class="ml-res"><a class="ml-res-link" href="${mh(`learn/${skill.id}/${plan.engine}`)}"><strong>${ENGINES.find((e) => e[0] === plan.engine)?.[1]}</strong><span class="fine">Interactive activity for the student.</span></a></li>` : ""}</ul>
       <h3>Scaffolds</h3><ul>${plan.scaffolds.map((s) => html`<li>${s}</li>`)}</ul></section>
     <section class="panel"><h2>4. A short plan</h2><ol class="ml-steps">${seq.map((s) => html`<li><strong>${s.title}</strong> (${s.minutes} min): ${s.what}</li>`)}</ol><p><a class="btn" href="${mh(`resource/${skill.id}/lesson-sequence`, { variant: plan.sequence, support: "more" })}">Open this plan as a document</a></p></section>
@@ -347,9 +359,9 @@ async function collectionsPage(ctx, I) {
   const sid = param("skill");
   return html`${crumbs(I, ["Saved and collections", null])}
     <header class="panel"><h1 tabindex="-1">Saved resources and collections</h1><p class="lead">Everything here is saved on this device. It holds your choices, not student information.</p></header>
-    <section class="panel"><h2>Saved resources</h2>${st.saved.length ? html`<ul class="ml-list ml-saved">${st.saved.map((x) => html`<li><a href="${mh(`resource/${x.recipe.skillId}/${x.recipe.type}`, { saved: x.id })}">${x.name}</a> <button class="btn small" type="button" data-ml-dup="${x.id}">Duplicate</button> <button class="btn small" type="button" data-ml-del="${x.id}">Delete</button> ${st.collections.length ? html`<label class="fine">Add to <select data-ml-addcol="${x.id}"><option value="">choose...</option>${st.collections.map((c) => html`<option value="${c.id}">${c.name}</option>`)}</select></label>` : ""}</li>`)}</ul>` : html`<p>Nothing saved yet. Open any resource and choose Save.</p>`}</section>
+    <section class="panel"><h2>Saved resources</h2>${st.saved.length ? html`<ul class="ml-list ml-saved">${st.saved.map((x) => html`<li><a href="${savedHref(x)}">${x.name}</a> <button class="btn small" type="button" data-ml-dup="${x.id}">Duplicate</button> <button class="btn small" type="button" data-ml-del="${x.id}">Delete</button> ${st.collections.length ? html`<label class="fine">Add to <select data-ml-addcol="${x.id}"><option value="">choose...</option>${st.collections.map((c) => html`<option value="${c.id}">${c.name}</option>`)}</select></label>` : ""}</li>`)}</ul>` : html`<p>Nothing saved yet. Open any resource and choose Save.</p>`}</section>
     <section class="panel"><h2>My collections</h2><form data-ml-newcol class="ml-inline"><label>New collection <input name="name" required placeholder="for example, Week of Oct 6"></label> <button class="btn" type="submit">Create</button></form>
-      ${st.collections.map((c) => html`<div class="ml-collection"><h3>${c.name}</h3><ul class="ml-list">${c.items.map((id) => st.saved.find((x) => x.id === id)).filter(Boolean).map((x) => html`<li><a href="${mh(`resource/${x.recipe.skillId}/${x.recipe.type}`, { saved: x.id })}">${x.name}</a> <button class="btn small" type="button" data-ml-rmcol="${c.id}:${x.id}">Remove</button></li>`)}</ul>${c.items.length ? html`<p><a class="btn" href="${mh(`packet/saved-${c.id}/mine`)}">Download as one packet</a></p>` : html`<p class="fine">Empty. Use "Add to" on a saved resource.</p>`} <button class="btn small" type="button" data-ml-delcol="${c.id}">Delete collection</button></div>`)}</section>
+      ${st.collections.map((c) => html`<div class="ml-collection"><h3>${c.name}</h3><ul class="ml-list">${c.items.map((id) => st.saved.find((x) => x.id === id)).filter(Boolean).map((x) => html`<li><a href="${savedHref(x)}">${x.name}</a> <button class="btn small" type="button" data-ml-rmcol="${c.id}:${x.id}">Remove</button></li>`)}</ul>${c.items.some((id) => st.saved.some((x) => x.id === id && x.recipe.type !== "fluency-activity")) ? html`<p><a class="btn" href="${mh(`packet/saved-${c.id}/mine`)}">Download printable resources as one packet</a></p>` : c.items.length ? "" : html`<p class="fine">Empty. Use "Add to" on a saved resource.</p>`} <button class="btn small" type="button" data-ml-delcol="${c.id}">Delete collection</button></div>`)}</section>
     <section class="panel"><h2>Ready-made collections</h2><p class="fine">Choose a skill, then open a collection as one packet.</p>
       <div class="ml-collections-pick"><ul class="ml-grades">${[1, 2, 3, 4, 5, 6, 7, 8].map((n) => html`<li><a class="btn ml-grade" aria-current="${g === n ? "true" : "false"}" href="${mh("collections", { grade: n })}"><strong>${n}</strong></a></li>`)}</ul>
       ${g ? html`<ul class="ml-skills">${idx.filter((s) => s.grade === g).map((s) => html`<li class="ml-skill"><a class="ml-skill-link" aria-current="${sid === s.id ? "true" : "false"}" href="${mh("collections", { grade: g, skill: s.id })}"><strong>${s.title}</strong></a></li>`)}</ul>` : ""}</div>
@@ -393,6 +405,7 @@ export async function render(ctx) {
       const out = await skillPage(ctx, I, sub);
       return { title: out.title, html: html`<div class="ml-page">${out.html}</div>` };
     }
+    if (id === "fluency") return await Fluency.render(ctx, I, sub, sub2, { ...fluencyHelpers, wrap, backLink });
     if (id === "family") return await Family.render(ctx, I, sub, { crumbs, backLink, mh, param, wrap });
     if (["resource", "packet"].includes(id)) return await Builder.render(ctx, I, id, sub, sub2, { crumbs, backLink, mh, param, supportOf, PREBUILT, TYPE_BLURB });
     if (["learn", "play", "tool"].includes(id)) return await Play.render(ctx, I, id, sub, sub2, { crumbs, backLink, mh, param, supportOf, ENGINES });
@@ -419,7 +432,7 @@ const Family = {
         ${es ? html`<p class="fine ml-note">${SPANISH_NOTE}</p>` : ""}</header>
       <section class="panel"><h2>${es ? "Lo que aprende su hijo o hija" : "What your child is learning"}</h2><p>${f.learning}</p></section>
       <section class="panel"><h2>${es ? "Palabras" : "Words to know"}</h2><dl class="ml-words">${skill.vocab.slice(0, 4).map((v) => html`<dt>${v.term}</dt><dd>${v.def}</dd>`)}</dl>${es ? html`<p class="fine">Las definiciones están en inglés.</p>` : ""}</section>
-      <section class="panel ml-try" data-ml-family><h2>${es ? "Pruébenlo juntos" : "Try one together"}</h2>${familyProblem(fam.current)}</section>
+      <section class="panel ml-try" data-ml-family><h2>${es ? "Pruébenlo juntos" : "Try one together"}</h2>${familyProblem(fam.current)}${Fluency.optionalFamilyPractice(skill, es)}</section>
       <section class="panel"><h2>${es ? "Conversación" : "Talk about it"}</h2><p><strong>${es ? "Digan:" : "Say:"}</strong> ${f.say}</p><p><strong>${es ? "Pregunten:" : "Ask:"}</strong> ${f.ask}</p><p><strong>${es ? "Actividad:" : "Activity:"}</strong> ${f.activity}</p></section>
       <section class="panel"><h2>${es ? "Imprimir" : "Print"}</h2><p><a class="btn" href="${h.mh(`resource/${id}/family-practice`)}">${icon("print")} ${es ? "Hoja para imprimir (inglés y español)" : "Printable family page (English and Spanish)"}</a></p></section>
       ${h.backLink("Back to the skill", h.mh(`skill/${id}`))}`);
@@ -444,6 +457,10 @@ export function onClick(e, ctx) {
   if (pl) return true;
   const b = Builder.onClick?.(e, ctx);
   if (b) return true;
+  const copy = e.target.closest("[data-ml-fluency-copy]");
+  if (copy) return (Fluency.copyLink(copy), true);
+  const save = e.target.closest("[data-ml-fluency-save]");
+  if (save) return (Fluency.saveLink(save, Store), true);
   const fav = e.target.closest("[data-ml-fav]");
   if (fav) {
     const on = Store.toggleFavorite(fav.dataset.mlFav);
@@ -467,7 +484,7 @@ export function onClick(e, ctx) {
   if (fc && fam.current) {
     fam.current.picked = Number(fc.dataset.mlFchoice);
     const sec = document.querySelector("[data-ml-family]");
-    if (sec) sec.innerHTML = String(toHtmlText(familyProblem(fam.current)));
+    if (sec) sec.innerHTML = toHtmlText(html`<h2>${fam.current.es ? "Pruébenlo juntos" : "Try one together"}</h2>${familyProblem(fam.current)}${Fluency.optionalFamilyPractice(fam.current.skill, fam.current.es)}`);
     return true;
   }
   if (e.target.closest("[data-ml-fnext]") && fam.current) {
@@ -502,6 +519,11 @@ export function onInput(e, ctx) {
 export function onSubmit(e, ctx) {
   const form = e.target.closest("form");
   if (!form) return false;
+  if (form.matches("[data-ml-fluency-options]")) {
+    e.preventDefault();
+    Fluency.optionSubmit(form, ctx);
+    return true;
+  }
   if (form.matches("[data-ml-search]")) {
     e.preventDefault();
     const q = new FormData(form).get("q");
@@ -527,12 +549,13 @@ export function onSubmit(e, ctx) {
 }
 export function mount(root, ctx) {
   Play.mount?.(root, ctx);
+  Fluency.mount(root, ctx);
   const form = root.querySelector("[data-ml-search]");
   if (form && !form.dataset.wired) {
     form.dataset.wired = "1";
     form.addEventListener("submit", (e) => onSubmit(e, ctx));
   }
-  for (const f of root.querySelectorAll("[data-ml-filter],[data-ml-newcol]")) {
+  for (const f of root.querySelectorAll("[data-ml-filter],[data-ml-newcol],[data-ml-fluency-options]")) {
     if (f.dataset.wired) continue;
     f.dataset.wired = "1";
     f.addEventListener("submit", (e) => onSubmit(e, ctx));
@@ -542,6 +565,7 @@ export function mount(root, ctx) {
 }
 export function unmount() {
   Play.unmount?.();
+  Fluency.unmount();
   Builder.unmount?.();
 }
 export { loadAll, loadGrade, loadInventory, ROLE_MAP, BANDS, buildResource };

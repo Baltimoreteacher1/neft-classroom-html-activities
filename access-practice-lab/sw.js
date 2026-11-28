@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "f9957c27b526";
+const BUILD_HASH = "82cd41bbfa5b";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=9edfb6eb",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=806a13ec",
   "/access-practice-lab/acc.css?v=e5cd389c",
   "/access-practice-lab/studios.css?v=3f3a7021",
-  "/access-practice-lab/src/main.js?v=a739914e",
+  "/access-practice-lab/src/main.js?v=8f7d8a5b",
   "/access-practice-lab/src/brand.js?v=af5de68e",
   "/access-practice-lab/src/keep-in-view.js?v=88f12041",
   "/access-practice-lab/src/components.js?v=d7e0108d",
@@ -955,6 +955,13 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/mls/families/g56.js?v=86644c78",
   "/access-practice-lab/src/mls/families/g78.js?v=4e30044e",
   "/access-practice-lab/src/mls/families.js?v=53f3a95b",
+  "/access-practice-lab/src/mls/fluency-launch.js?v=7641f694",
+  "/access-practice-lab/src/mls/fluency-map.js?v=af21512e",
+  "/access-practice-lab/src/mls/fluency-model.js?v=9c6018ef",
+  "/access-practice-lab/src/mls/fluency-player.js?v=546c490d",
+  "/access-practice-lab/src/mls/fluency-problems.js?v=13a0805b",
+  "/access-practice-lab/src/mls/fluency-progress.js?v=d8191087",
+  "/access-practice-lab/src/mls/fluency-resource.js?v=d69ef133",
   "/access-practice-lab/src/mls/games.js?v=46105632",
   "/access-practice-lab/src/mls/kit.js?v=8ac6f930",
   "/access-practice-lab/src/mls/lang.js?v=a766b9cd",
@@ -1414,9 +1421,10 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/library.js?v=7954b694",
   "/access-practice-lab/src/views/lingua.js?v=bc7c2023",
   "/access-practice-lab/src/views/listen-for-clue.js?v=5cb6c610",
-  "/access-practice-lab/src/views/math-literacy-builder.js?v=d66de60d",
+  "/access-practice-lab/src/views/math-literacy-builder.js?v=9a7aeea8",
+  "/access-practice-lab/src/views/math-literacy-fluency.js?v=9e26cb21",
   "/access-practice-lab/src/views/math-literacy-play.js?v=3ed2a0ee",
-  "/access-practice-lab/src/views/math-literacy.js?v=567ab06b",
+  "/access-practice-lab/src/views/math-literacy.js?v=79480917",
   "/access-practice-lab/src/views/mentor.js?v=118cb5b5",
   "/access-practice-lab/src/views/method.js?v=7b636ed4",
   "/access-practice-lab/src/views/missions-feedback.js?v=4c38d44d",
@@ -2578,9 +2586,14 @@ const OUTSIDE_MODULES = [
   "/shared/class-platform/book-merge.js",
   "/shared/class-platform/social.js",
   "/shared/qr/qr-code.mjs",
+  // The Studio's document exports import this writer statically, so the Studio route cannot load offline without it.
+  "/assets/lib/zip-store.js",
 ];
 // Shared chrome the lab loads from outside its own folder; worth having offline so the page is not unstyled.
 const OUTSIDE = [
+  // Cache shared Fluency modules on demand from an ACCESS client. Keep source pages and their worker outside this scope.
+  /^\/math\/fluency-lab\/(?:[\w-]+\/)*[\w-]+\.js$/,
+  /^\/assets\/lib\/zip-store\.js$/,
   /^\/assets\/mobile-access\.css$/,
   /^\/shared\/save-resume\//,
   /^\/shared\/(?:class-platform|qr)\/[\w-]+\.m?js$/,

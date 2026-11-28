@@ -58,14 +58,17 @@ const imports = Object.fromEntries(
     return [url, `${url}?v=${version(readFileSync(join(dir, "src", relative)))}`];
   }),
 );
-const importMap = `<!-- lab-modules:begin -->\n    <script type="importmap">\n${JSON.stringify(
-  { imports },
-  null,
-  2,
-)
-  .split("\n")
-  .map((line) => `      ${line}`)
-  .join("\n")}\n    </script>\n    <!-- lab-modules:end -->`;
+// One entry per line keeps changes readable while removing redundant indentation and spaces.
+const importEntries = Object.entries(imports)
+  .map(([url, versioned]) => `${JSON.stringify(url)}:${JSON.stringify(versioned)}`)
+  .join(",\n");
+const importMap = `<!-- lab-modules:begin -->
+    <script type="importmap">
+{"imports":{
+${importEntries}
+}}
+    </script>
+    <!-- lab-modules:end -->`;
 
 // ── static import chain of the entry module ───────────────────────────────────
 const STATIC_IMPORT = /(?:^|\n)\s*(?:import|export)\s+(?:[^'"()]*?\s+from\s+)?["']([^"']+)["']/g;

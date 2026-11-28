@@ -22,3 +22,62 @@
 .ml-man-err { padding: 0.6rem; border: 2px dashed #17324d; }
 .ml-man-notice { padding-inline-start: 1.2rem; }
 @media (prefers-reduced-motion: reduce) { .ml-stage * { animation: none !important; transition: none !important; } }
+
+.ml-fluency-question {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  overflow-wrap: anywhere;
+}
+
+.ml-fluency-counters {
+  inline-size: max-content;
+  margin-block: 0.75rem;
+  color: var(--ink);
+  font-size: clamp(1.4rem, 6vw, 2rem);
+  letter-spacing: 0.12em;
+}
+
+.ml-fluency-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-block-size: 44px;
+}
+
+[data-ml-fluency] summary {
+  align-content: center;
+  min-block-size: 44px;
+  cursor: pointer;
+}
+
+/* Student activity chrome: the brand, one language control and the page's own return link. The audience tabs,
+   grade picker, tools, workspace controls and teacher shortcuts return on every other page. */
+body[data-lab-chrome="activity"] :is(.top-aud, .grade-select, .lab-search-btn, .lab-read-btn, .lab-comfort-btn, .lab-utilities, #tlpControlBar, #labSectionBar) {
+  display: none !important;
+}
+
+/* Untimed race: two plain progress meters with a word and a number, never colour alone. */
+.ml-fluency-track {
+  display: grid;
+  gap: 0.6rem;
+  margin-block: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.ml-fluency-track label {
+  display: grid;
+  gap: 0.25rem;
+  font-weight: 700;
+}
+
+.ml-fluency-track progress {
+  inline-size: 100%;
+  block-size: 1.25rem;
+  accent-color: #0f7e7b;
+}
+
+.ml-fluency-track label:last-child progress {
+  accent-color: #8a3a5c;
+}

@@ -550,6 +550,9 @@ async function render({ keepFocus = false, scroll = false, restoreY = null } = {
   }
   document.title = brandTitle(out.title);
   document.body.dataset.labView = route.view;
+  // A view may ask for activity chrome: brand, one language control and the page's own return link.
+  if (out.chrome === "activity") document.body.dataset.labChrome = "activity";
+  else delete document.body.dataset.labChrome;
   document.body.dataset.labBand = app.band;
   document.body.dataset.labRegister = registerFor(route.view);
   mountShell(ctx);
@@ -645,6 +648,12 @@ async function common(e) {
   if (langBtn) {
     const mode = LANG_MODES.includes(langBtn.dataset.langMode) ? langBtn.dataset.langMode : "en";
     ctx.setPrefs({ lang: mode, langChosen: true });
+    // A link that names ?lang= is re-read on every render: carry the new choice in the address so it is not undone.
+    const here = new URL(location.href);
+    if (here.searchParams.has("lang")) {
+      here.searchParams.set("lang", mode);
+      history.replaceState(history.state, "", here.pathname + here.search + here.hash);
+    }
     announce({ en: "Language: English.", es: "Idioma: español.", bi: "Language: English and Español. Idioma: inglés y español." }[mode]);
     const fromPage = Boolean(langBtn.closest("#app"));
     await render({ keepFocus: true });
