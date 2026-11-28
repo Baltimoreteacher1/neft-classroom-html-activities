@@ -17,6 +17,12 @@ async function launch() {
   }
 }
 
+// Network-idle after loading the teacher page took 30.6 s on a 2-vCPU cloud session (the page makes ~110
+// requests and waits on one that finishes late), 0.6 s past Playwright's 30 s default, so the gate
+// timed out on a page that was working. What the probe asserts is the OFFLINE and NO-EGRESS behavior
+// further down, not how fast the page settles, so the wait gets room on a slow runner.
+const SETTLE_MS = 120_000;
+
 async function probeOfflineUnit({ pinFirst }) {
   const browser = await launch();
   if (browser.skip) return { skip: browser.skip };
@@ -29,7 +35,7 @@ async function probeOfflineUnit({ pinFirst }) {
     const url = `${base}/bcpss-teachers/?grade=6&subject=Math&unit=g6-math-u1`;
 
     if (pinFirst) {
-      await page.goto(url, { waitUntil: "networkidle" });
+      await page.goto(url, { waitUntil: "networkidle", timeout: SETTLE_MS });
       await page.waitForSelector("#workspaceTitle", { timeout: 15_000 });
       await page.waitForFunction(
         () => (document.querySelector("#workspaceTitle")?.textContent || "").includes("Unit 1"),
@@ -55,7 +61,7 @@ async function probeOfflineUnit({ pinFirst }) {
       info.pinLabel = await page.$eval("#pinUnitOfflineLabel", (e) => e.textContent);
       // Ensure SW controls the page before going offline
       if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
-        await page.reload({ waitUntil: "networkidle" });
+        await page.reload({ waitUntil: "networkidle", timeout: SETTLE_MS });
       }
     }
 

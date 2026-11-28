@@ -210,7 +210,7 @@ export const LISTED = {
   "newsroom-prompts": 48,
   "reading-path": 15,
   "newcomer-packs": 14,
-  "quest-missions": 10,
+  "quest-missions": 17,
   ...LISTED_C,
   ...(await listedA()),
 };

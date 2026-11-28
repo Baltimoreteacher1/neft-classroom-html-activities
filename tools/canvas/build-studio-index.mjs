@@ -14,6 +14,7 @@
 import { readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
+import { tryLoadLessonConfig } from "../lib/curriculum-source.mjs";
 import { selectLibrary } from "./lib/library-select.mjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -33,12 +34,9 @@ const SG_RE = /\/lessons\/[^/]*-(?:group\d+|catchup)\/$/;
 function readContentObjective(url) {
   const m = url.match(/\/lessons\/([^/]+)\//);
   if (!m) return null;
-  try {
-    const cfg = JSON.parse(readFileSync(resolve(repoRoot, "lessons", m[1], "config.json"), "utf8"));
-    return (cfg.contentObjective || "").replace(/\s+/g, " ").trim() || null;
-  } catch {
-    return null;
-  }
+  const cfg = tryLoadLessonConfig(m[1]);
+  if (!cfg) return null;
+  return (cfg.contentObjective || "").replace(/\s+/g, " ").trim() || null;
 }
 
 function descriptionFor(it) {

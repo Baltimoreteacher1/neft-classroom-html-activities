@@ -1,4 +1,4 @@
-// Adapter: Language Quest missions (content/quest/missions/<id>.json, listed in content/quest/index.json; 10 missions).
+// Adapter: Language Quest missions (content/quest/missions/<id>.json, listed in content/quest/index.json; 17 missions).
 // A mission becomes its vocabulary, its reading sources, and the items the activity model can hold as authored: listening
 // and reading checks (choice, with the radio script as read-aloud and transcript, and any chart as a table), card sorts,
 // timelines (order), and the writing and speaking tasks as open responses with their frame, model and checklist. Item
