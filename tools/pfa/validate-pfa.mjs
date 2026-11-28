@@ -18,6 +18,10 @@
 //  13  VISUALS     math visuals are SVG from the shared renderer (no raster), every positioned mark
 //                  sits where its value says; @keyframes and transitions touch transform/opacity only
 //  14  COVERAGE    84/84 core lessons have homework, family and assignment pages in the new template
+//  15  REVIEW      spiral review sources are taught EARLIER in the pacing sequence (MAP.sequence, from
+//                  data/pacing-unit-ranges.json), never the lesson's own generator, at most two
+//  16  CODES       the class-code tag list (insight-code.js) names every taxonomy tag; the insights
+//                  page renders and its sample codes decode and match the real 6-6 page
 // Exit 0 PASS / 1 FAIL / 3 SKIP (tools/lib/skip-exit.mjs). Every detector is run against a seeded
 // defect first; a sweep that checks nothing FAILS.
 
@@ -32,7 +36,9 @@ const json = (p) => JSON.parse(read(p));
 const imp = (p) => import(pathToFileURL(join(ROOT, p)).href);
 
 const { generate, parseNumber } = await imp("functions/_lib/pfa/generators.js");
-const { routePfa } = await imp("functions/_lib/pfa/render.js");
+const { routePfa, reviewSources } = await imp("functions/_lib/pfa/render.js");
+const BUNDLE = await imp("functions/_lib/pfa/generated/bundle.generated.js");
+const { TAG_LIST, encodeInsight, decodeInsight } = await imp("functions/_lib/pfa/insight-code.js");
 const { UI } = await imp("functions/_lib/pfa/strings.js");
 const { parseColor, isForbiddenHue } = await imp("tools/lib/color-math.mjs");
 const { DETECTORS: ES_DETECTORS } = await imp("tools/lib/family-spanish.mjs");
@@ -220,6 +226,31 @@ const feedbackKey = (lessonId, stem, choice) =>
     .digest("hex")
     .slice(0, 10)}`;
 
+// Spiral review: every source lesson is taught EARLIER (pacing sequence) and uses a different
+// generator from the lesson it reviews; at most two sources, never the same one twice.
+function reviewErrors(id, sources, seq, specOf) {
+  const e = [];
+  const at = seq.indexOf(id);
+  if (sources.length > 2) e.push(`${sources.length} review sources (max 2)`);
+  if (new Set(sources).size !== sources.length) e.push("a review source repeats");
+  for (const src of sources) {
+    const j = seq.indexOf(src);
+    if (j < 0) e.push(`review source ${src} is not in the pacing sequence`);
+    else if (j >= at) e.push(`review source ${src} is not taught before ${id}`);
+    if (specOf(src) === specOf(id)) e.push(`review source ${src} uses ${id}'s own generator`);
+  }
+  return e;
+}
+// Class codes: the tag list must name every taxonomy tag (append-only; a code stores an index).
+function tagListErrors(list, taxonomyKeys) {
+  const e = [];
+  for (const k of taxonomyKeys)
+    if (!list.includes(k)) e.push(`taxonomy tag ${k} missing from TAG_LIST (append it at the END)`);
+  if (new Set(list).size !== list.length) e.push("TAG_LIST has a duplicate");
+  if (list.length > 64) e.push("TAG_LIST outgrew 6 bits");
+  return e;
+}
+
 // ---------- negative controls ------------------------------------------------------------------
 function control(name, ok) {
   if (!ok) {
@@ -300,6 +331,30 @@ control("feedback-es: spaced percent", feedbackEsErrors("It is 60%.", "Es 60 %."
 control(
   "feedback-es: clean line passes",
   feedbackEsErrors("4 + 3 = 7, so 4x + 3x = 7x.", "4 + 3 = 7, así que 4x + 3x = 7x.").length === 0,
+);
+control(
+  "review: later lesson",
+  reviewErrors("3-2", ["3-5"], ["3-1", "3-2", "3-5"], (x) => x).some((x) =>
+    x.includes("not taught before"),
+  ),
+);
+control(
+  "review: own generator",
+  reviewErrors("3-2", ["3-1"], ["3-1", "3-2"], () => "same").some((x) =>
+    x.includes("own generator"),
+  ),
+);
+control(
+  "codes: tag missing",
+  tagListErrors(["a"], ["a", "b"]).some((x) => x.includes("missing")),
+);
+control(
+  "codes: typo refused",
+  !decodeInsight(
+    encodeInsight({ lessonId: "6-6", score: 3, total: 9 }).replace(/^./, (c) =>
+      c === "5" ? "6" : "5",
+    ),
+  ).ok,
 );
 // Fixtures are assembled at runtime so this file itself carries no forbidden color (validate:no-purple).
 const SEEDED_HEX = `#${"7c3aed"}`;
@@ -550,6 +605,42 @@ const missing = core.filter((id) => !MAP.lessons.some((l) => l.id === id));
 if (missing.length)
   fail(14, `core lessons missing from data/assignments.json: ${missing.join(", ")}`);
 if ((counters["problems checked"] || 0) === 0) fail(14, "checked zero problems");
+
+// ---------- 15 spiral review + 16 class codes ------------------------------------------------------------
+const SEQ = BUNDLE.MAP.sequence || [];
+const specOf = (lid) => JSON.stringify(BUNDLE.PRACTICE[lid]?.similar || null);
+if (SEQ.length !== core.length || core.some((id) => !SEQ.includes(id)))
+  fail(
+    15,
+    `pacing sequence has ${SEQ.length} lessons; expected all ${core.length} core lessons once`,
+  );
+let reviewed = 0;
+for (const id of core) {
+  const src = reviewSources(id);
+  if (src.length) reviewed++;
+  for (const e of reviewErrors(id, src, SEQ, specOf)) fail(15, `${id}: ${e}`);
+  const html = routePfa(`/lessons/${id}/practice`)?.body || "";
+  for (const s of src)
+    if (!html.includes(`href="/lessons/${s}/practice"`))
+      fail(15, `${id}: review from ${s} not rendered`);
+}
+if (reviewed < core.length - 3) fail(15, `only ${reviewed} lessons got spiral review`);
+bump("lessons with spiral review", reviewed);
+const taxKeys = Object.keys(TAX);
+for (const e of tagListErrors(TAG_LIST, taxKeys)) fail(16, e);
+const ins = routePfa("/practice-hub/insights");
+if (ins?.status !== 200) fail(16, "/practice-hub/insights did not render");
+const insData = JSON.parse(
+  /<script type="application\/json" id="pfa-data">([\s\S]*?)<\/script>/.exec(
+    ins?.body || "",
+  )?.[1] || "{}",
+);
+const decoded = (insData.sample || []).map((c) => decodeInsight(c));
+if (decoded.length < 10 || decoded.some((d) => !d.ok))
+  fail(16, "insights sample codes do not all decode");
+if (decoded.some((d) => d.total !== BUNDLE.PRACTICE["6-6"].problems.length))
+  fail(16, "insights sample codes do not match the 6-6 page's problem count");
+bump("insight sample codes decoded", decoded.length);
 // A translation no item uses is stale (its English changed or the item left): delete or re-translate.
 for (const k of Object.keys(FEEDBACK_ES))
   if (!k.startsWith("$") && !FEEDBACK_ES_USED.has(k))
@@ -572,5 +663,5 @@ console.log(
     .map(([k, v]) => `${v} ${k}`)
     .join(
       ", ",
-    )}; 17 seeded defects caught.\n  Spanish wrong-answer feedback not authored per choice (shown from a machine-assisted translation of the English line, the taxonomy, or the item's own Spanish hint; needs review): ${needs || "none"}`,
+    )}; 21 seeded defects caught.\n  Spanish wrong-answer feedback not authored per choice (shown from a machine-assisted translation of the English line, the taxonomy, or the item's own Spanish hint; needs review): ${needs || "none"}`,
 );

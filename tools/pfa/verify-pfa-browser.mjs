@@ -44,6 +44,9 @@ try {
   process.exit(process.env.CI ? 1 : 3);
 }
 const { startServer } = await import(pathToFileURL(join(ROOT, "tools/pfa/serve.mjs")).href);
+const { decodeInsight } = await import(
+  pathToFileURL(join(ROOT, "functions/_lib/pfa/insight-code.js")).href
+);
 const { isTeacherSurface } = await import(
   pathToFileURL(join(ROOT, "functions/_lib/teacher-surface.js")).href
 );
@@ -155,6 +158,7 @@ const TEMPLATES = [
   "/practice-hub/",
   "/practice-hub/family/unit-6",
   "/practice-hub/family/unit-6/letter",
+  "/practice-hub/insights",
 ];
 const sample = [];
 for (const u of MAP.units) {
@@ -558,6 +562,76 @@ for (const [path, lang, max] of PRINT) {
   await page.close();
 }
 
+// ---------------- coach, class code, spiral review and class insights ----------------
+{
+  const page = await newPage({ width: 390 });
+  await page.goto(`${BASE}/lessons/6-6/practice?lang=en`, { waitUntil: "load" });
+  const probs = await answers(page);
+  const data = await page.evaluate(() =>
+    JSON.parse(document.getElementById("pfa-data").textContent),
+  );
+  const review = Object.keys(probs).filter((k) => probs[k].review);
+  if (review.length !== 2)
+    fail("coach", `6-6 shows ${review.length} spiral review problems, expected 2`);
+  // One tagged wrong answer, then everything multiple-choice right.
+  let wrongTag = null;
+  for (const [pid, d] of Object.entries(probs)) {
+    if (d.kind !== "mc" || d.counted === false) continue;
+    const card = page.locator(`#p-${pid}`);
+    const wi = (d.tags || []).findIndex((t, i) => t && i !== d.correct && data.tips?.[t]);
+    if (!wrongTag && wi >= 0) {
+      await card.locator(`input[value="${wi}"]`).check();
+      await card.locator('[data-act="check"]').click();
+      wrongTag = d.tags[wi];
+    }
+    await card.locator(`input[value="${d.correct}"]`).check();
+    await card.locator('[data-act="check"]').click();
+  }
+  // A spiral review problem's third hint is a worked example from ITS lesson's generator.
+  const rc = page.locator(`#p-${review[0]}`);
+  for (let k = 0; k < 3; k++) await rc.locator('[data-act="hint"]').click();
+  if (!(await rc.locator(".hint .steps").count()))
+    fail("coach", "review problem hint 3 has no worked example");
+  await page.locator('[data-act="finish"]').click();
+  const coach = await page.locator(".coach-body").innerText();
+  if (!wrongTag) fail("coach", "6-6 has no tagged wrong answer to drive the coach");
+  else if (!coach.includes(data.tips[wrongTag].label.en))
+    fail("coach", `coach does not name ${wrongTag} after that wrong answer`);
+  const code = (await page.locator("#finish .code").innerText()).trim();
+  const dec = decodeInsight(code);
+  const counted = Object.values(probs).filter((d) => d.counted !== false).length;
+  if (!dec.ok || dec.lessonId !== "6-6" || dec.total !== counted || !dec.tags.includes(wrongTag))
+    fail("coach", `class code ${code} decodes to ${JSON.stringify(dec)}`);
+  await page.waitForTimeout(1800); // let the confetti and scroll-in fades finish before measuring
+  await axe(page, "6-6 finish card with coach and code");
+  await page.locator('[data-act="coach-try"]').first().click();
+  if (!(await page.locator(".coach .problem.extra").count()))
+    fail("coach", "coach practice did not add a problem");
+  if (page._errors.length) fail("coach", `errors: ${page._errors.slice(0, 2).join(" | ")}`);
+  // The teacher pastes it (with a name and a mistyped code) into class insights.
+  const ins = await newPage({ width: 1280 });
+  await ins.goto(`${BASE}/practice-hub/insights?lang=es`, { waitUntil: "load" });
+  const bad = code.replace(/^./, (c) => (c === "5" ? "6" : "5"));
+  await ins.locator("#ins-codes").fill(`Ana ${code}\nBen ${bad}`);
+  await ins.locator('[data-act="ins-show"]').focus();
+  await ins.keyboard.press("Enter");
+  const out = await ins.locator("#ins-out").innerText();
+  if (!/Lección 6-6/.test(out) || !out.includes("1 estudiante"))
+    fail("insights", "pasted code not summarized for Lesson 6-6");
+  if (!out.includes(bad)) fail("insights", "mistyped code was not listed as unreadable");
+  await axe(ins, "insights results es");
+  await ins.locator('[data-act="ins-sample"]').click();
+  const sampleOut = await ins.locator("#ins-out").innerText();
+  if (!/\b24\b/.test(sampleOut)) fail("insights", "sample class did not render 24 students");
+  await noOverflow(ins, "insights sample 1280");
+  if (ins._errors.length) fail("insights", `errors: ${ins._errors.slice(0, 2).join(" | ")}`);
+  ok(
+    `coach and codes: a ${wrongTag} answer is named on the finish card, the class code decodes (score, total, tag), a mistyped code is refused, class insights summarize it in Spanish`,
+  );
+  await page.close();
+  await ins.close();
+}
+
 // ---------------- live: every hub link for one unit, and the curriculum entry points ----------------
 if (LIVE) {
   const hub = await (await fetch(`${BASE}/practice-hub/`)).text();
@@ -596,6 +670,7 @@ for (const p of [
   "/lessons/6-6/family-guide",
   "/lessons/6-6/assignment",
   "/practice-hub/",
+  "/practice-hub/insights",
 ])
   if (isTeacherSurface(p)) fail("auth", `${p} is gated but is student/family-facing`);
 

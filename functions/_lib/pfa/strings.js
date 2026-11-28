@@ -187,6 +187,83 @@ export const UI = {
   copied: { en: "Copied", es: "Copiado" },
   showQr: { en: "QR", es: "QR" },
   familyHub: { en: "Family hub", es: "Página para familias" },
+  // mistake-pattern coach, class code, spiral review (2026-11-28)
+  coachTitle: { en: "What your answers tell us", es: "Lo que dicen tus respuestas" },
+  coachIntro: {
+    en: "Your wrong answers point to this mix-up. It is a common one, and you can fix it.",
+    es: "Tus respuestas incorrectas apuntan a esta confusión. Es común y la puedes corregir.",
+  },
+  coachNone: {
+    en: "No mistake pattern showed up in your answers. Nice work.",
+    es: "No apareció ningún patrón de error en tus respuestas. ¡Buen trabajo!",
+  },
+  coachSeen: { en: "In {n} of your answers", es: "En {n} de tus respuestas" },
+  coachTry: {
+    en: "Try one where this mistake is tempting",
+    es: "Intenta uno donde este error tienta",
+  },
+  coachTryNote: {
+    en: "This problem is built so that this mistake gives one of the wrong answers. Go slowly and check.",
+    es: "Este problema está hecho para que este error dé una de las respuestas incorrectas. Ve con calma y revisa.",
+  },
+  codeTitle: { en: "Your class code", es: "Tu código para la clase" },
+  codeNote: {
+    en: "Give this code to your teacher. It holds your score and what to practice. It does not hold your name.",
+    es: "Dale este código a tu maestro o maestra. Guarda tu puntaje y lo que debes practicar. No guarda tu nombre.",
+  },
+  copyCode: { en: "Copy code", es: "Copiar código" },
+  reviewTitle: { en: "Keep it fresh", es: "Repasa para no olvidar" },
+  reviewNote: {
+    en: "Two problems from lessons you did earlier this year. They do not change your score.",
+    es: "Dos problemas de lecciones que hiciste antes este año. No cambian tu puntaje.",
+  },
+  reviewFrom: { en: "From Lesson", es: "De la Lección" },
+  // class insights (teacher page)
+  insTitle: { en: "Class insights", es: "Resumen de la clase" },
+  insIntro: {
+    en: "Each student who finishes a practice page gets a class code. Paste the codes here, one per student, to see what the class understands and what to reteach. Names or other text on the same line are fine.",
+    es: "Cada estudiante que termina una página de práctica recibe un código. Peguen aquí los códigos, uno por estudiante, para ver qué entiende la clase y qué volver a enseñar. Se pueden dejar nombres u otro texto en la misma línea.",
+  },
+  insPrivacy: {
+    en: "The codes are read in this browser. Nothing is sent or saved, and the codes hold no names.",
+    es: "Los códigos se leen en este navegador. No se envía ni se guarda nada, y los códigos no tienen nombres.",
+  },
+  insPaste: { en: "Class codes", es: "Códigos de la clase" },
+  insShow: { en: "Show class insights", es: "Ver el resumen de la clase" },
+  insSample: { en: "Try with sample codes", es: "Probar con códigos de ejemplo" },
+  insSampleNote: {
+    en: "Sample data, not real students.",
+    es: "Datos de ejemplo, no son estudiantes reales.",
+  },
+  insStudents: { en: "Students", es: "Estudiantes" },
+  insAverage: { en: "First-try average", es: "Promedio al primer intento" },
+  insConf: { en: "Average confidence", es: "Confianza promedio" },
+  insReview: { en: "Spiral review right, average", es: "Repaso correcto, promedio" },
+  insSpread: { en: "Score spread", es: "Distribución de puntajes" },
+  insRevisit: { en: "Problems to reteach", es: "Problemas para volver a enseñar" },
+  insRevisitNote: {
+    en: "How many students missed each problem on the first try.",
+    es: "Cuántos estudiantes fallaron cada problema al primer intento.",
+  },
+  insMisc: { en: "Misconceptions to address", es: "Confusiones que hay que atender" },
+  insWatch: { en: "Watch for", es: "Observen" },
+  insNoMisc: {
+    en: "No misconception pattern in these codes.",
+    es: "No hay un patrón de confusión en estos códigos.",
+  },
+  insInvalid: { en: "Codes that could not be read", es: "Códigos que no se pudieron leer" },
+  insInvalidNote: {
+    en: "Check these with the student. A code with one wrong character is refused, never misread.",
+    es: "Revísenlos con el estudiante. Un código con un carácter equivocado se rechaza; nunca se lee mal.",
+  },
+  insNone: {
+    en: "No codes found. Paste one code per student, like 7H2KQ-M9XPA-3B0RT.",
+    es: "No se encontraron códigos. Peguen un código por estudiante, como 7H2KQ-M9XPA-3B0RT.",
+  },
+  insOpen: { en: "Open the practice page", es: "Abrir la página de práctica" },
+  insStudentsN: { en: "{n} students", es: "{n} estudiantes" },
+  insStudent1: { en: "1 student", es: "1 estudiante" },
+  insOpenHub: { en: "Class insights from codes", es: "Resumen de la clase con códigos" },
 };
 
 export function t(key, lang, vars = {}) {
