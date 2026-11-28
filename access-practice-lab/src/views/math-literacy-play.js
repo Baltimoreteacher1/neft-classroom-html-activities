@@ -7,12 +7,18 @@ import { BANDS, bandOf } from "../mls/lang.js";
 
 let pending = null;
 let live = null;
-const q = (k) => new URLSearchParams(location.search).get(k) || "";
+const q = (k) => {
+  const v = new URLSearchParams(location.search).get(k) || "";
+  return k === "skill" ? v.replace(/^(g[1-8])-/, "$1.") : v;
+};
 const BAND_OF_SUPPORT = { more: "1-2", standard: "3-4", extension: "5-6" };
 const LEVEL_OF_SUPPORT = { more: 2, standard: 2, extension: 3 };
 
 export async function render(ctx, I, kind, skillId, sub, h) {
   await ensureStylesheet("mls.css");
+  // The shared base for every activity, and the manipulative sheets (a manipulative module cannot be relied on to load its own).
+  await ensureStylesheet("mls-play.css");
+  if (kind === "tool") await Promise.all([ensureStylesheet("mls-play-manips-a.css"), ensureStylesheet("mls-play-manips-b.css")]);
   let skill = null;
   let title = "";
   let blurb = "";
@@ -52,6 +58,7 @@ export async function render(ctx, I, kind, skillId, sub, h) {
       pending = { kind, id, skill, mod: g };
     }
   }
+  pending.backTo = backTo;
   const support = h.supportOf();
   const band = bandOf(q("band") || BAND_OF_SUPPORT[support]);
   const level = Number(q("level")) || LEVEL_OF_SUPPORT[support];
@@ -89,6 +96,11 @@ function start(root) {
 }
 export function mount(root, ctx) {
   if (!pending || !root.querySelector("[data-ml-stage]")) return;
+  // A game's "Back" returns to the skill it was launched from.
+  pending.opts.onBack = () => {
+    history.pushState({}, "", pending.backTo);
+    ctx.rerender();
+  };
   start(root);
   const f = root.querySelector("[data-ml-dials]");
   f?.addEventListener("submit", (e) => {
