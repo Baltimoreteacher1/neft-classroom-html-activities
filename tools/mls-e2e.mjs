@@ -124,6 +124,13 @@ const noOverflow = async (page, label) => {
 };
 async function axe(page, label) {
   if (!AxeBuilder) return;
+  // let entrance transitions finish: axe samples mid-fade colours otherwise and reports contrast that no one ever sees
+  await page.evaluate(() =>
+    Promise.race([
+      Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))),
+      new Promise((r) => setTimeout(r, 2500)),
+    ]),
+  );
   const r = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
@@ -135,7 +142,7 @@ const noErrors = (page, label) =>
     (errorsOf.get(page) || []).length === 0,
     `${label}: console/page errors: ${(errorsOf.get(page) || []).slice(0, 2).join(" | ")}`,
   );
-const py = (code) => spawnSync("python3", ["-I", "-c", code], { encoding: "utf8" });
+const py = (code) => spawnSync(process.env.MLS_PYTHON || "python3", ["-I", "-c", code], { encoding: "utf8" });
 
 const scenarios = {
   async landing() {
@@ -487,6 +494,7 @@ const scenarios = {
     await page.locator(".ml-concern", { hasText: "word problems" }).click();
     await page.locator(".ml-grade", { hasText: "4" }).first().click();
     await page.locator(".ml-skill-link").first().click();
+    await page.locator("h2", { hasText: "What to look for" }).first().waitFor();
     for (const h of ["What to look for", "A short check", "Resources", "A short plan", "Follow up"])
       ok((await page.locator("h2", { hasText: h }).count()) === 1, `plan has "${h}"`);
     const hrefs = await page
@@ -639,6 +647,16 @@ const scenarios = {
       await axe(page, `activity ${p}`);
       await noOverflow(page, `activity ${p}`);
     }
+    // a game's "Back" hands the host a cancelable event; the host should take the student to the skill, not out of the studio
+    await go(page, `${LAB}/play/g4-fracops/auto`);
+    await page.locator("[data-ml-stage] *").nth(2).waitFor();
+    await page.evaluate(() =>
+      document
+        .querySelector("[data-ml-stage] *")
+        .dispatchEvent(new CustomEvent("ml-game-back", { bubbles: true, cancelable: true })),
+    );
+    await page.waitForFunction(() => location.pathname.includes("/skill/g4-fracops"));
+    ok(true, "a game's Back event returns to its skill page");
     noErrors(page, "activities");
     await ctx.close();
   },

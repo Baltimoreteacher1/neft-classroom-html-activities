@@ -90,6 +90,13 @@ function start(root) {
 export function mount(root, ctx) {
   if (!pending || !root.querySelector("[data-ml-stage]")) return;
   start(root);
+  // games say "back" with a cancelable event; the host answers by following the page's own Back link (the skill), so the router handles it
+  root.querySelector("[data-ml-stage]")?.addEventListener("ml-game-back", (e) => {
+    const back = root.querySelector(".ml-back a");
+    if (!back) return;
+    e.preventDefault();
+    back.click();
+  });
   const f = root.querySelector("[data-ml-dials]");
   f?.addEventListener("submit", (e) => {
     e.preventDefault();
