@@ -117,7 +117,13 @@ await test("a throwing handler returns JSON 500 and leaks nothing, to the caller
   logLines.length = 0;
   const h = handler({
     handle: () => {
-      throw new Error("DB_PASSWORD=hunter2 connection failed");
+      const fault = new Error("DB_PASSWORD=hunter2 connection failed");
+      // The logger keeps only token-shaped values of at most 80 characters, and a real frame carries the
+      // checkout's absolute path ("file:///home/user/neft-classroom-html-activities/functions/..." is 83),
+      // so on a long path the location was redacted and this test failed for reasons of where the repo
+      // lives. Deployed Workers frames are short; trim the checkout prefix so the test is path-independent.
+      fault.stack = fault.stack.split(new URL("../../", import.meta.url).href).join("");
+      throw fault;
     },
   });
   const r = await h({ request: req("GET") });
