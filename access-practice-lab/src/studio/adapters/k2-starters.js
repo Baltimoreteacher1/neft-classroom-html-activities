@@ -38,7 +38,15 @@ export default {
     "teacherNotes",
     "supports",
   ],
-  fixed: [],
+  fixed: [
+    {
+      what: t("The Read aloud voice", "La voz de la lectura en voz alta"),
+      why: t(
+        "Read aloud uses the voice installed on the student's device, so the studio cannot change it; it can be turned off in Student supports.",
+        "La lectura en voz alta usa la voz instalada en el dispositivo del estudiante, así que el estudio no puede cambiarla; se puede desactivar en Apoyos para estudiantes.",
+      ),
+    },
+  ],
   async list() {
     const { K2_STARTERS, TOPICS } = await load();
     return K2_STARTERS.map((s) => ({
