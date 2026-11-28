@@ -2,7 +2,7 @@
 // Service-Worker-Allowed: /), but it only ever answers front-layer URLs; every other request (the Practice Lab, the
 // Teacher Hub, /api/...) goes to the network untouched because this worker does not call respondWith for it.
 // Pages: network first, cached copy when offline. Assets and fonts: cached copy first, refreshed in the background.
-const CACHE = "lp-front-v3";
+const CACHE = "lp-front-v4";
 const FRONT = /^\/(?:$|practice\/|tools\/|content\/|access-guide\/|about\/|search\/|styleguide\/)/;
 const ASSET = /^\/(?:lp\/assets\/|assets\/fonts\/)/;
 const PRECACHE = [

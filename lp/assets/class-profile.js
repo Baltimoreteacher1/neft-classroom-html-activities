@@ -140,8 +140,13 @@ async function fillTool(root, draftAt = {}) {
   root.before(bar);
 }
 
-/** Called by site.js with each tool's draft time as of page load. */
-export function start(draftAt = {}) {
+/**
+ * Called by site.js with each tool's draft time as of page load and a promise for "every page module has run".
+ * The tool's own module loads its saved draft into the form when it runs; on a slow network it can run after this
+ * module arrives and write the old draft over My class, so the fill waits for it.
+ */
+export async function start(draftAt = {}, scriptsRan = Promise.resolve()) {
+  await scriptsRan;
   const editor = $("[data-class-profile]");
   if (editor) mountEditor(editor);
   for (const root of $$("[data-tool]")) fillTool(root, draftAt);

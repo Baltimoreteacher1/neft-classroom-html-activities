@@ -352,8 +352,12 @@ const draftAtLoad = Object.fromEntries(
     store.get(`draft:${el.dataset.tool}`)?.savedAt || 0,
   ]),
 );
+// Made while site.js runs, so before DOMContentLoaded, which fires only after every page module (the tool's too).
+const scriptsRan = new Promise((r) =>
+  document.addEventListener("DOMContentLoaded", r, { once: true }),
+);
 if ($("[data-tool]") || $("[data-class-profile]"))
-  import("./class-profile.js").then((m) => m.start?.(draftAtLoad));
+  import("./class-profile.js").then((m) => m.start?.(draftAtLoad, scriptsRan));
 
 /* ---------- offline: cache the front layer after the first visit ---------- */
 if ("serviceWorker" in navigator && location.protocol === "https:") {
