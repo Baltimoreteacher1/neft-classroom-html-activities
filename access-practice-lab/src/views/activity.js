@@ -112,6 +112,7 @@ import {
   reflectionHTML,
   saveFrame,
   seenKey,
+  storyPrintHTML,
   wellOnMiss,
 } from "../lesson-frame.js";
 
@@ -877,7 +878,7 @@ export async function render(ctx) {
         </header>
         ${lf.learn}
         <div class="activity-workspace">
-        <section id="activity-source" tabindex="-1" class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${sourceHeading(I, cur.domain, listening)}</h2>${stimulusHTML(a, ctx)}</section>
+        <section id="activity-source" tabindex="-1" class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${sourceHeading(I, cur.domain, listening)}</h2>${stimulusHTML(a, ctx)}${listening ? storyPrintHTML(I, a) : ""}</section>
         <section class="response-workspace" aria-labelledby="responseHeading"><h2 id="responseHeading" class="workbook-heading"><span aria-hidden="true">2</span> ${responseHeading(I, cur.domain, a.type)}</h2>
         ${
           hasPassage && a.prompt

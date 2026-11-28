@@ -533,3 +533,24 @@ test("the frame saves only seen lessons and what helped, in one small key outsid
   assert.deepEqual(Object.keys(frameKey()).sort(), ["reflect", "seen"]);
   assert.ok(storage.get(frame.FRAME_KEY).length < 400);
 });
+
+test("storyPrintHTML: only an empty slot is in the page; the story is written in for printing and removed after", () => {
+  const I = makeI18n("en");
+  const slot = toHtml(
+    frame.storyPrintHTML(I, { id: "t-story", script: "Ana has a can. Ana waters the beans." }),
+  );
+  assert.equal(slot, '<section class="story-print" data-story-print="t-story"></section>');
+  const { document: doc } = new JSDOM(`<main>${slot}</main>`).window;
+  frame.fillStoryPrint(true, doc);
+  assert.match(
+    doc.querySelector(".story-print").innerHTML,
+    /Ana has a can\. Ana waters the beans\./,
+  );
+  frame.fillStoryPrint(false, doc);
+  assert.equal(doc.querySelector(".story-print").innerHTML, "");
+  const talk = toHtml(
+    frame.storyPrintBody(I, { script: "Maya: Where is the map? Leo: It is on the desk." }),
+  );
+  assert.equal((talk.match(/<p lang="en">/g) || []).length, 2);
+  assert.equal(toHtml(frame.storyPrintHTML(I, { id: "x", script: "" })), "");
+});

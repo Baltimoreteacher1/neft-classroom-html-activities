@@ -268,7 +268,9 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface-2);
-  box-shadow: var(--edge-light), inset 4px 0 0 var(--room-soft);
+  box-shadow:
+    var(--edge-light),
+    inset 4px 0 0 var(--room-soft);
 }
 .lf-model-text,
 .lf-model-lines {
@@ -512,10 +514,31 @@
 
 /* ── print: the lesson as a sheet ──────────────────────────────────────── */
 .lf-print-head,
-.lf-print-foot {
+.lf-print-foot,
+.story-print {
   display: none;
 }
 @media print {
+  .story-print {
+    display: block;
+    margin: 0.75rem 0;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 13pt;
+    line-height: 1.5;
+    color: #000;
+    break-inside: avoid;
+  }
+  .story-print p {
+    margin: 0 0 0.4rem;
+  }
+  .story-print .story-print-label {
+    font-size: 10pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
   .lf-print-head,
   .lf-print-foot {
     display: block;
