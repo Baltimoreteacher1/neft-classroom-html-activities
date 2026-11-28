@@ -951,7 +951,7 @@ function storyStudio(el, opts) {
   const S = (salt) => seedFor(o, salt) + o.round * 101;
   const body = h("div", { class: "eb-body" });
   const short = (t) => (young ? splitSentences(t).slice(0, 2).join(" ") : t);
-  const hearRow = (t) => (young || o.band === "1-2" ? hearButton(speakable(t), "Hear it") : null);
+  const hearRow = (t) => (young || o.band === "1-2" ? hearButton(speakable(t), "Hear it") : document.createDocumentFragment());
   const progress = () => {
     const n = story.beats.length;
     return h("ol", { class: "eb-progress", "aria-label": "Story progress" }, story.beats.map((_b, i) => h("li", { class: i < st.bi || st.phase === "end" ? "eb-done" : i === st.bi && st.phase === "beat" ? "eb-cur" : "", "aria-current": i === st.bi && st.phase === "beat" ? "step" : null }, `Part ${i + 1} of ${n}${i < st.bi || st.phase === "end" ? " (done)" : ""}`)));
@@ -1044,7 +1044,7 @@ function modelingWorkshop(el, opts) {
   const stepBody = (sec) => {
     const s = st.step;
     if (s === 0) {
-      sec.append(h("p", { class: "eb-badge" }, "Invented or generic data: the situation is made up for practice."), h("p", { class: "eb-prose" }, M.scenario), o.band === "1-2" ? hearButton(speakable(M.scenario), "Hear the situation") : null, given.length ? table() : null);
+      sec.append(h("p", { class: "eb-badge" }, "Invented or generic data: the situation is made up for practice."), h("p", { class: "eb-prose" }, M.scenario), o.band === "1-2" ? hearButton(speakable(M.scenario), "Hear the situation") : document.createDocumentFragment(), given.length ? table() : document.createDocumentFragment());
     } else if (s === 1) {
       sec.append(h("p", { class: "eb-directions" }, "A model makes choices. Tick the assumptions you will use. Each one changes what your model can say."));
       const ul = h("ul", { class: "eb-assume" });
@@ -1269,7 +1269,7 @@ function transferLab(el, opts) {
 
   const sortStep = (sec) => {
     const items = makeRng(`sort:${sk.id}:${o.seed}:${o.round}`).shuffle([...T.phrasings.map((text) => ({ text, same: true })), ...T.decoys.map((d) => ({ text: d.text, same: false, why: d.why }))]);
-    sec.append(h("p", { class: "eb-directions" }, "Here is one relationship. Decide whether each statement says the same relationship or a different one."), h("blockquote", { class: "eb-relation" }, h("strong", {}, "The relationship: "), T.relationship), o.band === "1-2" || g === 0 ? hearButton(speakable(T.relationship), "Hear it") : null);
+    sec.append(h("p", { class: "eb-directions" }, "Here is one relationship. Decide whether each statement says the same relationship or a different one."), h("blockquote", { class: "eb-relation" }, h("strong", {}, "The relationship: "), T.relationship), o.band === "1-2" || g === 0 ? hearButton(speakable(T.relationship), "Hear it") : document.createDocumentFragment());
     let left = items.length;
     const list = h("ol", { class: "eb-sort" });
     items.forEach((it, k) => {

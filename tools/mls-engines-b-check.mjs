@@ -354,6 +354,8 @@ async function browserPart() {
         return { doc: document.documentElement.scrollWidth, win: window.innerWidth, stage: st.scrollWidth, cw: st.clientWidth };
       });
       ok(r.doc <= r.win + 1 && r.stage <= r.cw + 1, `${tag} [${label}]: horizontal overflow at ${width}px (doc ${r.doc}/${r.win}, stage ${r.stage}/${r.cw})`);
+      const badText = await page.evaluate(() => (document.getElementById("stage").innerText.match(/\bnull\b|\bundefined\b|\bNaN\b|\[object/) || [])[0]);
+      ok(!badText, `${tag} [${label}]: page text contains "${badText}"`);
       const small = await page.evaluate(() => {
         const bad = [];
         document.querySelectorAll("#stage :is(button, select, input:not([type=checkbox]), textarea, summary)").forEach((el) => {
