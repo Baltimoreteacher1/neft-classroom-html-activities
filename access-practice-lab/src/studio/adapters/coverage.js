@@ -144,7 +144,7 @@ export const ROWS = Object.freeze([
     status: "adapter",
     source: ["access-practice-lab/content/quest/missions"],
     reason: t(
-      "All 10 missions copy: vocabulary, readings, listening and reading checks, sorts and timelines with their keys, and writing and speaking tasks with frame, model and checklist. Not carried: interactive scene items (named in the teacher notes), endings, the family page.",
+      "All 17 missions copy: vocabulary, readings, listening and reading checks, sorts and timelines with their keys, and writing and speaking tasks with frame, model and checklist. Not carried: interactive scene items (named in the teacher notes), endings, the family page.",
       "Se copian las 10 misiones: vocabulario, lecturas, revisiones de escucha y lectura, clasificaciones y líneas de tiempo con su clave, y tareas de escribir y hablar con marco, modelo y lista. No se conserva: las escenas interactivas (nombradas en las notas para docentes), los finales, la página familiar.",
     ),
     evidence: TESTED,

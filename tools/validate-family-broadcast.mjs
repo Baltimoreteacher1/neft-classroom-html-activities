@@ -81,9 +81,14 @@ const {
 // lesson 2-6 names in its own commonMistake and had been borrowing
 // decimal-place-value for. Same rule honoured: family label, watchFor in both
 // languages, and a five-minute kitchen-table activity were authored first.
-if (canonicalTags.length !== 44) {
+// Bumped 44 → 46 on 2026-11-28 for compare-whole-number-bias and
+// compare-negative-magnitude (the 6.NOS.8 comparison errors). Same rule honoured:
+// the family label, watchFor in both languages and a five-minute kitchen-table
+// activity for each were already authored in broadcast-content.js, and 6.NOS.8
+// now has its own family-facing STANDARDS entry.
+if (canonicalTags.length !== 46) {
   fail(
-    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 44 — update this validator deliberately, not by accident`,
+    `data/misconception-labels.json declares ${canonicalTags.length} tags, expected 46 — update this validator deliberately, not by accident`,
   );
 }
 

@@ -18,6 +18,7 @@
 import { existsSync, readFileSync } from "fs";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
+import { lessonPath } from "../lib/curriculum-source.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const MARK = "canvas-bridge-injected:begin";
@@ -79,7 +80,7 @@ for (const p of catalog.injectOnly || []) {
 // --- 4: lessons + homework ---
 let homeworkCount = 0;
 for (const l of lessons) {
-  if (!existsSync(join(ROOT, "lessons", l.id, "index.html")))
+  if (!existsSync(lessonPath(l.id, "index.html")))
     problems.push(`manifest lesson missing on disk: lessons/${l.id}/`);
   claim(l.id, `lesson ${l.id}`);
   const hw = `lessons/${l.id}/homework.html`;
