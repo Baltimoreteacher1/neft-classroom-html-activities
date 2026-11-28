@@ -104,6 +104,7 @@ function initPlayer(pl) {
     (a, b) => Number(a.dataset.step) - Number(b.dataset.step),
   );
   const status = pl.querySelector(".player-status");
+  const pips = [...pl.querySelectorAll(".pip")];
   const n = items.length;
   let i = n; // fully shown until the student asks to step through it
   let timer = null;
@@ -119,6 +120,11 @@ function initPlayer(pl) {
     });
     const share = n ? Math.ceil((marks.length * i) / n) : marks.length;
     marks.forEach((m, k) => m.classList.toggle("is-hidden", k >= share));
+    pips.forEach((p, k) => {
+      p.classList.toggle("is-on", k < i);
+      if (k === i - 1) p.setAttribute("aria-current", "step");
+      else p.removeAttribute("aria-current");
+    });
     if (status) status.textContent = t("stepOf", lang(), { i: Math.max(1, i), n });
   }
   function stop() {
@@ -144,6 +150,10 @@ function initPlayer(pl) {
     const b = e.target.closest("[data-player]");
     if (!b) return;
     const a = b.dataset.player;
+    if (a === "pip") {
+      stop();
+      go(Number(b.dataset.k));
+    }
     if (a === "next") go(i + 1);
     if (a === "prev") go(i - 1);
     if (a === "again" || a === "replay") {
@@ -201,6 +211,7 @@ function updateProgress() {
   if (lab) lab.innerHTML = bi("progress", "span", { done, total: counted.length });
   const bar = doc.querySelector(".progress-track");
   if (bar) bar.setAttribute("aria-valuenow", String(done));
+  doc.dispatchEvent(new CustomEvent("pfa:progress"));
 }
 
 function readValue(card, d) {
@@ -658,6 +669,7 @@ function finish() {
   const codeEl = sec.querySelector(".code");
   if (codeEl) codeEl.textContent = code;
   confetti(sec);
+  doc.dispatchEvent(new CustomEvent("pfa:finish"));
   sec.querySelector("h2")?.focus();
 }
 
@@ -784,6 +796,19 @@ function insightSection(lid, rs) {
 <h3>${bi("insMisc")}</h3>${miscList ? `<ul class="ins-misc-list">${miscList}</ul>` : `<p>${bi("insNoMisc")}</p>`}
 <p class="no-print"><a class="btn quiet" href="/lessons/${h(lid)}/practice">${bi("insOpen")}</a></p></section>`;
 }
+
+// Shared with client-premium.js, which is concatenated after this file into the same module.
+export const runtime = {
+  LESSON,
+  storage,
+  state,
+  problems,
+  counted,
+  announce,
+  reduced,
+  lang,
+  confetti,
+};
 
 // ---- boot ------------------------------------------------------------------------------------
 function boot() {

@@ -266,6 +266,14 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // PRACTICE / FAMILY / ASSIGNMENTS (PFA): the Pages-Function-rendered /lessons/<id>/practice, /family-guide,
+  // /assignment pages and /practice-hub/. Before this rule a change here fell through to the broad `functions/`
+  // rule (test + data-contracts) and never ran validate:pfa; a change to the bundle builder or the gate escalated
+  // to the full sweep. validate:pfa rebuilds and --checks the generated bundle, so it covers the builder too.
+  [
+    /^(functions\/_lib\/pfa\/|functions\/(lessons|practice-hub)\/\[\[path\]\]\.js$|scripts\/pfa\/|tools\/pfa\/|data\/(practice|family)\/|data\/assignments\.json$|docs\/PRACTICE_FAMILY_ASSIGNMENTS_REPORT\.md$)/,
+    ["validate:pfa", "validate:pfa-browser", "test", "validate:js-syntax", "check"],
+  ],
   // CONTENT REVIEW (Prompt 3): the review workflow, queue, provenance badges and release trains. Migration 0022,
   // the review library and API, the review modules of the content schema, the Studio's review views and their
   // tests. `bundle-syntax` proves the Functions still compile; the privacy pair covers the new tables.

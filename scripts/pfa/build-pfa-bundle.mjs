@@ -30,7 +30,7 @@ function css() {
 // Concatenate the shared modules into one module-scoped script: drop import lines and `export`.
 export function clientJs(lite = false) {
   const files = lite
-    ? ["strings.js", "problem-view.js", "insight-code.js", "client-runtime.js"]
+    ? ["strings.js", "problem-view.js", "insight-code.js", "client-runtime.js", "client-premium.js"]
     : [
         "generators.js",
         "math-visuals.js",
@@ -38,6 +38,7 @@ export function clientJs(lite = false) {
         "problem-view.js",
         "insight-code.js",
         "client-runtime.js",
+        "client-premium.js",
       ];
   const parts = files.map((f) => {
     const src = readFileSync(join(LIB, f), "utf8");
@@ -49,10 +50,12 @@ export function clientJs(lite = false) {
       .map((line) => line.replace(/^export\s+(const|function|let)\s/, "$1 "))
       .join("\n");
   });
-  // Client-drawn SVGs must not reuse the server's mv1..mvN title ids.
+  // Client-drawn SVGs must not reuse the server's mv1..mvN title ids: reset the counter just before
+  // the browser runtime (client-runtime.js and the premium layer after it) starts drawing.
+  const rt = files.indexOf("client-runtime.js");
   const js = lite
     ? parts.join("\n")
-    : `${parts.slice(0, -1).join("\n")}\nuid = 100000;\n${parts.at(-1)}`;
+    : `${parts.slice(0, rt).join("\n")}\nuid = 100000;\n${parts.slice(rt).join("\n")}`;
   return js.replace(/<\/script/gi, "<\\/script").replace(/\n{2,}/g, "\n");
 }
 

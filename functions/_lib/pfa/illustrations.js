@@ -25,7 +25,7 @@ const svg = (w, h, title, body, cls = "ill") =>
 
 // A person, seated or standing, from simple rounded shapes.
 function person(x, y, skin, shirt, s = 1, hair = C.navy) {
-  return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-16" y="0" width="32" height="44" rx="14" fill="${shirt}"/><circle cx="0" cy="-14" r="14" fill="${skin}"/><path d="M-14,-16 a14,14 0 0 1 28,0 q-14,-10 -28,0z" fill="${hair}"/><circle cx="-5" cy="-14" r="1.8" fill="${C.ink}"/><circle cx="5" cy="-14" r="1.8" fill="${C.ink}"/><path d="M-5,-8 q5,4 10,0" stroke="${C.ink}" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>`;
+  return `<g class="ps"><g transform="translate(${x} ${y}) scale(${s})"><rect x="-16" y="0" width="32" height="44" rx="14" fill="${shirt}"/><circle cx="0" cy="-14" r="14" fill="${skin}"/><path d="M-14,-16 a14,14 0 0 1 28,0 q-14,-10 -28,0z" fill="${hair}"/><circle cx="-5" cy="-14" r="1.8" fill="${C.ink}"/><circle cx="5" cy="-14" r="1.8" fill="${C.ink}"/><path d="M-5,-8 q5,4 10,0" stroke="${C.ink}" stroke-width="1.6" fill="none" stroke-linecap="round"/></g></g>`;
 }
 
 const SCENES = {
@@ -148,7 +148,7 @@ export function unitArt(n, title = null) {
     320,
     160,
     title,
-    `${sc.body()}<g transform="translate(0 0)"><rect x="236" y="8" width="76" height="72" rx="16" fill="${C.paper}" opacity=".92"/>${(UNIT_MOTIF[n] || UNIT_MOTIF[10])(274)}</g>`,
+    `${sc.body()}<g transform="translate(0 0)"><rect x="236" y="8" width="76" height="72" rx="16" fill="${C.paper}" opacity=".92"/><g class="motif">${(UNIT_MOTIF[n] || UNIT_MOTIF[10])(274)}</g></g>`,
     "ill ill-unit",
   );
 }

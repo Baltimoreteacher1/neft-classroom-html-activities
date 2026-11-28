@@ -585,6 +585,8 @@ for (const f of [
   "illustrations.js",
   "math-visuals.js",
   "client-runtime.js",
+  "client-premium.js",
+  "premium.js",
   "render.js",
   "strings.js",
 ]) {

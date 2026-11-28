@@ -324,6 +324,35 @@ Three additions, each closing a loop the pages left open.
   drives the whole loop (a deliberate wrong answer, the coach naming it, the code decoding, a typo
   refused, the Spanish class summary) and runs axe on the finish card and the insights page.
 
+## 10d. Premium graphics and interaction layer (2026-11-28)
+
+Screen-only (every piece is `.no-print`, so the print budgets are unchanged). Markup in
+`functions/_lib/pfa/premium.js`, behaviour in `functions/_lib/pfa/client-premium.js` (concatenated
+after `client-runtime.js` into both inline bundles), styles in `design-system.css`. No problem,
+answer, standard or image changed.
+
+- **Homework (`/lessons/<id>/practice`, all 84):** a progress trail in the header, one stop per
+  counted problem (a link to it; check when solved, star when solved first try, ring on the next
+  one), a medal gate between tiers and a finish flag; three tier medals that unlock (with a shine)
+  when every problem in a tier is solved, plus an inline "medal earned" card; step pips on the
+  worked-example player; a per-problem scratch pad (canvas, three pens, eraser, grid, undo, clear;
+  not saved, not checked); a finish trophy and a ring chart of first try / after another try / not
+  solved yet.
+- **Family guide (`/lessons/<id>/family-guide`, all 84):** "Tonight's plan", four illustrated steps
+  with Done toggles and a plant that grows one stage per step and blooms when all four are done
+  (saved as `ewl_pfa_<id>_fam`, annotated in the privacy inventory); a checked-answers meter on
+  "Try it together" that completes the Try step; conversation starters as a swipeable card deck
+  (arrows and buttons too; the list prints as before).
+- **Family hubs:** each unit page shows "Our unit path" with a check on every lesson whose plan was
+  finished on this device; the family index shows unit art and a per-unit meter; the unit letter
+  shows the unit art on screen.
+- **Living art:** the people in the scenes breathe and the unit badge bobs (stops under reduced
+  motion like everything else).
+- **Fix found by the sweep:** the tape-diagram renderer read only `{ v, l }` parts, so the
+  refreshers of 6-3, 6-12 and 6-15 (bare-number parts) and 6-5 (a symbolic `12t` part) drew
+  `NaN` rectangles on screen and in print. Bare numbers are now parts; a symbolic part draws all
+  parts equal.
+
 ## 11. Next 10
 
 1. Done in 10b: `/lessons/<id>/homework` stays as it is (decision and reasons in 10b).

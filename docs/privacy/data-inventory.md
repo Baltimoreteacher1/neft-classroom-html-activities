@@ -8,7 +8,7 @@ when this file is stale, when a migration column has no annotation, or when a br
 found in source has none. The rows say what each store holds today, including the places that hold a
 typed name; the never-collect list is checked separately by `tools/privacy-forbidden-scan.mjs`.
 
-D1 tables: 57. Annotated D1 columns: 449. Device storage keys: 39. Log fields: 1.
+D1 tables: 57. Annotated D1 columns: 449. Device storage keys: 40. Log fields: 1.
 
 ## D1 (server)
 
@@ -498,6 +498,7 @@ Source: `migrations/0005_web_vitals.sql`
 | `ewl_lang_v1` | English or Spanish choice and display comfort for the Studio and Language Page. | until site data is cleared | clear site data |
 | `ewl_leitner_*_*` | Leitner review box for one fluency skill and question (spaced-practice schedule). | until site data is cleared | clear site data |
 | `ewl_nets_interactive_v4` | Nets interactive progress for lesson 5-6. | until site data is cleared | clear site data |
+| `ewl_pfa_*_fam` | Family guide checklist for one lesson: which of the four plan steps the family marked done and which try-it-together answers they opened. No name, no answers, no account. | until the browser clears site data | clear site data |
 | `ewl_pfa_*_hw` | Homework practice progress for one lesson: per-problem attempt count, solved flag, the last typed answer (120 characters at most), a 1-4 confidence rating and an optional reflection the student typed (600 characters at most). No name or account. | until the student presses Start over or the browser clears site data | Start over on the page, or clear site data |
 | `ewl_pfa_lang` | English or Spanish choice on the practice, family and assignment pages. | until site data is cleared | clear site data |
 | `ewl_pfa_motion` | Reduce-motion preference on the practice, family and assignment pages. | until site data is cleared | clear site data |
