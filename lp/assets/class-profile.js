@@ -107,12 +107,12 @@ const waitForOption = (select, value, ms = 4000) =>
     tick();
   });
 
-async function fillTool(root) {
+async function fillTool(root, draftAt = {}) {
   const slug = root.dataset.tool;
   const p = loadProfile();
   if (!hasProfile(p) || new URLSearchParams(location.search).has("example")) return;
-  const draft = store.get(`draft:${slug}`);
-  if (draft && draft.savedAt > (p.savedAt || 0)) return; // the teacher has worked in this tool since: keep it
+  // draftAt[slug]: when the tool's draft was last saved, as of page load (site.js reads it before the tool runs).
+  if ((draftAt[slug] || 0) > (p.savedAt || 0)) return; // the teacher has worked in this tool since: keep it
   const form = $("form", root);
   if (!form) return;
   let filled = 0;
@@ -140,6 +140,9 @@ async function fillTool(root) {
   root.before(bar);
 }
 
-const editor = $("[data-class-profile]");
-if (editor) mountEditor(editor);
-for (const root of $$("[data-tool]")) fillTool(root);
+/** Called by site.js with each tool's draft time as of page load. */
+export function start(draftAt = {}) {
+  const editor = $("[data-class-profile]");
+  if (editor) mountEditor(editor);
+  for (const root of $$("[data-tool]")) fillTool(root, draftAt);
+}

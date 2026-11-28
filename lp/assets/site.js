@@ -344,7 +344,16 @@ document.addEventListener("fullscreenchange", () => {
 });
 
 /* ---------- My class: every tool opens with the teacher's class filled in ---------- */
-if ($("[data-tool]") || $("[data-class-profile]")) import("./class-profile.js");
+// The tool's own draft time, read now: site.js runs before the tool's module, which re-saves its draft on first
+// render. Read after the lazy import instead, every draft looked newer than My class and nothing was filled.
+const draftAtLoad = Object.fromEntries(
+  $$("[data-tool]").map((el) => [
+    el.dataset.tool,
+    store.get(`draft:${el.dataset.tool}`)?.savedAt || 0,
+  ]),
+);
+if ($("[data-tool]") || $("[data-class-profile]"))
+  import("./class-profile.js").then((m) => m.start?.(draftAtLoad));
 
 /* ---------- offline: cache the front layer after the first visit ---------- */
 if ("serviceWorker" in navigator && location.protocol === "https:") {
