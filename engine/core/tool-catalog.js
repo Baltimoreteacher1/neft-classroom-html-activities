@@ -997,6 +997,24 @@ export const TOOL_CATALOG = {
       "Double just the height. Which faces change, and which stay the same?",
     ],
   },
+  // ── Concept scenes ───────────────────────────────────────────────────────
+  "living-scene": {
+    name: "Living Scene",
+    nameEs: "Escena animada",
+    purpose:
+      "Watch one math idea unfold scene by scene: a situation becomes a picture, you predict or choose, you rebuild the model, and see the symbols it turns into.",
+    purposeEs:
+      "Mira cómo una idea matemática se va mostrando escena por escena: una situación se vuelve un dibujo, tú predices o eliges, reconstruyes el modelo y ves los símbolos en que se convierte.",
+    howTo: [
+      "Read the line under the picture, then press Next to move to the next scene.",
+      "When a scene asks you to predict, choose or move something, do that first. Next opens after you try.",
+      "Press Back to watch an earlier scene again.",
+    ],
+    tryThis: [
+      "Before you press Next, say out loud what you think will happen in the next scene.",
+      "Find the object that stays the same from the first scene to the last, and say how it changes.",
+    ],
+  },
 };
 
 /** Human phase names for the section a tool was authored into. */

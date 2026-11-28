@@ -187,6 +187,12 @@ export const STANDARDS = Object.freeze({
     family: "plotting points that sit left of zero or under it, not just up and to the right",
     familyEs: "marcar puntos que quedan a la izquierda del cero o debajo, no solo arriba y a la derecha",
   },
+  "6.NOS.8": {
+    label: "Ordering and absolute value",
+    labelEs: "Orden y valor absoluto",
+    family: "saying which number is greater, and how far a number sits from zero",
+    familyEs: "decir cuál número es mayor y a qué distancia del cero está un número",
+  },
   "6.NOS.6c": {
     label: "Opposites on the number line",
     labelEs: "Opuestos en la recta numérica",
@@ -615,15 +621,19 @@ export const TAGS = Object.freeze({
   "compare-whole-number-bias": {
     label: "Compared the digits, not the sizes",
     labelEs: "Comparó los dígitos, no los tamaños",
-    watchFor: "Ask which amount would be bigger if both were pieces of the same pizza.",
-    watchForEs: "Pregunten cuál cantidad sería mayor si las dos fueran pedazos de la misma pizza.",
+    watchFor:
+      "Put both amounts on one number line or one fraction strip before anyone names the bigger one.",
+    watchForEs:
+      "Pongan las dos cantidades en una misma recta numérica o en una misma tira de fracciones antes de decir cuál es la mayor.",
     standards: ["6.NOS.8"],
   },
   "compare-negative-magnitude": {
     label: "Compared negatives by their distance from zero",
     labelEs: "Comparó negativos por su distancia al cero",
-    watchFor: "Ask which temperature is warmer: the one closer to zero is the greater number.",
-    watchForEs: "Pregunten cuál temperatura es más cálida: la más cercana al cero es el número mayor.",
+    watchFor:
+      "Have them place both numbers on a vertical number line and say which one is higher up.",
+    watchForEs:
+      "Pídanles que ubiquen los dos números en una recta numérica vertical y digan cuál queda más arriba.",
     standards: ["6.NOS.8"],
   },
   "geom-triangle-area-no-half": {
