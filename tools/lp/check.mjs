@@ -664,9 +664,11 @@ if (LIVE)
     "Production headers: CSP, HSTS, Permissions-Policy on front pages",
     async () => {
       const errs = [];
+      // Front pages only. "/" is not one on production: Joel made it a 302 to the Practice Lab on 2026-11-27
+      // (functions/_lib/language-page.js), and fetch() would follow it and judge the lab's headers instead.
       const paths = [
-        "/",
         "/practice/",
+        "/practice/my-practice/",
         "/tools/game-maker/",
         routes.find((r) => r.mic)?.path,
       ].filter(Boolean);
