@@ -370,6 +370,8 @@ const VERIFY = {
       else if (unk !== "none" && sum.includes(`${Math.max(a, b) * v} − ${Math.min(a, b) * v} =`)) fail("compare relation gives the value away");
     }
     for (const t of need) if (!sum.includes(t)) fail(`summary should contain "${t}"`);
+    const scaleNote = (kind === "whole" && (unk === "first" || unk === "second")) || (kind === "compare" && (a === b ? unk === "first" || unk === "second" : unk !== "none"));
+    if (scaleNote !== /not drawn to scale/.test(sum)) fail(`the "not drawn to scale" note should be ${scaleNote ? "present" : "absent"}`);
   },
 
   algebratiles(st, el, r) {
@@ -558,8 +560,11 @@ VERIFY.equationbuilder = function (st, el, r) {
     eq(must(m[1]), x0, "solution shown");
     if (!/They match\./.test(sum)) fail("the substitution check must match");
   }
-  const rows = [...el.querySelectorAll(".ml-mb-log li")];
-  if (rows.length !== mod.ops) fail(`step log has ${rows.length} lines for ${mod.ops} moves`);
+  const logged = /Steps so far: (.+?)\. The equation now/.exec(sum);
+  const nLog = logged ? logged[1].split("; ").length : 0;
+  if (nLog !== mod.ops) fail(`step log has ${nLog} steps for ${mod.ops} moves`);
+  const trs = tableRows(el);
+  void trs;
   const n = r.int(0, 4);
   for (let i = 0; i < n; i++) {
     const s2 = handleOf(el).state;
@@ -622,7 +627,7 @@ VERIFY.graphing = function (st, el) {
       eq(must(xi[1]), L.b.neg().div(L.m), "x-intercept");
       const sl = /The slope is ([^:]+):/.exec(seg);
       eq(must(sl[1]), L.m, "slope readout");
-      const rate = /rate of change is ([^\s]+) units/.exec(seg);
+      const rate = /rate of change is ([^\s]+) units?/.exec(seg);
       eq(must(rate[1]), L.m, "rate readout");
     } else if (!/flat/.test(sum)) fail("a slope of 0 must say the line is flat");
   });
@@ -978,11 +983,20 @@ VERIFY.statviz = function (st, el, r) {
       eq(first(m[2]), B.mean, "mean before the extra value");
       eq(first(m[3]), E.mean, "mean after the extra value");
     } else fail("with-extra comparison missing");
-    const rows = tableRows(el);
-    if (rows.length !== 5 || rows[0].length !== 3) fail("comparison table shape");
-    eq(first(rows[1][1]), B.median, "median before");
-    eq(first(rows[1][2]), E.median, "median after");
-  } else if (/Adding /.test(sum)) fail("comparison shown without an extra value");
+    const rows = Object.fromEntries(tableRows(el).map((row) => [row[0], row]));
+    for (const [nm, key] of [["Minimum", "min"], ["First quartile", "q1"], ["Median", "median"], ["Third quartile", "q3"], ["Maximum", "max"], ["Mean", "mean"], ["Range", "range"], ["IQR", "iqr"], ["MAD", "mad"]]) {
+      if (!rows[nm] || rows[nm].length !== 3) fail(`comparison table lacks ${nm}`);
+      eq(first(rows[nm][1]), B[key], `${nm} before`);
+      eq(first(rows[nm][2]), E[key], `${nm} after`);
+    }
+  } else {
+    if (/Adding /.test(sum)) fail("comparison shown without an extra value");
+    const rows = Object.fromEntries(tableRows(el).map((row) => [row[0], row]));
+    for (const [nm, key] of [["Minimum", "min"], ["First quartile", "q1"], ["Median", "median"], ["Third quartile", "q3"], ["Maximum", "max"], ["Mean", "mean"], ["Range", "range"], ["IQR", "iqr"], ["MAD", "mad"]]) {
+      if (!rows[nm] || rows[nm].length !== 2) fail(`measures table lacks ${nm}`);
+      eq(first(rows[nm][1]), E[key], `${nm} in the table`);
+    }
+  }
   // plot kind
   const desc = el.querySelector("svg")?.querySelector("desc")?.textContent || "";
   const rng = E.range.num();
@@ -1163,10 +1177,10 @@ function runExtra() {
     handle.set("amount", 3);
     clickAct("equationbuilder", el, "div");
     check("equation builder: 3x + 4 = 19 solves to x = 5 with a check", /x is alone: x = 5\./.test(S(el)) && /They match\./.test(S(el)), S(el).slice(-200));
-    check("equation builder: the step log lists both moves", el.querySelectorAll(".ml-mb-log li").length === 2);
+    check("equation builder: the step log lists both moves", /Steps so far: 1\. Subtract 4 on both sides, giving 3x = 15; 2\. Divide by 3 on both sides, giving x = 5\./.test(S(el)), S(el).slice(0, 300));
     handle.set("side", "left");
     clickAct("equationbuilder", el, "add");
-    check("equation builder: a left-side-only move is refused and the log is unchanged", /^Not allowed: if you change only the left side/.test(S(el)) && el.querySelectorAll(".ml-mb-log li").length === 2);
+    check("equation builder: a left-side-only move is refused and the log is unchanged", /^Not allowed: if you change only the left side/.test(S(el)) && /Steps so far: 1\. [^;]+; 2\./.test(S(el)) && !/3\. /.test(S(el)));
     el.remove();
     // fractions stay exact: x / 4 + (-3) = 5 -> x = 32
     const m2 = mountOne("equationbuilder");
@@ -1299,6 +1313,10 @@ function serve() {
   const types = { ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".html": "text/html" };
   const srv = http.createServer((req, res) => {
     const u = new URL(req.url, "http://x");
+    if (u.pathname === "/favicon.ico") {
+      res.writeHead(204);
+      return res.end();
+    }
     const m = /^\/__test\/(\w+)$/.exec(u.pathname);
     if (m) {
       res.writeHead(200, { "content-type": "text/html" });
@@ -1354,7 +1372,7 @@ const WALK = {
     await page.keyboard.press("Enter");
     await K.expect(/^Yes\./, "tick 2 of the bottom line is 10");
     await K.stepper("target", "ArrowUp", 18);
-    await K.expect(/scale factor is 6/, "18 of A gives scale factor 6");
+    await K.expect(/scale factor is 18 ÷ 3 = 6, so amount B is 5 × 6 = 30/, "18 of A gives scale factor 6 and 30 of B");
   },
   async tape(page, K) {
     await K.select("kind", "ArrowDown", 2);
@@ -1407,8 +1425,7 @@ const WALK = {
     await K.stepper("mn", "ArrowUp", 1);
     await K.expect(/Line 1: y = x \+ 1\./, "slope numerator 2 over 2 is slope 1");
     await K.toggle("two");
-    await K.expect(/meet at exactly one point, \(1\.?/, "the second line crosses the first");
-    await K.stepper("md", "ArrowUp", 0);
+    await K.expect(/meet at exactly one point, \(3\/2, 5\/2\)/, "the second line crosses the first at (3/2, 5/2)");
   },
   async machine(page, K) {
     await K.tab('[data-act="feed"]');
@@ -1444,9 +1461,10 @@ const WALK = {
   async statviz(page, K) {
     await K.tab("#mb-statviz-data");
     await page.keyboard.press("Control+A");
-    await page.keyboard.type("1, 2, 3, 4, 100");
+    await page.keyboard.type("1, 2, 3, 4, 5, 6, 7, 8, 100");
     await page.keyboard.press("Enter");
-    await K.expect(/Data \(5 values\): 1, 2, 3, 4, 100\./, "new data typed and applied");
+    await K.expect(/Data \(9 values\): 1, 2, 3, 4, 5, 6, 7, 8, 100\./, "new data typed and applied");
+    await K.expect(/more than 60 units/, "a spread over 60 units falls back to the box plot and says so");
     await K.expect(/100 is an outlier/, "100 is flagged by the 1.5 x IQR rule");
     await K.select("plot", "ArrowDown", 1);
     await K.expect(/box plot/i, "box plot shown");
@@ -1473,6 +1491,7 @@ async function runBrowser() {
       return null;
     }
   })();
+  check("axe-core is installed (it is run on every manipulative)", !!axeSrc);
   const srv = await serve();
   const base = `http://127.0.0.1:${srv.address().port}`;
   const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--no-sandbox"] });

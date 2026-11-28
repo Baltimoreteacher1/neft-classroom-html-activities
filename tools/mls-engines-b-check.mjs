@@ -115,7 +115,7 @@ async function jsdomPart() {
     "concept-comics": (c) => ({ root: c.querySelector(".eb-comic"), panel: c.querySelectorAll(".eb-panel").length === 1, label: /says:/.test(c.querySelector(".eb-panel")?.getAttribute("aria-label") || ""), next: [...c.querySelectorAll("button")].some((b) => /Next panel/.test(b.textContent)) }),
     "transfer-lab": (c) => ({ root: c.querySelector(".eb-transfer"), items: c.querySelectorAll(".eb-sortitem").length >= 5, relation: c.querySelector(".eb-relation") }),
   };
-  const BAD_TEXT = /\bundefined\b|\bNaN\b|\[object|\bnull\b/;
+  const BAD_TEXT = /undefined|(?<![A-Za-z])NaN(?![a-z])|\[object|(?<![A-Za-z])null(?![a-z])/;
   let mounts = 0;
   const t0 = Date.now();
   skills.forEach((skill, si) => {

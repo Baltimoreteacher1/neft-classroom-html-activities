@@ -42,6 +42,7 @@ let uidCount = 0;
 const uid = (p = "g") => `${p}${++uidCount}`;
 const fid = (s) => s?.familyId || (typeof s?.family === "string" ? s.family : "");
 const norm = (t) => String(t ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+const pl = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 const words = (tag) => String(tag || "").replace(/[-_]+/g, " ").trim();
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -264,7 +265,7 @@ function problemBody(c, p, { picture = true } = {}) {
   const { stem } = problemText(p, c.S.band);
   const box = h("div", { class: "ml-gm-body" });
   if (stem) box.append(para(stem));
-  if (p.expr) box.append(h("p", { class: "ml-gm-expr" }, p.expr));
+  if (p.expr && norm(p.expr) !== norm(stem)) box.append(h("p", { class: "ml-gm-expr" }, p.expr));
   if (picture && p.visual) {
     const v = visualNode(p.visual);
     if (v) box.append(v);
@@ -580,7 +581,7 @@ function runGame(el, opts, def) {
     cur.locked = true;
     let ex = null;
     try {
-      ex = cur.round.parallel?.() || null;
+      ex = cur.round.steps[cur.idx]?.parallel?.() || cur.round.parallel?.() || null;
     } catch {
       ex = null;
     }
@@ -955,7 +956,7 @@ function renderCode(S, box) {
   const found = code.reveal.map((d) => d < S.completed);
   clear(box);
   box.append(h("p", { class: "ml-gm-roomline" }, `You are in ${ROOMS[S.ctxs[0]] || "a locked classroom"}. Each door has a problem. Solving a door shows a letter of the code word.`));
-  const strip = h("p", { class: "ml-gm-code", "aria-label": `Code so far: ${[...code.word].map((ch, i) => (found[i] ? ch : "blank")).join(", ")}. ${found.filter(Boolean).length} of ${code.word.length} letters found.` });
+  const strip = h("p", { class: "ml-gm-code", role: "img", "aria-label": `Code so far: ${[...code.word].map((ch, i) => (found[i] ? ch : "blank")).join(", ")}. ${found.filter(Boolean).length} of ${code.word.length} letters found.` });
   [...code.word].forEach((ch, i) => strip.append(h("span", { class: `ml-gm-letter${found[i] ? " on" : ""}`, "aria-hidden": "true" }, found[i] ? ch : "_")));
   box.append(strip);
 }
@@ -1235,8 +1236,8 @@ function fracTask(c, salt = 0) {
         { id: "steps", label: "Steps to move from 0", min: 0, max: 12 * W, value: 0 },
       ],
       draw: (st) => {
-        if (st.steps > st.parts * W) return { error: `You can move at most ${st.parts * W} steps on this number line.` };
-        return { spec: { kind: "numberline", min: 0, max: W, ticks: st.parts * W, marks: [{ at: `${st.steps}/${st.parts}`, label: "your point" }], show: "frac", labelTicks: "ends" }, summary: `Each whole has ${st.parts} equal steps. Your point is ${st.steps} steps from 0, at ${st.steps}/${st.parts}.` };
+        if (st.steps > st.parts * W) return { error: `You can move at most ${pl(st.parts * W, "step")} on this number line.` };
+        return { spec: { kind: "numberline", min: 0, max: W, ticks: st.parts * W, marks: [{ at: `${st.steps}/${st.parts}`, label: "your point" }], show: "frac", labelTicks: "ends" }, summary: `Each whole has ${pl(st.parts, "equal step")}. Your point is ${pl(st.steps, "step")} from 0, at ${st.steps}/${st.parts}.` };
       },
       check: (st) => {
         if (st.steps > st.parts * W) return { invalid: true, msg: "Your point is off the number line. Use fewer steps." };
@@ -1247,7 +1248,7 @@ function fracTask(c, salt = 0) {
       },
       solution: { parts: d, steps: n },
       hints: { conceptual: "Cut each whole into equal steps. The bottom number tells how many steps are in one whole.", procedural: "Set the steps in each whole to the bottom number. Then move the number of steps in the top number." },
-      work: [`Cut each whole into ${d} equal steps, because the bottom number is ${d}.`, `Start at 0 and move ${n} steps, because the top number is ${n}.`, `The point is at ${n}/${d}.`],
+      work: [`Cut each whole into ${pl(d, "equal step")}, because the bottom number is ${d}.`, `Start at 0 and move ${pl(n, "step")}, because the top number is ${n}.`, `The point is at ${n}/${d}.`],
     };
   }
   if (fam === "fracequiv") {
@@ -1544,6 +1545,11 @@ function graphRound(c, { data }) {
       speak: "Which kind of display shows this data?",
       options: rng.shuffle([{ text: DISPLAYS[p.visual.kind], correct: true }, ...kinds.map((k) => ({ text: DISPLAYS[k], correct: false, why: `Look at how the data is drawn. That is not a ${DISPLAYS[k].toLowerCase()}.` }))]),
       hints: { conceptual: "Look at the marks that show the data: bars, dots, points, a box or numbers in rows.", procedural: "Compare the picture with each name. Which name describes how it is drawn?" },
+      parallel: () => {
+        const how = { bar: "Bars standing side by side are a bar graph.", lineplot: "Marks stacked above a number line are a line plot.", boxplot: "A box with lines at each end is a box plot.", table: "Numbers in rows and columns are a table." };
+        const lines = Object.entries(how).filter(([k]) => k !== p.visual.kind).slice(0, 3).map(([, t]) => t);
+        return { question: "Here is how to name a display: look at how the data is drawn.", lines: [...lines, "Match what you see to the name that describes it."] };
+      },
       ok: `It is a ${DISPLAYS[p.visual.kind].toLowerCase()}.`,
     });
   }

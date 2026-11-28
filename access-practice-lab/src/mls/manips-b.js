@@ -30,7 +30,7 @@ function run(o, id, fn) {
   }
   for (const [k, v] of Object.entries(res.ctl || {})) r.handle.set(k, v);
   r.handle.set("_", { ...(res.x || st._ || {}), note: res.note || "", noteFp: fp({ ...st, ...(res.ctl || {}) }) });
-  r.el.querySelector(`[data-act="${id}"]`)?.focus();
+  ((res.focus && r.el.querySelector(res.focus)) || r.el.querySelector(`[data-act="${id}"]`))?.focus();
 }
 
 function sheet() {
@@ -63,6 +63,7 @@ function manip(def) {
         /** A typed-answer box with an exact check. `expected` is a Fr; `key` ties the result to the puzzle it was typed for. */
         answer(id, label, expected, key, hint) {
           const res = x.res && x.res.key === key ? x.res : null;
+          let viaKey = false; // Enter pressed in the box keeps the cursor in the box, so the next try can be typed at once
           const inp = h("input", {
             id: `mb-${def.id}-${id}`,
             type: "text",
@@ -73,15 +74,18 @@ function manip(def) {
             onkeydown: (e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
+                viaKey = true;
                 chk.click();
+                viaKey = false;
               }
             },
           });
           const chk = ctx.btn(`${id}-check`, "Check my answer", (xx) => {
+            const focus = viaKey ? `#mb-${def.id}-${id}` : null;
             const p = parseFr(inp.value);
-            if (!p) return { note: "Type a whole number, a decimal such as 2.5, or a fraction such as 3/4." };
+            if (!p) return { note: "Type a whole number, a decimal such as 2.5, or a fraction such as 3/4.", focus };
             const ok = p.cmp(expected) === 0;
-            return { x: { ...xx, res: { key, text: inp.value.trim(), ok } }, note: ok ? "Yes. That is exactly right." : `Not yet. ${hint}` };
+            return { x: { ...xx, res: { key, text: inp.value.trim(), ok } }, note: ok ? "Yes. That is exactly right." : `Not yet. ${hint}`, focus };
           });
           return h("div", { class: "ml-mb-answer" }, h("label", { for: `mb-${def.id}-${id}` }, label), h("span", { class: "ml-mb-row" }, inp, chk), res ? h("p", { class: "ml-mb-result" }, res.ok ? `✓ Correct: ${res.text} is exactly right.` : `✗ Not yet: ${res.text} is not the hidden value.`) : null);
         },
@@ -183,8 +187,9 @@ function linText(c, k) {
   if (k.n !== 0) s = s ? `${s} ${k.n < 0 ? MINUS : "+"} ${T(abs(k))}` : T(k);
   return s || "0";
 }
+/** A real HTML table inside a keyboard-focusable scroll region (a wide table scrolls instead of widening the page). */
 const tbl = (caption, headers, rows) =>
-  h("table", { class: "ml-mb-table" }, h("caption", {}, caption), h("thead", {}, h("tr", {}, headers.map((x) => h("th", { scope: "col" }, x)))), h("tbody", {}, rows.map((r) => h("tr", {}, r.map((cell, i) => h(i === 0 ? "th" : "td", i === 0 ? { scope: "row" } : {}, cell))))));
+  h("div", { class: "ml-mb-scroll", role: "region", "aria-label": caption, tabindex: "0" }, h("table", { class: "ml-mb-table" }, h("caption", {}, caption), h("thead", {}, h("tr", {}, headers.map((x) => h("th", { scope: "col" }, x)))), h("tbody", {}, rows.map((r) => h("tr", {}, r.map((cell, i) => h(i === 0 ? "th" : "td", i === 0 ? { scope: "row" } : {}, cell)))))));
 const svgBox = (spec) => {
   const d = h("div", { class: "ml-man-svg ml-mb-svg" });
   d.innerHTML = renderVisual(spec).svg; // our own generated SVG, never user text
@@ -341,7 +346,9 @@ const tape = manip({
       if (a === b) relation = `A and B are both ${a * v}, so the two rows are equal and there is no difference.`;
       else relation = unk === "none" ? `A is ${a * v} and B is ${b * v}. The longer row is ${diff} more than the shorter one: ${Math.max(a, b) * v} ${MINUS} ${Math.min(a, b) * v} = ${diff}.` : "The longer row is the shorter row plus the difference. Use the values you can see to find the one that is hidden.";
     }
-    return { spec, summary: `${vsum(spec)} ${relation}` };
+    // a hidden part is drawn at the average size of the visible ones, so say so when that is not its real size
+    const placeholder = (kind === "whole" && (unk === "first" || unk === "second")) || (kind === "compare" && (a !== b ? unk !== "none" : unk === "first" || unk === "second"));
+    return { spec, summary: `${vsum(spec)} ${relation}${placeholder ? " The box with a question mark is not drawn to scale." : ""}` };
   },
 });
 
@@ -502,7 +509,7 @@ const balance = manip({
       out.push(`x is alone, so the solution is x = ${both(v)}.`);
     } else if (sol === "all") out.push("Both sides are always equal, so every value of x is a solution.");
     else if (sol === "none") out.push("The two sides can never be equal, so there is no solution.");
-    return { spec, summary: out.join(" "), extra: h("div", { class: "ml-mb" }, buttons, steps(lines.map((l, i) => `${i === 0 ? "Start" : `Step ${i}: ${l.label}`}: ${balText(l.e)}`))) };
+    return { spec, summary: out.join(" "), extra: h("div", { class: "ml-mb" }, buttons, steps(lines.map((l) => `${l.label}: ${balText(l.e)}`))) };
   },
 });
 
@@ -590,7 +597,7 @@ const equationbuilder = manip({
       const sub = start.P.mul(e.R).add(start.Q);
       out.push(`x is alone: x = ${both(e.R)}. Check in the original equation: ${linText(start.P, start.Q).replace(/x/g, `(${T(e.R)})`)} = ${T(sub)}, and the right side is ${T(start.R)}. ${same(sub, start.R) ? "They match." : "They do not match."}`);
     }
-    return { spec, summary: out.join(" "), extra: h("div", { class: "ml-mb" }, buttons, steps(rows.slice(1).map((r, i) => `Step ${i + 1}: ${r[0]} on both sides: ${r[1]}`))) };
+    return { spec, summary: out.join(" "), extra: h("div", { class: "ml-mb" }, buttons) };
   },
 });
 
@@ -607,7 +614,7 @@ function lineRead(L, k) {
   const { m, b, xInt } = L;
   const out = [`Line ${k}: ${yEq(m, b)}.`];
   if (m.n === 0) out.push(`The slope is 0: the line is flat, so y is always ${T(b)}.`);
-  else out.push(`The slope is ${T(m)}: for every 1 unit across, y changes by ${T(m)}${m.d === 1 ? "" : ` (${dec(m).text}${dec(m).exact ? "" : ", rounded"} as a decimal)`}, so going right, the line ${m.n > 0 ? "rises" : "falls"}. The rate of change is ${T(m)} units of y per 1 unit of x.`);
+  else out.push(`The slope is ${T(m)}: for every 1 unit across, y changes by ${T(m)}${m.d === 1 ? "" : ` (${dec(m).text}${dec(m).exact ? "" : ", rounded"} as a decimal)`}, so going right, the line ${m.n > 0 ? "rises" : "falls"}. The rate of change is ${T(m)} ${abs(m).cmp(fr(1)) === 0 ? "unit" : "units"} of y per 1 unit of x.`);
   out.push(`The y-intercept is (0, ${T(b)}).`);
   if (xInt) out.push(`The x-intercept is (${T(xInt)}, 0)${inWin(xInt) ? "" : ", which is off this grid"}.`);
   else out.push(b.n === 0 ? "The line lies along the x-axis." : "The line never crosses the x-axis.");
@@ -637,8 +644,8 @@ const graphing = manip({
     const L2 = two ? lineFacts(fr(I(s.m2n, -10, 10, -1), I(s.m2d, 1, 10, 1)), fr(I(s.b2n, -10, 10, 4), I(s.b2d, 1, 10, 1))) : null;
     const pt = (x, y, label) => ({ x: V(x), y: V(y), label });
     const points = [];
-    points.push(pt(F0, L1.b, "y-int"));
-    if (L1.xInt && inWin(L1.xInt) && L1.xInt.n !== 0) points.push(pt(L1.xInt, F0, "x-int"));
+    points.push(pt(F0, L1.b, ""));
+    if (L1.xInt && inWin(L1.xInt) && L1.xInt.n !== 0) points.push(pt(L1.xInt, F0, ""));
     const lines = [{ m: V(L1.m), b: V(L1.b), label: "L1" }];
     const out = [];
     let cross = null;
@@ -730,14 +737,14 @@ const machine = manip({
     const trows = fed.map((i) => {
       const o = mRun(real, i);
       const g = mRun(mine, i);
-      return guessCols ? [String(i), T(o), T(g), same(o, g) ? "✓ same" : "✗ different"] : [String(i), T(o)];
+      return guessCols ? [T(fr(i)), T(o), T(g), same(o, g) ? "✓ same" : "✗ different"] : [T(fr(i)), T(o)];
     });
     const buttons = h(
       "div",
       { class: "ml-mb ml-mb-actions" },
       c.btn("feed", `Feed ${T(fr(input))} into the machine`, (x) => {
         const cur = x.fedKey === key && Array.isArray(x.fed) ? x.fed : [];
-        if (cur.includes(input)) return { note: `${input} is already in the table. Try a different input.` };
+        if (cur.includes(input)) return { note: `${T(fr(input))} is already in the table. Try a different input.` };
         if (cur.length >= 12) return { note: "The table is full (12 inputs). Clear it to start again." };
         return { x: { ...x, fedKey: key, fed: [...cur, input] }, note: `Fed ${T(fr(input))}; the machine gave ${T(out)}.` };
       }),
@@ -754,11 +761,11 @@ const machine = manip({
     if (mode === "show") parts.push(`The machine rule is ${rulePretty(mText(real))}.`);
     else parts.push(`Guess the rule, puzzle ${seed}. ${revealed ? `The machine's rule was ${rulePretty(mText(real))}.` : "The machine's rule is hidden."}`);
     parts.push(`The input is ${T(fr(input))} and the output is ${T(out)}.`);
-    if (fed.length) parts.push(`Inputs tried so far: ${fed.map((i) => `${i} gives ${T(mRun(real, i))}`).join(", ")}.`);
+    if (fed.length) parts.push(`Inputs tried so far: ${fed.map((i) => `${T(fr(i))} gives ${T(mRun(real, i))}`).join(", ")}.`);
     else parts.push("The table is empty. Feed some inputs to see the pattern.");
     if (guessCols) {
       parts.push(`Your guess is ${rulePretty(mText(mine))}.${fed.length ? ` On the inputs you tried it matches ${fed.filter((i) => same(mRun(real, i), mRun(mine, i))).length} of ${fed.length}.` : ""}`);
-      if (committed) parts.push(committed.ok ? "Your guess is equivalent to the machine's rule." : `Your guess is not the same rule: for input ${committed.at} the machine gives ${T(mRun(real, committed.at))} but your rule gives ${T(mRun(mine, committed.at))}.`);
+      if (committed) parts.push(committed.ok ? "Your guess is equivalent to the machine's rule." : `Your guess is not the same rule: for input ${T(fr(committed.at))} the machine gives ${T(mRun(real, committed.at))} but your rule gives ${T(mRun(mine, committed.at))}.`);
     }
     const table = fed.length ? tbl("Inputs and outputs", guessCols ? ["Input", "Machine output", "My rule's output", "Same?"] : ["Input", "Output"], trows) : null;
     return { spec, summary: parts.join(" "), extra: h("div", { class: "ml-mb" }, buttons, table) };
@@ -786,7 +793,7 @@ const tfApply = (pts, op) => {
     }
   });
 };
-const tfName = (op) => ({ translate: `Translate by (${op.dx}, ${op.dy})`, rx: "Reflect over the x-axis", ry: "Reflect over the y-axis", ccw: "Rotate 90° counterclockwise about the origin", cw: "Rotate 90° clockwise about the origin", dilate: `Dilate by a scale factor of ${T(fr(op.n, op.d))} about the origin` })[op.t];
+const tfName = (op) => ({ translate: `Translate by (${T(fr(op.dx))}, ${T(fr(op.dy))})`, rx: "Reflect over the x-axis", ry: "Reflect over the y-axis", ccw: "Rotate 90° counterclockwise about the origin", cw: "Rotate 90° clockwise about the origin", dilate: `Dilate by a scale factor of ${T(fr(op.n, op.d))} about the origin` })[op.t];
 const signedArea2 = (p) => p[1][0].sub(p[0][0]).mul(p[2][1].sub(p[0][1])).sub(p[2][0].sub(p[0][0]).mul(p[1][1].sub(p[0][1])));
 const coordText = (p) => `(${T(p[0])}, ${T(p[1])})`;
 
@@ -853,7 +860,7 @@ const transformtool = manip({
       out.push(same(K, fr(1)) ? "Every side length is the same as before, so the image is congruent to the preimage." : `Every side length is ${both(K)} times the preimage side length, and the area is ${both(K.mul(K))} times as large, so the image is similar but not congruent.`);
       out.push(flipped ? "The order A, B, C goes around the opposite way, so the image is a mirror image." : "The order A, B, C goes around the same way as before.");
     } else out.push("No moves yet. Choose a move to see the image.");
-    return { spec, summary: out.join(" "), extra: h("div", { class: "ml-mb" }, buttons, steps(ops.map((op, i) => `Move ${i + 1}: ${tfName(op)}`))) };
+    return { spec, summary: out.join(" "), extra: h("div", { class: "ml-mb" }, buttons, steps(ops.map((op) => tfName(op)))) };
   },
 });
 
@@ -1002,7 +1009,7 @@ const statviz = manip({
     else if (plot === "dot" && rng === 0) spec = { kind: "lineplot", min: V(st.min.sub(fr(1))), max: V(st.max.add(fr(1))), step: 1, values: data, label };
     else {
       fallback = plot === "dot";
-      spec = { kind: "boxplot", min: V(st.min), q1: V(st.q1), median: V(st.median), q3: V(st.q3), max: V(st.max), label, showValues: true };
+      spec = { kind: "boxplot", min: V(st.min), q1: V(st.q1), median: V(st.median), q3: V(st.q3), max: V(st.max), label };
     }
     const m = (name, f) => `${name} ${both(f)}`;
     const sentence = (t) => [m("mean", t.mean), m("median", t.median), `mode ${modeText(t.modes)}`, m("range", t.range), m("IQR", t.iqr), m("MAD", t.mad)].join("; ");
@@ -1015,12 +1022,14 @@ const statviz = manip({
       const chg = (a, b) => `${both(a)} to ${both(b)} (change ${b.cmp(a) >= 0 ? "+" : ""}${both(b.sub(a))})`;
       out.push(`Adding ${ex}: the mean goes from ${chg(sb.mean, st.mean)}, the median from ${chg(sb.median, st.median)}, the range from ${chg(sb.range, st.range)}, the IQR from ${chg(sb.iqr, st.iqr)}, and the MAD from ${chg(sb.mad, st.mad)}.`);
     } else if (wantExtra) out.push("The list already has 15 values, so the extra value was not added.");
-    const inp = h("input", { id: "mb-statviz-data", type: "text", class: "ml-mb-in ml-mb-wide", autocomplete: "off", spellcheck: "false", value: base.join(", "), onkeydown: (e) => { if (e.key === "Enter") { e.preventDefault(); useBtn.click(); } } });
+    let viaKey = false;
+    const inp = h("input", { id: "mb-statviz-data", type: "text", class: "ml-mb-in ml-mb-wide", autocomplete: "off", spellcheck: "false", value: base.join(", "), onkeydown: (e) => { if (e.key === "Enter") { e.preventDefault(); viaKey = true; useBtn.click(); viaKey = false; } } });
     const useBtn = c.btn("use", "Use these values", (x) => {
+      const focus = viaKey ? "#mb-statviz-data" : null;
       const r = parseData(inp.value);
-      return r.error ? { note: r.error } : { x: { ...x, data: r.vals }, note: `Now using ${r.vals.length} ${plural(r.vals.length, "value")}.` };
+      return r.error ? { note: r.error, focus } : { x: { ...x, data: r.vals }, note: `Now using ${r.vals.length} ${plural(r.vals.length, "value")}.`, focus };
     });
-    const rowsOf = (f) => [["Mean", f.mean], ["Median", f.median], ["Range", f.range], ["IQR", f.iqr], ["MAD", f.mad]];
+    const rowsOf = (f) => [["Minimum", f.min], ["First quartile", f.q1], ["Median", f.median], ["Third quartile", f.q3], ["Maximum", f.max], ["Mean", f.mean], ["Range", f.range], ["IQR", f.iqr], ["MAD", f.mad]];
     const trows = rowsOf(st).map(([nm, v], i) => (useExtra ? [nm, both(rowsOf(sb)[i][1]), both(v)] : [nm, both(v)]));
     return {
       spec,

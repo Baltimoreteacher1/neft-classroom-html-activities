@@ -22,11 +22,15 @@ const S = (f) => (f.d === 1 ? String(f.n) : `${f.n}/${f.d}`);
 const eqF = (a, b) => a.cmp(b) === 0;
 const absF = (f) => (f.n < 0 ? fr(-f.n, f.d) : f);
 const negF = (f) => fr(-f.n, f.d);
+/** A number that is a fraction gets brackets inside a calculation, so 56 ÷ (8/3) cannot be read as (56 ÷ 8)/3. */
+const par = (t) => (t.includes("/") || t.startsWith(MINUS) ? `(${t})` : t);
+const pf = (f, dm = false) => par(T(f, dm));
 /** "lhs = result", or "lhs gives result" when the result carries a thousands comma (a comma would read as the end of the number to the checkers). */
 const E = (lhs, res, dm = false) => {
   const t = typeof res === "number" ? num(res) : T(res, dm);
   return t.includes(",") ? `${lhs} gives ${t}` : `${lhs} = ${t}`;
 };
+const an = (w) => (/^[aeiou]/i.test(w) ? "an" : "a");
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 const isTerm = (f) => {
   let d = f.d;
@@ -94,14 +98,17 @@ function A(f, { dec = false, unit } = {}) {
 function D(ans, cands, dm = false) {
   const seen = [ans];
   const out = [];
-  for (const [v, tag] of cands) {
-    if (v == null) continue;
-    if (seen.some((o) => eqF(o, v))) continue;
-    seen.push(v);
-    out.push({ text: T(v, dm), misconception: tag });
-    if (out.length === 3) break;
+  const ok = cands.filter(([v]) => v != null);
+  // Prefer wrong answers that look like the right one: whole when it is whole, and not negative when it is not.
+  const passes = [(v) => (ans.d !== 1 || v.d === 1) && (ans.n < 0 || v.n >= 0), (v) => ans.n < 0 || v.n >= 0, () => true];
+  for (const want of passes) {
+    for (const [v, tag] of ok) {
+      if (out.length === 3) break;
+      if (!want(v) || seen.some((o) => eqF(o, v))) continue;
+      seen.push(v);
+      out.push({ text: T(v, dm), misconception: tag });
+    }
   }
-  // Safety net so a coincidence never leaves a problem short: slips of 1 or 10 in the final step.
   for (const off of [1, -1, 10, -10, 2]) {
     if (out.length >= 3) break;
     const v = ans.add(fr(off));
@@ -332,7 +339,7 @@ const propTableMissing = {
       ask: ST("What is the missing y?", "What is the missing value of y?", "Determine the missing value of y."),
       expr: null,
       answer: A(ans, { dec: dm }),
-      work: [`Find k: ${y1} ${DIVIDE} ${x1} = ${kT}.`, `Multiply k by the new x: ${kT} ${TIMES} ${xq} = ${aT}.`],
+      work: [`Find k: ${y1} ${DIVIDE} ${x1} = ${kT}.`, `Multiply k by the new x: ${pf(k, dm)} ${TIMES} ${xq} = ${aT}.`],
       visual: ratioVis(s, [...d, [String(xq), "?"]], [[3, 1]], `A table of ${s.x[1]} and ${s.y[1]} with the pairs ${pr}, and a last row with x = ${xq} and y missing.`),
       distractors: D(ans, [[fr(xq).div(k), "divides-instead-of-multiplies"], [rows[0][1].add(fr(xq).sub(rows[0][0])), "additive-thinking"], [k.add(fr(xq)), "adds-k-and-x"], [rows[2][1].add(fr(xq).sub(rows[2][0])), "adds-the-same-amount-to-both"]], dm),
       hints: H("The constant of proportionality links every x to its y, so the same rule works for the new row.", "First find k from a complete row. Then use k with the x-value of the new row."),
@@ -371,7 +378,7 @@ const propEqSolve = {
       ask: findY ? ST("What is y?", "What is the value of y?", "Determine the value of y.") : ST("What is x?", "What is the value of x?", "Determine the value of x."),
       expr: eq,
       answer: A(a, { dec: dm }),
-      work: findY ? [`Put x = ${gT} into ${eq}.`, `${kT} ${TIMES} ${gT} = ${aT}.`] : [`Put y = ${gT} into ${eq}.`, `Divide both sides by ${kT}: ${gT} ${DIVIDE} ${kT} = ${aT}.`],
+      work: findY ? [`Put x = ${gT} into ${eq}.`, `${pf(k, dm)} ${TIMES} ${gT} = ${aT}.`] : [`Put y = ${gT} into ${eq}.`, `Divide both sides by ${kT}: ${gT} ${DIVIDE} ${pf(k, dm)} = ${aT}.`],
       visual: null,
       distractors: findY ? D(a, [[g.add(k), "adds-instead-of-multiplies"], [g.div(k), "divides-instead-of-multiplies"], [g, "ignores-the-constant"], [g.sub(k), "subtracts-k"]], dm) : D(a, [[g.mul(k), "multiplies-instead-of-dividing"], [g.sub(k), "subtracts-k"], [g.add(k), "adds-k"], [k.div(g), "inverts-the-division"]], dm),
       hints: H("In y = kx, y is k times as big as x.", findY ? "Replace x with the given number and multiply." : "Replace y with the given number, then undo the multiplication by k."),
@@ -611,7 +618,7 @@ const cmpDiff = {
       ask: ST(`How many more ${s.y[1]} for 1 ${s.x[0]} does the greater rate give?`, `How much greater is the greater unit rate (${s.y[1]} for 1 ${s.x[0]}) than the other one?`, `By how much does the greater unit rate exceed the lesser one, in ${s.y[1]} per 1 ${s.x[0]}?`),
       expr: null,
       answer: A(diff, { dec: dm }),
-      work: [`${c.n1}: the unit rate is ${T(c.k1, dm)}.`, `${c.n2}: the unit rate is ${T(c.k2, dm)}.`, `Subtract: ${T(hi, dm)} ${MINUS} ${T(lo, dm)} = ${T(diff, dm)}.`],
+      work: [`${c.n1}: the unit rate is ${T(c.k1, dm)}.`, `${c.n2}: the unit rate is ${T(c.k2, dm)}.`, `Subtract: ${pf(hi, dm)} ${MINUS} ${pf(lo, dm)} = ${T(diff, dm)}.`],
       visual: c.vis,
       distractors: D(diff, [[hi.div(lo), "divides-instead-of-subtracting"], [hi.add(lo), "adds-the-rates"], [lo, "reports-the-lesser-rate"], [hi, "reports-the-greater-rate"]], dm),
       hints: H("A difference between two rates compares them by subtraction, once both are written as y for 1 x.", "Find each unit rate first, then subtract the smaller one from the larger one."),
@@ -1017,9 +1024,9 @@ const geoCirc = {
     const given = level === 1 ? (rng.chance(0.7) ? "r" : "d") : rng.pick(["r", "d"]);
     const r = level === 1 ? rng.int(2, 10) : rng.int(3, 15);
     const d = 2 * r;
-    const u = rng.pick(["cm", "m", "in", "ft"]);
     const gv = given === "r" ? r : d;
-    const obj = rng.pick(["round pond", "circular table", "clock face", "round rug", "circular garden", "pizza pan", "wheel"]);
+    const [obj, objUnits] = rng.pick([["round pond", ["m", "ft"]], ["circular table", ["cm", "in"]], ["clock face", ["cm", "in"]], ["round rug", ["ft", "m"]], ["circular garden", ["m", "ft"]], ["pizza pan", ["cm", "in"]], ["bicycle wheel", ["cm", "in"]]]);
+    const u = rng.pick(objUnits);
     const coef = what === "circumference" ? fr(given === "r" ? 2 * r : d) : fr(r * r);
     const ans = pi === "3.14" ? PI3.mul(coef) : coef;
     const given_st = given === "r" ? ST(`The radius is ${gv} ${UNIT[u][1]}.`, `It has a radius of ${gv} ${UNIT[u][1]}.`, `Its radius measures ${gv} ${UNIT[u][1]}.`) : ST(`The diameter is ${gv} ${UNIT[u][1]}.`, `It has a diameter of ${gv} ${UNIT[u][1]}.`, `Its diameter measures ${gv} ${UNIT[u][1]}.`);
@@ -1091,9 +1098,9 @@ const geoCircInv = {
 const geoComposite = {
   lv: [2, 3],
   gen({ rng, level }) {
-    const u = rng.pick(["m", "cm", "ft", "in"]);
-    const un = UNIT[u][1];
     const shape = level === 2 ? rng.pick(["hole", "l"]) : rng.pick(["hole", "l", "semi", "perim", "semi", "perim"]);
+    const u = rng.pick(shape === "hole" ? ["cm", "in", "ft"] : shape === "semi" ? ["ft", "m", "in"] : ["m", "ft"]);
+    const un = UNIT[u][1];
     if (shape === "hole") {
       const W = rng.int(8, 16);
       const Hh = rng.int(6, 12);
@@ -1169,7 +1176,7 @@ const geoComposite = {
       spec: { type: "comp-perim", shape: "perim", W, H: Hh, cw, ch },
       stem: ST(
         `A patio is a rectangle that is ${W} ${un} long and ${Hh} ${un} wide. A rectangle that is ${cw} ${un} by ${ch} ${un} is cut out of one corner. This makes an L shape.`,
-        `A rectangular patio is ${W} ${un} long and ${Hh} ${un} wide. A ${cw} ${un} by ${ch} ${un} rectangle is cut out of one corner, leaving an L shape.`,
+        `A rectangular patio is ${W} ${un} long and ${Hh} ${un} wide. A rectangle that measures ${cw} ${un} by ${ch} ${un} is cut out of one corner, leaving an L shape.`,
         `A rectangular patio measures ${W} ${un} by ${Hh} ${un}. A rectangle measuring ${cw} ${un} by ${ch} ${un} is removed from one corner, leaving an L-shaped patio.`,
       ),
       ask: ST("What is the distance around the L shape?", "What is the perimeter of the L-shaped patio?", "Determine the perimeter of the L-shaped patio."),
@@ -1399,7 +1406,7 @@ const prSimple = {
     const P = fr(fav, total);
     const bag = rng.pick(BAGS);
     const cnt = Object.fromEntries(colors.map((c, i) => [c, counts[i]]));
-    const np = story === "bag" ? (ev === "notin" ? `a ${bag.it[0]} that is not ${set[0]}` : set.map((c) => `a ${c} ${bag.it[0]}`).join(" or ")) : ev === "notin" ? `a color that is not ${set[0]}` : set.join(" or ");
+    const np = story === "bag" ? (ev === "notin" ? `a ${bag.it[0]} that is not ${set[0]}` : set.map((c) => `${an(c)} ${c} ${bag.it[0]}`).join(" or ")) : ev === "notin" ? `a color that is not ${set[0]}` : set.join(" or ");
     const verb = story === "bag" ? "picking" : "landing on";
     const verbRich = story === "bag" ? "selecting" : "landing on";
     const formAsk = form === "frac" ? ["Write a fraction in simplest form.", "Write your answer as a fraction in simplest form.", "Express the answer as a fraction in simplest form."] : ["Write a decimal.", "Write your answer as a decimal.", "Express the answer as a decimal."];
@@ -1525,7 +1532,7 @@ const prCompound = {
     const P = fr(fav, tot);
     const bag = rng.pick(BAGS);
     const it = bag.it;
-    const phrase = ev.kind === "both" ? `two ${ev.color} ${it[1]}` : ev.kind === "different" ? `two ${it[1]} of different colors` : `a ${ev.first} ${it[0]} first and then a ${ev.second} ${it[0]}`;
+    const phrase = ev.kind === "both" ? `two ${ev.color} ${it[1]}` : ev.kind === "different" ? `two ${it[1]} of different colors` : `${an(ev.first)} ${ev.first} ${it[0]} first and then ${an(ev.second)} ${ev.second} ${it[0]}`;
     const c1 = counts[0];
     const c2 = counts[1];
     const wrongRepl = fr(alt.f, alt.t);
@@ -1558,7 +1565,7 @@ const prExperimental = {
     const base = Math.round(trials / n);
     let hits;
     do hits = base + rng.int(-3, 5);
-    while (hits < 1 || hits >= trials || hits * n === trials);
+    while (hits < 2 || hits >= trials || hits * n === trials);
     const ask = level === 3 ? "diff" : "exp";
     const form = ask === "exp" && rng.chance(0.5) ? "dec" : "frac";
     const colors = ["blue", ...rng.sample(COLORS.filter((c) => c !== "blue"), Math.min(n - 1, 5))];
@@ -1675,10 +1682,10 @@ FAMILIES.probability = {
 
 // ================================================================================================================ sampling
 const POPS = [
-  (n, k, N, ask) => ({ s: ST(`A random sample of ${n} students was asked how they get to school. ${k} of them walk. The school has ${N} students.`, `${n} students were chosen at random and asked how they get to school. ${k} of them walk. The school has ${N} students in all.`, `A random sample of ${n} students was surveyed about how they travel to school, and ${k} of them walk. The school has ${N} students in total.`), what: "students at the school walk to school", doNot: "students at the school do not walk to school" }),
-  (n, k, N) => ({ s: ST(`A farmer picks ${n} tomatoes at random. ${k} of them have spots. The farm picks ${N} tomatoes in all.`, `A farmer chooses ${n} tomatoes at random from a harvest and finds spots on ${k} of them. The harvest has ${N} tomatoes.`, `A farmer examines a random sample of ${n} tomatoes and finds spots on ${k} of them. The whole harvest is ${N} tomatoes.`), what: "tomatoes in the harvest have spots", doNot: "tomatoes in the harvest do not have spots" }),
-  (n, k, N) => ({ s: ST(`A library asks ${n} visitors at random if they borrowed a book. ${k} of them did. ${N} people visited the library last month.`, `A library asks ${n} randomly chosen visitors if they borrowed a book. ${k} of them did. The library had ${N} visitors last month.`, `A library surveys a random sample of ${n} visitors, and ${k} of them borrowed a book. The library had ${N} visitors last month.`), what: "visitors borrowed a book last month", doNot: "visitors did not borrow a book last month" }),
-  (n, k, N) => ({ s: ST(`A factory tests ${n} light bulbs picked at random. ${k} of them do not work. The factory made ${N} bulbs today.`, `A factory tests ${n} light bulbs chosen at random and finds that ${k} of them do not work. The factory made ${N} bulbs today.`, `A factory tests a random sample of ${n} light bulbs, and ${k} of them are defective. The factory produced ${N} bulbs today.`), what: "of the bulbs made today are defective", doNot: "of the bulbs made today work" }),
+  (n, k, N, ask) => ({ s: ST(`A random sample of ${n} students was asked how they get to school. ${k} of them walk. The school has ${num(N)} students.`, `${n} students were chosen at random and asked how they get to school. ${k} of them walk. The school has ${num(N)} students in all.`, `A random sample of ${n} students was surveyed about how they travel to school, and ${k} of them walk. The school has ${num(N)} students in total.`), what: "students at the school walk to school", doNot: "students at the school do not walk to school" }),
+  (n, k, N) => ({ s: ST(`A farmer picks ${n} tomatoes at random. ${k} of them have spots. The farm picks ${num(N)} tomatoes in all.`, `A farmer chooses ${n} tomatoes at random from a harvest and finds spots on ${k} of them. The harvest has ${num(N)} tomatoes.`, `A farmer examines a random sample of ${n} tomatoes and finds spots on ${k} of them. The whole harvest is ${num(N)} tomatoes.`), what: "tomatoes in the harvest have spots", doNot: "tomatoes in the harvest do not have spots" }),
+  (n, k, N) => ({ s: ST(`A library asks ${n} visitors at random if they borrowed a book. ${k} of them did. ${num(N)} people visited the library last month.`, `A library asks ${n} randomly chosen visitors if they borrowed a book. ${k} of them did. The library had ${num(N)} visitors last month.`, `A library surveys a random sample of ${n} visitors, and ${k} of them borrowed a book. The library had ${num(N)} visitors last month.`), what: "visitors borrowed a book last month", doNot: "visitors did not borrow a book last month" }),
+  (n, k, N) => ({ s: ST(`A factory tests ${n} light bulbs picked at random. ${k} of them do not work. The factory made ${num(N)} bulbs today.`, `A factory tests ${n} light bulbs chosen at random and finds that ${k} of them do not work. The factory made ${num(N)} bulbs today.`, `A factory tests a random sample of ${n} light bulbs, and ${k} of them are defective. The factory produced ${num(N)} bulbs today.`), what: "of the bulbs made today are defective", doNot: "of the bulbs made today work" }),
 ];
 const smEstimate = {
   lv: [1, 2, 3],
@@ -1688,7 +1695,7 @@ const smEstimate = {
     if (level === 1) k = Math.max(2, Math.round(k / 5) * 5 || 2);
     if (k >= n) k = n - 1;
     const unitN = n / gcdI(n, k);
-    const N = unitN * rng.int(level === 1 ? 4 : 5, level === 1 ? 20 : 30) * (level === 1 ? 1 : 1);
+    const N = unitN * rng.int(Math.ceil((level === 1 ? 200 : 400) / unitN), Math.ceil((level === 1 ? 900 : 1600) / unitN));
     const ask = level === 3 ? "no" : "yes";
     const t = rng.pick(POPS)(n, k, N);
     const ans = fr(ask === "yes" ? (N * k) / n : (N * (n - k)) / n);
@@ -1701,7 +1708,7 @@ const smEstimate = {
       ask: askT,
       expr: null,
       answer: A(ans),
-      work: [`In the sample, ${fav} out of ${n} is the same as ${per.n}/${per.d}.`, `Use the same share for all ${N}: ${N} ${TIMES} ${fav} = ${N * fav}.`, `Divide by the sample size: ${E(`${N * fav} ${DIVIDE} ${n}`, (N * fav) / n)}.`],
+      work: [`In the sample, ${fav} out of ${n} is the same as ${per.n}/${per.d}.`, `Use the same share for all ${num(N)}: ${E(`${num(N)} ${TIMES} ${fav}`, N * fav)}.`, `Divide by the sample size: ${E(`${N * fav} ${DIVIDE} ${n}`, (N * fav) / n)}.`],
       visual: { kind: "ratiotable", alt: `A ratio table: ${fav} out of ${n} in the sample goes with an unknown number out of ${N}.`, headers: ["Count in the sample", "Sample size"], rows: [[String(fav), String(n)], ["?", String(N)]], hide: [[1, 0]] },
       distractors: D(ans, [[fr(N + fav), "adds-the-sample-count"], [fr(N * fav), "forgets-to-divide-by-the-sample-size"], [fr(N * (ask === "yes" ? n - k : k), n), "uses-the-opposite-group"], [fr(N * n, fav), "inverts-the-sample-ratio"], [fr(N - fav), "subtracts-the-sample-count"]]),
       hints: H("A random sample is a small copy of the whole group, so the share in the sample is about the share in the whole group.", "Write the share found in the sample as a fraction, then take that same share of the whole group."),
@@ -2012,7 +2019,7 @@ const lnSolve = {
     if (l.c.n !== 0) {
       work.push(`${l.c.n > 0 ? `Subtract ${T(l.c)}` : `Add ${T(negF(l.c))}`} ${l.c.n > 0 ? "from" : "to"} both sides: ${mx(dM)} = ${T(dC)}.`);
     }
-    work.push(`Divide both sides by ${T(dM)}: ${T(dC)} ${DIVIDE} ${T(dM)} = ${T(x)}.`);
+    work.push(eqF(dM, fr(1)) ? `So x = ${T(x)}.` : `Divide both sides by ${T(dM)}: ${E(`${pf(dC)} ${DIVIDE} ${pf(dM)}`, x)}.`);
     const wrongs = [
       [solveX(l.m, negF(l.c), r.m, r.c), "adds-the-constants-instead-of-subtracting"],
       [solveX(l.m, l.c, negF(r.m), r.c), "adds-the-x-terms-instead-of-subtracting"],
@@ -2135,10 +2142,11 @@ const lnModel = {
     const amt = absF(m);
     const move = grows ? "goes up" : "goes down";
     const what = sc.what;
+    const inU = /^number of/.test(what) ? "" : `, in ${sc.y[1]}`;
     const stem = ST(
-      `${name} watches the ${what}. At the start, it is ${unitsOf(b)}. Each ${sc.x[0]}, it ${move} by ${unitsOf(amt)}. Let x be the number of ${sc.x[1]} and y be the ${what}, in ${sc.y[1]}.`,
-      `The ${what} starts at ${unitsOf(b)}, and each ${sc.x[0]} it ${move} by ${unitsOf(amt)}. Let x be the number of ${sc.x[1]} and let y be the ${what}, in ${sc.y[1]}.`,
-      `The ${what} is ${unitsOf(b)} at the start and ${grows ? "increases" : "decreases"} by ${unitsOf(amt)} each ${sc.x[0]}. Let x represent the number of ${sc.x[1]} and y represent the ${what}, in ${sc.y[1]}.`,
+      `${name} tracks the ${what}. At the start, it is ${unitsOf(b)}. Each ${sc.x[0]}, it ${move} by ${unitsOf(amt)}. Let x be the number of ${sc.x[1]} and y be the ${what}${inU}.`,
+      `The ${what} starts at ${unitsOf(b)}, and each ${sc.x[0]} it ${move} by ${unitsOf(amt)}. Let x be the number of ${sc.x[1]} and let y be the ${what}${inU}.`,
+      `The ${what} is ${unitsOf(b)} at the start and ${grows ? "increases" : "decreases"} by ${unitsOf(amt)} each ${sc.x[0]}. Let x represent the number of ${sc.x[1]} and y represent the ${what}${inU}.`,
     );
     const mT = T(m, true);
     const bT = T(b, true);
@@ -2222,15 +2230,13 @@ function stdEq(a, b, c) {
 }
 /** "mV + k" in a named variable, integers. */
 const linInt = (m, k, v) => `${m === 0 ? "" : coefTxt(m, v)}${k === 0 ? (m === 0 ? "0" : "") : m === 0 ? num(k) : ` ${k < 0 ? MINUS : "+"} ${num(Math.abs(k))}`}`;
-/** An expression for p + q that never forms "-a + b" (which a checker would read as a false "a + b"). */
-const sumTxt = (p, q) => {
-  if (p >= 0 && q >= 0) return `${num(p)} + ${num(q)}`;
-  if (p >= 0) return `${num(p)} ${MINUS} ${num(-q)}`;
-  if (q >= 0) return `${num(q)} ${MINUS} ${num(-p)}`;
-  return `${MINUS}${num(-p)} ${MINUS} ${num(-q)}`;
-};
-const subTxt = (p, q) => sumTxt(p, -q);
-const mulTxt = (p, q) => `${num(p)} ${TIMES} ${num(q)}`;
+/** Calculations with negative numbers in brackets, so "(−5) + 8" is never read as "5 + 8". */
+const sumTxt = (p, q) => `${par(num(p))} + ${par(num(q))}`;
+const subTxt = (p, q) => `${par(num(p))} ${MINUS} ${par(num(q))}`;
+const mulTxt = (p, q) => `${par(num(p))} ${TIMES} ${par(num(q))}`;
+const divTxt = (p, q) => `${par(num(p))} ${DIVIDE} ${par(num(q))}`;
+/** "Divide both sides by q: p ÷ q = res", or just the result when q is 1. */
+const divStep = (v, p, q, res) => (q === 1 ? `So ${v} = ${num(res)}.` : `Divide both sides by ${num(q)}: ${E(divTxt(p, q), res)}.`);
 const pairStr = (x, y) => `(${x},${y})`;
 function pairDist(x0, y0) {
   const ans = pairStr(x0, y0);
@@ -2256,7 +2262,7 @@ function solveLines(l, r, x) {
   const w = [];
   if (r.m.n !== 0) w.push(`${opText(r.m, (v) => mx(v))}: ${linText(dM, l.c)} = ${T(r.c)}.`);
   if (l.c.n !== 0) w.push(`${l.c.n > 0 ? `Subtract ${T(l.c)}` : `Add ${T(negF(l.c))}`} ${l.c.n > 0 ? "from" : "to"} both sides: ${mx(dM)} = ${T(dC)}.`);
-  w.push(`Divide both sides by ${T(dM)}: ${E(`${T(dC)} ${DIVIDE} ${T(dM)}`, x)}.`);
+  w.push(eqF(dM, fr(1)) ? `So x = ${T(x)}.` : `Divide both sides by ${T(dM)}: ${E(`${pf(dC)} ${DIVIDE} ${pf(dM)}`, x)}.`);
   return w;
 }
 
@@ -2312,7 +2318,7 @@ const sySub = {
         `Put ${rhs} in place of ${P} in the second equation.`,
         `Combine like terms: ${linInt(cm, cc, Q)} = ${num(c)}.`,
         ...(cc !== 0 ? [`${cc > 0 ? `Subtract ${num(cc)}` : `Add ${num(-cc)}`} ${cc > 0 ? "from" : "to"} both sides: ${coefTxt(cm, Q)} = ${num(c - cc)}.`] : []),
-        `Divide both sides by ${num(cm)}: ${E(`${num(c - cc)} ${DIVIDE} ${num(cm)}`, Q0)}.`,
+        divStep(Q, c - cc, cm, Q0),
         `Now find ${P}: ${E(mulTxt(m, Q0), m * Q0)}, and ${E(sumTxt(m * Q0, k), P0)}.`,
         `The solution is x = ${num(x0)} and y = ${num(y0)}.`,
       ],
@@ -2367,9 +2373,9 @@ const syElim = {
     const work = [];
     if (mode === "add") {
       work.push(`The y terms are opposites, so add the equations: ${stdEq(e1.a + E2.a, 0, e1.c + E2.c)}.`);
-      work.push(`Divide both sides by ${num(e1.a + E2.a)}: ${E(`${num(e1.c + E2.c)} ${DIVIDE} ${num(e1.a + E2.a)}`, x0)}.`);
+      work.push(divStep("x", e1.c + E2.c, e1.a + E2.a, x0));
       work.push(`Put x = ${num(x0)} in the first equation: ${E(mulTxt(e1.a, x0), e1.a * x0)}, and ${E(subTxt(e1.c, e1.a * x0), e1.c - e1.a * x0)}, so ${stdEq(0, e1.b, e1.c - e1.a * x0)}.`);
-      work.push(`Divide both sides by ${num(e1.b)}: ${E(`${num(e1.c - e1.a * x0)} ${DIVIDE} ${num(e1.b)}`, y0)}.`);
+      work.push(divStep("y", e1.c - e1.a * x0, e1.b, y0));
     } else {
       let top = e1;
       if (mode === "scale") {
@@ -2379,9 +2385,9 @@ const syElim = {
       const db = top.b - E2.b;
       const dc = top.c - E2.c;
       work.push(`Subtract the second equation from the ${mode === "scale" ? "new first" : "first"} equation. The x terms cancel: ${stdEq(0, db, dc)}.`);
-      work.push(`Divide both sides by ${num(db)}: ${E(`${num(dc)} ${DIVIDE} ${num(db)}`, y0)}.`);
+      work.push(divStep("y", dc, db, y0));
       work.push(`Put y = ${num(y0)} in the first equation: ${E(mulTxt(e1.b, y0), e1.b * y0)}, and ${E(subTxt(e1.c, e1.b * y0), e1.c - e1.b * y0)}, so ${stdEq(e1.a, 0, e1.c - e1.b * y0)}.`);
-      work.push(`Divide both sides by ${num(e1.a)}: ${E(`${num(e1.c - e1.b * y0)} ${DIVIDE} ${num(e1.a)}`, x0)}.`);
+      work.push(divStep("x", e1.c - e1.b * y0, e1.a, x0));
     }
     const how = mode === "add" ? "Solve by adding the equations." : mode === "subtract" ? "Solve by subtracting the equations." : "Solve by elimination.";
     return {
@@ -2441,12 +2447,13 @@ const syGraph = {
   },
 };
 
+const pl = (v, one, many) => (v === 1 ? one : many);
 const DUELS = [
-  { x: ["week", "weeks"], y: ["dollar", "dollars"], down: true, q: "have the same amount of money", line: (n, s, r) => (r > 0 ? `${n} has ${s} dollars and saves ${r} dollars each week.` : `${n} has ${s} dollars and spends ${-r} dollars each week.`) },
-  { x: ["day", "days"], y: ["page", "pages"], down: false, q: "have read the same number of pages", line: (n, s, r) => `${n} has read ${s} pages and reads ${r} more pages each day.` },
-  { x: ["minute", "minutes"], y: ["liter", "liters"], down: true, q: "have the same amount of water", line: (n, s, r) => (r > 0 ? `${n}'s tank has ${s} liters of water and fills by ${r} liters each minute.` : `${n}'s tank has ${s} liters of water and drains by ${-r} liters each minute.`) },
-  { x: ["week", "weeks"], y: ["centimeter", "centimeters"], down: false, q: "are the same height", line: (n, s, r) => `${n}'s plant is ${s} centimeters tall and grows ${r} centimeters each week.` },
-  { x: ["minute", "minutes"], y: ["meter", "meters"], down: true, q: "are the same distance from the start", line: (n, s, r) => (r > 0 ? `${n} is ${s} meters from the start and runs away from it at ${r} meters each minute.` : `${n} is ${s} meters from the start and runs back toward it at ${-r} meters each minute.`) },
+  { x: ["week", "weeks"], y: ["dollar", "dollars"], down: true, q: "have the same amount of money", line: (n, s, r) => (r > 0 ? `${n} has ${s} ${pl(s, "dollar", "dollars")} and saves ${r} ${pl(r, "dollar", "dollars")} each week.` : `${n} has ${s} ${pl(s, "dollar", "dollars")} and spends ${-r} ${pl(-r, "dollar", "dollars")} each week.`) },
+  { x: ["day", "days"], y: ["page", "pages"], down: false, q: "have read the same number of pages", line: (n, s, r) => `${n} has read ${s} ${pl(s, "page", "pages")} and reads ${r} more ${pl(r, "page", "pages")} each day.` },
+  { x: ["minute", "minutes"], y: ["liter", "liters"], down: true, q: "have the same amount of water", line: (n, s, r) => (r > 0 ? `${n}'s tank has ${s} ${pl(s, "liter", "liters")} of water and fills by ${r} ${pl(r, "liter", "liters")} each minute.` : `${n}'s tank has ${s} ${pl(s, "liter", "liters")} of water and drains by ${-r} ${pl(-r, "liter", "liters")} each minute.`) },
+  { x: ["week", "weeks"], y: ["centimeter", "centimeters"], down: false, q: "be the same height", line: (n, s, r) => `${n}'s plant is ${s} ${pl(s, "centimeter", "centimeters")} tall and grows ${r} ${pl(r, "centimeter", "centimeters")} each week.` },
+  { x: ["minute", "minutes"], y: ["meter", "meters"], down: true, q: "be the same distance from the start", line: (n, s, r) => (r > 0 ? `${n} is ${s} ${pl(s, "meter", "meters")} from the start and runs away from it at ${r} ${pl(r, "meter", "meters")} each minute.` : `${n} is ${s} ${pl(s, "meter", "meters")} from the start and runs back toward it at ${-r} ${pl(-r, "meter", "meters")} each minute.`) },
 ];
 const syWord = {
   lv: [1, 2, 3],
@@ -2485,10 +2492,10 @@ const syWord = {
     return {
       spec: { type: "word", ask: askY ? "y" : "x", ...sysSpec({ a: -r1, b: 1, c: s1 }, { a: -r2, b: 1, c: s2 }) },
       stem,
-      ask: askY ? ST(`Find when ${n1} and ${n2} ${duel.q}. How many ${duel.y[1]} do they each have then?`, `At the time when ${n1} and ${n2} ${duel.q}, how many ${duel.y[1]} do they each have?`, `Determine the number of ${duel.y[1]} that ${n1} and ${n2} each have at the moment when they ${duel.q}.`) : ST(`After how many ${duel.x[1]} do ${n1} and ${n2} ${duel.q}?`, `After how many ${duel.x[1]} will ${n1} and ${n2} ${duel.q}?`, `Determine after how many ${duel.x[1]} ${n1} and ${n2} will ${duel.q}.`),
+      ask: askY ? ST(`Find when ${n1} and ${n2} will ${duel.q}. What is the amount, in ${duel.y[1]}, at that time?`, `When ${n1} and ${n2} ${duel.q.replace(/^(have|be)/, (m) => `will ${m}`)}, what is the amount, in ${duel.y[1]}, at that time?`, `Determine the amount, in ${duel.y[1]}, at the moment when ${n1} and ${n2} will ${duel.q}.`) : ST(`After how many ${duel.x[1]} will ${n1} and ${n2} ${duel.q}?`, `After how many ${duel.x[1]} will ${n1} and ${n2} ${duel.q}?`, `Determine after how many ${duel.x[1]} ${n1} and ${n2} will ${duel.q}.`),
       expr: null,
       answer: A(fr(ans), { unit: askY ? duel.y[1] : duel.x[1] }),
-      work: [`Let x be the number of ${duel.x[1]} and y the amount, in ${duel.y[1]}.`, `${n1}: ${eqA}. ${n2}: ${eqB}.`, `They ${duel.q} when the amounts are equal: ${linText(L.m, L.c)} = ${linText(Rr.m, Rr.c)}.`, ...solveLines(L, Rr, fr(x0)), ...(askY ? [`Now put x = ${x0} in the first equation: ${E(mulTxt(r1, x0), r1 * x0)}, and ${E(`${r1 * x0} + ${s1}`, y0)}.`] : [])],
+      work: [`Let x be the number of ${duel.x[1]} and y the amount, in ${duel.y[1]}.`, `${n1}: ${eqA}. ${n2}: ${eqB}.`, `We want the time when the two amounts are equal: ${linText(L.m, L.c)} = ${linText(Rr.m, Rr.c)}.`, ...solveLines(L, Rr, fr(x0)), ...(askY ? [`Now put x = ${x0} in the first equation: ${E(mulTxt(r1, x0), r1 * x0)}, and ${E(`${r1 * x0} + ${s1}`, y0)}.`] : [])],
       visual: null,
       distractors: D(fr(ans), wrong),
       hints: H("Write an equation for each person, using the starting amount and the change each time. They are equal when both equations give the same y.", "Set the two expressions for y equal to each other, solve for x, and put x back in if the amount is asked."),
@@ -2683,7 +2690,7 @@ const fnEval = {
       ask: ST(`What is f(${xt})?`, `What is f(${xt})?`, `Evaluate f(${xt}).`),
       expr: `f(x) = ${rule}`,
       answer: A(val, { dec: true }),
-      work: [`Put ${xt} in place of x.`, `Multiply first: ${T(m, true)} times ${xt} is ${T(m.mul(fr(x)), true)}.`, `Then add the constant: ${T(m.mul(fr(x)), true)} plus ${T(b, true)} is ${T(val, true)}.`],
+      work: [`Put ${xt} in place of x.`, `Multiply first: ${T(m, true)} times ${xt} is ${T(m.mul(fr(x)), true)}.`, b.n < 0 ? `Then subtract ${T(absF(b), true)}: ${T(m.mul(fr(x)), true)} minus ${T(absF(b), true)} is ${T(val, true)}.` : `Then add the constant: ${T(m.mul(fr(x)), true)} plus ${T(b, true)} is ${T(val, true)}.`],
       visual: { kind: "machine", alt: `A function machine with the rule ${rule}. The input is ${xt} and the output is unknown.`, rule, input: String(x), output: "?" },
       distractors: D(val, [[m.add(fr(x)).add(b), "adds-instead-of-multiplying"], [m.mul(fr(x)).sub(b), "changes-the-sign-of-the-constant"], [m.mul(fr(x).add(b)), "adds-before-multiplying"], [m.mul(fr(x)), "forgets-the-constant"], [fr(x < 0 ? -x : x).mul(m).add(b), "drops-the-negative-sign-of-the-input"]], true),
       hints: H("A function takes an input, follows the rule, and gives one output. The input goes where x is.", "Replace x with the input. Multiply first, then add or subtract."),
@@ -2835,7 +2842,7 @@ const slTwo = {
       ask,
       expr: null,
       answer: A(m, { dec: dmm, unit }),
-      work: [`The slope is rise ${DIVIDE} run, the change in y over the change in x.`, `Rise: ${E(subTxt(p2[1], p1[1]), dy)}. Run: ${E(subTxt(p2[0], p1[0]), dx)}.`, `${num(dy)} ${DIVIDE} ${num(dx)} = ${T(m, dmm)}.`.replace(/ = /, " is ")],
+      work: [`The slope is rise ${DIVIDE} run, the change in y over the change in x.`, `Rise: ${E(subTxt(p2[1], p1[1]), dy)}. Run: ${E(subTxt(p2[0], p1[0]), dx)}.`, `${divTxt(dy, dx)} is ${T(m, dmm)}.`],
       visual: pointsVisual([p1, p2], `A coordinate grid with the points ${a1} and ${a2} and the line through them.`),
       distractors: D(m, [[fr(dx, dy || 1), "inverts-rise-and-run"], [fr(-dy, dx), "gets-the-sign-wrong"], [fr(p2[1] - p1[1] + (p2[0] - p1[0])), "adds-the-changes"], [fr(dy - dx), "subtracts-run-from-rise"], [dx !== 0 ? fr(p2[1], p2[0] || 1) : null, "divides-the-second-point-coordinates"]], dmm),
       hints: H("Slope tells how much y changes each time x goes up by 1.", "Subtract the y-values in the same order as the x-values, then divide the change in y by the change in x."),
@@ -2880,7 +2887,7 @@ const slIntercept = {
       ask: ST("Where does the line cross the y-axis? What is the y-intercept?", "What is the y-intercept of the line?", "Determine the y-intercept of the line."),
       expr: null,
       answer: A(fr(b)),
-      work: [`First find the slope: ${E(subTxt(p2[1], p1[1]), p2[1] - p1[1])} and ${E(subTxt(p2[0], p1[0]), p2[0] - p1[0])}, so the slope is ${slopeT}.`, `Use y = mx + b with the point ${a1}: ${num(p1[1])} = ${slopeT} ${TIMES} ${num(p1[0])} + b.`, `${slopeT} ${TIMES} ${num(p1[0])} is ${T(m.mul(fr(p1[0])))}, so b is ${num(p1[1])} minus ${T(m.mul(fr(p1[0])))}, which is ${num(b)}.`],
+      work: [`First find the slope: ${E(subTxt(p2[1], p1[1]), p2[1] - p1[1])} and ${E(subTxt(p2[0], p1[0]), p2[0] - p1[0])}, so the slope is ${slopeT}.`, `Use y = mx + b with the point ${a1}: ${num(p1[1])} = ${slopeT} ${TIMES} ${par(num(p1[0]))} + b.`, `${E(mulTxt(m.n / m.d, p1[0]), m.mul(fr(p1[0])))}, so b = ${E(subTxt(p1[1], m.n * p1[0] / m.d), b)}.`],
       visual: pointsVisual([p1, p2], `A coordinate grid with the points ${a1} and ${a2} and the line through them.`, [b]),
       distractors: D(fr(b), [[m, "reports-the-slope"], [fr(p1[1]), "reports-the-y-value-of-a-point"], [fr(p1[1]).add(m.mul(fr(p1[0]))), "adds-instead-of-subtracting-mx"], [fr(-b), "gets-the-sign-wrong"]], false),
       hints: H("The y-intercept is the value of y when x is 0. You can find it from the slope and any point on the line.", "Find the slope, then put the slope and one point into y = mx + b and solve for b."),
@@ -3027,7 +3034,7 @@ const exExpoN = {
       ask: ST("What is the exponent n?", "What is the value of n?", "Determine the value of n."),
       expr,
       answer: A(fr(n)),
-      work: [rule, `${calc}.`, `So n = ${n}.`],
+      work: [rule, `${calc}.`, `So n = ${num(n)}.`],
       visual: null,
       distractors: D(fr(n), wrong.map(([v, t]) => [fr(v), t])),
       hints: H("Powers with the same base follow rules that connect the operation on the powers to an operation on the exponents.", "Decide whether the exponents should be added, subtracted or multiplied, then do that arithmetic carefully with the signs."),
@@ -3071,7 +3078,7 @@ const exEval = {
       work.push(`${termTxt(terms[0])} = ${T(powF(terms[0].base, terms[0].e))} and ${termTxt(terms[1])} = ${T(powF(terms[1].base, terms[1].e))}.`);
       work.push(`${op === "mul" ? "Multiply" : "Divide"} the two values to get ${T(val)}.`);
     } else if (t0.e === 0) work.push("Any nonzero number to the power 0 is 1.");
-    else if (t0.e < 0) work.push(`A negative exponent means take the reciprocal: ${T(t0.base)} to the power ${MINUS}${Math.abs(t0.e)} is 1 divided by ${T(t0.base)} to the power ${Math.abs(t0.e)}.`, `${T(t0.base)} to the power ${Math.abs(t0.e)} is ${T(powF(t0.base, -t0.e))}, so the value is 1/${T(powF(t0.base, -t0.e))}, which is ${T(val)}.`);
+    else if (t0.e < 0) work.push("A negative exponent means the reciprocal of the matching positive power.", `${termTxt({ base: t0.base, e: -t0.e })} is ${T(powF(t0.base, -t0.e))}.`, `${E(`1 ${DIVIDE} ${pf(powF(t0.base, -t0.e))}`, val)}.`);
     else work.push(`${T(t0.base)} to the power ${t0.e} means ${T(t0.base)} used as a factor ${t0.e} times.`, `That product is ${T(val)}.`);
     return {
       spec: { type: "eval", terms: terms.map((t) => ({ base: S(t.base), e: t.e })), op },
@@ -3171,8 +3178,8 @@ const exSciRatio = {
     }
     const ratio = ma.div(mb).mul(pow10(ea - eb));
     const th = rng.pick(SCI_THINGS);
-    const fa = `${T(ma)} ${TIMES} 10^${ea < 0 ? MINUS : ""}${Math.abs(ea)}`;
-    const fb = `${T(mb)} ${TIMES} 10^${eb < 0 ? MINUS : ""}${Math.abs(eb)}`;
+    const fa = eqF(ma, fr(1)) ? caret(10, ea) : `${T(ma)} ${TIMES} ${caret(10, ea)}`;
+    const fb = eqF(mb, fr(1)) ? caret(10, eb) : `${T(mb)} ${TIMES} ${caret(10, eb)}`;
     const ans = A(ratio);
     ans.text = T(ratio);
     return {
@@ -3221,11 +3228,14 @@ const exSciMul = {
       op === "mul" ? [sciText(mProd, ea - eb), "subtracts-the-exponents-when-multiplying"] : [sciText(mProd, ea + eb), "adds-the-exponents-when-dividing"],
       [sciText(m, op === "mul" ? ea * eb : ea * eb), "multiplies-the-exponents"],
       [sciText(m, e + 1), "adjusts-the-exponent-the-wrong-way"],
+      [sciText(m, e - 1), "adjusts-the-exponent-the-wrong-way"],
+      [sciText(m, ea), "uses-only-the-first-exponent"],
+      [sciText(m, eb), "uses-only-the-second-exponent"],
     ].filter(Boolean);
     const work = [];
     work.push(op === "mul" ? `Multiply the first factors: ${T(ma, true)} ${TIMES} ${T(mb, true)} = ${T(mProd, true)}.` : `Divide the first factors: ${T(ma, true)} ${DIVIDE} ${T(mb, true)} = ${T(mProd, true)}.`);
     work.push(op === "mul" ? `Add the exponents: ${E(sumTxt(ea, eb), eRaw)}.` : `Subtract the exponents: ${E(subTxt(ea, eb), eRaw)}.`);
-    if (normalized) work.push(`${T(mProd, true)} is not between 1 and 10, so rewrite ${T(mProd, true)} as ${T(m, true)} times ${mProd.cmp(fr(10)) >= 0 ? "10" : "one tenth"}, and change the exponent to ${e}.`);
+    if (normalized) work.push(`${T(mProd, true)} is not between 1 and 10, so rewrite ${T(mProd, true)} as ${T(m, true)} times ${mProd.cmp(fr(10)) >= 0 ? "10" : "one tenth"}, and change the exponent to ${num(e)}.`);
     work.push(`The answer is ${ans}.`);
     const expr = op === "mul" ? `(${f(ma, ea)}) ${TIMES} (${f(mb, eb)})` : `(${f(ma, ea)}) ${DIVIDE} (${f(mb, eb)})`;
     return {
@@ -3571,13 +3581,14 @@ function makeShape(rng, level, even) {
     if (tri) {
       const pts = [[R(-5, 4), R(-5, 4)], [R(-5, 5), R(-5, 5)], [R(-5, 5), R(-5, 5)]];
       const area2 = (pts[1][0] - pts[0][0]) * (pts[2][1] - pts[0][1]) - (pts[2][0] - pts[0][0]) * (pts[1][1] - pts[0][1]);
-      if (area2 !== 0 && new Set(pts.map((p) => p.join())).size === 3) return { names: "ABC", pts };
+      if (area2 !== 0 && new Set(pts.map((p) => p.join())).size === 3 && !pts.some((p) => p[0] === 0 && p[1] === 0)) return { names: "ABC", pts };
     } else {
       const x = R(-5, 2);
       const y = R(-5, 2);
       const w = R(1, 4);
       const h = R(1, 4);
-      if (w !== h || rng.chance(0.3)) return { names: "ABCD", pts: [[x, y], [x + w, y], [x + w, y + h], [x, y + h]] };
+      const rect = [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
+      if ((w !== h || rng.chance(0.3)) && !rect.some((p) => p[0] === 0 && p[1] === 0)) return { names: "ABCD", pts: rect };
     }
   }
   return { names: "ABC", pts: [[1, 1], [4, 1], [1, 5]] };
@@ -3616,7 +3627,14 @@ const trImage = {
       const target = rng.int(0, shape.pts.length - 1);
       shape.target = target;
       const imgs = shape.pts.map((p) => steps.reduce((q, s) => applyStep(s, q), [fr(p[0]), fr(p[1])]));
-      if (imgs.every(([x, y]) => Math.abs(x.n / x.d) <= 14 && Math.abs(y.n / y.d) <= 14) && imgs.every(([x, y]) => x.d === 1 && y.d === 1)) break;
+      let q = [fr(shape.pts[target][0]), fr(shape.pts[target][1])];
+      const moves = steps.every((s) => {
+        const nq = applyStep(s, q);
+        const moved = !(eqF(nq[0], q[0]) && eqF(nq[1], q[1]));
+        q = nq;
+        return moved;
+      });
+      if (moves && imgs.every(([x, y]) => Math.abs(x.n / x.d) <= 14 && Math.abs(y.n / y.d) <= 14) && imgs.every(([x, y]) => x.d === 1 && y.d === 1)) break;
     }
     const { names, pts, target } = shape;
     const v = names[target];
@@ -3647,13 +3665,15 @@ const trImage = {
     cands.push([pairF(fr(x0), fr(y0)), "forgets-to-transform-the-point"]);
     cands.push([pairF(cur[0].add(fr(1)), cur[1]), "arithmetic-slip-in-x"]);
     cands.push([pairF(cur[0], cur[1].add(fr(1))), "arithmetic-slip-in-y"]);
+    cands.push([pairF(cur[0].sub(fr(1)), cur[1].add(fr(1))), "arithmetic-slip-in-both-coordinates"]);
+    cands.push([pairF(cur[0].add(fr(2)), cur[1]), "arithmetic-slip-in-x"]);
     return {
       spec: { type: "transform", names, pts, target, steps: steps.map(specStep) },
       stem: ST(`${noun} ${names} has vertices ${shapeText(names, pts)}. It is ${did}. The new vertices are ${prime}.`, `${noun} ${names} has vertices ${shapeText(names, pts)}. It is ${did}. The image is ${prime}.`, `${noun} ${names} has vertices ${shapeText(names, pts)}. It is ${did}, producing the image ${prime}.`),
       ask: ST(`What are the coordinates of ${v}′? Write them as (x,y).`, `What are the coordinates of ${v}′? Write them as (x,y).`, `Determine the coordinates of ${v}′. Write them as an ordered pair (x,y).`),
       expr: null,
       answer: { value: ans, kind: "pair" },
-      work: [...work, `So ${v}′ is at ${ans}.`],
+      work: [...work, `So ${v}′ is at (${T(cur[0])}, ${T(cur[1])}).`],
       visual: shapeVisual(names, pts, `A coordinate grid with ${noun.toLowerCase()} ${names}: ${shapeText(names, pts)}.`),
       distractors: DS(ans, cands),
       hints: H("Every point of a shape moves by the same rule, so you can follow one vertex through each step.", "Write the rule for each transformation as a change to (x, y), then apply the steps to the vertex in order."),
@@ -3665,9 +3685,8 @@ const trCongruent = {
   lv: [3],
   gen({ rng, level }) {
     const withDil = rng.chance(0.5);
-    const rigid = () => rng.pick([{ op: "translate", dx: nz(rng, -6, 6), dy: nz(rng, -6, 6) }, { op: "reflect", axis: rng.pick(["x", "y"]) }, { op: "rotate", deg: 90, dir: rng.pick(["cw", "ccw"]) }, { op: "rotate", deg: 180, dir: "" }]);
-    const steps = [rigid(), rigid()];
-    if (rng.chance(0.4)) steps.push(rigid());
+    const rigidKinds = [() => ({ op: "translate", dx: nz(rng, -6, 6), dy: nz(rng, -6, 6) }), () => ({ op: "reflect", axis: rng.pick(["x", "y"]) }), () => (rng.chance(0.3) ? { op: "rotate", deg: 180, dir: "" } : { op: "rotate", deg: 90, dir: rng.pick(["cw", "ccw"]) })];
+    const steps = rng.sample(rigidKinds, withDil ? 2 : rng.pick([2, 3])).map((f) => f());
     if (withDil) steps.splice(rng.int(0, steps.length), 0, { op: "dilate", kF: rng.pick([fr(2), fr(3), fr(1, 2)]) });
     const shape = makeShape(rng, 1, withDil && steps.some((s) => s.kF && s.kF.d !== 1));
     const names = shape.names;
@@ -3828,7 +3847,8 @@ const smExterior = {
   },
 };
 
-const REL = { corresponding: ["corresponding angles", false], "alternate interior": ["alternate interior angles", false], "alternate exterior": ["alternate exterior angles", false], "same-side interior": ["same-side interior angles", true], "linear pair": ["a linear pair", true] };
+const REL = { corresponding: ["corresponding angles", false, "corresponding angle"], "alternate interior": ["alternate interior angles", false, "alternate interior angle"], "alternate exterior": ["alternate exterior angles", false, "alternate exterior angle"], "same-side interior": ["same-side interior angles", true, "same-side interior angle"], "linear pair": ["a linear pair", true, "linear pair"] };
+const art = (w) => (/^[aeiou]/.test(w) ? "an" : "a");
 const smParallel = {
   lv: [1, 2, 3],
   gen({ rng, level }) {
@@ -3839,7 +3859,7 @@ const smParallel = {
     while (a === 90 || a >= 175);
     const supp = REL[rel][1];
     const ans = supp ? 180 - a : a;
-    const ctx = rel === "linear pair" ? ST(`Two angles make a straight line. One of them is ${a}°.`, `Two angles form a linear pair. One of them measures ${a}°.`, `Two angles form a linear pair, and one of them measures ${a}°.`) : ST(`Two parallel lines are cut by a third line. One angle is ${a}°. Another angle is called ${REL[rel][0]} with it.`, `Two parallel lines are cut by a transversal. One angle measures ${a}°. A second angle forms ${REL[rel][0]} with it.`, `Two parallel lines are cut by a transversal. One angle measures ${a}°. A second angle and the first form ${REL[rel][0]}.`);
+    const ctx = rel === "linear pair" ? ST(`Two angles make a straight line. One of them is ${a}°.`, `Two angles form a linear pair. One of them measures ${a}°.`, `Two angles form a linear pair, and one of them measures ${a}°.`) : ST(`Two parallel lines are cut by a third line. One angle is ${a}°. A second angle is ${art(REL[rel][2])} ${REL[rel][2]} of the first.`, `Two parallel lines are cut by a transversal. One angle measures ${a}°. A second angle is ${art(REL[rel][2])} ${REL[rel][2]} of the first.`, `Two parallel lines are cut by a transversal. One angle measures ${a}°. A second angle is ${art(REL[rel][2])} ${REL[rel][2]} of the first.`);
     return {
       spec: { type: "parallel", rel, a },
       stem: ctx,
@@ -3890,7 +3910,7 @@ const smDecision = {
       ask: ASK,
       expr: null,
       answer: { value: real, kind: "text" },
-      work: congruent ? [`Put each list in order: ${sideList(s1)} and ${sideList(s2)}.`, "The side lengths match exactly, so the triangles are congruent."] : similar ? [`Put each list in order: ${sideList(s1)} and ${sideList(s2)}.`, `Divide matching sides: ${T(fr(s2[0], s1[0]))} for the shortest sides, and the same number for the others.`, "Every side is multiplied by the same number, so the triangles are similar, but the sides are not equal, so they are not congruent."] : [`Put each list in order: ${sideList(s1)} and ${sideList(s2)}.`, `Divide matching sides: ${T(fr(s2[0], s1[0]))}, ${T(fr(s2[1], s1[1]))} and ${T(fr(s2[2], s1[2]))}. The ratios are not all the same.`, "The sides are not equal and not in the same ratio, so the triangles are neither congruent nor similar."],
+      work: congruent ? [`Put the sides in order. Triangle P: ${s1.join(", ")}. Triangle Q: ${s2.join(", ")}.`, "The side lengths match exactly, so the triangles are congruent."] : similar ? [`Put the sides in order. Triangle P: ${s1.join(", ")}. Triangle Q: ${s2.join(", ")}.`, `Divide matching sides: ${T(fr(s2[0], s1[0]))} for the shortest sides, and the same number for the others.`, "Every side is multiplied by the same number, so the triangles are similar, but the sides are not equal, so they are not congruent."] : [`Put the sides in order. Triangle P: ${s1.join(", ")}. Triangle Q: ${s2.join(", ")}.`, `Divide matching sides: ${T(fr(s2[0], s1[0]))}, ${T(fr(s2[1], s1[1]))} and ${T(fr(s2[2], s1[2]))}. The ratios are not all the same.`, "The sides are not equal and not in the same ratio, so the triangles are neither congruent nor similar."],
       visual: null,
       distractors: pool.slice(0, 3).map(([text, misconception]) => ({ text, misconception })),
       hints: H("Congruent triangles have equal matching sides. Similar triangles have matching sides in the same ratio.", "Put the sides of each triangle in order, then compare the matching sides by subtracting (equal?) and by dividing (same ratio?)."),
@@ -3944,9 +3964,9 @@ const pyHyp = {
     const v = a * a + b * b;
     const res = exactOrRound(v);
     const story = rng.pick(STORIES.hyp);
-    const u = rng.pick(["feet", "meters", "inches", "centimeters"]);
+    const u = rng.pick({ ladder: ["feet", "meters"], screen: ["inches"], field: ["meters", "feet"], ramp: ["feet", "meters"] }[story.ctx]);
     const stem = story.mk(a, b, u);
-    const ask = res.exact ? story.q : ST(`${story.q.plain.replace("?", "")} Round to the nearest tenth.`, `${story.q.standard.replace("?", "")}? Round to the nearest tenth.`, `${story.q.rich.replace(".", "")}. Round to the nearest tenth.`);
+    const ask = res.exact ? story.q : ST(`${story.q.plain} Round to the nearest tenth.`, `${story.q.standard} Round to the nearest tenth.`, `${story.q.rich} Round to the nearest tenth.`);
     const cands = res.exact
       ? [[String(a + b), "adds-the-legs"], [String(v), "forgets-to-take-the-square-root"], [String(Math.max(a, b) + 1), "guesses-near-the-longer-leg"], [String(Math.abs(a - b)), "subtracts-the-legs"]]
       : [[String(a + b), "adds-the-legs"], [String(v), "forgets-to-take-the-square-root"], [roundSqrt(Math.abs(b * b - a * a) || 1, 1), "subtracts-the-squares"], [roundSqrt(v, 0).replace(/\.0*$/, ""), "rounds-to-the-nearest-whole-number"], [roundSqrt(v, 2), "rounds-to-the-wrong-place"]];
@@ -3986,13 +4006,14 @@ const pyLeg = {
     }
     const v = hyp * hyp - leg * leg;
     const res = exactOrRound(v);
-    const u = rng.pick(["feet", "meters", "inches", "centimeters"]);
-    const st = rng.pick([
-      { stem: ST(`A ladder is ${hyp} ${u} long. It leans on a wall. The bottom is ${leg} ${u} from the wall.`, `A ${hyp} ${u} ladder leans against a wall. Its bottom is ${leg} ${u} from the wall.`, `A ladder that is ${hyp} ${u} long leans against a vertical wall. Its base is ${leg} ${u} from the wall.`), q: ST("How high does it reach on the wall?", "How high up the wall does the ladder reach?", "Determine the height that the ladder reaches on the wall.") },
+    const kind = rng.int(0, 2);
+    const u = rng.pick([["feet", "meters"], ["inches", "centimeters", "feet"], ["meters", "feet"]][kind]);
+    const st = [
+      { stem: ST(`A ladder is ${hyp} ${u} long. It leans on a wall. The bottom is ${leg} ${u} from the wall.`, `A ladder that is ${hyp} ${u} long leans against a wall. Its bottom is ${leg} ${u} from the wall.`, `A ladder that is ${hyp} ${u} long leans against a vertical wall. Its base is ${leg} ${u} from the wall.`), q: ST("How high does it reach on the wall?", "How high up the wall does the ladder reach?", "Determine the height that the ladder reaches on the wall.") },
       { stem: ST(`A rectangle has a diagonal of ${hyp} ${u}. One side is ${leg} ${u}.`, `A rectangle has a diagonal of ${hyp} ${u} and one side of ${leg} ${u}.`, `A rectangle has a diagonal measuring ${hyp} ${u} and one side measuring ${leg} ${u}.`), q: ST("How long is the other side?", "What is the length of the other side?", "Determine the length of the other side.") },
       { stem: ST(`A kite string is ${hyp} ${u} long and goes straight to the ground. The kite is ${leg} ${u} high.`, `A kite string ${hyp} ${u} long is pulled straight to the ground. The kite is ${leg} ${u} above the ground, directly over a point on the ground.`, `A kite string of length ${hyp} ${u} is stretched straight to the ground. The kite is ${leg} ${u} above the ground.`), q: ST("How far is the kite's spot on the ground from the person?", "How far is the person from the point on the ground directly below the kite?", "Determine the horizontal distance from the person to the point on the ground directly below the kite.") },
-    ]);
-    const ask = res.exact ? st.q : ST(`${st.q.plain.replace("?", "")} Round to the nearest tenth.`, `${st.q.standard.replace("?", "")}? Round to the nearest tenth.`, `${st.q.rich.replace(".", "")}. Round to the nearest tenth.`);
+    ][kind];
+    const ask = res.exact ? st.q : ST(`${st.q.plain} Round to the nearest tenth.`, `${st.q.standard} Round to the nearest tenth.`, `${st.q.rich} Round to the nearest tenth.`);
     const cands = res.exact ? [[String(hyp - leg), "subtracts-the-lengths"], [String(hyp + leg), "adds-the-lengths"], [String(v), "forgets-to-take-the-square-root"], [roundSqrt(hyp * hyp + leg * leg, 0).replace(/\.0*$/, ""), "adds-the-squares-instead-of-subtracting"]] : [[String(hyp - leg), "subtracts-the-lengths"], [roundSqrt(hyp * hyp + leg * leg, 1), "adds-the-squares-instead-of-subtracting"], [String(v), "forgets-to-take-the-square-root"], [roundSqrt(v, 0).replace(/\.0*$/, ""), "rounds-to-the-nearest-whole-number"], [roundSqrt(v, 2), "rounds-to-the-wrong-place"]];
     return {
       spec: { type: "leg", leg, hyp, round: res.exact ? 0 : 1 },
@@ -4130,9 +4151,9 @@ function genCloud(rng, kind) {
     if (kind === "pos" || kind === "neg") {
       const m = rng.int(1, 4);
       const noise = Math.max(1, Math.round(m * 1.2));
-      const b = kind === "pos" ? rng.int(1, 8) : rng.int(m * n + 2, m * n + 12);
+      const b = kind === "pos" ? rng.int(noise + 1, noise + 8) : rng.int(m * n + noise + 1, m * n + noise + 12);
       ys = xs.map((x) => (kind === "pos" ? m * x + b : b - m * x) + rng.int(-noise, noise));
-      if (corr2(xs, ys) < 0.85) continue;
+      if (corr2(xs, ys) < 0.85 || ys.some((y) => y < 0)) continue;
     } else if (kind === "none") {
       ys = xs.map(() => rng.int(2, 22));
       if (corr2(xs, ys) > 0.15) continue;
@@ -4259,7 +4280,7 @@ const scPredict = {
     if (find === "x") {
       return {
         spec: { type: "predict", find, m: S(m), b: S(b), y: S(y0) },
-        stem: stemBase(ST(` The ${sc.what} is ${yT} ${sc.y[1]}.`, ` Suppose the predicted ${sc.what} is ${yT} ${sc.y[1]}.`, ` Suppose the predicted ${sc.what} is ${yT} ${sc.y[1]}.`)),
+        stem: stemBase(ST(` The predicted y is ${yT}.`, ` Suppose the predicted value of y is ${yT} ${sc.y[1]}.`, ` Suppose the predicted value of y is ${yT} ${sc.y[1]}.`)),
         ask: ST(`How many ${sc.x[1]} does the line predict?`, `For how many ${sc.x[1]} does the line predict that value?`, `Determine the number of ${sc.x[1]} for which the line predicts that value.`),
         expr: lineStr,
         answer: A(fr(x0), { unit: sc.x[1] }),
@@ -4316,7 +4337,7 @@ const scInterpret = {
       answer: { value: ans, kind: "text" },
       work: ask === "slope" ? [`In y = mx + b, the slope m is the change in y for each 1 that x goes up.`, `Here m is ${T(m, dm)}, so y ${m.n > 0 ? "goes up" : "goes down"} by ${amt} for each extra ${sc.x[0]}.`] : [`In y = mx + b, the y-intercept b is the value of y when x is 0.`, `Here b is ${T(b, dm)}, so the predicted ${sc.what} is ${T(b, dm)} ${sc.y[1]} when there are 0 ${sc.x[1]}.`],
       visual: v,
-      distractors: dist(wrong),
+      distractors: dist(wrong.filter(([t]) => t !== ans).slice(0, 3)),
       hints: H(ask === "slope" ? "The slope is a rate: it compares the change in y with a change of 1 in x." : "The y-intercept is the predicted y when x is 0.", ask === "slope" ? "Say what y does for each extra 1 of x, using the units of the problem." : "Replace x with 0 in the equation and say what the result means, with units."),
     };
   },

@@ -518,14 +518,14 @@ const picturegraph = defineManip({
       return f ? `${f} and a half pictures` : "a half picture";
     };
     const reads = th.cats.map((c, i) => `${c}: ${counts[i]}${s.bar ? "" : ` (${pics(counts[i])})`}`);
-    let t = `${s.bar ? "Bar graph" : `Picture graph. Each picture stands for ${per} ${per === 1 ? th.unit.replace(/s$/, "") : th.unit}`}${s.bar ? "" : ", a half picture for 1"}. ${reads.join(". ")}. Total: ${total}. `;
+    let t = `${s.bar ? "Bar graph" : `Picture graph. Each picture stands for ${per} ${per === 1 ? th.unit.replace(/s$/, "") : th.unit}`}${s.bar || per === 1 ? "" : ", a half picture for 1"}. ${reads.join(". ")}. Total: ${total}. `;
     if (total === 0) t += "Nothing is counted yet.";
     else {
       const top = th.cats.filter((_, i) => counts[i] === max);
       const bottom = th.cats.filter((_, i) => counts[i] === min);
       t += max === min ? "Every category has the same count." : `${list(top)} ${top.length > 1 ? "have" : "has"} the most (${max}); ${list(bottom)} ${bottom.length > 1 ? "have" : "has"} the fewest (${min}), a difference of ${max - min}.`;
     }
-    const spec = s.bar ? { kind: "bar", title: th.title, cats: th.cats, values: counts, scale: 1, orient: "v", showValues: true, axisLabel: th.unit } : { kind: "bar", title: th.title, cats: th.cats, values: counts, scale: per, orient: "v", picture: true, unit: th.unit };
+    const spec = s.bar ? { kind: "bar", title: th.title, cats: th.cats, values: counts, scale: 1, orient: "v", showValues: true, axisLabel: th.unit } : { kind: "bar", title: th.title, cats: th.cats, values: counts, scale: per, orient: "v", picture: true, unit: per === 1 ? th.unit.replace(/s$/, "") : th.unit };
     return { spec, summary: t };
   },
 });
@@ -846,7 +846,7 @@ const dataviz = defineManip({
     choice("display", "Show as", [["lineplot", "Line plot"], ["bar", "Bar graph"]], "lineplot"),
     choice("from", "First value", [["0", "0"], ["1", "1"], ["5", "5"], ["10", "10"]], "1"),
     choice("by", "Values go up by", [["1", "1"], ["2", "2"], ["5", "5"]], "1"),
-    ...counts0.map((c, i) => step(`c${i}`, `How many times value ${i + 1} of 7 occurs`, 0, 8, c)),
+    ...counts0.map((c, i) => step(`c${i}`, `Count at the ${["1st", "2nd", "3rd", "4th", "5th", "6th", "7th"][i]} value`, 0, 8, c)),
   ],
   start: seed,
   model(s) {

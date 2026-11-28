@@ -1464,7 +1464,7 @@ function sentenceStudio(el, opts) {
 }
 
 // ================================================================================================================ 4. Representation Translator
-const REP_NAMES = { story: "the story", words: "the problem", retell: "the other wording", expr: "the expression", visual: "the picture", desc: "the description" };
+const REP_NAMES = { opwords: "the words", story: "the story", words: "the problem", retell: "the other wording", expr: "the expression", visual: "the picture", desc: "the description" };
 const MODES = [
   { id: "story-expr", from: "story", to: "expr", label: "Story to expression", q: "Which expression matches the story?" },
   { id: "expr-story", from: "expr", to: "story", label: "Expression to story", q: "Which story matches the expression?" },
@@ -1473,6 +1473,7 @@ const MODES = [
   { id: "expr-visual", from: "expr", to: "visual", label: "Expression to picture", q: "Which picture matches the expression?" },
   { id: "visual-expr", from: "visual", to: "expr", label: "Picture to expression", q: "Which expression matches the picture?" },
   { id: "visual-desc", from: "visual", to: "desc", label: "Picture or table to description", q: "Which description matches the picture?" },
+  { id: "expr-words", from: "expr", to: "opwords", label: "Expression to math words", q: "Which words say the same thing as the expression?" },
   { id: "story-retell", from: "words", to: "retell", label: "Problem in different words", q: "Which one says the same thing with different words?" },
 ];
 const BUILD = {
@@ -1484,6 +1485,9 @@ const BUILD = {
   placevalue: { args: [{ k: "hundreds", label: "hundreds", min: 0, max: () => 9 }, { k: "tens", label: "tens", min: 0, max: () => 9 }, { k: "ones", label: "ones", min: 0, max: () => 9 }], fixed: [] },
   rect: { args: [{ k: "w", label: "width", min: 1, max: () => 20 }, { k: "h", label: "height", min: 1, max: () => 20 }], fixed: ["unit"], ok: (s) => !s.showArea && !s.showPerimeter },
 };
+const SIMPLE_EXPR = /^\s*(\d+(?:\.\d+)?)\s*([+−×÷])\s*(\d+(?:\.\d+)?)\s*(?:=\s*(?:\?|_+))?\s*$/;
+const OP_WORDS = { "+": "plus", [MINUS]: "minus", "×": "times", "÷": "divided by" };
+const opPhrase = (op, a, b) => `${a} ${OP_WORDS[op]} ${b}`;
 const numSet = (text) => {
   const s = new Set();
   for (const n of numerals(text)) {
@@ -1498,13 +1502,24 @@ function repOf(p, kind, W, W2) {
     case "story":
     case "words":
     case "retell": {
-      const lv = kind === "retell" ? W2 : W;
+      let lv = W;
+      if (kind === "retell") {
+        const mine = textOf(p, W);
+        lv = [W2, "plain", "standard", "rich"].find((x) => x !== W && textOf(p, x) !== mine);
+        if (!lv) return null;
+      }
       if (kind === "story" && !p.stem[lv]) return null;
       const t = textOf(p, lv);
       return { text: t, nums: numerals(t), key: t };
     }
     case "expr":
       return p.expr ? { text: p.expr, nums: numerals(p.expr), key: p.expr } : null;
+    case "opwords": {
+      const m = String(p.expr || "").match(SIMPLE_EXPR);
+      if (!m) return null;
+      const t = opPhrase(m[2], m[1], m[3]);
+      return { text: t, nums: numerals(t), key: t, parts: [m[1], m[2], m[3]] };
+    }
     case "visual":
     case "desc": {
       if (!p.visual) return null;
@@ -1535,6 +1550,13 @@ function translator(el, opts) {
     const cor = repOf(p, mode.to, W, W2);
     if (!src || !cor) return null;
     if (mode.to === "retell" && src.key === cor.key) return null;
+    if (mode.to === "opwords") {
+      const [a, op, b] = cor.parts;
+      const alt = Object.keys(OPS).filter((o) => o !== op).map((o) => opPhrase(o, a, b));
+      if (op === MINUS || op === "÷") alt.unshift(opPhrase(op, b, a));
+      const fs = alt.filter((t) => t !== cor.key).slice(0, 3).map((t) => ({ text: t, nums: numerals(t), key: t }));
+      return fs.length >= 2 ? { src, cor, foils: fs } : null;
+    }
     const foilQs = E.others(p, 6, (q) => {
       const r = repOf(q, mode.to, W, W2);
       if (!r || r.key === cor.key) return false;
@@ -1612,7 +1634,7 @@ function translator(el, opts) {
       }
       n += 1;
       E.touched = true;
-      const specific = numberDiff(src.nums, opts[i].rep.nums, REP_NAMES[mode.from], REP_NAMES[mode.to]) || (mode.to === "retell" ? "That retelling is about a different situation. Check the names and the things." : "The numbers match, but the relationship is different. Check what is happening and which quantity comes first.");
+      const specific = (mode.to === "opwords" ? "The numbers match, but check the operation and the order of the numbers. What does the symbol tell you to do?" : "") || numberDiff(src.nums, opts[i].rep.nums, REP_NAMES[mode.from], REP_NAMES[mode.to]) || (mode.to === "retell" ? "That retelling is about a different situation. Check the names and the things." : "The numbers match, but the relationship is different. Check what is happening and which quantity comes first.");
       if (n === 1) feedback(fb, "try", specific);
       else if (n === 2) feedback(fb, "try", `${specific} Say what each part means in ${REP_NAMES[mode.from]}, then look for it in each choice.`);
       else {

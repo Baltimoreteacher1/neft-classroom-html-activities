@@ -481,7 +481,7 @@ async function browserPart() {
       if (await page.locator('[class*="timer" i], [class*="countdown" i], [id*="timer" i], progress, [role="timer"]').count()) problems.push("a timer element exists");
       if ((await overflow()) > 1) problems.push(`horizontal overflow ${await overflow()}px (round ${st.round})`);
       // Round 4 (or the first later round with a scoreable step): three misses, in order, then a new problem
-      if (missPlan === "pending" && st.round >= 4 && !pk.reason && (pk.type === "custom" ? pk.kind !== "explore" : pk.n >= 4)) {
+      if (missPlan === "pending" && st.round >= 4 && !pk.reason && (pk.type === "custom" ? pk.kind !== "explore" : pk.n >= 3)) {
         missPlan = "done";
         levelBefore = Number(st.level);
         const before = await bodyText();
@@ -506,9 +506,11 @@ async function browserPart() {
         if (levelBefore === 3 && !/friendlier numbers|a little easier/.test(await page.locator(".ml-gm-main").innerText())) problems.push("the lowered level is not said in words");
         else if (levelBefore === 3) sawDown = true;
         pk2 = (await peek()).pk;
-        if (pk2) await wrongTry(pk2, tried);
+        const canThird = pk.type === "custom" || pk.n >= 4;
+        if (pk2 && canThird) await wrongTry(pk2, tried);
         const worked = page.locator(".ml-gm-worked");
-        if (!(await worked.count())) problems.push("the third miss did not show a worked example");
+        if (!canThird) note.push("verdict step has 3 choices: two misses tested, the third-miss worked example is covered by the other games");
+        else if (!(await worked.count())) problems.push("the third miss did not show a worked example");
         else {
           const wt = await worked.innerText();
           if (!/different numbers/i.test(wt)) problems.push("worked example is not labelled as using different numbers");
