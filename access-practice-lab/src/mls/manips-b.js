@@ -243,7 +243,7 @@ const ratiotable = manip({
     if (hrow !== 1) out.push(`The base ratio is ${a} to ${b}: ${nm.a} to ${nm.b}.`);
     out.push(grow === "add" ? "Row k is the base row multiplied by k." : `Each row is the row above multiplied by ${GROW[grow]}.`);
     out.push(vsum(spec));
-    if (hrow !== 1) out.push(`Unit rates: for every 1 ${nm.a} there are ${both(fr(a, b))} ${nm.b}, and for every 1 ${nm.b} there are ${both(fr(a, b))} ${nm.a}. Every row is equivalent to ${a}:${b}.`);
+    if (hrow !== 1) out.push(`Unit rates: for every 1 ${nm.a} there are ${both(fr(b, a))} ${nm.b}, and for every 1 ${nm.b} there are ${both(fr(a, b))} ${nm.a}. Every row is equivalent to ${a}:${b}.`);
     const key = [a, b, n, grow, hrow, hcol].join("|");
     return {
       spec,

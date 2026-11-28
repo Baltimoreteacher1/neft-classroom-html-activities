@@ -92,7 +92,10 @@ function tableRate(rows) {
     need(!eq(R(x), ZERO), "x must not be zero");
     return R(y).div(R(x));
   });
-  need(rs.every((r) => eq(r, rs[0])), "table is not proportional");
+  need(
+    rs.every((r) => eq(r, rs[0])),
+    "table is not proportional",
+  );
   return rs[0];
 }
 const repRate = (rep) => {
@@ -147,7 +150,12 @@ SOLVERS.proportional = (spec) => {
     case "arg-which": {
       const rs = ratiosOf(spec.rows);
       const idx = rs.findIndex((r) => rs.filter((o) => eq(o, r)).length === 1);
-      need(idx >= 0 && rs.filter((r) => eq(r, rs[idx])).length === 1 && rs.filter((r) => !eq(r, rs[idx])).every((r, _i, arr) => eq(r, arr[0])), "no single odd row");
+      need(
+        idx >= 0 &&
+          rs.filter((r) => eq(r, rs[idx])).length === 1 &&
+          rs.filter((r) => !eq(r, rs[idx])).every((r, _i, arr) => eq(r, arr[0])),
+        "no single odd row",
+      );
       return fmt(R(spec.rows[idx][0]));
     }
     case "arg-line":
@@ -217,11 +225,25 @@ SOLVERS.circle = (spec) => {
       return fmt(r);
     }
     case "comp": {
-      if (spec.shape === "hole") return fmt(I(spec.W).mul(I(spec.H)).sub(I(spec.s).mul(I(spec.s))));
-      if (spec.shape === "l") return fmt(I(spec.w1).mul(I(spec.h1)).add(I(spec.w2).mul(I(spec.h2))));
+      if (spec.shape === "hole")
+        return fmt(
+          I(spec.W)
+            .mul(I(spec.H))
+            .sub(I(spec.s).mul(I(spec.s))),
+        );
+      if (spec.shape === "l")
+        return fmt(
+          I(spec.w1)
+            .mul(I(spec.h1))
+            .add(I(spec.w2).mul(I(spec.h2))),
+        );
       if (spec.shape === "semi") {
         const r = I(spec.w).div(I(2));
-        return fmt(I(spec.w).mul(I(spec.h)).add(PI3.mul(r).mul(r).div(I(2))));
+        return fmt(
+          I(spec.w)
+            .mul(I(spec.h))
+            .add(PI3.mul(r).mul(r).div(I(2))),
+        );
       }
       throw new Error("unknown composite shape");
     }
@@ -236,7 +258,10 @@ SOLVERS.circle = (spec) => {
       throw new Error("unknown angle relation");
     }
     case "angle-alg": {
-      const x = I(spec.total).sub(I(spec.c1)).sub(I(spec.c2)).div(I(spec.a1).add(I(spec.a2)));
+      const x = I(spec.total)
+        .sub(I(spec.c1))
+        .sub(I(spec.c2))
+        .div(I(spec.a1).add(I(spec.a2)));
       if (spec.ask === "x") return fmt(x);
       const A1 = I(spec.a1).mul(x).add(I(spec.c1));
       const A2 = I(spec.a2).mul(x).add(I(spec.c2));
@@ -255,14 +280,27 @@ SOLVERS.circle = (spec) => {
 
 // ---------------------------------------------------------------------------------------------------------------- probability
 const DIE_FACES = [1, 2, 3, 4, 5, 6];
-const diePass = (p, f) => (p.op === "gt" ? f > p.v : p.op === "lt" ? f < p.v : p.op === "even" ? f % 2 === 0 : p.op === "odd" ? f % 2 === 1 : p.op === "prime" ? [2, 3, 5].includes(f) : f % p.v === 0);
+const diePass = (p, f) =>
+  p.op === "gt"
+    ? f > p.v
+    : p.op === "lt"
+      ? f < p.v
+      : p.op === "even"
+        ? f % 2 === 0
+        : p.op === "odd"
+          ? f % 2 === 1
+          : p.op === "prime"
+            ? [2, 3, 5].includes(f)
+            : f % p.v === 0;
 const fraction = (fav, total) => new Rat(BigInt(fav), BigInt(total));
 SOLVERS.probability = (spec) => {
   switch (spec.type) {
     case "simple": {
       const entries = Object.entries(spec.counts);
       const total = entries.reduce((a, [, n]) => a + n, 0);
-      const inSet = entries.filter(([c]) => spec.event.set.includes(c)).reduce((a, [, n]) => a + n, 0);
+      const inSet = entries
+        .filter(([c]) => spec.event.set.includes(c))
+        .reduce((a, [, n]) => a + n, 0);
       const fav = spec.event.kind === "in" ? inSet : total - inSet;
       return fmt(fraction(fav, total));
     }
@@ -274,7 +312,8 @@ SOLVERS.probability = (spec) => {
           for (const b of "HT") {
             const heads = (a === "H") + (b === "H");
             tot++;
-            if (spec.event.kind === "heads-eq" ? heads === spec.event.n : heads >= spec.event.n) fav++;
+            if (spec.event.kind === "heads-eq" ? heads === spec.event.n : heads >= spec.event.n)
+              fav++;
           }
       } else if (spec.kind === "coin-die") {
         for (const c of "HT")
@@ -287,16 +326,34 @@ SOLVERS.probability = (spec) => {
           for (const b of DIE_FACES) {
             tot++;
             const ev = spec.event;
-            if (ev.kind === "sum-eq" ? a + b === ev.v : ev.kind === "sum-ge" ? a + b >= ev.v : ev.kind === "sum-lt" ? a + b < ev.v : a === b) fav++;
+            if (
+              ev.kind === "sum-eq"
+                ? a + b === ev.v
+                : ev.kind === "sum-ge"
+                  ? a + b >= ev.v
+                  : ev.kind === "sum-lt"
+                    ? a + b < ev.v
+                    : a === b
+            )
+              fav++;
           }
       } else if (spec.kind === "draws") {
-        const items = Object.entries(spec.counts).flatMap(([c, n]) => Array.from({ length: n }, () => c));
+        const items = Object.entries(spec.counts).flatMap(([c, n]) =>
+          Array.from({ length: n }, () => c),
+        );
         for (let i = 0; i < items.length; i++)
           for (let j = 0; j < items.length; j++) {
             if (!spec.replace && i === j) continue;
             tot++;
             const ev = spec.event;
-            if (ev.kind === "both" ? items[i] === ev.color && items[j] === ev.color : ev.kind === "different" ? items[i] !== items[j] : items[i] === ev.first && items[j] === ev.second) fav++;
+            if (
+              ev.kind === "both"
+                ? items[i] === ev.color && items[j] === ev.color
+                : ev.kind === "different"
+                  ? items[i] !== items[j]
+                  : items[i] === ev.first && items[j] === ev.second
+            )
+              fav++;
           }
       } else throw new Error(`unknown compound kind ${spec.kind}`);
       return fmt(fraction(fav, tot));
@@ -319,7 +376,8 @@ SOLVERS.probability = (spec) => {
 SOLVERS.sampling = (spec) => {
   switch (spec.type) {
     case "estimate": {
-      const share = spec.ask === "yes" ? fraction(spec.k, spec.n) : fraction(spec.n - spec.k, spec.n);
+      const share =
+        spec.ask === "yes" ? fraction(spec.k, spec.n) : fraction(spec.n - spec.k, spec.n);
       return fmt(share.mul(I(spec.N)));
     }
     case "rep":
@@ -343,7 +401,11 @@ SOLVERS.sampling = (spec) => {
 };
 
 // ---------------------------------------------------------------------------------------------------------------- linear equations
-const expandSide = (side) => side.reduce((a, t) => ({ m: a.m.add(R(t.k).mul(R(t.m))), c: a.c.add(R(t.k).mul(R(t.c))) }), { m: ZERO, c: ZERO });
+const expandSide = (side) =>
+  side.reduce((a, t) => ({ m: a.m.add(R(t.k).mul(R(t.m))), c: a.c.add(R(t.k).mul(R(t.c))) }), {
+    m: ZERO,
+    c: ZERO,
+  });
 /** Canonical text of y = mx + b: ASCII signs, a decimal when it terminates, (n/d)x otherwise. */
 const eqString = (m, b) => {
   const t = dtext(m);
@@ -401,7 +463,10 @@ function lineOfRows(rows) {
   const [x2, y2] = pts[1];
   const m = y2.sub(y1).div(x2.sub(x1));
   const b = y1.sub(m.mul(x1));
-  need(pts.every(([x, y]) => eq(y, m.mul(x).add(b))), "rows are not on one line");
+  need(
+    pts.every(([x, y]) => eq(y, m.mul(x).add(b))),
+    "rows are not on one line",
+  );
   return { m, b };
 }
 SOLVERS.functions = (spec) => {
@@ -441,7 +506,10 @@ SOLVERS.functions = (spec) => {
 };
 
 // ---------------------------------------------------------------------------------------------------------------- slope
-const slopeOf = (p1, p2) => R(p2[1]).sub(R(p1[1])).div(R(p2[0]).sub(R(p1[0])));
+const slopeOf = (p1, p2) =>
+  R(p2[1])
+    .sub(R(p1[1]))
+    .div(R(p2[0]).sub(R(p1[0])));
 SOLVERS.slope = (spec) => {
   switch (spec.type) {
     case "two-points":
@@ -494,7 +562,12 @@ SOLVERS.exponents = (spec) => {
   switch (spec.type) {
     case "expo-n": {
       const B = I(spec.base);
-      const V = spec.op === "mul" ? pw(B, spec.a).mul(pw(B, spec.b)) : spec.op === "div" ? pw(B, spec.a).div(pw(B, spec.b)) : pw(pw(B, spec.a), spec.b);
+      const V =
+        spec.op === "mul"
+          ? pw(B, spec.a).mul(pw(B, spec.b))
+          : spec.op === "div"
+            ? pw(B, spec.a).div(pw(B, spec.b))
+            : pw(pw(B, spec.a), spec.b);
       for (let n = -80; n <= 80; n++) if (eq(pw(B, n), V)) return String(n);
       throw new Error("not a power of the base");
     }
@@ -508,11 +581,18 @@ SOLVERS.exponents = (spec) => {
     case "sci-from":
       return fmt(R(spec.m).mul(pw(TEN, spec.e)));
     case "sci-ratio":
-      return fmt(R(spec.a.m).div(R(spec.b.m)).mul(pw(TEN, spec.a.e - spec.b.e)));
+      return fmt(
+        R(spec.a.m)
+          .div(R(spec.b.m))
+          .mul(pw(TEN, spec.a.e - spec.b.e)),
+      );
     case "sci-mul": {
       const a = R(spec.a.m);
       const b = R(spec.b.m);
-      const v = spec.op === "mul" ? a.mul(b).mul(pw(TEN, spec.a.e + spec.b.e)) : a.div(b).mul(pw(TEN, spec.a.e - spec.b.e));
+      const v =
+        spec.op === "mul"
+          ? a.mul(b).mul(pw(TEN, spec.a.e + spec.b.e))
+          : a.div(b).mul(pw(TEN, spec.a.e - spec.b.e));
       return sciString(v);
     }
     default:
@@ -560,7 +640,8 @@ SOLVERS.irrational = (spec) => {
     case "order": {
       const sq = (it) => (it.k === "sqrt" ? R(it.v) : R(it.v).mul(R(it.v)));
       const sorted = [...spec.items].sort((a, b) => cmp(sq(a), sq(b)));
-      for (let i = 1; i < sorted.length; i++) need(cmp(sq(sorted[i]), sq(sorted[i - 1])) !== 0, "tie in the ordering");
+      for (let i = 1; i < sorted.length; i++)
+        need(cmp(sq(sorted[i]), sq(sorted[i - 1])) !== 0, "tie in the ordering");
       return sorted.map((it) => (it.k === "sqrt" ? `√${it.v}` : it.v)).join(", ");
     }
     case "solve":
@@ -589,7 +670,8 @@ function applyStep(st, [x, y]) {
   }
 }
 SOLVERS.transform = (spec) => {
-  if (spec.type === "congruent") return spec.steps.every((s) => s.op !== "dilate" || eq(R(s.k), ONE)) ? "true" : "false";
+  if (spec.type === "congruent")
+    return spec.steps.every((s) => s.op !== "dilate" || eq(R(s.k), ONE)) ? "true" : "false";
   const p = spec.pts[spec.target].map(R);
   const q = spec.steps.reduce((acc, st) => applyStep(st, acc), p);
   return pairOf(q[0], q[1]);
@@ -642,9 +724,15 @@ const sqrtAnswer = (v, round) => {
 SOLVERS.pythag = (spec) => {
   switch (spec.type) {
     case "hyp":
-      return sqrtAnswer(BigInt(spec.a) * BigInt(spec.a) + BigInt(spec.b) * BigInt(spec.b), spec.round);
+      return sqrtAnswer(
+        BigInt(spec.a) * BigInt(spec.a) + BigInt(spec.b) * BigInt(spec.b),
+        spec.round,
+      );
     case "leg":
-      return sqrtAnswer(BigInt(spec.hyp) * BigInt(spec.hyp) - BigInt(spec.leg) * BigInt(spec.leg), spec.round);
+      return sqrtAnswer(
+        BigInt(spec.hyp) * BigInt(spec.hyp) - BigInt(spec.leg) * BigInt(spec.leg),
+        spec.round,
+      );
     case "distance": {
       const dx = BigInt(spec.p2[0]) - BigInt(spec.p1[0]);
       const dy = BigInt(spec.p2[1]) - BigInt(spec.p1[1]);
@@ -693,7 +781,8 @@ SOLVERS.scatter = (spec) => {
     case "interpret": {
       const m = R(spec.m);
       const b = R(spec.b);
-      if (spec.ask === "slope") return `${dtext(abs(m))} ${sign(m) > 0 ? "more" : "fewer"} ${spec.y[1]} for each extra ${spec.x[0]}`;
+      if (spec.ask === "slope")
+        return `${dtext(abs(m))} ${sign(m) > 0 ? "more" : "fewer"} ${spec.y[1]} for each extra ${spec.x[0]}`;
       return `${dtext(b)} ${spec.y[1]} when there are 0 ${spec.x[1]}`;
     }
     case "outlier": {
