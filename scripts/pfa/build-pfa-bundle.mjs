@@ -30,8 +30,15 @@ function css() {
 // Concatenate the shared modules into one module-scoped script: drop import lines and `export`.
 export function clientJs(lite = false) {
   const files = lite
-    ? ["strings.js", "problem-view.js", "client-runtime.js"]
-    : ["generators.js", "math-visuals.js", "strings.js", "problem-view.js", "client-runtime.js"];
+    ? ["strings.js", "problem-view.js", "insight-code.js", "client-runtime.js"]
+    : [
+        "generators.js",
+        "math-visuals.js",
+        "strings.js",
+        "problem-view.js",
+        "insight-code.js",
+        "client-runtime.js",
+      ];
   const parts = files.map((f) => {
     const src = readFileSync(join(LIB, f), "utf8");
     return src
@@ -45,7 +52,7 @@ export function clientJs(lite = false) {
   // Client-drawn SVGs must not reuse the server's mv1..mvN title ids.
   const js = lite
     ? parts.join("\n")
-    : `${parts.slice(0, 4).join("\n")}\nuid = 100000;\n${parts[4]}`;
+    : `${parts.slice(0, -1).join("\n")}\nuid = 100000;\n${parts.at(-1)}`;
   return js.replace(/<\/script/gi, "<\\/script").replace(/\n{2,}/g, "\n");
 }
 
@@ -72,6 +79,27 @@ function data() {
   const taxonomy = JSON.parse(read("data/misconception-taxonomy.json")).taxonomy;
   map.taxonomyLabels = Object.fromEntries(
     Object.entries(taxonomy).map(([k, v]) => [k, { en: v.label, es: v.labelEs || v.label }]),
+  );
+  // Student coaching line (finish card) and teacher "watch for" line (class insights).
+  map.taxonomyStudent = Object.fromEntries(
+    Object.entries(taxonomy)
+      .filter(([, v]) => v.student && v.studentEs)
+      .map(([k, v]) => [k, { en: v.student, es: v.studentEs }]),
+  );
+  map.taxonomyWatch = Object.fromEntries(
+    Object.entries(taxonomy)
+      .filter(([, v]) => v.watchFor)
+      .map(([k, v]) => [k, v.watchFor]),
+  );
+  // Lessons in the order they are TAUGHT (district pacing: unit order from
+  // data/pacing-unit-ranges.json, then lesson number), for spiral review.
+  const pacing = JSON.parse(read("data/pacing-unit-ranges.json"));
+  const unitOrder = pacing.units.map((u) => u.curriculumUnit).filter((u) => Number.isInteger(u));
+  map.sequence = unitOrder.flatMap((u) =>
+    map.lessons
+      .filter((L) => L.unit === u)
+      .sort((a, b) => a.lesson - b.lesson)
+      .map((L) => L.id),
   );
   return { practice, family, map };
 }

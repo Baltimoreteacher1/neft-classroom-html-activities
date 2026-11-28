@@ -292,6 +292,38 @@ All of these reproduce on a clean `origin/main`.
 - **Baltimoreteacher1/neft-classroom-html-activities#234 closed** with a comment. Its content is
   on `main`.
 
+## 10c. Closing the loop: mistake coach, class codes, spiral review (2026-11-28)
+
+Three additions, each closing a loop the pages left open.
+
+- **Mistake-pattern coach.** Every wrong answer that matches a known mistake is recorded (as an
+  index into the misconception taxonomy, so the save stays small: 624 characters for a full 6-6
+  run, against the 4,096 SCORM ceiling). The finish card now names the top one or two in plain
+  words, English and Spanish, with the taxonomy's own student message. "Try one where this mistake
+  is tempting" builds a fresh problem whose wrong answers include that exact mistake. It is offered
+  only for mistakes a generator on the page can actually build; otherwise the button is an ordinary
+  "Try a similar problem" with no claim attached.
+- **Class Insight codes.** The finish card shows a 15-character code (`XXXXX-XXXXX-XXXXX`) holding
+  the lesson, first-try score, confidence, problems to revisit, up to three misconception tags and
+  the spiral-review result, with a CRC-8. It holds no name. A teacher pastes a class's codes (names
+  or other text on the same line are fine) into the new `/practice-hub/insights`, linked from the
+  practice hub. The page shows, per lesson: students, first-try average, average confidence, the
+  score spread, the problems most often missed and the misconceptions ranked, each with the
+  taxonomy's "watch for" teacher move. It decodes in the browser; nothing is sent or stored. Every
+  single-character typo is refused (465 of 465 tested), so a mistyped code is listed as unreadable
+  instead of being read as a different result. "Try with sample codes" fills a made-up class of 24,
+  labelled as sample data.
+- **Spiral review ("Keep it fresh").** Each practice page adds two problems from lessons taught
+  EARLIER in the district pacing order (`data/pacing-unit-ranges.json`: 1, 3, 4, 6, 7, 8, 9, 5, 2,
+  10): the lesson just before and one about six lessons back. They never use the lesson's own
+  generator, never change the score, and carry their own lesson's hints and worked example. 83 of 84
+  lessons get them (1-1 is first in the year). They are screen-only, so the printed set keeps its
+  two-page budget.
+- **Gates.** `validate:pfa` gained REVIEW and CODES with four seeded defects;
+  `tools/pfa/insight-code.test.mjs` (in `npm test`) round-trips 5,000 results; `validate:pfa-browser`
+  drives the whole loop (a deliberate wrong answer, the coach naming it, the code decoding, a typo
+  refused, the Spanish class summary) and runs axe on the finish card and the insights page.
+
 ## 11. Next 10
 
 1. Done in 10b: `/lessons/<id>/homework` stays as it is (decision and reasons in 10b).
