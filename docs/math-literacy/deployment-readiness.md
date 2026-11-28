@@ -9,7 +9,7 @@ On both hosts, in Chromium: `/access-practice-lab/math-literacy` shows the three
 ## Decisions for the owner (Joel)
 
 1. **Route.** The Studio is at `/access-practice-lab/math-literacy`, listed for teachers. On 2026-11-28 Joel approved a teacher-facing alias: `thelanguagepage.com/teachers/math-literacy[/...]` redirects (302) into the lab address, query kept. No other `/teachers/` path on that host is claimed; they still go to eduwonderlab.com (H-24).
-2. **Shell-weight ratchet raised once**, from 29.3 to 29.8 KB gzip, in `data/language-page-perf-budget.json`, with a note. Cause: 34 new import-map entries. Review and decide whether to bundle lab modules instead.
+2. **Shell-weight ratchet raised once**, from 29.3 to 29.8 KB gzip, in `data/language-page-perf-budget.json`, with a note. Cause: 34 new import-map entries. Review and decide whether to bundle lab modules instead. Decision 2026-11-28 (Joel delegated it): the ratchet stays at 29.8 and the lab modules are not bundled now. Bundling the Studio would move its 34 modules out of `src/` and rewire about 20 tests and docs for roughly 0.4 KB gzip, short of the 0.5 KB needed, and changes how the lab loads code in production. Revisit as part of bundling the whole lab.
 3. **Skill ids in URLs use a dash** (`g6-ratios`), not a dot, because static servers read `.ratios` as a file extension.
 4. **Picture descriptions** are always available to assistive technology (see `accessibility-and-performance.md`).
 
