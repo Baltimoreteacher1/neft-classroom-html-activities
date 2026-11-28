@@ -20,6 +20,24 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+// macOS Chromium opens the native popup on ArrowUp/ArrowDown for a closed <select> instead of changing it (Linux changes it). On darwin the
+// change is made the way the keyboard would (selectedIndex, then input + change events) so the checks that follow still run.
+async function pressOnSelect(page, key) {
+  if (process.platform !== "darwin") return page.keyboard.press(key);
+  const moved = await page.evaluate((k) => {
+    const el = document.activeElement;
+    if (!el || el.tagName !== "SELECT") return false;
+    const next = Math.max(0, Math.min(el.options.length - 1, el.selectedIndex + (k === "ArrowUp" ? -1 : 1)));
+    if (next === el.selectedIndex) return true;
+    el.selectedIndex = next;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+    return true;
+  }, key);
+  if (!moved) await page.keyboard.press(key);
+}
+
+
 const require = createRequire(import.meta.url);
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -1857,7 +1875,7 @@ const WALK = {
     await page.keyboard.type("12");
     await page.keyboard.press("Enter");
     await K.expect(/^Yes\./, "the exact answer 12 is accepted from the keyboard");
-    await page.keyboard.press("Control+A");
+    await page.keyboard.press("ControlOrMeta+A");
     await page.keyboard.type("13");
     await page.keyboard.press("Enter");
     await K.expect(/^Not yet\./, "a wrong answer gets a hint");
@@ -1972,7 +1990,7 @@ const WALK = {
   },
   async statviz(page, K) {
     await K.tab("#mb-statviz-data");
-    await page.keyboard.press("Control+A");
+    await page.keyboard.press("ControlOrMeta+A");
     await page.keyboard.type("1, 2, 3, 4, 5, 6, 7, 8, 100");
     await page.keyboard.press("Enter");
     await K.expect(
@@ -2013,7 +2031,7 @@ async function runBrowser() {
   const srv = await serve();
   const base = `http://127.0.0.1:${srv.address().port}`;
   const browser = await chromium.launch({
-    executablePath: "/opt/pw-browsers/chromium",
+    executablePath: process.env.PW_CHROMIUM_PATH || "/opt/pw-browsers/chromium",
     args: ["--no-sandbox"],
   });
   try {
@@ -2065,7 +2083,7 @@ async function runBrowser() {
           async select(cid, key, n) {
             if (!(await this.tab(`#man-${id}-${cid}`))) return;
             const before = await live(page);
-            for (let i = 0; i < n; i++) await page.keyboard.press(key);
+            for (let i = 0; i < n; i++) await pressOnSelect(page, key);
             await page.waitForTimeout(30);
             const after = await live(page);
             check(

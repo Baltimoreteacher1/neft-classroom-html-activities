@@ -14,6 +14,24 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { JSDOM } from "jsdom";
 
+// macOS Chromium opens the native popup on ArrowUp/ArrowDown for a closed <select> instead of changing it (Linux changes it). On darwin the
+// change is made the way the keyboard would (selectedIndex, then input + change events) so the checks that follow still run.
+async function pressOnSelect(page, key) {
+  if (process.platform !== "darwin") return page.keyboard.press(key);
+  const moved = await page.evaluate((k) => {
+    const el = document.activeElement;
+    if (!el || el.tagName !== "SELECT") return false;
+    const next = Math.max(0, Math.min(el.options.length - 1, el.selectedIndex + (k === "ArrowUp" ? -1 : 1)));
+    if (next === el.selectedIndex) return true;
+    el.selectedIndex = next;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+    return true;
+  }, key);
+  if (!moved) await page.keyboard.press(key);
+}
+
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LAB = path.join(ROOT, "access-practice-lab");
 const argv = process.argv.slice(2);
@@ -1424,7 +1442,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
 
   if (chromium) {
     const browser = await chromium.launch({
-      executablePath: "/opt/pw-browsers/chromium",
+      executablePath: process.env.PW_CHROMIUM_PATH || "/opt/pw-browsers/chromium",
       args: ["--no-sandbox"],
     });
     const ctx = await browser.newContext({ viewport: { width: 375, height: 800 } });
@@ -1509,7 +1527,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
           const lo = Number(a.min);
           const hi = Number(a.max);
           const target = cur >= hi ? Math.max(lo, cur - 1) : cur + 1; // a small typed change, so the walk stays in valid states
-          await page.keyboard.press("Control+A");
+          await page.keyboard.press("ControlOrMeta+A");
           await page.keyboard.type(String(target));
           await page.keyboard.press("Tab");
           did = true;
@@ -1519,7 +1537,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
             await page.keyboard.press("Tab");
             continue;
           }
-          await page.keyboard.press(a.optIndex >= a.optCount - 1 ? "ArrowUp" : "ArrowDown");
+          await pressOnSelect(page, a.optIndex >= a.optCount - 1 ? "ArrowUp" : "ArrowDown");
           did = true;
           log.push(`select ${a.ctl}`);
           await page.keyboard.press("Tab");
@@ -1704,11 +1722,11 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
       await page.evaluate(() => window.mountManip("coordinate"));
       await tabIntoStage();
       await tabTo((x) => x.ctl === "x");
-      await press("Control+A");
+      await press("ControlOrMeta+A");
       await page.keyboard.type("7");
       await press("Tab", 2); // + button of x? -> field y is after its two buttons
       const yField = await tabTo((x) => x.ctl === "y");
-      await press("Control+A");
+      await press("ControlOrMeta+A");
       await page.keyboard.type("2");
       await press("Tab");
       const add = await tabTo((x) => x.act === "add");
@@ -1733,7 +1751,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
       await page.evaluate(() => window.mountManip("bonds"));
       await tabIntoStage();
       await tabTo((x) => x.ctl === "guess");
-      await press("Control+A");
+      await press("ControlOrMeta+A");
       await page.keyboard.type("6");
       await press("Tab");
       await tabTo((x) => x.type === "checkbox" && x.ctl === "check");
@@ -1741,7 +1759,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
       await page.waitForTimeout(40);
       const yes = await summaryOf();
       await tabTo((x) => x.ctl === "guess");
-      await press("Control+A");
+      await press("ControlOrMeta+A");
       await page.keyboard.type("5");
       await press("Tab");
       await page.waitForTimeout(40);
@@ -1756,7 +1774,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
       await page.evaluate(() => window.mountManip("decimalgrid"));
       await tabIntoStage();
       await tabTo((x) => x.ctl === "tenths");
-      await press("Control+A");
+      await press("ControlOrMeta+A");
       await page.keyboard.type("5");
       await press("Tab");
       const s = await summaryOf();

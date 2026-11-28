@@ -3091,7 +3091,7 @@ main{width:1200px;padding:16px;box-sizing:border-box}h2{font-size:18px;margin:18
   try {
     const { chromium } = require("playwright");
     const browser = await chromium.launch({
-      executablePath: "/opt/pw-browsers/chromium",
+      executablePath: process.env.PW_CHROMIUM_PATH || "/opt/pw-browsers/chromium",
       args: ["--no-sandbox"],
     });
     const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });

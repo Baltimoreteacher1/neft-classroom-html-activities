@@ -229,7 +229,7 @@ check(
 // ── (a) python-docx / python-pptx ───────────────────────────────────────────
 
 const PY = String.raw`
-import sys, json, zipfile, posixpath, re
+import os, sys, json, zipfile, posixpath, re
 from lxml import etree
 import docx
 from docx.oxml.ns import qn
@@ -248,6 +248,9 @@ def font(size, bold=False, italic=False):
     if k not in FONT:
         style = ("Bold" if bold else "") + ("Italic" if italic else "")
         path = "/usr/share/fonts/truetype/liberation/LiberationSans-%s.ttf" % (style or "Regular")
+        if not os.path.exists(path):
+            # Arial is metric-compatible with Liberation Sans (macOS has Arial, not Liberation)
+            path = "/System/Library/Fonts/Supplemental/Arial%s.ttf" % ((" " + (("Bold " if bold else "") + ("Italic" if italic else "")).strip()) if style else "")
         FONT[k] = ImageFont.truetype(path, size * 4)
     return FONT[k]
 
@@ -614,7 +617,7 @@ void pngJobs;
 
 const { chromium } = await import("playwright");
 const browser = await chromium.launch({
-  executablePath: "/opt/pw-browsers/chromium",
+  executablePath: process.env.PW_CHROMIUM_PATH || "/opt/pw-browsers/chromium",
   args: ["--no-sandbox"],
 });
 const consoleErrors = [];
