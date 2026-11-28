@@ -8,7 +8,7 @@ On both hosts, in Chromium: `/access-practice-lab/math-literacy` shows the three
 
 ## Decisions for the owner (Joel)
 
-1. **Route.** The Studio is at `/access-practice-lab/math-literacy`, listed for teachers. thelanguagepage.com redirects paths not on its allow-list to eduwonderlab.com, and adding a path changes the public route contract, so a `/teachers/math-literacy/` alias was **not** added. Decide whether you want one (H-24).
+1. **Route.** The Studio is at `/access-practice-lab/math-literacy`, listed for teachers. On 2026-11-28 Joel approved a teacher-facing alias: `thelanguagepage.com/teachers/math-literacy[/...]` redirects (302) into the lab address, query kept. No other `/teachers/` path on that host is claimed; they still go to eduwonderlab.com (H-24).
 2. **Shell-weight ratchet raised once**, from 29.3 to 29.8 KB gzip, in `data/language-page-perf-budget.json`, with a note. Cause: 34 new import-map entries. Review and decide whether to bundle lab modules instead.
 3. **Skill ids in URLs use a dash** (`g6-ratios`), not a dot, because static servers read `.ratios` as a file extension.
 4. **Picture descriptions** are always available to assistive technology (see `accessibility-and-performance.md`).

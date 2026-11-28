@@ -177,6 +177,18 @@ await t("Activity Studio addresses redirect into the lab: /activity-studio and a
   assert.equal(at("https://thelanguagepage.com/do/../etc").status, 308);
 });
 
+await t("/teachers/math-literacy opens the Math Literacy Studio inside the lab; other /teachers/ paths still leave", () => {
+  const home = at("https://thelanguagepage.com/teachers/math-literacy/");
+  assert.equal(home.kind, "redirect");
+  assert.equal(home.location, "https://thelanguagepage.com/access-practice-lab/math-literacy");
+  const deep = at("https://thelanguagepage.com/teachers/math-literacy/skill/g6-ratios?support=more");
+  assert.equal(deep.location, "https://thelanguagepage.com/access-practice-lab/math-literacy/skill/g6-ratios?support=more");
+  const other = at("https://thelanguagepage.com/teachers/");
+  assert.equal(other.status, 308);
+  assert.equal(other.location, "https://eduwonderlab.com/teachers/");
+  assert.equal(at("https://thelanguagepage.com/teachers/math-literacy-x/").status, 308);
+});
+
 await t("/twr and its sets redirect into the lab, keeping queries", () => {
   const hub = at("https://thelanguagepage.com/twr?grades=2-3");
   assert.equal(hub.status, 302);

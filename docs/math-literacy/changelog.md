@@ -21,3 +21,7 @@ Grades 1 to 8, reached from the Teachers area at `/access-practice-lab/math-lite
 ### Known limits
 
 See `deployment-readiness.md`.
+
+## 2026-11-28: teacher alias
+
+- `thelanguagepage.com/teachers/math-literacy[/...]` redirects to `/access-practice-lab/math-literacy[/...]` (`functions/_lib/language-page.js`, tested in `functions/language-page-host.test.mjs`). Other `/teachers/` paths are unchanged.
