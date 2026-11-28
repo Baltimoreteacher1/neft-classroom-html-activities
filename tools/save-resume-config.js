@@ -55,6 +55,7 @@ export const SKIP_TOPLEVEL = new Set([
   "dashboard",
   "teacher-data-dashboard",
   "teacher-tools",
+  "teachers", // teacher resource area (Math Literacy): hubs hold no state; grade pages self-persist to localStorage ml:v1:<grade> with their own Start over
   "neft-school-hub",
   "neft-data-studio",
   "results-worker",

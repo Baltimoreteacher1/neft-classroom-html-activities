@@ -1,0 +1,1121 @@
+/**
+ * content.mjs — the authored plan for the Math Literacy & Fluency program, grades K-8.
+ *
+ * Six units per grade. Each unit names its domain, five vocabulary words (term | Spanish | student definition |
+ * example), one fact-fluency generator, one skill-fluency generator, one word-problem generator and a Math Talk
+ * prompt with a sentence frame. Numbers are never typed here: gen.mjs computes every problem and
+ * tools/validate-math-literacy.mjs recomputes every key. The program follows the widely used grade-level domains of
+ * K-8 mathematics and is not tied to any district's curriculum or pacing.
+ */
+
+const V = (rows) =>
+  rows.map((s) => {
+    const [term, es, def, ex] = s.split("|");
+    return { term, es, def, ex };
+  });
+
+export const LIT_STRATEGY = [
+  {
+    id: "question",
+    name: "Find the question",
+    move: "Read the last sentence first. Say the question in your own words.",
+  },
+  {
+    id: "numbers",
+    name: "Numbers and units",
+    move: "Circle each number. Underline what it counts.",
+  },
+  {
+    id: "retell",
+    name: "Retell it",
+    move: "Close your eyes or look away. Tell a partner what happened in the story.",
+  },
+  {
+    id: "extra",
+    name: "Spot extra information",
+    move: "Cross out any number the question does not need.",
+  },
+  {
+    id: "draw",
+    name: "Draw or label it",
+    move: "Make a quick picture or diagram. Label every part with its unit.",
+  },
+  {
+    id: "justify",
+    name: "Explain and check",
+    move: "Say why your answer makes sense. Check it with a different method.",
+  },
+];
+
+export const GRADES = [
+  {
+    id: "k",
+    label: "Kindergarten",
+    short: "K",
+    band: "K-2",
+    fluencyGoal: "Fluently add and subtract within 5, and know the partners of 10.",
+    blurb:
+      "Counting, comparing, teen numbers, adding and taking away to 10, shapes and measuring, all with simple stories and plenty of talking.",
+    units: [
+      {
+        t: "Count and Compare",
+        dom: "Counting & Cardinality",
+        fact: ["add", { max: 5 }],
+        skill: ["compare", { max: 20 }],
+        wp: ["join", { max: 10 }],
+        v: V([
+          "number|número|A word or symbol that tells how many.|7 tells how many.",
+          "count|contar|Say numbers in order to tell how many.|1, 2, 3, 4",
+          "more|más|A greater amount.|6 is more than 4.",
+          "fewer|menos|A smaller amount.|3 is fewer than 5.",
+          "same|igual|The same amount.|4 and 4 are the same.",
+        ]),
+        talk: [
+          "How do you know which number is greater? Tell a partner.",
+          "I know ___ is greater than ___ because ___.",
+        ],
+      },
+      {
+        t: "Teen Numbers",
+        dom: "Number & Operations in Base Ten",
+        fact: ["add", { max: 5 }],
+        skill: ["tenOnes", { lo: 11, hi: 19 }],
+        wp: ["join", { max: 10 }],
+        v: V([
+          "ten|diez|A group of 10.|10 is 1 ten.",
+          "ones|unidades|Single things left after making a ten.|13 is 1 ten and 3 ones.",
+          "teen number|número entre 11 y 19|A number from 11 to 19.|14 is a teen number.",
+          "group|grupo|Things that are together.|a group of 10",
+          "ten frame|marco de diez|A box with 10 spaces that shows a number.|7 dots in a ten frame",
+        ]),
+        talk: [
+          "Pick a teen number. Tell how many tens and how many ones.",
+          "___ is ___ ten and ___ ones.",
+        ],
+      },
+      {
+        t: "Add to 10",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["makeN", { t: 5 }],
+        skill: ["next", { max: 18 }],
+        wp: ["join", { max: 10 }],
+        v: V([
+          "add|sumar|Put groups together.|3 and 2 more.",
+          "plus|más|The sign + that means add.|2 + 1",
+          "equals|es igual a|The sign = that means the same as.|2 + 1 = 3",
+          "total|total|How many in all.|The total is 5.",
+          "equation|ecuación|A number sentence with an equals sign.|4 + 1 = 5",
+        ]),
+        talk: [
+          "Tell a story that goes with 3 + 2 = 5.",
+          "First there were ___. Then ___ more came. Now there are ___.",
+        ],
+      },
+      {
+        t: "Take Away",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["sub", { max: 5 }],
+        skill: ["sub", { max: 10 }],
+        wp: ["separate", { max: 10 }],
+        v: V([
+          "subtract|restar|Take away part of a group.|5 − 2",
+          "minus|menos|The sign − that means take away.|5 − 1",
+          "left|quedan|What is left after taking away.|3 are left.",
+          "difference|diferencia|The number that is left when you subtract.|In 5 − 2 = 3, the difference is 3.",
+          "take away|quitar|Remove some from a group.|Take away 2.",
+        ]),
+        talk: [
+          "Tell a take-away story for 6 − 2.",
+          "There were ___. ___ went away. Now ___ are left.",
+        ],
+      },
+      {
+        t: "Shapes and Where They Are",
+        dom: "Geometry",
+        fact: ["add", { max: 10 }],
+        skill: ["shapeSides", {}],
+        wp: ["shapeStory", {}],
+        v: V([
+          "side|lado|A straight edge of a shape.|A triangle has 3 sides.",
+          "corner|esquina|A point where two sides meet.|A square has 4 corners.",
+          "triangle|triángulo|A shape with 3 sides.|The roof shape.",
+          "square|cuadrado|A shape with 4 equal sides.|A tile.",
+          "circle|círculo|A round shape with no sides.|A coin.",
+        ]),
+        talk: [
+          "How are a square and a triangle alike? How are they different?",
+          "They are alike because ___. They are different because ___.",
+        ],
+      },
+      {
+        t: "Measure and Compare",
+        dom: "Measurement & Data",
+        fact: ["add", { max: 10 }],
+        skill: ["compareLen", {}],
+        wp: ["compare", { max: 10 }],
+        v: V([
+          "long|largo|Great in length.|A long rope.",
+          "short|corto|Small in length.|A short pencil.",
+          "longer|más largo|Having more length.|The rope is longer than the pencil.",
+          "shorter|más corto|Having less length.|The pencil is shorter.",
+          "unit|unidad|One piece used to measure.|The ribbon is 6 units long.",
+        ]),
+        talk: [
+          "Find two things. Which is longer? How do you know?",
+          "The ___ is longer than the ___ because ___.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "1",
+    label: "Grade 1",
+    short: "1",
+    band: "K-2",
+    fluencyGoal:
+      "Fluently add and subtract within 10, and add and subtract within 20 using strategies.",
+    blurb:
+      "Addition and subtraction stories within 20, tens and ones, adding within 100, and telling time, shapes and data with the words to explain them.",
+    units: [
+      {
+        t: "Add Within 10",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["add", { max: 10 }],
+        skill: ["makeN", { t: 10 }],
+        wp: ["join", { max: 10 }],
+        v: V([
+          "addend|sumando|A number you add.|In 3 + 4, 3 and 4 are addends.",
+          "sum|suma|The answer when you add.|3 + 4 = 7. The sum is 7.",
+          "doubles|dobles|Adding a number to itself.|4 + 4",
+          "make ten|formar diez|Add to reach 10.|7 + 3 makes ten.",
+          "order|orden|Addends can switch places and the sum stays the same.|3 + 4 = 4 + 3",
+        ]),
+        talk: [
+          "Show two ways to make 8. How do you know both work?",
+          "___ + ___ = 8 and ___ + ___ = 8 because ___.",
+        ],
+      },
+      {
+        t: "Subtract Within 10",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["sub", { max: 10 }],
+        skill: ["missSub", { max: 10 }],
+        wp: ["separate", { max: 10 }],
+        v: V([
+          "subtract|restar|Take away to find what is left.|8 − 3",
+          "difference|diferencia|The answer when you subtract.|8 − 3 = 5. The difference is 5.",
+          "fact family|familia de operaciones|Add and subtract facts that use the same numbers.|3, 5, 8: 3 + 5 = 8, 8 − 5 = 3",
+          "missing number|número que falta|A number you need to find.|8 − ___ = 5",
+          "inverse|inversa|An operation that undoes another.|Subtract undoes add.",
+        ]),
+        talk: [
+          "How can adding help you subtract 9 − 4?",
+          "I think of ___ + ___ = ___, so 9 − 4 = ___.",
+        ],
+      },
+      {
+        t: "Tens and Ones",
+        dom: "Number & Operations in Base Ten",
+        fact: ["add", { max: 10 }],
+        skill: ["tensOnesTotal", { maxTens: 9 }],
+        wp: ["join", { max: 20 }],
+        v: V([
+          "tens|decenas|Groups of 10.|3 tens is 30.",
+          "ones|unidades|Single units.|34 is 3 tens and 4 ones.",
+          "digit|dígito|One of the symbols 0 to 9.|The digits in 52 are 5 and 2.",
+          "place value|valor posicional|What a digit is worth because of where it is.|In 52, the 5 is worth 50.",
+          "compare|comparar|Tell which number is greater or less.|52 is greater than 25.",
+        ]),
+        talk: [
+          "Explain why 52 and 25 are different numbers.",
+          "In 52 the ___ is in the tens place, so it is worth ___.",
+        ],
+      },
+      {
+        t: "Add and Subtract Within 20",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["add", { max: 20 }],
+        skill: ["sub", { max: 20 }],
+        wp: ["compare", { max: 20 }],
+        v: V([
+          "strategy|estrategia|A plan for solving a problem.|Count on, make ten, or use doubles.",
+          "count on|contar hacia adelante|Start at one number and count up.|8 + 3: say 9, 10, 11.",
+          "compare|comparar|Find how much more or less.|9 and 5: 4 more.",
+          "more than|más que|Greater than another amount.|9 is 4 more than 5.",
+          "fewer than|menos que|Less than another amount.|5 is 4 fewer than 9.",
+        ]),
+        talk: ["Pick a strategy for 8 + 6. Why did you choose it?", "I chose ___ because ___."],
+      },
+      {
+        t: "Add Within 100",
+        dom: "Number & Operations in Base Ten",
+        fact: ["sub", { max: 10 }],
+        skill: ["addTens", { max: 69 }],
+        wp: ["join", { max: 20 }],
+        v: V([
+          "add tens|sumar decenas|Add 10, 20, or 30 to a number.|34 + 20 = 54",
+          "ten more|diez más|The number 10 greater.|45 is ten more than 35.",
+          "ten less|diez menos|The number 10 smaller.|25 is ten less than 35.",
+          "regroup|reagrupar|Trade 10 ones for 1 ten.|10 ones becomes 1 ten.",
+          "equation|ecuación|A number sentence with an equals sign.|34 + 20 = 54",
+        ]),
+        talk: [
+          "What changes when you add 20 to 34? What stays the same?",
+          "The ___ digit changes because ___. The ___ digit stays the same.",
+        ],
+      },
+      {
+        t: "Time, Shapes, and Data",
+        dom: "Measurement & Data",
+        fact: ["add", { max: 20 }],
+        skill: ["clockHour", {}],
+        wp: ["join", { max: 20 }],
+        v: V([
+          "hour hand|manecilla de las horas|The short hand on a clock.|It points to the hour.",
+          "minute hand|minutero|The long hand on a clock.|It points to 12 for o'clock.",
+          "o'clock|en punto|The exact hour.|3 o'clock",
+          "half past|y media|30 minutes after the hour.|Half past 3 is 3:30.",
+          "tally mark|marca de conteo|A line that helps count one.|Five marks make a group.",
+        ]),
+        talk: [
+          "Tell a partner what time you wake up and how you read it on a clock.",
+          "I wake up at ___. The short hand points to ___ and the long hand points to ___.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "2",
+    label: "Grade 2",
+    short: "2",
+    band: "K-2",
+    fluencyGoal:
+      "Fluently add and subtract within 20 from memory, and add and subtract within 100.",
+    blurb:
+      "Fact fluency within 20, place value to 1,000, adding and subtracting within 100 and 1,000, plus money, time and equal groups.",
+    units: [
+      {
+        t: "Fluency Within 20",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["add", { max: 20 }],
+        skill: ["sub", { max: 20 }],
+        wp: ["separate", { max: 20 }],
+        v: V([
+          "fluently|con fluidez|Quickly and correctly without a struggle.|I know 7 + 8 = 15.",
+          "even|par|A number you can split into two equal groups.|8 is even.",
+          "odd|impar|A number with one left over when split into two equal groups.|7 is odd.",
+          "related facts|operaciones relacionadas|Facts that use the same three numbers.|8 + 6 = 14 and 14 − 6 = 8",
+          "unknown|incógnita|A number we do not know yet.|8 + ___ = 14",
+        ]),
+        talk: ["How do you know 7 is odd and 8 is even?", "___ is odd because ___ left over."],
+      },
+      {
+        t: "Place Value to 1,000",
+        dom: "Number & Operations in Base Ten",
+        fact: ["sub", { max: 20 }],
+        skill: ["expanded", {}],
+        wp: ["join", { max: 20 }],
+        v: V([
+          "hundreds|centenas|Groups of 100.|3 hundreds is 300.",
+          "expanded form|forma desarrollada|A number written as the sum of its place values.|352 = 300 + 50 + 2",
+          "standard form|forma estándar|A number written with digits.|352",
+          "word form|forma escrita|A number written in words.|three hundred fifty-two",
+          "greater than|mayor que|The symbol > that points to the smaller number.|352 > 325",
+        ]),
+        talk: [
+          "Write 352 three ways. Why do all three mean the same number?",
+          "352 is ___ in expanded form and ___ in word form.",
+        ],
+      },
+      {
+        t: "Add Within 100",
+        dom: "Number & Operations in Base Ten",
+        fact: ["add", { max: 20 }],
+        skill: ["add2d", { regroup: true }],
+        wp: ["join", { max: 20 }],
+        v: V([
+          "regroup|reagrupar|Trade 10 ones for 1 ten.|18 ones is 1 ten and 8 ones.",
+          "sum|suma|The answer to an addition problem.|47 + 25 = 72",
+          "addend|sumando|A number you add.|47 and 25 are addends.",
+          "estimate|estimar|Find an answer that is close.|47 + 25 is about 70.",
+          "check|comprobar|Make sure the answer makes sense.|72 is close to 70.",
+        ]),
+        talk: [
+          "Explain how you regrouped to solve 47 + 25.",
+          "First I added the ___. I had ___ ones, so I regrouped ___.",
+        ],
+      },
+      {
+        t: "Subtract Within 100",
+        dom: "Number & Operations in Base Ten",
+        fact: ["sub", { max: 20 }],
+        skill: ["sub2d", { regroup: true }],
+        wp: ["separate", { max: 20 }],
+        v: V([
+          "subtract|restar|Take away to find what is left.|72 − 25",
+          "difference|diferencia|The answer to a subtraction problem.|72 − 25 = 47",
+          "regroup|reagrupar|Trade 1 ten for 10 ones.|1 ten becomes 10 ones.",
+          "compare|comparar|Tell how much more or less.|72 is 47 more than 25.",
+          "inverse operation|operación inversa|An operation that undoes another.|Add to check subtraction.",
+        ]),
+        talk: [
+          "How can you use addition to check 72 − 25 = 47?",
+          "I check by adding ___ + ___. That equals ___.",
+        ],
+      },
+      {
+        t: "Add and Subtract Within 1,000",
+        dom: "Number & Operations in Base Ten",
+        fact: ["add", { max: 20 }],
+        skill: ["add3d", { max: 499 }],
+        wp: ["twoStep", {}],
+        v: V([
+          "hundreds place|lugar de las centenas|The third digit from the right.|In 352, the 3 is in the hundreds place.",
+          "mental math|cálculo mental|Solving in your head.|300 + 200 = 500",
+          "two-step problem|problema de dos pasos|A problem that needs two operations.|Add, then subtract.",
+          "operation|operación|A math action such as add or subtract.|+ and − are operations.",
+          "reasonable|razonable|Makes sense.|An answer near the estimate is reasonable.",
+        ]),
+        talk: [
+          "Tell why your answer is reasonable for 348 + 215.",
+          "My answer is reasonable because it is close to ___.",
+        ],
+      },
+      {
+        t: "Money, Arrays, and Data",
+        dom: "Measurement & Data",
+        fact: ["add", { max: 20 }],
+        skill: ["coins", {}],
+        wp: ["groups", { lo: 2, hi: 5 }],
+        v: V([
+          "coin|moneda|A piece of money.|A dime is a coin.",
+          "cent|centavo|A small amount of money.|One penny is 1 cent.",
+          "array|matriz|Objects in rows and columns.|3 rows of 4",
+          "row|fila|A line that goes across.|The array has 3 rows.",
+          "column|columna|A line that goes up and down.|The array has 4 columns.",
+        ]),
+        talk: [
+          "How can an array help you count equal groups?",
+          "There are ___ rows of ___. That makes ___ in all.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "3",
+    label: "Grade 3",
+    short: "3",
+    band: "3-5",
+    fluencyGoal:
+      "Fluently multiply and divide within 100 and know all products of two one-digit numbers from memory.",
+    blurb:
+      "Multiplication and division meaning and facts, fractions as numbers, area and perimeter, rounding and multi-digit addition and subtraction.",
+    units: [
+      {
+        t: "Meaning of Multiplication",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["mul", { lo: 0, hi: 5 }],
+        skill: ["arrayTotal", { hi: 6 }],
+        wp: ["groups", { lo: 2, hi: 6 }],
+        v: V([
+          "factor|factor|A number you multiply.|In 3 × 4, 3 and 4 are factors.",
+          "product|producto|The answer to a multiplication problem.|3 × 4 = 12. The product is 12.",
+          "equal groups|grupos iguales|Groups with the same number in each.|4 bags with 3 apples each",
+          "array|matriz|Objects in equal rows and columns.|3 rows of 4",
+          "multiply|multiplicar|Find the total of equal groups.|3 × 4",
+        ]),
+        talk: [
+          "Explain how an array shows 3 × 4.",
+          "The array has ___ rows with ___ in each row, so ___ × ___ = ___.",
+        ],
+      },
+      {
+        t: "Meaning of Division",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["div", { lo: 1, hi: 5 }],
+        skill: ["missMul", { lo: 2, hi: 5 }],
+        wp: ["share", { lo: 2, hi: 5 }],
+        v: V([
+          "divide|dividir|Split into equal groups.|12 ÷ 3",
+          "quotient|cociente|The answer to a division problem.|12 ÷ 3 = 4. The quotient is 4.",
+          "dividend|dividendo|The number being divided.|In 12 ÷ 3, the dividend is 12.",
+          "divisor|divisor|The number you divide by.|In 12 ÷ 3, the divisor is 3.",
+          "equal share|parte igual|One of the same-size parts.|Each friend gets an equal share.",
+        ]),
+        talk: [
+          "Tell how multiplication helps you solve 12 ÷ 3.",
+          "I know ___ × ___ = ___, so ___ ÷ ___ = ___.",
+        ],
+      },
+      {
+        t: "Multiplication and Division Facts",
+        dom: "Operations & Algebraic Thinking",
+        fact: ["mul", { lo: 2, hi: 10 }],
+        skill: ["div", { lo: 2, hi: 10 }],
+        wp: ["groups", { lo: 3, hi: 9 }],
+        v: V([
+          "fact family|familia de operaciones|Multiplication and division facts with the same numbers.|3, 4, 12",
+          "commutative property|propiedad conmutativa|You can multiply in any order.|3 × 4 = 4 × 3",
+          "distributive property|propiedad distributiva|Break a factor into parts to multiply.|7 × 6 = 7 × 5 + 7 × 1",
+          "multiple|múltiplo|A product of a number and a counting number.|12 is a multiple of 3.",
+          "unknown factor|factor desconocido|The missing number in a multiplication equation.|3 × ___ = 12",
+        ]),
+        talk: [
+          "Explain a strategy that helps you with 7 × 6.",
+          "I break ___ into ___ and ___. Then I multiply and add.",
+        ],
+      },
+      {
+        t: "Fractions as Numbers",
+        dom: "Number & Operations—Fractions",
+        fact: ["mul", { lo: 2, hi: 10 }],
+        skill: ["fracCompare", { dens: [2, 3, 4, 6, 8] }],
+        wp: ["fractionOfSet", {}],
+        v: V([
+          "fraction|fracción|A number that names equal parts of a whole.|3/4",
+          "numerator|numerador|The top number. It tells how many parts we have.|In 3/4, the numerator is 3.",
+          "denominator|denominador|The bottom number. It tells how many equal parts in the whole.|In 3/4, the denominator is 4.",
+          "equivalent|equivalente|Having the same value.|1/2 and 2/4 are equivalent.",
+          "unit fraction|fracción unitaria|A fraction with a numerator of 1.|1/4",
+        ]),
+        talk: [
+          "How do you know 3/4 is greater than 1/4?",
+          "Both fractions have ___ equal parts, and ___ parts is more than ___ part.",
+        ],
+      },
+      {
+        t: "Area and Perimeter",
+        dom: "Measurement & Data",
+        fact: ["mul", { lo: 2, hi: 10 }],
+        skill: ["area", {}],
+        wp: ["perimeter", {}],
+        v: V([
+          "area|área|The amount of flat space inside a shape.|3 × 4 = 12 square units",
+          "perimeter|perímetro|The distance around a shape.|2 + 2 + 3 + 3 = 10",
+          "square unit|unidad cuadrada|A square that measures area.|1 unit by 1 unit",
+          "length|longitud|How long something is.|The rectangle is 4 units long.",
+          "width|ancho|How wide something is.|The rectangle is 3 units wide.",
+        ]),
+        talk: [
+          "Tell how area and perimeter are different.",
+          "Area measures ___. Perimeter measures ___.",
+        ],
+      },
+      {
+        t: "Rounding and Multi-Digit Add/Subtract",
+        dom: "Number & Operations in Base Ten",
+        fact: ["div", { lo: 2, hi: 10 }],
+        skill: ["round", { place: 10, max: 999 }],
+        wp: ["twoStep", {}],
+        v: V([
+          "round|redondear|Replace a number with a close, easier number.|47 rounds to 50.",
+          "nearest|más cercano|Closest.|Round to the nearest ten.",
+          "estimate|estimar|Find an answer that is close.|198 + 304 is about 500.",
+          "sum|suma|The answer to an addition problem.|198 + 304 = 502",
+          "reasonable|razonable|Makes sense.|502 is reasonable because it is near 500.",
+        ]),
+        talk: ["Why do we estimate before we add?", "Estimating helps me check ___ because ___."],
+      },
+    ],
+  },
+  {
+    id: "4",
+    label: "Grade 4",
+    short: "4",
+    band: "3-5",
+    fluencyGoal:
+      "Fluently add and subtract multi-digit whole numbers, and multiply up to a four-digit number by a one-digit number.",
+    blurb:
+      "Place value to one million, multi-digit multiplication and division, equivalent fractions, adding and subtracting fractions, and decimals.",
+    units: [
+      {
+        t: "Place Value and Rounding",
+        dom: "Number & Operations in Base Ten",
+        fact: ["mul", { lo: 2, hi: 12 }],
+        skill: ["round", { place: 1000, max: 99999 }],
+        wp: ["twoStep", { big: true }],
+        v: V([
+          "place value|valor posicional|The value of a digit because of its position.|In 4,300, the 4 is worth 4,000.",
+          "period|período|A group of three digits in a big number.|Thousands period",
+          "round|redondear|Replace a number with a nearby friendly number.|4,382 rounds to 4,000.",
+          "compare|comparar|Decide which number is greater or less.|52,300 > 52,030",
+          "standard form|forma estándar|A number written with digits.|52,300",
+        ]),
+        talk: [
+          "Explain how you round 4,382 to the nearest thousand.",
+          "I look at the ___ place. It is ___, so I round ___.",
+        ],
+      },
+      {
+        t: "Add and Subtract Large Numbers",
+        dom: "Number & Operations in Base Ten",
+        fact: ["mul", { lo: 2, hi: 12 }],
+        skill: ["addBig", { digits: 5 }],
+        wp: ["twoStep", { big: true }],
+        v: V([
+          "algorithm|algoritmo|Steps that always work to solve a problem.|The standard way to add.",
+          "regroup|reagrupar|Trade between place values.|1 thousand becomes 10 hundreds.",
+          "sum|suma|The answer to addition.|23,450 + 12,300",
+          "difference|diferencia|The answer to subtraction.|23,450 − 12,300",
+          "estimate|estimar|Find an answer that is close.|Round, then add.",
+        ]),
+        talk: [
+          "Explain how you know your sum is reasonable.",
+          "I rounded to ___ and got about ___. My answer is close.",
+        ],
+      },
+      {
+        t: "Multiply Multi-Digit Numbers",
+        dom: "Number & Operations in Base Ten",
+        fact: ["mul", { lo: 3, hi: 12 }],
+        skill: ["mulMD", { a: [12, 99], b: [2, 9] }],
+        wp: ["groups", { lo: 6, hi: 12 }],
+        v: V([
+          "partial products|productos parciales|Products you find for each place value, then add.|24 × 3 = 20 × 3 + 4 × 3",
+          "area model|modelo de área|A rectangle split into parts to multiply.|Split 24 into 20 and 4.",
+          "factor|factor|A number you multiply.|24 and 3 are factors.",
+          "product|producto|The answer to multiplication.|72",
+          "digit|dígito|One symbol from 0 to 9.|24 has two digits.",
+        ]),
+        talk: [
+          "Show how an area model finds 24 × 3.",
+          "I split ___ into ___ and ___. I multiply each part and add.",
+        ],
+      },
+      {
+        t: "Divide With Remainders",
+        dom: "Number & Operations in Base Ten",
+        fact: ["div", { lo: 2, hi: 12 }],
+        skill: ["divRem", { divisor: [3, 9], q: [10, 60] }],
+        wp: ["shareRem", {}],
+        v: V([
+          "remainder|residuo|The amount left over after dividing.|17 ÷ 5 = 3 remainder 2",
+          "dividend|dividendo|The number being divided.|In 17 ÷ 5, the dividend is 17.",
+          "divisor|divisor|The number you divide by.|In 17 ÷ 5, the divisor is 5.",
+          "quotient|cociente|The answer to division.|3 remainder 2",
+          "interpret|interpretar|Decide what an answer means in the story.|Ignore the remainder when only full groups count.",
+        ]),
+        talk: [
+          "Tell what the remainder means in a story.",
+          "The remainder is ___, which means ___ are left over.",
+        ],
+      },
+      {
+        t: "Equivalent Fractions and Fraction Addition",
+        dom: "Number & Operations—Fractions",
+        fact: ["mul", { lo: 3, hi: 12 }],
+        skill: ["fracAddLike", { dens: [4, 5, 6, 8, 10] }],
+        wp: ["fracAddWord", {}],
+        v: V([
+          "equivalent fractions|fracciones equivalentes|Fractions that name the same amount.|1/2 = 2/4",
+          "simplify|simplificar|Write a fraction with smaller numbers.|2/4 simplifies to 1/2.",
+          "mixed number|número mixto|A whole number and a fraction together.|1 1/2",
+          "improper fraction|fracción impropia|A fraction with a numerator greater than the denominator.|3/2",
+          "common denominator|denominador común|The same denominator.|2/6 + 3/6",
+        ]),
+        talk: [
+          "Why can you add the numerators but not the denominators?",
+          "The pieces are the same size, so I add ___ and keep the ___.",
+        ],
+      },
+      {
+        t: "Decimals",
+        dom: "Number & Operations—Fractions",
+        fact: ["div", { lo: 2, hi: 12 }],
+        skill: ["decAdd", { places: 1 }],
+        wp: ["money", {}],
+        v: V([
+          "decimal|decimal|A number with a point that shows parts of a whole.|0.5",
+          "tenths|décimos|Ten equal parts of one whole.|0.3 is 3 tenths.",
+          "hundredths|centésimos|One hundred equal parts of one whole.|0.07 is 7 hundredths.",
+          "decimal point|punto decimal|The dot that separates whole numbers from parts.|3.5",
+          "equivalent|equivalente|Having the same value.|0.5 = 0.50",
+        ]),
+        talk: [
+          "Explain why 0.5 and 0.50 are equal.",
+          "Both show ___ out of ___ parts, so they are ___.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "5",
+    label: "Grade 5",
+    short: "5",
+    band: "3-5",
+    fluencyGoal:
+      "Fluently multiply multi-digit whole numbers using the standard algorithm, and add, subtract, multiply and divide decimals.",
+    blurb:
+      "Decimal place value, multi-digit multiplication and division, fractions with unlike denominators, multiplying and dividing fractions, volume, and expressions.",
+    units: [
+      {
+        t: "Decimal Place Value",
+        dom: "Number & Operations in Base Ten",
+        fact: ["mul", { lo: 4, hi: 12 }],
+        skill: ["powerOfTen", {}],
+        wp: ["money", {}],
+        v: V([
+          "power of 10|potencia de 10|10, 100, 1,000, and so on.|10 × 10 × 10 = 1,000",
+          "exponent|exponente|A small raised number that tells how many times to multiply.|10³",
+          "thousandths|milésimos|One thousand equal parts of a whole.|0.001",
+          "round|redondear|Replace a number with a close number.|3.46 rounds to 3.5.",
+          "compare|comparar|Decide which is greater.|0.45 > 0.405",
+        ]),
+        talk: [
+          "What happens to a number when you multiply by 10? Why?",
+          "Each digit moves ___ place to the ___.",
+        ],
+      },
+      {
+        t: "Multiply and Divide Whole Numbers",
+        dom: "Number & Operations in Base Ten",
+        fact: ["mul", { lo: 6, hi: 12 }],
+        skill: ["mulMD", { a: [100, 999], b: [11, 49] }],
+        wp: ["groups", { lo: 8, hi: 25 }],
+        v: V([
+          "standard algorithm|algoritmo estándar|The usual written steps for an operation.|Multiply by ones, then tens, then add.",
+          "partial quotient|cociente parcial|A part of the answer found in one step of division.|Subtract friendly multiples.",
+          "estimate|estimar|Find a close answer.|389 × 24 is about 8,000.",
+          "dividend|dividendo|The number being divided.|In 156 ÷ 12, 156.",
+          "divisor|divisor|The number you divide by.|In 156 ÷ 12, 12.",
+        ]),
+        talk: [
+          "How do you check a multiplication answer with an estimate?",
+          "I rounded to ___ × ___ and got about ___, which is close to my answer.",
+        ],
+      },
+      {
+        t: "Add and Subtract Fractions",
+        dom: "Number & Operations—Fractions",
+        fact: ["mul", { lo: 6, hi: 12 }],
+        skill: ["fracAddUnlike", {}],
+        wp: ["fracAddWord", {}],
+        v: V([
+          "unlike denominators|denominadores distintos|Denominators that are not the same.|1/2 and 1/3",
+          "common denominator|denominador común|A shared denominator.|3/6 and 2/6",
+          "equivalent fraction|fracción equivalente|A fraction with the same value.|1/2 = 3/6",
+          "least common multiple|mínimo común múltiplo|The smallest shared multiple.|The LCM of 2 and 3 is 6.",
+          "benchmark|valor de referencia|A friendly fraction such as 1/2.|Is 5/8 more or less than 1/2?",
+        ]),
+        talk: [
+          "Why do you need a common denominator to add 1/2 and 1/3?",
+          "I rewrite both fractions with ___ so the pieces are the ___ size.",
+        ],
+      },
+      {
+        t: "Multiply and Divide Fractions",
+        dom: "Number & Operations—Fractions",
+        fact: ["div", { lo: 3, hi: 12 }],
+        skill: ["fracMul", {}],
+        wp: ["fracMulWord", {}],
+        v: V([
+          "multiply|multiplicar|Find a part of a part, or repeated groups.|1/2 × 1/3",
+          "product|producto|The answer to multiplication.|1/6",
+          "scale|escalar|To make larger or smaller by a factor.|Multiplying by a fraction less than 1 makes a smaller product.",
+          "unit fraction|fracción unitaria|A fraction with a numerator of 1.|1/5",
+          "reciprocal|recíproco|A number that multiplies with another to make 1.|2/3 and 3/2",
+        ]),
+        talk: [
+          "Tell why 1/2 × 1/3 is smaller than 1/3.",
+          "Taking ___ of a number makes it ___ because ___.",
+        ],
+      },
+      {
+        t: "Volume and Measurement",
+        dom: "Measurement & Data",
+        fact: ["div", { lo: 3, hi: 12 }],
+        skill: ["volume", {}],
+        wp: ["area", {}],
+        v: V([
+          "volume|volumen|The amount of space inside a solid shape.|2 × 3 × 4 = 24 cubic units",
+          "cubic unit|unidad cúbica|A cube that measures volume.|1 unit by 1 unit by 1 unit",
+          "length|longitud|How long.|4 units",
+          "width|ancho|How wide.|3 units",
+          "height|altura|How tall.|2 units",
+        ]),
+        talk: ["Explain how volume is different from area.", "Area covers ___. Volume fills ___."],
+      },
+      {
+        t: "Decimal Operations",
+        dom: "Number & Operations in Base Ten",
+        fact: ["div", { lo: 3, hi: 12 }],
+        skill: ["decMul", {}],
+        wp: ["money", {}],
+        v: V([
+          "decimal|decimal|A number with a point showing parts of a whole.|2.5",
+          "tenths|décimos|Ten equal parts of one whole.|0.4",
+          "hundredths|centésimos|One hundred equal parts of a whole.|0.04",
+          "product|producto|The answer to multiplication.|2.5 × 3 = 7.5",
+          "quotient|cociente|The answer to division.|7.5 ÷ 3 = 2.5",
+        ]),
+        talk: [
+          "Explain where you place the decimal point when you multiply 2.5 × 3.",
+          "I multiply as if there is no decimal. Then I place ___ decimal place because ___.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "6",
+    label: "Grade 6",
+    short: "6",
+    band: "6-8",
+    fluencyGoal:
+      "Fluently divide multi-digit numbers and compute with multi-digit decimals using the standard algorithm.",
+    blurb:
+      "Ratios and rates, dividing fractions, percents, integers and rational numbers, expressions and equations, and area and statistics.",
+    units: [
+      {
+        t: "Ratios and Rates",
+        dom: "Ratios & Proportional Relationships",
+        fact: ["mul", { lo: 6, hi: 12 }],
+        skill: ["unitRate", {}],
+        wp: ["ratioRecipe", {}],
+        v: V([
+          "ratio|razón|A comparison of two quantities.|3 cups of blue to 2 cups of white",
+          "rate|tasa|A ratio that compares different units.|60 miles per hour",
+          "unit rate|tasa unitaria|A rate with 1 as the second quantity.|12 miles per hour",
+          "equivalent ratios|razones equivalentes|Ratios that name the same comparison.|2:3 and 4:6",
+          "per|por|For each.|$3 per pound",
+        ]),
+        talk: [
+          "Explain how you know 2:3 and 4:6 are equivalent ratios.",
+          "I multiplied both numbers by ___, so the ratios are ___.",
+        ],
+      },
+      {
+        t: "Fractions and Decimal Division",
+        dom: "The Number System",
+        fact: ["div", { lo: 4, hi: 12 }],
+        skill: ["fracDiv", {}],
+        wp: ["fracMulWord", {}],
+        v: V([
+          "reciprocal|recíproco|A number that multiplies with another to make 1.|The reciprocal of 3/4 is 4/3.",
+          "quotient|cociente|The answer to division.|1/2 ÷ 1/4 = 2",
+          "dividend|dividendo|The number being divided.|In 1/2 ÷ 1/4, the dividend is 1/2.",
+          "divisor|divisor|The number you divide by.|In 1/2 ÷ 1/4, the divisor is 1/4.",
+          "mixed number|número mixto|A whole number plus a fraction.|2 1/2",
+        ]),
+        talk: [
+          "Explain why dividing by 1/4 gives a greater number.",
+          "There are ___ fourths in one whole, so ___ ÷ 1/4 = ___.",
+        ],
+      },
+      {
+        t: "Percents",
+        dom: "Ratios & Proportional Relationships",
+        fact: ["mul", { lo: 6, hi: 12 }],
+        skill: ["percentOf", {}],
+        wp: ["percentDiscount", {}],
+        v: V([
+          "percent|porcentaje|A ratio out of 100.|25% means 25 out of 100.",
+          "part|parte|The piece of the whole.|25 is part of 100.",
+          "whole|total|The full amount.|100 is the whole.",
+          "discount|descuento|An amount taken off the price.|20% off",
+          "benchmark percent|porcentaje de referencia|A friendly percent such as 10%, 25%, 50%.|10% of 80 is 8.",
+        ]),
+        talk: [
+          "Explain how to find 10% of a number and then 20%.",
+          "10% of ___ is ___, so 20% is ___.",
+        ],
+      },
+      {
+        t: "Integers and Rational Numbers",
+        dom: "The Number System",
+        fact: ["mul", { lo: 6, hi: 12 }],
+        skill: ["intAdd", { max: 12 }],
+        wp: ["temp", {}],
+        v: V([
+          "integer|entero|A whole number or its opposite.|−3, 0, 5",
+          "opposite|opuesto|Numbers the same distance from 0 on the other side.|The opposite of 4 is −4.",
+          "absolute value|valor absoluto|The distance a number is from 0.|The absolute value of −7 is 7.",
+          "negative number|número negativo|A number less than 0.|−5",
+          "rational number|número racional|A number that can be written as a fraction.|1/2, −3, 0.75",
+        ]),
+        talk: [
+          "Explain why −8 is less than −3.",
+          "On a number line, −8 is ___ of −3, so −8 is ___.",
+        ],
+      },
+      {
+        t: "Expressions and Equations",
+        dom: "Expressions & Equations",
+        fact: ["div", { lo: 4, hi: 12 }],
+        skill: ["oneStepEq", {}],
+        wp: ["equation", {}],
+        v: V([
+          "variable|variable|A letter that stands for a number.|x",
+          "expression|expresión|Numbers, variables, and operations with no equals sign.|3x + 2",
+          "equation|ecuación|A statement that two things are equal.|3x + 2 = 11",
+          "solve|resolver|Find the value that makes an equation true.|x = 3",
+          "inverse operation|operación inversa|The operation that undoes another.|Divide undoes multiply.",
+        ]),
+        talk: [
+          "Explain how you solve 3x = 27 and check your answer.",
+          "I use the ___ operation. I ___ both sides by ___. Then I check by ___.",
+        ],
+      },
+      {
+        t: "Area, Volume, and Statistics",
+        dom: "Statistics & Probability",
+        fact: ["mul", { lo: 6, hi: 12 }],
+        skill: ["mean", {}],
+        wp: ["meanWord", {}],
+        v: V([
+          "mean|media|The balance point of data. Add all values and divide by how many.|The mean of 2, 4, 6 is 4.",
+          "median|mediana|The middle value when data are in order.|The median of 1, 3, 9 is 3.",
+          "range|rango|The greatest value minus the least.|9 − 1 = 8",
+          "data set|conjunto de datos|A collection of numbers or facts.|Quiz scores",
+          "outlier|valor atípico|A value far from the others.|In 3, 4, 5, 40, the 40 is an outlier.",
+        ]),
+        talk: [
+          "Explain what the mean tells you about a data set.",
+          "The mean is ___. It tells me the ___ if all values were ___.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "7",
+    label: "Grade 7",
+    short: "7",
+    band: "6-8",
+    fluencyGoal:
+      "Fluently add, subtract, multiply and divide rational numbers, and solve two-step equations.",
+    blurb:
+      "Proportional relationships, percent applications, rational number operations, expressions and equations, geometry, and probability.",
+    units: [
+      {
+        t: "Proportional Relationships",
+        dom: "Ratios & Proportional Relationships",
+        fact: ["mul", { lo: 6, hi: 12 }],
+        skill: ["proportion", {}],
+        wp: ["unitPrice", {}],
+        v: V([
+          "proportion|proporción|An equation that says two ratios are equal.|2/3 = 4/6",
+          "constant of proportionality|constante de proporcionalidad|The unit rate in a proportional relationship.|y = 3x, constant 3",
+          "unit rate|tasa unitaria|A rate for one unit.|$4 per pound",
+          "cross products|productos cruzados|Products found by multiplying across an equal sign.|2 × 6 = 3 × 4",
+          "proportional|proporcional|Having a constant ratio.|Cost and pounds at $4 each",
+        ]),
+        talk: [
+          "Explain how you know a table shows a proportional relationship.",
+          "Every ratio of ___ to ___ is ___, so it is proportional.",
+        ],
+      },
+      {
+        t: "Percent Applications",
+        dom: "Ratios & Proportional Relationships",
+        fact: ["mul", { lo: 6, hi: 12 }],
+        skill: ["fracToPercent", {}],
+        wp: ["tip", {}],
+        v: V([
+          "percent increase|aumento porcentual|How much a quantity grows, as a percent of the start.|40 to 50 is a 25% increase.",
+          "percent decrease|disminución porcentual|How much a quantity falls, as a percent of the start.|50 to 40 is a 20% decrease.",
+          "markup|margen de ganancia|The amount added to a cost to make a price.|a 20% markup",
+          "tax|impuesto|Money added to a price for the government.|6% sales tax",
+          "tip|propina|Extra money for a service.|a 15% tip",
+        ]),
+        talk: [
+          "Explain how to find a total price with tax.",
+          "I find ___% of the price, then I ___ it to the price.",
+        ],
+      },
+      {
+        t: "Rational Number Operations",
+        dom: "The Number System",
+        fact: ["mul", { lo: 7, hi: 12 }],
+        skill: ["intMul", { max: 9 }],
+        wp: ["temp", {}],
+        v: V([
+          "rational number|número racional|A number that can be written as a fraction of two integers.|−3/4",
+          "opposite|opuesto|The same distance from 0 on the other side.|3 and −3",
+          "additive inverse|inverso aditivo|A number that adds with another to make 0.|5 + (−5) = 0",
+          "absolute value|valor absoluto|The distance from 0.|The absolute value of −5 is 5.",
+          "terminating decimal|decimal exacto|A decimal that ends.|0.25",
+        ]),
+        talk: [
+          "Explain the rule for the sign of a product of two negatives.",
+          "A negative times a negative is ___ because ___.",
+        ],
+      },
+      {
+        t: "Expressions and Equations",
+        dom: "Expressions & Equations",
+        fact: ["div", { lo: 6, hi: 12 }],
+        skill: ["twoStepEq", {}],
+        wp: ["twoStepEqWord", {}],
+        v: V([
+          "coefficient|coeficiente|The number multiplied by a variable.|In 5x, the coefficient is 5.",
+          "term|término|A number, variable, or product in an expression.|In 5x + 2, 5x and 2 are terms.",
+          "like terms|términos semejantes|Terms with the same variable part.|3x and 5x",
+          "inequality|desigualdad|A statement that compares using <, >, ≤, or ≥.|x + 2 > 5",
+          "distribute|distribuir|Multiply a factor across a sum.|2(x + 3) = 2x + 6",
+        ]),
+        talk: [
+          "Explain each step in solving 3x + 5 = 20.",
+          "First I ___ both sides. Then I ___ both sides.",
+        ],
+      },
+      {
+        t: "Geometry",
+        dom: "Geometry",
+        fact: ["mul", { lo: 7, hi: 12 }],
+        skill: ["angles", {}],
+        wp: ["area", {}],
+        v: V([
+          "complementary|complementarios|Two angles that add to 90°.|30° and 60°",
+          "supplementary|suplementarios|Two angles that add to 180°.|110° and 70°",
+          "circumference|circunferencia|The distance around a circle.|C = 2πr",
+          "radius|radio|The distance from the center to the circle.|3 cm",
+          "scale drawing|dibujo a escala|A drawing that is proportional to a real object.|1 inch = 5 feet",
+        ]),
+        talk: [
+          "Explain how you find the other angle of a supplementary pair.",
+          "The angles add to ___, so the other angle is ___ − ___.",
+        ],
+      },
+      {
+        t: "Probability and Statistics",
+        dom: "Statistics & Probability",
+        fact: ["div", { lo: 6, hi: 12 }],
+        skill: ["probability", {}],
+        wp: ["probWord", {}],
+        v: V([
+          "probability|probabilidad|A number from 0 to 1 that tells how likely an event is.|1/2",
+          "outcome|resultado|One possible result.|Heads is one outcome.",
+          "event|suceso|A set of outcomes.|Rolling an even number",
+          "sample|muestra|A part of a group used to learn about the whole.|30 students",
+          "random|al azar|Every outcome is equally likely to be chosen.|Pick a tile without looking.",
+        ]),
+        talk: [
+          "Explain what a probability of 0 and a probability of 1 mean.",
+          "A probability of 0 means ___. A probability of 1 means ___.",
+        ],
+      },
+    ],
+  },
+  {
+    id: "8",
+    label: "Grade 8",
+    short: "8",
+    band: "6-8",
+    fluencyGoal:
+      "Fluently solve linear equations in one variable and compute with integer exponents and square roots.",
+    blurb:
+      "Exponents and scientific notation, linear equations, functions and slope, the Pythagorean theorem, and volume.",
+    units: [
+      {
+        t: "Exponents and Scientific Notation",
+        dom: "Expressions & Equations",
+        fact: ["mul", { lo: 7, hi: 12 }],
+        skill: ["expRule", {}],
+        wp: ["sciWord", {}],
+        v: V([
+          "exponent|exponente|A raised number that tells how many times a base is a factor.|2³ = 2 × 2 × 2",
+          "base|base|The number that is multiplied by itself.|In 2³, the base is 2.",
+          "scientific notation|notación científica|A number written as a number from 1 to 10 times a power of 10.|4,500 = 4.5 × 10³",
+          "power|potencia|A number written with an exponent.|10⁴",
+          "product rule|regla del producto|Add exponents when you multiply powers with the same base.|2³ × 2⁴ = 2⁷",
+        ]),
+        talk: [
+          "Explain why 2³ × 2⁴ = 2⁷.",
+          "Three 2s times four 2s is ___ 2s, so the exponent is ___.",
+        ],
+      },
+      {
+        t: "Linear Equations",
+        dom: "Expressions & Equations",
+        fact: ["div", { lo: 7, hi: 12 }],
+        skill: ["bothSidesEq", {}],
+        wp: ["twoStepEqWord", {}],
+        v: V([
+          "linear equation|ecuación lineal|An equation whose graph is a straight line.|y = 2x + 1",
+          "variable|variable|A letter that stands for a number.|x",
+          "solution|solución|A value that makes an equation true.|x = 3",
+          "inverse operations|operaciones inversas|Operations that undo each other.|Add and subtract",
+          "infinitely many|infinitas|Too many solutions to count.|2x + 2 = 2(x + 1)",
+        ]),
+        talk: [
+          "Explain how you know your solution makes the equation true.",
+          "I substitute ___ for x. Both sides equal ___.",
+        ],
+      },
+      {
+        t: "Functions and Slope",
+        dom: "Functions",
+        fact: ["mul", { lo: 7, hi: 12 }],
+        skill: ["slope", {}],
+        wp: ["slopeWord", {}],
+        v: V([
+          "function|función|A rule that gives exactly one output for each input.|y = 2x + 1",
+          "slope|pendiente|How steep a line is: rise over run.|rise 4, run 2, slope 2",
+          "y-intercept|intersección con el eje y|Where a line crosses the y-axis.|In y = 2x + 1, it is 1.",
+          "rate of change|tasa de cambio|How fast one quantity changes compared with another.|5 cm per week",
+          "input|entrada|The value you put into a function.|x",
+        ]),
+        talk: [
+          "Explain what the slope and y-intercept mean in a story.",
+          "The slope ___ tells me the ___. The y-intercept ___ tells me the ___.",
+        ],
+      },
+      {
+        t: "Pythagorean Theorem",
+        dom: "Geometry",
+        fact: ["div", { lo: 7, hi: 12 }],
+        skill: ["pythag", {}],
+        wp: ["pythagWord", {}],
+        v: V([
+          "right triangle|triángulo rectángulo|A triangle with one 90° angle.|A corner of a square",
+          "hypotenuse|hipotenusa|The longest side, opposite the right angle.|c in a² + b² = c²",
+          "leg|cateto|One of the two shorter sides of a right triangle.|a and b",
+          "square root|raíz cuadrada|A number that multiplies by itself to make another.|√25 = 5",
+          "theorem|teorema|A statement that has been proven.|a² + b² = c²",
+        ]),
+        talk: [
+          "Explain how you know which side is the hypotenuse.",
+          "The hypotenuse is opposite the ___ angle and is the ___ side.",
+        ],
+      },
+      {
+        t: "Volume",
+        dom: "Geometry",
+        fact: ["mul", { lo: 8, hi: 12 }],
+        skill: ["cylVolume", {}],
+        wp: ["cylWord", {}],
+        v: V([
+          "cylinder|cilindro|A solid with two circle bases.|A can",
+          "radius|radio|Distance from the center of a circle to its edge.|3 cm",
+          "height|altura|The distance between the bases.|10 cm",
+          "volume|volumen|The amount of space inside a solid.|V = πr²h",
+          "in terms of π|en términos de π|Leave π as a symbol in the answer.|36π",
+        ]),
+        talk: [
+          "Explain what each part of V = πr²h stands for.",
+          "π r² is the area of the ___, and h is the ___.",
+        ],
+      },
+      {
+        t: "Data, Lines, and Prediction",
+        dom: "Statistics & Probability",
+        fact: ["mul", { lo: 8, hi: 12 }],
+        skill: ["linearEval", {}],
+        wp: ["slopeWord", {}],
+        v: V([
+          "scatter plot|diagrama de dispersión|A graph of ordered pairs.|Height and shoe size",
+          "trend|tendencia|The overall direction of data.|Points that rise show a positive trend.",
+          "line of best fit|recta de ajuste|A line that follows the trend of the data.|y = 2x + 1",
+          "predict|predecir|Use a pattern to say what comes next.|Use the line to predict y.",
+          "outlier|valor atípico|A point far from the others.|A point off the trend.",
+        ]),
+        talk: [
+          "Explain how you use a line to make a prediction.",
+          "I put ___ in for x. The line says y is ___, so I predict ___.",
+        ],
+      },
+    ],
+  },
+];
+
+export const GRADE_BY_ID = Object.fromEntries(GRADES.map((g) => [g.id, g]));
+export const ORDER = GRADES.map((g) => g.id);
