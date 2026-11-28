@@ -251,6 +251,7 @@ export const DIAGRAM_KINDS = Object.freeze([
   "histogram",
   "timeline",
   "foodweb",
+  "tenframe",
 ]);
 /** Size caps (the same numbers as CAPS in x/diagram-kit.js; the tests assert they agree). */
 export const DIAGRAM_LIMITS = Object.freeze({
@@ -336,6 +337,7 @@ const DIAGRAM_SPEC = {
       label: dtext(e?.label, 60),
     })),
   }),
+  tenframe: (s) => ({ count: dnum(s.count), add: dnum(s.add) }),
   foodweb: (s) => ({
     relationships: dlist(s.relationships, DIAGRAM_LIMITS.relationships, (r) => ({
       eats: dtext(r?.eats, 28),

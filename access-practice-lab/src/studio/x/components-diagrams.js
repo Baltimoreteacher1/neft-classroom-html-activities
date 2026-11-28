@@ -16,6 +16,7 @@ const SAMPLE = {
   histogram: [T("Histogram", "Histograma"), T("Groups a list of numbers into equal-width bins.", "Agrupa una lista de números en intervalos del mismo ancho."), ["math", "data", "statistics"], { title: "Heights", unit: "", values: [52, 55, 56, 58, 59, 60, 61, 61, 63, 66, 68, 70], binWidth: 5 }],
   timeline: [T("Timeline", "Línea de tiempo"), T("Places events in order along a scaled line.", "Coloca sucesos en orden sobre una línea a escala."), ["history", "social studies", "sequencing"], { events: [{ year: 1900, label: "First event" }, { year: 1925, label: "Second event" }, { year: 1950, label: "Third event" }] }],
   foodweb: [T("Food web", "Red alimentaria"), T("Shows who eats whom in a habitat.", "Muestra quién come a quién en un hábitat."), ["science", "ecosystems"], { relationships: [{ eats: "grasshopper", eaten: "grass" }, { eats: "frog", eaten: "grasshopper" }, { eats: "snake", eaten: "frog" }] }],
+  tenframe: [T("Ten frame", "Marco de diez"), T("Shows counters in rows of five for counting and adding to 20.", "Muestra marcadores en filas de cinco para contar y sumar hasta 20."), ["math", "counting", "early grades"], { count: 7, add: 3 }],
 };
 
 const make = (kind) => {

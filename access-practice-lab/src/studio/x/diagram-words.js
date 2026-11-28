@@ -31,6 +31,8 @@ const TOP = {
   w: ["The width", "El ancho"],
   h: ["The height", "La altura"],
   binWidth: ["The interval width", "El ancho del intervalo"],
+  count: ["The number of counters", "El número de marcadores"],
+  add: ["The number of counters to add", "El número de marcadores para sumar"],
 };
 
 /** "Row 3, number" / "The title" for the field a generator message starts with, as [en, es]. */

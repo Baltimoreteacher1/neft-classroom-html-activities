@@ -4,6 +4,7 @@
 //   fractionModelSvg  prismSvg  tapeDiagramSvg  coordinatePlaneSvg   (diagrams-models.js)
 //   barChartSvg  dotPlotSvg  histogramSvg                            (diagrams-charts.js)
 //   timelineSvg  foodWebSvg                                          (diagrams-graphs.js)
+//   tenFrameSvg                                                      (diagrams-counting.js)
 //
 // Every function takes `lang: "en" | "es"` (default "en") for the text drawn inside the figure and the <title>/<desc>.
 // Bad input throws a DiagramError with a stable `code` and a message a teacher can read.
@@ -16,6 +17,7 @@ import { safeImageSrc } from "../core/schema.js";
 import { both } from "./diagram-kit.js";
 
 export { barChartSvg, dotPlotSvg, histogramSvg } from "./diagrams-charts.js";
+export { tenFrameSvg } from "./diagrams-counting.js";
 export { foodWebSvg, timelineSvg } from "./diagrams-graphs.js";
 export {
   coordinatePlaneSvg,

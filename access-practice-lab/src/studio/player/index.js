@@ -18,6 +18,8 @@ import { createSpeaker } from "./speech.js";
 import { makeTranslator } from "./strings.js";
 import { h, rich } from "./util.js";
 
+const EARLY_GRADES = ["K", "1", "2"];
+
 const PREFS_KEY = "lp-activity-player:prefs";
 const LANGS = ["en", "es", "bi"];
 
@@ -57,6 +59,8 @@ export function mountPlayer(root, input, opts = {}) {
   const canSpanish = activity.supports.spanish;
 
   const el = h("div", { class: "sp-root", "data-kind": activity.kind, "data-template": activity.template, lang: "en" });
+  // Kindergarten to grade 2: bigger words, bigger pictures and bigger targets for small hands (formats.css).
+  if (EARLY_GRADES.includes(activity.context?.grade)) el.setAttribute("data-band", "k2");
   applyLook(el, activity.look);
   const live = h("div", { class: "sp-sr", role: "status", "aria-live": "polite", "aria-atomic": "true" });
   const header = h("header", { class: "sp-header" });

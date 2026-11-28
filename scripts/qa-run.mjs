@@ -722,6 +722,12 @@ const COVERAGE = [
   // CREATE (Project Studio): the coverage sweep, browser e2e and export lab need a server, Chromium or LibreOffice, so they
   // are run by hand before shipping (see access-practice-lab/CREATE.md); the unit test is in `npm test`.
   [/^tools\/create-(coverage|e2e|export-lab)\.mjs$/, ["test", "validate:js-syntax", "check"]],
+  // ACTIVITY STUDIO: the customize-adapter sweep's shared helpers (read by the adapter tests in `npm test`) and the K-2
+  // starters browser run (needs Chromium; run by hand before shipping: `node tools/studio-k2-e2e.mjs`).
+  [
+    /^tools\/(studio-customize-adapters-helpers|studio-k2-e2e)\.mjs$/,
+    ["test", "validate:js-syntax", "check"],
+  ],
   [
     /^tools\/(vocab-sets|assign-status|book-editions|present-mode)-e2e\.mjs$|^tools\/vocab-sets\.test\.mjs$/,
     ["test", "validate:js-syntax", "check"],

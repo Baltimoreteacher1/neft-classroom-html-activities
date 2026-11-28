@@ -23,6 +23,7 @@ const KIND_LABEL = {
   histogram: ["Histogram", "Histograma"],
   timeline: ["Timeline", "Línea de tiempo"],
   foodweb: ["Food web", "Red alimentaria"],
+  tenframe: ["Ten frame (counting)", "Marco de diez (contar)"],
 };
 
 const rows = (n, make) => Array.from({ length: n }, make);
@@ -40,6 +41,7 @@ const BLANK = {
   histogram: () => ({ title: "", unit: "", values: [], binWidth: null }),
   timeline: () => ({ events: rows(2, () => ({ year: null, label: "" })) }),
   foodweb: () => ({ relationships: rows(2, () => ({ eats: "", eaten: "" })) }),
+  tenframe: () => ({ count: null, add: null }),
 };
 const NEW_ROW = {
   categories: () => ({ label: "", value: null }),
@@ -267,6 +269,22 @@ export function diagramBlockEditor(block, { store, S, onChange } = {}) {
           spec().style,
           (v) => editSpec((s) => (s.style = v), { structure: true }),
         ),
+      ),
+    ],
+    tenframe: () => [
+      numeric(
+        S("Counters (circles)", "Marcadores (círculos)"),
+        () => spec().count,
+        (s, v) => (s.count = v),
+        "count",
+        S("0 to 20. Past 10 a second frame appears.", "De 0 a 20. Después de 10 aparece un segundo marco."),
+      ),
+      numeric(
+        S("Counters to add (squares, optional)", "Marcadores para sumar (cuadrados, opcional)"),
+        () => spec().add,
+        (s, v) => (s.add = v),
+        "add",
+        S("Leave blank for one group. Both groups together: at most 20.", "Déjelo vacío para un solo grupo. Los dos grupos juntos: 20 como máximo."),
       ),
     ],
     prism: () => [

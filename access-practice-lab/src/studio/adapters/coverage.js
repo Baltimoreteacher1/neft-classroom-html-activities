@@ -469,6 +469,17 @@ export const ROWS = Object.freeze([
     evidence: TESTED,
   },
   {
+    family: "k2-starters",
+    label: t("K-2 starter sets", "Conjuntos iniciales de K a 2.º"),
+    status: "adapter",
+    source: ["access-practice-lab/src/content/k2-studio"],
+    reason: t(
+      "All 15 starters (5 per grade for K, 1 and 2: phonics, early math, oral language) copy whole: they are written in lp-activity/1, with picture choices, read-aloud scripts, word cards with Spanish, ten frames, keyed questions and partner-talk prompts. Nothing is dropped.",
+      "Se copian completos los 15 conjuntos (5 por grado para K, 1.º y 2.º: fonética, matemáticas iniciales, lenguaje oral): están escritos en lp-activity/1, con opciones con dibujos, guiones para leer en voz alta, tarjetas de palabras con español, marcos de diez, preguntas con clave y conversaciones en pareja. No se pierde nada.",
+    ),
+    evidence: TESTED,
+  },
+  {
     family: "activity-studio-draft",
     label: t(
       "Activity Studio drafts (lp-activity/1)",
