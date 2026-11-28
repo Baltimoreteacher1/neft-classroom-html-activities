@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "29ebda190bd1";
+const BUILD_HASH = "2fb3cf2d66ac";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
   "/access-practice-lab/home.css?v=9edfb6eb",
@@ -272,6 +272,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/mls-play-engines-b.css",
   "/access-practice-lab/mls-play-games.css",
   "/access-practice-lab/mls-play-manips-a.css",
+  "/access-practice-lab/mls-play-manips-b.css",
   "/access-practice-lab/mls-play.css",
   "/access-practice-lab/mls.css",
   "/access-practice-lab/my-week.css",
@@ -931,7 +932,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/mls/export/html.js?v=1a024aa6",
   "/access-practice-lab/src/mls/export/index.js?v=726bd8ae",
   "/access-practice-lab/src/mls/export/pptx.js?v=a1315c9a",
-  "/access-practice-lab/src/mls/export/print.js?v=8c308b76",
+  "/access-practice-lab/src/mls/export/print.js?v=fea431d3",
   "/access-practice-lab/src/mls/export/raster.js?v=ac18d1a4",
   "/access-practice-lab/src/mls/families/g12.js?v=b580dda5",
   "/access-practice-lab/src/mls/families/g34.js?v=f7a42cfc",
@@ -1397,9 +1398,9 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/library.js?v=7954b694",
   "/access-practice-lab/src/views/lingua.js?v=bc7c2023",
   "/access-practice-lab/src/views/listen-for-clue.js?v=5cb6c610",
-  "/access-practice-lab/src/views/math-literacy-builder.js?v=f51b6295",
-  "/access-practice-lab/src/views/math-literacy-play.js?v=9c4a1082",
-  "/access-practice-lab/src/views/math-literacy.js?v=a41261c5",
+  "/access-practice-lab/src/views/math-literacy-builder.js?v=d66de60d",
+  "/access-practice-lab/src/views/math-literacy-play.js?v=3ed2a0ee",
+  "/access-practice-lab/src/views/math-literacy.js?v=567ab06b",
   "/access-practice-lab/src/views/mentor.js?v=118cb5b5",
   "/access-practice-lab/src/views/method.js?v=7b636ed4",
   "/access-practice-lab/src/views/missions-feedback.js?v=4c38d44d",

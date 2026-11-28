@@ -275,9 +275,11 @@ const PRINT_CSS = `
 
 // ── documents ───────────────────────────────────────────────────────────────
 
-/** A complete HTML document for the browser's print dialog. `key: true` prints the teacher answer key instead. */
-// `button: false` omits the Print button and its script, for the sandboxed in-page preview (scripts are blocked there by design).
-export function printDocument(resource, { key = false, renderVisual = null, button = true } = {}) {
+/**
+ * A complete HTML document for the browser's print dialog. `key: true` prints the teacher answer key instead.
+ * `preview: true` omits the print bar and its script: the builder shows the document in a sandboxed frame that (rightly) runs no script.
+ */
+export function printDocument(resource, { key = false, renderVisual = null, preview = false } = {}) {
   const r = key ? keyResource(resource) : normalizeResource(resource);
   const { html } = bodyHtml(r, { interactive: false, renderVisual });
   const title = `${r.title}`;
@@ -292,11 +294,11 @@ export function printDocument(resource, { key = false, renderVisual = null, butt
 </head>
 <body class="${key ? "is-key" : "is-student"}">
 <svg class="defs" aria-hidden="true" focusable="false"><defs><pattern id="mls-grid" width="0.25in" height="0.25in" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="0.25in" stroke="#9aa5ad" stroke-width="1"/><line x1="0" y1="0" x2="0.25in" y2="0" stroke="#9aa5ad" stroke-width="1"/></pattern></defs></svg>
-${button ? `<div class="bar no-print"><button type="button" id="mls-print">Print or Save as PDF</button><span>In the print window, choose &ldquo;Save as PDF&rdquo; as the destination to keep a file.</span></div>` : ""}
+${preview ? "" : `<div class="bar no-print"><button type="button" id="mls-print">Print or Save as PDF</button><span>In the print window, choose &ldquo;Save as PDF&rdquo; as the destination to keep a file.</span></div>`}
 <main class="sheet" aria-labelledby="doc-title">
 ${html}
 </main>
-${button ? `<script>document.getElementById("mls-print").addEventListener("click",function(){window.print()});</script>` : ""}
+${preview ? "" : `<script>document.getElementById("mls-print").addEventListener("click",function(){window.print()});</script>`}
 </body>
 </html>
 `;

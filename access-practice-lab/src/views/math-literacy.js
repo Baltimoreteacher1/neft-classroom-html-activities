@@ -214,7 +214,7 @@ async function skillPage(ctx, I, id) {
         <p class="lead">${skill.objective}</p>
         <ul class="ml-criteria">${skill.successCriteria.map((c) => html`<li>${c}</li>`)}</ul>
         <p class="fine">Language objective: ${skill.languageObjective}</p>
-        <p class="fine">Standards (informational, ${skill.standards.version}): ${skill.standards.codes.join(", ")}. ${skill.standards.note}</p>
+        <p class="fine">Standards alignment (CCSS-M, ${skill.standards.version.replace(/\s*\(.*\)/, "")}): ${skill.standards.codes.join(", ")}. ${skill.standards.note}</p>
         <p><button type="button" class="btn small" data-ml-fav="${id}" aria-pressed="${fav}">${icon("star")} ${fav ? "Favorite skill" : "Add to favorites"}</button></p>
         ${supportControl()}
       </header>

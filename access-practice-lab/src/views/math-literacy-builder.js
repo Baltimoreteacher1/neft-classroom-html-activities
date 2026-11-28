@@ -15,9 +15,6 @@ const ENGINE_NAME = { "reading-lab": "Reading Lab", anatomy: "Word Problem Anato
 
 /** What is on screen: the skill, the recipe, the built Resource and any packet parts. */
 let cur = null;
-// unmount() runs on every re-render, so edits are stashed here when the page re-renders itself (a dial changed, a question regenerated) and are
-// picked up once by the next render of the same skill and type. Opening any other resource starts clean.
-let carry = null;
 let compare = false;
 /** Which details panels the teacher has open; kept across re-renders so a change never closes the panel being used. */
 const openPanels = { adjust: false, questions: false };
@@ -110,7 +107,7 @@ function problemEditor() {
 }
 
 function previewFrame(resource, label) {
-  return html`<iframe class="ml-frame" title="${label}" sandbox="allow-same-origin" data-mlb-frame srcdoc="${Exp.printDocument(resource, { key: false, button: false })}"></iframe>`;
+  return html`<iframe class="ml-frame" title="${label}" sandbox="allow-same-origin" data-mlb-frame srcdoc="${Exp.printDocument(resource, { key: false, preview: true })}"></iframe>`;
 }
 
 function comparePanel() {
@@ -132,8 +129,7 @@ export async function render(ctx, I, id, sub, sub2, h) {
   }
   const type = sub2;
   let opts = optsFromUrl();
-  let edits = carry && carry.skillId === skill.id && carry.type === type ? carry.edits : {};
-  carry = null;
+  let edits = cur?.skill?.id === skill.id && cur?.type === type && cur.edits ? cur.edits : {};
   let savedId = "";
   const sv = q("saved") ? Store.load().saved.find((x) => x.id === q("saved")) : null;
   if (sv && sv.recipe.skillId === sub) {
@@ -238,13 +234,12 @@ async function doDownload(fmt, key) {
 let editT = 0;
 function refreshPreview() {
   const frame = document.querySelector("[data-mlb-frame]");
-  if (frame) frame.srcdoc = Exp.printDocument(cur.resource, { key: false, button: false });
+  if (frame) frame.srcdoc = Exp.printDocument(cur.resource, { key: false, preview: true });
   const kf = document.querySelector(".ml-frame-key");
   if (kf) kf.srcdoc = keyHtml(cur.resource);
 }
 function navigate(opts, ctx) {
   cur.opts = opts;
-  carry = { skillId: cur.skill.id, type: cur.type, edits: cur.edits };
   const path = location.pathname;
   history.replaceState({}, "", urlFor(path, { ...opts, variant: opts.variant || "" }));
   ctx.rerender();
@@ -258,6 +253,7 @@ export function onClick(e, ctx) {
   if (a === "dl") return (doDownload(act.dataset.fmt, false), true);
   if (a === "keydl") return (doDownload(act.dataset.fmt, true), true);
   if (a === "save") {
+    flushEdits();
     const item = Store.saveResource({ skillId: cur.skill.id, type: cur.type, opts: cur.opts, edits: cur.edits }, `${cur.skill.title}: ${cur.resource.title.split(": ").pop()}`);
     cur.savedId = item.id;
     Store.noteCreated();
@@ -269,7 +265,7 @@ export function onClick(e, ctx) {
     say(c ? "Duplicated. Find the copy under Saved and collections." : "Save it first.");
     return true;
   }
-  if (a === "compare") return ((compare = !compare), (carry = { skillId: cur.skill.id, type: cur.type, edits: cur.edits }), ctx.rerender(), true);
+  if (a === "compare") return ((compare = !compare), ctx.rerender(), true);
   if (a === "newset") return (navigate({ ...cur.opts, seed: (cur.norm.seed || 1) + 1, pseed: {} }, ctx), true);
   const li = act.closest("[data-mlb-prob]");
   if (li && a === "regen") {
@@ -316,20 +312,29 @@ export function onChange(e, ctx) {
   navigate(o, ctx);
   return true;
 }
+/** Edits typed within the debounce window all apply: a shared timer must never drop the first field's change. */
+const pendingEdits = new Map();
 export function onInput(e) {
   const t = e.target.closest("[data-mlb-edit],[data-mlb-pedit]");
   if (!t || !cur?.skill) return false;
+  const key = t.dataset.mlbEdit ? `e:${t.dataset.mlbEdit}` : `p:${t.closest("[data-mlb-prob]").dataset.mlbProb}:${t.dataset.mlbPedit}`;
+  pendingEdits.set(key, t);
   clearTimeout(editT);
-  editT = setTimeout(() => {
+  editT = setTimeout(flushEdits, 350);
+  return true;
+}
+function flushEdits() {
+  if (!cur?.skill) return pendingEdits.clear();
+  for (const t of pendingEdits.values()) {
     if (t.dataset.mlbEdit) cur.edits[t.dataset.mlbEdit] = t.value;
     else {
       const k = t.closest("[data-mlb-prob]").dataset.mlbProb;
       cur.edits.problems = { ...(cur.edits.problems || {}), [k]: { ...(cur.edits.problems?.[k] || {}), [t.dataset.mlbPedit]: t.value } };
     }
-    rebuild();
-    refreshPreview();
-  }, 350);
-  return true;
+  }
+  pendingEdits.clear();
+  rebuild();
+  refreshPreview();
 }
 export function mount(root) {
   if (root.dataset.mlbToggle) return;
@@ -343,8 +348,9 @@ export function mount(root) {
     true,
   );
 }
+// The router calls unmount() on EVERY URL change, and each dial change rewrites the query string, so unmount must keep the teacher's edits and
+// open panels. State is replaced when a different resource opens (render()), not when this view is left.
 export const unmount = () => {
   clearTimeout(editT);
-  cur = null;
-  compare = false;
+  if (pendingEdits.size) flushEdits();
 };

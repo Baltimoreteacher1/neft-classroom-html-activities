@@ -131,11 +131,25 @@ async function axe(page, label) {
       new Promise((r) => setTimeout(r, 2500)),
     ]),
   );
+  // Sandboxed preview iframes (no scripts) cannot answer axe's frame injection, so the page is scanned without them; the documents they show are
+  // scanned on their own with axeDocument().
   const r = await new AxeBuilder({ page })
+    .exclude("iframe")
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
   const bad = r.violations.filter((v) => ["serious", "critical"].includes(v.impact));
   ok(bad.length === 0, `${label}: axe ${bad.map((v) => `${v.id}(${v.nodes.length})`).join(", ")}`);
+}
+async function axeDocument(ctx, html, label) {
+  if (!AxeBuilder) return;
+  const doc = await ctx.newPage();
+  await doc.setContent(html);
+  const r = await new AxeBuilder({ page: doc })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  const bad = r.violations.filter((v) => ["serious", "critical"].includes(v.impact));
+  ok(bad.length === 0, `${label}: axe ${bad.map((v) => `${v.id}(${v.nodes.length})`).join(", ")}`);
+  await doc.close();
 }
 const noErrors = (page, label) =>
   ok(
@@ -322,15 +336,26 @@ const scenarios = {
     ok((await page.locator(".ml-saved li").count()) >= 1, "saved resource is listed");
     await page.locator(".ml-saved li a").first().click();
     await page.locator("iframe[data-mlb-frame]").waitFor();
-    await page.waitForTimeout(600);
-    const again = (
-      await page.frameLocator("iframe[data-mlb-frame]").locator("body").innerText()
-    ).replace(/\s+/g, " ");
+    const doc = () => page.locator("iframe[data-mlb-frame]").evaluate((f) => f.srcdoc);
+    await page
+      .waitForFunction(
+        () =>
+          /Mina mixes paint/.test(document.querySelector("iframe[data-mlb-frame]")?.srcdoc || ""),
+        null,
+        { timeout: 15000 },
+      )
+      .catch(() => {});
+    const again = await doc();
     ok(
       /Mina mixes paint/.test(again) && /Work with a partner/.test(again),
-      `saved resource reopens with the teacher's edits (mina=${/Mina mixes paint/.test(again)} partner=${/Work with a partner/.test(again)} recipe=${await page.evaluate(() => JSON.stringify(JSON.parse(localStorage.getItem('accessPracticeLab:v1:mls')).saved[0].recipe))})`,
+      `saved resource reopens with the teacher's edits (question edit: ${/Mina mixes paint/.test(again)}, directions: ${/Work with a partner/.test(again)}, stored: ${await page.evaluate(() => (localStorage.getItem("accessPracticeLab:v1:mls") || "").match(/"edits":\{[^}]*\}?/)?.[0]?.slice(0, 160))})`,
     );
     await axe(page, "builder");
+    await axeDocument(
+      ctx,
+      await page.locator("iframe[data-mlb-frame]").evaluate((f) => f.srcdoc),
+      "worksheet preview document",
+    );
     await noOverflow(page, "builder");
     noErrors(page, "builder");
     void count;
@@ -494,7 +519,7 @@ const scenarios = {
     await page.locator(".ml-concern", { hasText: "word problems" }).click();
     await page.locator(".ml-grade", { hasText: "4" }).first().click();
     await page.locator(".ml-skill-link").first().click();
-    await page.locator("h2", { hasText: "What to look for" }).first().waitFor();
+    await page.locator("h2", { hasText: "What to look for" }).first().waitFor({ timeout: 15000 });
     for (const h of ["What to look for", "A short check", "Resources", "A short plan", "Follow up"])
       ok((await page.locator("h2", { hasText: h }).count()) === 1, `plan has "${h}"`);
     const hrefs = await page
