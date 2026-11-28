@@ -7,11 +7,14 @@ import { page, t } from "./layout.mjs";
 import {
   clusterPage,
   domainPage,
+  myPracticePage,
   onPageDisclaimer,
+  playlistPage,
   practiceHome,
   setClientData,
   setPage,
   setPath,
+  setsIndex,
 } from "./practice.mjs";
 import * as tp from "./tools-pages.mjs";
 import { CLUSTERS, DOMAINS, ELD, html, LEVEL_NAMES, raw, SITE } from "./util.mjs";
@@ -26,6 +29,7 @@ const TOOL_RENDER = {
   "graphic-organizers": tp.organizersPage,
   "readiness-kit": tp.readinessPage,
   "warm-ups": tp.warmupsPage,
+  "playlist-maker": tp.playlistMakerPage,
 };
 
 /* ---------- home ---------- */
@@ -322,6 +326,29 @@ export function renderAll(data, assets) {
     crumbs: [crumb("Practice", "/practice/")],
     body: practiceHome(data),
   });
+  data.setsIndex = setsIndex(data);
+  add({
+    path: "/practice/playlist/",
+    title: "Practice playlist",
+    description: "A practice playlist from your teacher. Your progress stays on this device.",
+    navKey: "practice",
+    crumbs: [crumb("Practice", "/practice/"), crumb("Playlist", "/practice/playlist/")],
+    body: playlistPage(),
+    scripts: ["/lp/assets/playlist.js"],
+    data: { "sets-index": data.setsIndex },
+    noindex: true,
+  });
+  add({
+    path: "/practice/my-practice/",
+    title: "My practice",
+    description:
+      "Every practice set you finished on this device, ready to print for your teacher. Nothing is collected.",
+    navKey: "practice",
+    crumbs: [crumb("Practice", "/practice/"), crumb("My practice", "/practice/my-practice/")],
+    body: myPracticePage(),
+    scripts: ["/lp/assets/my-practice.js"],
+    data: { "sets-index": data.setsIndex },
+  });
   for (const c of CLUSTERS) {
     add({
       path: `/practice/${c.slug}/`,
@@ -424,7 +451,9 @@ export function renderAll(data, assets) {
         tool.slug === "warm-ups" ||
         tool.slug === "scaffold-generator"
           ? { banks: data.banks }
-          : undefined,
+          : tool.slug === "playlist-maker"
+            ? { "sets-index": data.setsIndex }
+            : undefined,
     });
     searchIndex.push({ k: "tool", t: tool.title, u: `/tools/${tool.slug}/`, d: tool.summary });
   }

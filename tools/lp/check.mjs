@@ -270,7 +270,8 @@ gate(
 );
 
 /* G-04 Lighthouse budgets on the home page and every section landing page (mobile). */
-// Home, every section landing page, and three deep pages (a practice set, the heaviest tool, a unit page).
+// Home, every section landing page, and four deep pages (a practice set, the heaviest tool, a unit page, the
+// playlist maker with its full list of sets).
 const LH_PATHS = [
   "/",
   "/practice/",
@@ -281,6 +282,7 @@ const LH_PATHS = [
   "/practice/grades-6-8/reading/fundraiser-by-numbers/",
   "/tools/game-maker/",
   "/content/math/grade-6/ratios/",
+  "/tools/playlist-maker/",
 ];
 export function budgetCheck(results) {
   const errs = [];

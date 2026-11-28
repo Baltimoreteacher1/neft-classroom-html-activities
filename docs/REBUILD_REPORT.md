@@ -134,11 +134,38 @@ specimen used a second `h1`. Card headings now take their level from where they 
 **Gates after this pass** (local, `CI=1`, Lighthouse on 9 pages × 2 form factors): **14 pass, 0 fail, 0 skip** (532 s).
 G-03 control now catches 5 seeded defects and G-07 catches 46.
 
+## Third pass: playlists, My practice, and a gate on every push
+
+**Teachers: Practice Playlist Maker** (`/tools/playlist-maker/`). Choose up to 12 practice sets, filter by grades and
+skill, put them in order (move up, move down, remove), add a name and a note, then copy one student link with a QR code
+or print the list. The playlist travels inside the link; nothing is stored on a server, and the draft stays on the
+teacher's device. The practice home links to it.
+
+**Students: the playlist page** (`/practice/playlist/#p=…`, not indexed). It shows the teacher's name and note, a
+progress bar ("1 of 3 sets done"), and each set as Done (date and first-try score), Started (question n of n) or Not
+started, with one Start / Next set button. Finishing a set on the playlist offers "Next in your playlist" and "Back to
+your playlist". A link with no playlist in it says so and points to all practice.
+
+**Students: My practice** (`/practice/my-practice/`). Every set finished or started on this device, by grade band,
+with totals (sets finished, first-try score, about how many minutes), a print button to show a teacher, and a two-step
+"Clear my progress" on the page itself (no browser dialog). Nothing on either page is sent anywhere; the pages say so in
+English and Spanish (33 new interface strings, 163 in all).
+
+**Fixes found while testing:** a teacher draft typed in the last 400 ms before closing a tab was lost; every tool's
+draft is now written when the page is hidden. The service worker cache name moved to `lp-front-v2`, so returning
+visitors get the new scripts instead of one stale visit.
+
+**Gate on every push.** `npm run validate:lp` runs the nine browser-free `check:lp` gates (links, URL preservation, no
+purple, content, math, privacy, disclaimer, interface strings, freshness) in about 2 seconds with no server and no
+browser, and is now a member of the repo's `npm run validate`, so CI's Pre-Deploy Gate runs it. A `qa:fast` coverage
+rule sends changes under `lp/`, `tools/lp/` and `docs/lp/` to it instead of escalating every commit to the full repo
+gate. Lighthouse now also measures the playlist maker.
+
 ## Redirects and changed answers (thelanguagepage.com only)
 
 | Path | Before | After |
 | --- | --- | --- |
-| `/` | 302 to `/access-practice-lab/` | 200, the new home page |
+| `/` | 302 to `/access-practice-lab/` | 200, the new home page at release; **Joel restored the 302 to the lab the same day** (`9d368473`: "the lab is the homepage"). The generated front home page (`lp/index.html`) is therefore not served at any URL; the five front sections are. |
 | `/practice/…`, `/tools/…`, `/content/…`, `/access-guide/…`, `/about/…`, `/search/`, `/styleguide/` (the 103 routes) | 308 to the same path on eduwonderlab.com | 200, front-layer pages |
 | Any other path under those prefixes | 308 to eduwonderlab.com | unchanged: 308 to eduwonderlab.com |
 | A route without its trailing slash (`/practice`) | 308 to eduwonderlab.com | 308 to `/practice/` |
@@ -181,4 +208,4 @@ None of the 649 baseline URLs answered from those prefixes except `/`, which the
 7. Expand practice to 5 sets per cluster × domain and add a grade 1 and K–2 path.
 8. Add 2 more units each for Science, ELA and Social Studies, and verify the C3 and CCSS-ELA codes.
 9. Bring the lab shell's mobile performance (65) toward the front layer's (100): the 124 blocking stylesheets.
-10. Wire `check:lp` (static gates) into the repo's CI `validate` chain once its pre-existing failures are cleared.
+10. ~~Wire `check:lp` (static gates) into the repo's CI `validate` chain.~~ Done in the third pass (`npm run validate:lp`).

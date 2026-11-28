@@ -2054,3 +2054,86 @@ dialog.modal.palette {
   justify-content: flex-end;
   margin-bottom: var(--s1);
 }
+
+/* practice playlists (teacher maker + student page) and My practice */
+.pl-pick {
+  max-height: 28rem;
+  overflow-y: auto;
+  padding: var(--s1) var(--s2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.pl-group + .pl-group {
+  margin-top: var(--s2);
+}
+.pl-group .label {
+  font-weight: 700;
+  margin: var(--s1) 0;
+}
+.pl-order,
+.pl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s2);
+}
+.pl-row {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.pl-num {
+  flex: 0 0 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 700;
+}
+.pl-text {
+  flex: 1 1 12rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.pl-row .btn-row {
+  margin: 0;
+}
+.pl-link {
+  font-weight: 700;
+  font-size: var(--fs-md);
+}
+.pl-item[aria-current="step"] {
+  border-color: var(--primary);
+  box-shadow: inset 4px 0 0 var(--primary);
+}
+.pl-item.is-done .pl-link {
+  color: var(--text);
+}
+.pl-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+  align-items: center;
+}
+.mine-stats .card {
+  text-align: center;
+}
+.mine-table th[scope="row"] {
+  font-weight: 400;
+}
+.mine-table th[scope="row"] a {
+  font-weight: 700;
+}
+@media print {
+  .pl-item[aria-current="step"] {
+    box-shadow: none;
+  }
+  .pl-pick {
+    max-height: none;
+  }
+}

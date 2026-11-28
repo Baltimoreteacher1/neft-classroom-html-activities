@@ -43,6 +43,10 @@ export function practiceHome(data) {
   })}</div>
 <section class="section"><h2>What the four skills look like</h2>
 <div class="grid">${DOMAINS.map((d) => html`<div class="card"><span class="card-icon">${raw(icon(d.icon))}</span><h3>${d.label}</h3><p>${d.verb}</p></div>`)}</div></section>
+<section class="section"><div class="grid cols-2">
+<article class="card"><span class="card-icon">${raw(icon("checklist"))}</span><h2 class="h3"><a class="card-link" href="/practice/my-practice/" data-i18n="mine.title">My practice</a></h2><p data-i18n="mine.cardText">See every set you finished on this device, and print it to show your teacher.</p></article>
+<article class="card"><span class="card-icon">${raw(icon("teacher"))}</span><h2 class="h3"><a class="card-link" href="/tools/playlist-maker/">Teachers: make a playlist</a></h2><p>Choose sets in the order you want and share one link or QR code. No student accounts.</p></article>
+</div></section>
 <section class="section note"><p><strong>More practice:</strong> the full <a href="/access-practice-lab/">ACCESS Practice Lab</a> has hundreds more activities, practice tests and a 12-week Road to ACCESS plan.</p></section>
 ${onPageDisclaimer()}
 </div>`;
@@ -260,4 +264,64 @@ export function setClientData(set) {
     script: set.script?.lines,
     glossary: set.passage?.glossary,
   };
+}
+
+/** A compact list of every set for the playlist pages and tools: id, title, path, grades, skill, minutes, scored. */
+export function setsIndex(data) {
+  return data.practice.map((s) => ({
+    id: s.id,
+    t: s.title,
+    u: setPath(s),
+    c: s.cluster,
+    cl: CLUSTERS.find((c) => c.slug === s.cluster).label,
+    d: s.domain,
+    dl: DOMAINS.find((d) => d.slug === s.domain).label,
+    m: s.minutes,
+    mc: Array.isArray(s.items),
+    n: (s.items || s.tasks).length,
+  }));
+}
+
+/* The student side of a teacher's playlist. The playlist lives in the link (#p=...); progress is read from this device. */
+export function playlistPage() {
+  return html`<div class="wrap">
+<div class="page-head"><span class="eyebrow" data-i18n="nav.practice">Practice</span><h1 data-pl-title><span data-i18n="playlist.title">Your practice playlist</span></h1><p class="lede" data-pl-note></p></div>
+<div data-pl-app>
+  <p class="empty" data-pl-loading data-i18n="playlist.loading">Opening your playlist…</p>
+  <div class="empty" data-pl-missing hidden><p data-i18n="playlist.missing">This link has no playlist in it. Ask your teacher for the link again.</p><p><a href="/practice/" data-i18n="playlist.browse">Browse all practice</a></p></div>
+  <div class="panel" data-pl-progress hidden>
+    <p class="progress-label" data-pl-count></p>
+    <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Playlist progress"><span data-pl-bar></span></div>
+    <p class="btn-row"><a class="btn" href="/practice/" data-pl-next>${raw(icon("play"))} <span data-pl-next-label>Start</span></a></p>
+  </div>
+  <ol class="pl-list" data-pl-list></ol>
+  <div class="btn-row no-print section" data-pl-actions hidden><button type="button" class="btn secondary" data-print>${raw(icon("print"))} <span data-i18n="playlist.print">Print my progress</span></button><a class="btn ghost" href="/practice/my-practice/" data-i18n="mine.title">My practice</a></div>
+  <p class="note" data-i18n="playlist.private">Your progress is saved only on this device. Nothing is sent to your teacher or anyone else. To show your teacher, print this page or show your screen.</p>
+</div>
+<noscript><p class="note">This page needs JavaScript to read the playlist in its link. <a href="/practice/">Browse all practice</a>.</p></noscript>
+${onPageDisclaimer()}
+</div>`;
+}
+
+/* Everything this device has finished, for the student to print or show. Nothing here is collected. */
+export function myPracticePage() {
+  return html`<div class="wrap">
+<div class="page-head"><span class="eyebrow" data-i18n="nav.practice">Practice</span><h1 data-i18n="mine.title">My practice</h1><p class="lede" data-i18n="mine.lede">Every practice set you finished on this device. Print it to show your teacher. Nothing on this page is sent anywhere.</p></div>
+<div data-mine-app>
+  <div class="grid cols-3 mine-stats" data-mine-stats hidden>
+    <div class="card"><p class="stat" data-mine-sets>0</p><p data-i18n="mine.sets">sets finished</p></div>
+    <div class="card"><p class="stat" data-mine-right>0</p><p data-i18n="mine.firstTry">questions right on the first try</p></div>
+    <div class="card"><p class="stat" data-mine-minutes>0</p><p data-i18n="mine.minutes">minutes of practice (about)</p></div>
+  </div>
+  <div class="empty" data-mine-empty hidden><p data-i18n="mine.empty">You have not finished a practice set on this device yet.</p><p><a href="/practice/" data-i18n="playlist.browse">Browse all practice</a></p></div>
+  <div data-mine-list></div>
+  <div class="btn-row no-print section" data-mine-actions hidden>
+    <button type="button" class="btn secondary" data-print>${raw(icon("print"))} <span data-i18n="mine.print">Print</span></button>
+    <button type="button" class="btn ghost" data-mine-clear><span data-i18n="mine.clear">Clear my progress</span></button>
+    <button type="button" class="btn ghost" data-mine-confirm hidden><span data-i18n="mine.confirm">Yes, clear it from this device</span></button>
+  </div>
+</div>
+<noscript><p class="note">This page needs JavaScript to read the progress saved on this device.</p></noscript>
+${onPageDisclaimer()}
+</div>`;
 }

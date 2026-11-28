@@ -321,6 +321,14 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // The Language Page front layer (thelanguagepage.com): generated pages in lp/, their generator, data and gates in
+  // tools/lp/, and the generated route table. validate:lp is the browser-free half of check:lp (links, URL
+  // preservation, no purple, content, math, privacy, disclaimer, i18n, freshness); `npm run check:lp` adds axe,
+  // Lighthouse, network, exports and visual checks before a ship.
+  [
+    /^(lp\/.*|tools\/lp\/.*|docs\/lp\/.*|functions\/_lib\/lp-(front|routes)\.js)$/,
+    ["validate:lp", "validate:js-syntax", "check"],
+  ],
   [
     /^((language-adventures|language-studio)\/.*|data\/static-app-mounts\.json|curriculum\/index\.html|functions\/_lib\/language-page\.js|functions\/language-page-host\.test\.mjs)$/,
     ["validate:static", "validate:catalog", "test", "check"],

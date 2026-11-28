@@ -548,3 +548,55 @@ ${head(tool, "A five-minute language warm-up for any class. Pick a type, add you
 ${privacyNote()}
 </div>`;
 }
+
+/* Practice Playlist Maker: a teacher orders practice sets; the playlist travels inside the student link. */
+export function playlistMakerPage(tool, data) {
+  const groups = [];
+  for (const s of data.setsIndex) {
+    let g = groups.find((x) => x.c === s.c && x.d === s.d);
+    if (!g) groups.push((g = { c: s.c, d: s.d, label: `${s.cl} · ${s.dl}`, sets: [] }));
+    g.sets.push(s);
+  }
+  const clusters = [...new Map(data.setsIndex.map((s) => [s.c, s.cl])).entries()];
+  const domains = [...new Map(data.setsIndex.map((s) => [s.d, s.dl])).entries()];
+  return html`<div class="wrap">
+${head(tool, "Choose practice sets in the order you want students to do them. Share one link or QR code. Each student sees their own progress on their own device.")}
+${steps(["Choose sets", "Put them in order", "Share"])}
+<div class="tool-layout" data-tool="playlist-maker">
+<form class="panel no-print" data-pl-form autocomplete="off">
+  <div class="field"><label for="pl-title">Playlist name</label><input type="text" id="pl-title" name="title" maxlength="80" value="This week's practice"></div>
+  <div class="field"><label for="pl-note">Note to students (optional)</label><textarea id="pl-note" name="note" rows="2" maxlength="240" placeholder="Do the first two sets by Friday."></textarea></div>
+  <fieldset><legend>Choose practice sets (up to 12)</legend>
+    <div class="grid cols-2">
+      <div class="field"><label for="pl-cluster">Grades</label><select id="pl-cluster" data-pl-filter="c"><option value="">All grades</option>${opts(clusters, "")}</select></div>
+      <div class="field"><label for="pl-domain">Skill</label><select id="pl-domain" data-pl-filter="d"><option value="">All skills</option>${opts(domains, "")}</select></div>
+    </div>
+    <div class="pl-pick">${groups.map(
+      (g) =>
+        html`<div class="pl-group" data-c="${g.c}" data-d="${g.d}"><p class="label">${g.label}</p>${g.sets.map(
+          (s) =>
+            html`<label class="check"><input type="checkbox" name="set" value="${s.id}"><span>${s.t} <span class="muted">· ${s.m} min</span></span></label>`,
+        )}</div>`,
+    )}</div>
+  </fieldset>
+  <p class="muted" data-pl-count aria-live="polite"></p>
+  <div class="btn-row"><button type="button" class="btn ghost small" data-pl-reset>${t("tool.reset", "Start over")}</button></div>
+</form>
+<section class="preview" aria-labelledby="pl-preview-title">
+  <h2 id="pl-preview-title" class="h3" data-pl-heading>This week's practice</h2>
+  <p class="muted" data-pl-note-preview></p>
+  <p class="empty" data-pl-empty>Choose sets on the left. They appear here in the order you pick them, and you can move them up or down.</p>
+  <ol class="pl-order" data-pl-order></ol>
+  <div class="panel no-print section"><h3 class="h4">Share</h3>
+    <div class="btn-row"><button type="button" class="btn" data-pl-link>${raw(icon("link"))} Copy student link</button>
+    <a class="btn secondary" href="/practice/playlist/" target="_blank" rel="noopener" data-pl-open>${raw(icon("student"))} Open as a student</a>
+    <button type="button" class="btn secondary" data-print>${raw(icon("print"))} <span data-i18n="tool.print">Print</span></button></div>
+    <p class="muted" data-pl-errors aria-live="polite"></p>
+    <div class="qr-box" data-pl-qr hidden><p class="label">Scan to open the playlist</p><div data-pl-qr-svg></div><p class="muted" data-pl-qr-note></p></div>
+    <p class="muted">The playlist lives inside the link; nothing is stored on a server. Students' progress stays on their own device and is never sent to you. To see it, ask students to show or print their playlist page.</p>
+  </div>
+</section>
+</div>
+${privacyNote()}
+</div>`;
+}
