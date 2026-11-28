@@ -9,7 +9,7 @@ import { loadRecord } from "../store.js";
 import { loadLab } from "../lab/store.js";
 import { readinessPanelHTML } from "../lab/progress-ui.js";
 import { i18nFor } from "../i18n.js";
-import { BASE, DOMAIN_META, bandLabel, formatDate, html, icon, todayISO } from "../util.js";
+import { BASE, DOMAIN_META, bandLabel, ensureStylesheet, formatDate, html, icon, todayISO } from "../util.js";
 import { activityHref } from "./room.js";
 import { mountOffline, offlineCardHTML, onOfflineClick } from "../road-offline.js";
 
@@ -35,6 +35,7 @@ const minutesOf = (a) => Number(a.minutes) || parseInt(a.time, 10) || 8;
 let page = null; // { I, plan } of the week on screen, for the offline card
 
 export async function render(ctx) {
+  await ensureStylesheet("lab-progress.css");
   const band = ctx.band;
   const I = i18nFor(ctx);
   page = null;

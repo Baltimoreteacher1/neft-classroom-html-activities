@@ -485,7 +485,7 @@ export const STOP_ANATOMY = {
     ],
   },
   present: {
-    formula: ["base verb (or base + -s/-es for he/she/it)", "verbo base (o base + -s/-es para he/she/it)"],
+    formula: ["base verb (or base + ‑s/‑es for he/she/it)", "verbo base (o base + ‑s/‑es para he/she/it)"],
     when: [
       "Shows a regular habit, schedule, or scientific fact that is generally true (every morning, at sea level).",
       "Muestra un hábito, rutina o hecho científico que siempre es cierto (every morning, at sea level).",

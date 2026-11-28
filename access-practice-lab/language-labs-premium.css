@@ -1,0 +1,663 @@
+/* Language Labs hub, premium layer (/language-labs). Linked AFTER language-labs.css. Every rule is scoped to .llp (the
+   hub root: <section class="ll-hub llp">). Light theme only; colours are ds.css tokens. Part 1 of 2: base, hero, notebook, catalogue.
+   Part 2 (language-labs-premium-sections.css) holds the rest, the responsive rules and all motion. */
+.ll-hub.llp {
+  --llp-gap: clamp(2.25rem, 5vw, 4rem);
+  --llp-paper: var(--ivory);
+  --llp-rule: var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--llp-gap);
+  max-width: 100%;
+  color: var(--ink);
+}
+.llp *,
+.llp *::before,
+.llp *::after {
+  box-sizing: border-box;
+}
+.llp :where(h1, h2, h3, h4, p, ul, ol, figure, blockquote) {
+  margin: 0;
+  max-width: none;
+}
+.llp :where(ul, ol) {
+  padding: 0;
+  list-style: none;
+}
+.llp .ico {
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+}
+.llp :focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* ── section heads ──────────────────────────────────────────────────────── */
+.llp-head {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 62ch;
+}
+.llp-eyebrow {
+  font: 700 0.78rem/1.2 var(--font);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+.llp-head h2,
+.llp-sheet-head h3 {
+  font: 700 clamp(1.6rem, 1.25rem + 1.3vw, 2.3rem) / 1.12 var(--font-display);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.llp-lead {
+  font: 400 1.1rem/1.6 var(--font-serif);
+  color: var(--ink-2);
+}
+
+/* ── hero masthead ──────────────────────────────────────────────────────── */
+.llp-hero {
+  --bi-es-color: currentColor;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  padding: clamp(1.5rem, 4vw, 3.25rem);
+  border-radius: var(--radius-lg);
+  color: var(--ivory);
+  overflow: hidden;
+  box-shadow: var(--shadow-elevated);
+  background:
+    radial-gradient(90% 120% at 100% 0%, rgb(21 150 154 / 32%), transparent 58%),
+    linear-gradient(140deg, var(--mi-900), var(--mi-800));
+}
+.llp-hero.is-band-3-5 {
+  background:
+    radial-gradient(90% 120% at 100% 0%, rgb(210 139 88 / 30%), transparent 58%),
+    linear-gradient(140deg, var(--mi-800), var(--mi-600));
+}
+.llp-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+.llp-hero-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+  min-width: 0;
+}
+.llp-hero-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  font: 700 0.95rem/1.3 var(--font);
+  color: var(--ocean-200);
+}
+.llp-grade {
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--copper-200);
+  color: var(--mi-900);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.llp-hero h1 {
+  font: 700 clamp(2.4rem, 1.5rem + 3.4vw, 4rem) / 1.03 var(--font-display);
+  letter-spacing: -0.025em;
+  color: var(--ivory);
+  text-wrap: balance;
+}
+.llp-hero-eyebrow {
+  font: 600 1rem/1.4 var(--font);
+  color: var(--copper-200);
+}
+.llp-hero-lead {
+  max-width: 54ch;
+  font: 400 clamp(1.05rem, 1rem + 0.25vw, 1.2rem) / 1.65 var(--font-serif);
+  color: rgb(255 252 245 / 92%);
+}
+.llp-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+}
+.llp-hero .btn.llp-hero-go {
+  background: var(--copper-200);
+  border-color: var(--copper-200);
+  color: var(--mi-900);
+}
+.llp-hero .btn.llp-hero-go:hover {
+  background: #fbe5c2;
+  border-color: #fbe5c2;
+  color: var(--mi-900);
+}
+.llp-hero .btn.llp-hero-alt {
+  background: transparent;
+  border-color: rgb(255 252 245 / 55%);
+  color: var(--ivory);
+}
+.llp-hero .btn.llp-hero-alt:hover {
+  background: rgb(255 252 245 / 12%);
+  border-color: var(--ivory);
+  color: var(--ivory);
+}
+.llp-hero :focus-visible {
+  outline-color: var(--copper-200);
+}
+.llp-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font: 600 0.9rem/1.3 var(--font);
+  color: rgb(255 252 245 / 92%);
+}
+.llp-hero-stats > span {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+}
+.llp-hero-stats .ico {
+  flex: none;
+  margin-top: 0.1rem;
+  color: var(--ocean-200);
+}
+.llp-hero .btn.llp-hero-go {
+  justify-content: flex-start;
+  text-align: left;
+}
+.llp-go-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.llp-go-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.llp-go-lab {
+  font: 700 1.15rem/1.2 var(--font-display);
+}
+.llp-wida {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin-top: calc(var(--llp-gap) * -0.7);
+  padding: 0.85rem 1.1rem;
+  border-inline-start: 4px solid var(--brand-brass);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--surface);
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 78ch;
+}
+.llp-wida .ico {
+  flex: none;
+  margin-top: 0.15rem;
+  color: var(--teal);
+}
+
+/* hero art: three covers hung like museum plates */
+.llp-hero-art {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  align-items: start;
+  min-width: 0;
+}
+.llp-plate {
+  padding: 0.4rem 0.4rem 0.3rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--brand-brass);
+  background: var(--ivory);
+  box-shadow: 0 16px 32px rgb(6 22 38 / 45%);
+  color: var(--ink);
+  rotate: -1.6deg;
+}
+.llp-plate.p1 {
+  rotate: 1.8deg;
+  margin-top: 1.4rem;
+}
+.llp-plate.p2 {
+  grid-column: 1 / 3;
+  width: 72%;
+  justify-self: center;
+  rotate: -0.8deg;
+  margin-top: -0.2rem;
+}
+.llp-plate-art,
+.llp-card-cover,
+.llp-next-art {
+  display: block;
+  aspect-ratio: 8 / 5;
+  overflow: hidden;
+  background: var(--pearl);
+}
+.llp-plate-art {
+  border-radius: var(--radius-sm);
+}
+.llp-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.llp-plate figcaption {
+  padding: 0.4rem 0.2rem 0.15rem;
+  font: 700 0.74rem/1.2 var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ── notebook: next up + stamp sheet ────────────────────────────────────── */
+.llp-notebook {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+}
+.llp-next,
+.llp-sheet {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.llp-next {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+.llp-next-art {
+  aspect-ratio: auto;
+  min-height: 15rem;
+  border-inline-end: 1px solid var(--border-strong);
+}
+.llp-next-body {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.25rem 1.35rem 1.4rem;
+}
+.llp-next h3 {
+  font: 700 1.55rem/1.15 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.llp-next-goal {
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.llp-track {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.25rem;
+  position: relative;
+  margin: 0.2rem 0 0.4rem;
+}
+.llp-track::before {
+  content: "";
+  position: absolute;
+  inset: 0.5rem 10% auto;
+  height: 2px;
+  background: var(--border-strong);
+}
+.llp-track li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+.llp-track-dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid var(--border-control);
+  background: var(--surface);
+}
+.llp-track .is-earned .llp-track-dot {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.llp-track .is-here .llp-track-dot {
+  border-color: var(--brand-gold);
+  box-shadow: 0 0 0 4px var(--status-warning-border);
+}
+.llp-track-name {
+  font: 600 0.75rem/1.2 var(--font);
+  color: var(--ink-2);
+}
+.llp-track .is-here .llp-track-name {
+  color: var(--ink);
+  font-weight: 700;
+}
+.llp-go {
+  align-self: flex-start;
+}
+
+.llp-sheet {
+  position: relative;
+  padding: 1.6rem 1.35rem 1.25rem;
+  background: var(--llp-paper);
+}
+.llp-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 12px;
+  background: radial-gradient(circle at 9px 0, var(--bg-canvas) 5px, transparent 5.5px) 0 0 / 18px
+    12px repeat-x;
+  border-bottom: 1px dashed var(--border-strong);
+}
+.llp-sheet-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+.llp-sheet-head h3 {
+  font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.7rem);
+}
+.llp-sheet-total {
+  font: 700 0.9rem/1.2 var(--font);
+  color: var(--teal);
+}
+.llp-rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 25rem), 1fr));
+  column-gap: 2.25rem;
+}
+.llp-row {
+  padding: 0.85rem 0 0.9rem;
+  border-top: 1px solid var(--llp-rule);
+}
+.llp-row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.55rem;
+}
+.llp-row-name {
+  font: 700 1.02rem/1.25 var(--font-display);
+}
+.llp-row-count {
+  font: 600 0.82rem/1.2 var(--font);
+  color: var(--ink-2);
+}
+.llp-stamps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+}
+.llp-stamp {
+  display: flex;
+  flex: 0 0 4.4rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--ink-3);
+  text-align: center;
+}
+.llp-seal {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+.llp-stamp.is-earned .llp-seal {
+  rotate: var(--tilt, 0deg);
+  filter: drop-shadow(0 1px 0 rgb(16 28 44 / 12%));
+}
+.llp-stamp:nth-child(1).is-earned {
+  color: var(--reading-ink);
+}
+.llp-stamp:nth-child(2).is-earned {
+  color: var(--listening-ink);
+}
+.llp-stamp:nth-child(3).is-earned {
+  color: var(--writing-ink);
+}
+.llp-stamp:nth-child(4).is-earned {
+  color: var(--speaking-ink);
+}
+.llp-stamp:nth-child(5).is-earned {
+  color: var(--teal);
+}
+.llp-stamp:nth-child(6).is-earned {
+  color: var(--brand-gold);
+}
+.llp-stamp-name {
+  font: 600 0.72rem/1.2 var(--font);
+  color: var(--ink-3);
+}
+.llp-stamp.is-earned .llp-stamp-name {
+  color: var(--ink);
+  font-weight: 700;
+}
+.llp-row-note {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+.llp-row.is-complete .llp-row-count {
+  color: var(--right);
+}
+.llp-done {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--status-success-border);
+  border-radius: var(--radius-md);
+  background: var(--status-success-bg);
+  color: var(--status-success-text);
+  font: 600 0.88rem/1.4 var(--font);
+}
+.llp-sparkles {
+  position: relative;
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.llp-sparkles i {
+  position: absolute;
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--brand-brass);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+}
+.llp-sparkles i:nth-child(1) {
+  left: 0.45rem;
+  top: 0.45rem;
+  width: 0.9rem;
+  height: 0.9rem;
+}
+.llp-sparkles i:nth-child(2) {
+  left: 0;
+  top: 0;
+}
+.llp-sparkles i:nth-child(3) {
+  right: 0;
+  bottom: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+}
+.llp-honest {
+  margin-top: 0.6rem;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--border-strong);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+/* ── catalogue: cover cards ─────────────────────────────────────────────── */
+.llp-cat-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.llp-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.llp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19.5rem), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+.llp .llp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    transform 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out),
+    border-color 180ms var(--ease-out);
+}
+.llp .llp-card:hover,
+.llp .llp-card:focus-visible {
+  border-color: var(--brand-accent);
+  box-shadow: var(--shadow-elevated);
+}
+.llp .llp-card:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.llp-card-cover {
+  position: relative;
+  border-bottom: 1px solid var(--border-strong);
+}
+.llp-card-kind {
+  position: absolute;
+  left: 0.7rem;
+  top: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--ivory);
+  font: 700 0.68rem/1.2 var(--font);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.llp-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.15rem 1.3rem 1.3rem;
+}
+.llp-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.llp-card-name {
+  font: 700 1.4rem/1.15 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.llp-card-text {
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.llp-card-note {
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.llp-card-mentor {
+  padding-inline-start: 0.75rem;
+  border-inline-start: 3px solid var(--brand-brass);
+  font: italic 400 0.98rem/1.5 var(--font-serif);
+  color: var(--ink);
+}
+.llp-card-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.llp-card-prog {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.llp-pips {
+  display: flex;
+  gap: 0.3rem;
+}
+.llp-pips i {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-control);
+}
+.llp-pips i.is-on {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.llp-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--status-success-border);
+  border-radius: var(--radius-sm);
+  background: var(--status-success-bg);
+  color: var(--status-success-text);
+  font: 700 0.75rem/1.3 var(--font);
+}
+.llp-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-inline-start: auto;
+  font: 700 0.95rem/1.2 var(--font);
+  color: var(--teal);
+}
+.llp .llp-card .ico,
+.llp .llp-card-badge .ico {
+  width: 1.1em;
+  height: 1.1em;
+  color: currentColor;
+}

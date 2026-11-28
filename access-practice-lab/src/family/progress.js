@@ -6,7 +6,7 @@ import { allRecords, getStudentName } from "../store.js";
 import { loadLedger } from "../lang/ledger.js";
 import { loadLab } from "../lab/store.js";
 import { familySnapshotHTML } from "../lab/progress-ui.js";
-import { BASE, DOMAIN_META, html, icon, todayISO } from "../util.js";
+import { BASE, DOMAIN_META, ensureStylesheet, html, icon, todayISO } from "../util.js";
 import { nextRecognition, recognition, weeklyChallenge } from "./engage.js";
 import { playlistHref, sessionOptions } from "./plan.js";
 import { familyNextStep } from "./next-step.js";
@@ -109,6 +109,7 @@ function growthEvidenceHTML(I, evidence) {
 }
 
 export async function render(ctx, I) {
+  await ensureStylesheet("lab-progress.css");
   const band = ctx.band;
   const [es, road, ...rowLists] = await Promise.all([loadEsGuide(), loadRoad(), ...ctx.bands.map((b) => bandRows(b))]);
   const bandRowsNow = rowLists[ctx.bands.indexOf(band)] || [];

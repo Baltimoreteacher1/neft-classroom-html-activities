@@ -17,7 +17,7 @@ import {
   matchesOf,
   skillLead,
 } from "../sitemap.js";
-import { BASE, announce, html, icon, raw, safeJson, storage, toHtml } from "../util.js";
+import { BASE, announce, ensureStylesheet, html, icon, raw, safeJson, storage, toHtml } from "../util.js";
 import { jumpInHTML } from "../quick-start.js";
 import { loadLab } from "../lab/store.js";
 import { readinessPanelHTML } from "../lab/progress-ui.js";
@@ -294,6 +294,7 @@ function sectionTabsHTML() {
 }
 
 export async function render(ctx) {
+  await ensureStylesheet("lab-progress.css");
   I = i18nFor(ctx);
   band = ctx.band;
   state.section = SECTION_BY_ID[ctx.route.id] ? ctx.route.id : "";

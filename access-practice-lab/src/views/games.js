@@ -1,7 +1,7 @@
 // Language Game Studio: the hub (/games) and the player (/games/<id>). The controller owns the phases
 // (start -> play -> transfer -> done), autosave and resume, evidence history and achievements; every game
 // module (src/games/<module>.js) owns only its own mechanic. See src/games/engine.js for the contract.
-import { announce, BASE, html } from "../util.js";
+import { announce, BASE, ensureStylesheet, html } from "../util.js";
 import { speak } from "../speech.js";
 import { gameMeta, tierOfSupport, DOMAINS } from "../lab/meta.js";
 import { supportFromQuery } from "../lab/query.js";
@@ -169,6 +169,7 @@ export async function render(ctx) {
   const band = ctx.band;
   const id = ctx.route.id;
   const q = query();
+  if (id) await Promise.all(["lab-v2", "lab-reading", "lab-speaking", "lab-writing"].map((f) => ensureStylesheet(`${f}.css`)));
   if (id && isArcade(id)) {
     LIVE = null;
     ARC = await import("../arcade/host.js");

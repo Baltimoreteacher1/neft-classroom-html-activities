@@ -1,0 +1,460 @@
+/* Language Labs hub, premium layer part 2 (path, author's craft, guides, responsive rules for the whole hub, motion).
+   Link AFTER language-labs-premium.css. Same scoping rule: every selector begins with .llp. Motion lives only inside
+   prefers-reduced-motion: no-preference; the reduce block switches everything off. */
+
+/* ── five-step path ─────────────────────────────────────────────────────── */
+.llp-journey .llp-head {
+  margin-bottom: 0.75rem;
+}
+.llp-path {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  counter-reset: stage;
+}
+.llp-path::before {
+  content: "";
+  position: absolute;
+  inset: 2.75rem 6% auto;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, var(--brand-brass) 0 9px, transparent 9px 18px);
+  opacity: 0.8;
+}
+.llp-station {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 2.75rem;
+  padding: 2.4rem 1.05rem 1.1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.llp-medal {
+  position: absolute;
+  top: -1.9rem;
+  left: 1rem;
+  display: grid;
+  place-items: center;
+  width: 3.8rem;
+  height: 3.8rem;
+  border: 4px solid var(--bg-canvas);
+  border-radius: 50%;
+  background: var(--mi-800);
+  color: var(--ivory);
+  box-shadow: var(--shadow-card);
+}
+.llp-medal .ico {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.llp-medal b {
+  position: absolute;
+  top: -0.45rem;
+  right: -0.55rem;
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  border: 2px solid var(--bg-canvas);
+  border-radius: 50%;
+  background: var(--copper-900);
+  font: 700 0.8rem/1 var(--font-display);
+}
+.llp-station:nth-child(1) .llp-medal {
+  background: var(--reading);
+}
+.llp-station:nth-child(2) .llp-medal {
+  background: var(--listening);
+}
+.llp-station:nth-child(3) .llp-medal {
+  background: var(--writing);
+}
+.llp-station:nth-child(4) .llp-medal {
+  background: var(--speaking);
+}
+.llp-station:nth-child(5) .llp-medal {
+  background: var(--teal);
+}
+.llp-station h3 {
+  font: 700 1.15rem/1.2 var(--font-display);
+}
+.llp-station-do {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.llp-frame {
+  margin-top: auto;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  font: italic 500 0.9rem/1.45 var(--font-serif);
+  color: var(--ink);
+}
+.llp-station-stamp {
+  font: 700 0.78rem/1.3 var(--font);
+  letter-spacing: 0.02em;
+  color: var(--brand-gold);
+}
+
+/* ── author's craft ─────────────────────────────────────────────────────── */
+.llp-craft .llp-head {
+  margin-bottom: 1.25rem;
+}
+.llp-craft-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+.llp-craft-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.3rem 1.35rem 1.2rem;
+  border: 1px solid var(--border-strong);
+  border-top: 4px solid var(--reading);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.llp-craft-card:nth-child(2) {
+  border-top-color: var(--listening);
+}
+.llp-craft-card:nth-child(3) {
+  border-top-color: var(--writing);
+}
+.llp-craft-card:nth-child(4) {
+  border-top-color: var(--speaking);
+}
+.llp-craft-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.llp-craft-num {
+  margin-inline-end: auto;
+  font: 700 1.7rem/1 var(--font-display);
+  color: var(--brand-gold);
+}
+.llp-craft-card h3 {
+  font: 700 1.2rem/1.25 var(--font-display);
+}
+.llp-craft-tip {
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.llp-tag {
+  display: block;
+  margin-bottom: 0.15rem;
+  font: 700 0.7rem/1.2 var(--font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.llp-before {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.llp-before [lang="en"] {
+  color: var(--ink-2);
+  font-style: italic;
+}
+.llp-mentor {
+  padding: 0.85rem 1rem;
+  border-inline-start: 4px solid var(--brand-brass);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--llp-paper);
+  font: 400 1.08rem/1.55 var(--font-serif);
+  color: var(--ink);
+}
+.llp-mentor [lang="en"] {
+  background: linear-gradient(transparent 62%, rgb(245 214 168 / 70%) 62%);
+}
+.llp-craft-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+/* ── guides ─────────────────────────────────────────────────────────────── */
+.llp-guides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+.llp-guide {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+.llp-guide summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3.25rem;
+  padding: 0.8rem 1.25rem;
+  font: 700 1.1rem/1.3 var(--font-display);
+  cursor: pointer;
+}
+.llp-guide summary .ico {
+  color: var(--teal);
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.llp-guide-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.25rem 1.25rem 1.35rem;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.llp-routines {
+  display: grid;
+  gap: 0.85rem;
+}
+.llp-routines li {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.llp-routines li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.llp-routines strong {
+  color: var(--ink);
+}
+.llp-routines p {
+  margin-top: 0.15rem;
+  font-size: 0.94rem;
+}
+.llp-standards {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  font-size: 0.9rem;
+}
+.llp-standards ul {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  list-style: disc;
+  padding-inline-start: 1.1rem;
+}
+
+/* ── responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .llp-path {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding-inline-start: 2.4rem;
+  }
+  .llp-path::before {
+    inset: 1rem auto 1rem 1.15rem;
+    width: 3px;
+    height: auto;
+    background: repeating-linear-gradient(180deg, var(--brand-brass) 0 9px, transparent 9px 18px);
+  }
+  .llp-station {
+    margin-top: 0;
+    padding: 1.1rem 1.15rem 1.1rem 3.4rem;
+  }
+  .llp-medal {
+    top: 0.85rem;
+    left: -2.4rem;
+    width: 3.2rem;
+    height: 3.2rem;
+  }
+  .llp-station-do,
+  .llp-frame {
+    max-width: 60ch;
+  }
+  .llp-frame {
+    margin-top: 0.25rem;
+  }
+}
+@media (max-width: 980px) {
+  .llp-hero {
+    grid-template-columns: 1fr;
+  }
+  .llp-hero-art {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+  .llp-plate,
+  .llp-plate.p1,
+  .llp-plate.p2 {
+    grid-column: auto;
+    width: auto;
+    margin-top: 0;
+  }
+  .llp-plate figcaption {
+    font-size: 0.62rem;
+  }
+}
+@media (max-width: 980px) {
+  .llp-next {
+    display: block;
+  }
+  .llp-next-art {
+    aspect-ratio: 8 / 5;
+    min-height: 0;
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--border-strong);
+  }
+}
+@media (max-width: 760px) {
+  .llp-craft-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .llp-hero-art {
+    display: none;
+  }
+  .llp-hero-cta .btn {
+    flex: 1 1 100%;
+  }
+  .llp-track-name {
+    font-size: 0.68rem;
+  }
+  .llp-stamp {
+    flex-basis: 4.1rem;
+  }
+  .llp-go {
+    align-self: stretch;
+  }
+  .llp-path {
+    padding-inline-start: 2.1rem;
+  }
+  .llp-station {
+    padding-inline-start: 3rem;
+  }
+  .llp-medal {
+    left: -2.1rem;
+    width: 2.9rem;
+    height: 2.9rem;
+  }
+}
+
+/* ── motion: only for people who have not asked for less ─────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .llp-art * {
+    animation-play-state: paused;
+  }
+  .llp-hero .llp-art *,
+  .llp-next .llp-art *,
+  .llp-card:hover .llp-art *,
+  .llp-card:focus-visible .llp-art * {
+    animation-play-state: running;
+  }
+  .llp-spin {
+    animation: llp-spin 16s linear infinite;
+  }
+  .llp-sweep {
+    animation: llp-spin 10s linear infinite;
+  }
+  .llp-drift {
+    animation: llp-drift 9s ease-in-out infinite alternate;
+  }
+  .llp-wave {
+    animation: llp-wave 4.5s linear infinite;
+  }
+  .llp-bob {
+    animation: llp-bob 3.4s ease-in-out infinite alternate;
+  }
+  .llp-pulse,
+  .llp-twinkle {
+    animation: llp-pulse 2.2s ease-in-out infinite alternate;
+  }
+  .llp-scan {
+    animation: llp-scan 4s ease-in-out infinite alternate;
+  }
+  .llp-card:hover,
+  .llp-card:focus-visible {
+    transform: translateY(-4px);
+  }
+  .llp-card:hover .llp-card-cta .ico {
+    transform: translateX(3px);
+  }
+  .llp-card-cta .ico {
+    transition: transform 180ms var(--ease-out);
+  }
+  .llp-stamp.is-earned .llp-seal {
+    animation: llp-press 360ms var(--ease-out) both;
+  }
+  .llp-sparkles i {
+    animation: llp-pulse 1.8s ease-in-out infinite alternate;
+  }
+  .llp-sparkles i:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+  .llp-sparkles i:nth-child(3) {
+    animation-delay: 1s;
+  }
+  @keyframes llp-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes llp-drift {
+    to {
+      transform: translateX(16px);
+    }
+  }
+  @keyframes llp-wave {
+    to {
+      transform: translateX(-48px);
+    }
+  }
+  @keyframes llp-bob {
+    to {
+      transform: translateY(-3px);
+    }
+  }
+  @keyframes llp-pulse {
+    from {
+      opacity: 0.3;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes llp-scan {
+    to {
+      transform: translateY(150px);
+    }
+  }
+  @keyframes llp-press {
+    from {
+      opacity: 0;
+      scale: 1.18;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .llp *,
+  .llp *::before,
+  .llp *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+.llp-hero .llp-go-stack .bi-pair {
+  text-align: left;
+}

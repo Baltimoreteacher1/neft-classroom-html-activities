@@ -76,6 +76,55 @@ export const TENSE_NAMES = {
   empty: ["nothing yet", "nada todavía"],
 };
 
+/** The one-line rule for an item's tense, as [English, Spanish]. Shared by the second try and the hint ladder. */
+export function verbRule(item) {
+  const f = verbForms(item.base);
+  const irregular = Boolean(IRREGULAR[f.base]);
+  return {
+    past: irregular
+      ? [
+          `“${item.base}” is irregular: its past form does not end in -ed.`,
+          `«${item.base}» es irregular: su pasado no termina en -ed.`,
+        ]
+      : ["Regular past: add -ed.", "Pasado regular: agrega -ed."],
+    present: [
+      "Habits and facts use the present: he/she/it adds -s.",
+      "Hábitos y hechos usan el presente: he/she/it agrega -s.",
+    ],
+    future: [
+      "Later: will + the base verb, or am/is/are going to + the base verb.",
+      "Después: will + el verbo base, o am/is/are going to + el verbo base.",
+    ],
+    "past-progressive": [
+      "In progress in the past: was/were + verb-ing.",
+      "En progreso en el pasado: was/were + verbo-ing.",
+    ],
+    "present-progressive": [
+      "In progress right now: am/is/are + verb-ing.",
+      "En progreso ahora: am/is/are + verbo-ing.",
+    ],
+    "past-perfect": [
+      "The earlier of two past events: had + past participle.",
+      "El primero de dos sucesos pasados: had + participio.",
+    ],
+    "present-perfect": [
+      "Started in the past and still true: have/has + past participle.",
+      "Empezó en el pasado y sigue siendo cierto: have/has + participio.",
+    ],
+  }[item.tense];
+}
+
+/** Hint ladder: level 0 asks about the time clue, level 1 gives the rule. Neither states the answer. */
+export function verbHint(item, level = 0) {
+  if (level === 0)
+    return {
+      en: `Look at the time clue “${item.cue}”: is this action before now, now, or later?`,
+      es: `Mira la pista de tiempo «${item.cue}»: ¿la acción es antes de ahora, ahora o después?`,
+    };
+  const rule = verbRule(item);
+  return { en: rule[0], es: rule[1] };
+}
+
 /**
  * Check a verb item: { base, accept: [...answers], tense, cue }. tries = how many checks before this one.
  * Returns { ok, got, message: {en, es}, reveal }.
@@ -106,40 +155,7 @@ export function checkVerb(item, answer, tries = 0) {
       },
     };
   if (tries === 1) {
-    const f = verbForms(item.base);
-    const irregular = Boolean(IRREGULAR[f.base]);
-    const rule = {
-      past: irregular
-        ? [
-            `“${item.base}” is irregular: its past form does not end in -ed.`,
-            `«${item.base}» es irregular: su pasado no termina en -ed.`,
-          ]
-        : ["Regular past: add -ed.", "Pasado regular: agrega -ed."],
-      present: [
-        "Habits and facts use the present: he/she/it adds -s.",
-        "Hábitos y hechos usan el presente: he/she/it agrega -s.",
-      ],
-      future: [
-        "Later: will + the base verb, or am/is/are going to + the base verb.",
-        "Después: will + el verbo base, o am/is/are going to + el verbo base.",
-      ],
-      "past-progressive": [
-        "In progress in the past: was/were + verb-ing.",
-        "En progreso en el pasado: was/were + verbo-ing.",
-      ],
-      "present-progressive": [
-        "In progress right now: am/is/are + verb-ing.",
-        "En progreso ahora: am/is/are + verbo-ing.",
-      ],
-      "past-perfect": [
-        "The earlier of two past events: had + past participle.",
-        "El primero de dos sucesos pasados: had + participio.",
-      ],
-      "present-perfect": [
-        "Started in the past and still true: have/has + past participle.",
-        "Empezó en el pasado y sigue siendo cierto: have/has + participio.",
-      ],
-    }[item.tense];
+    const rule = verbRule(item);
     return {
       ok,
       got,
