@@ -1208,7 +1208,7 @@ function runExtra() {
       const a = reveal(sd);
       const b = reveal(sd);
       if (a.rule !== b.rule) check(`machine: puzzle ${sd} is the same every time`, false, `${a.rule} vs ${b.rule}`);
-      if (a.before.includes(a.rule) && a.rule.length > 3) hiddenOk = false;
+      if (a.before.replace(/Your guess is [^.]+\./, "").includes(a.rule)) hiddenOk = false;
       rules.add(a.rule);
     }
     check("machine: the hidden rule is not in the page before the guess is committed (99 puzzles)", hiddenOk);

@@ -569,3 +569,142 @@ SOLVERS.irrational = (spec) => {
       throw new Error(`unknown irrational type ${spec.type}`);
   }
 };
+
+// ---------------------------------------------------------------------------------------------------------------- transformations
+function applyStep(st, [x, y]) {
+  switch (st.op) {
+    case "translate":
+      return [x.add(I(st.dx)), y.add(I(st.dy))];
+    case "reflect":
+      return st.axis === "x" ? [x, y.neg()] : [x.neg(), y];
+    case "rotate":
+      if (st.deg === 180) return [x.neg(), y.neg()];
+      return st.dir === "cw" ? [y, x.neg()] : [y.neg(), x];
+    case "dilate": {
+      const k = R(st.k);
+      return [x.mul(k), y.mul(k)];
+    }
+    default:
+      throw new Error(`unknown transformation ${st.op}`);
+  }
+}
+SOLVERS.transform = (spec) => {
+  if (spec.type === "congruent") return spec.steps.every((s) => s.op !== "dilate" || eq(R(s.k), ONE)) ? "true" : "false";
+  const p = spec.pts[spec.target].map(R);
+  const q = spec.steps.reduce((acc, st) => applyStep(st, acc), p);
+  return pairOf(q[0], q[1]);
+};
+
+// ---------------------------------------------------------------------------------------------------------------- congruence and similarity
+const SUPP_REL = ["same-side interior", "linear pair"];
+SOLVERS.similarity = (spec) => {
+  switch (spec.type) {
+    case "missing": {
+      const { t1, t2, idx } = spec;
+      const j = [0, 1, 2].find((i) => i !== idx && t1[i] != null && t2[i] != null);
+      need(j != null, "need one pair of known matching sides");
+      if (t2[idx] == null) return fmt(R(t1[idx]).mul(R(t2[j])).div(R(t1[j])));
+      need(t1[idx] == null, "exactly one side must be unknown");
+      return fmt(R(t2[idx]).mul(R(t1[j])).div(R(t2[j])));
+    }
+    case "angle-sum":
+      return fmt(I(180).sub(I(spec.given[0])).sub(I(spec.given[1])));
+    case "exterior":
+      return fmt(spec.ask === "ext" ? I(spec.a).add(I(spec.b)) : I(spec.ext).sub(I(spec.a)));
+    case "parallel":
+      return fmt(SUPP_REL.includes(spec.rel) ? I(180).sub(I(spec.a)) : I(spec.a));
+    case "decision": {
+      const a = spec.t1.map(R).sort((x, y) => cmp(x, y));
+      const b = spec.t2.map(R).sort((x, y) => cmp(x, y));
+      if (a.every((v, i) => eq(v, b[i]))) return "congruent";
+      const similar = eq(a[0].mul(b[1]), a[1].mul(b[0])) && eq(a[0].mul(b[2]), a[2].mul(b[0]));
+      return similar ? "similar but not congruent" : "neither";
+    }
+    default:
+      throw new Error(`unknown similarity type ${spec.type}`);
+  }
+};
+
+// ---------------------------------------------------------------------------------------------------------------- Pythagorean theorem
+/** sqrt(v) rounded to the nearest tenth, in exact integer arithmetic. */
+function roundTenth(v) {
+  const scaled = 100n * v;
+  const r = isqrt(scaled);
+  const t = scaled >= r * r + r + 1n ? r + 1n : r;
+  return `${t / 10n}.${t % 10n}`;
+}
+const sqrtAnswer = (v, round) => {
+  if (round === 1) return roundTenth(v);
+  const r = isqrt(v);
+  need(r * r === v, "expected a perfect square");
+  return String(r);
+};
+SOLVERS.pythag = (spec) => {
+  switch (spec.type) {
+    case "hyp":
+      return sqrtAnswer(BigInt(spec.a) * BigInt(spec.a) + BigInt(spec.b) * BigInt(spec.b), spec.round);
+    case "leg":
+      return sqrtAnswer(BigInt(spec.hyp) * BigInt(spec.hyp) - BigInt(spec.leg) * BigInt(spec.leg), spec.round);
+    case "distance": {
+      const dx = BigInt(spec.p2[0]) - BigInt(spec.p1[0]);
+      const dy = BigInt(spec.p2[1]) - BigInt(spec.p1[1]);
+      return sqrtAnswer(dx * dx + dy * dy, spec.round);
+    }
+    case "converse": {
+      const s = spec.sides.map(BigInt).sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+      return s[0] * s[0] + s[1] * s[1] === s[2] * s[2] ? "true" : "false";
+    }
+    default:
+      throw new Error(`unknown pythag type ${spec.type}`);
+  }
+};
+
+// ---------------------------------------------------------------------------------------------------------------- scatter plots
+/** Exact r^2 of two samples and the sign of their covariance. */
+function r2(xs, ys) {
+  const n = I(xs.length);
+  const mx = sum(xs).div(n);
+  const my = sum(ys).div(n);
+  const cov = sum(xs.map((x, i) => x.sub(mx).mul(ys[i].sub(my))));
+  const vx = sum(xs.map((x) => x.sub(mx).mul(x.sub(mx))));
+  const vy = sum(ys.map((y) => y.sub(my).mul(y.sub(my))));
+  need(sign(vx) > 0 && sign(vy) > 0, "no variation");
+  return { r2: cov.mul(cov).div(vx.mul(vy)), sign: sign(cov) };
+}
+SOLVERS.scatter = (spec) => {
+  switch (spec.type) {
+    case "assoc": {
+      const xs = spec.points.map((p) => R(p[0]));
+      const ys = spec.points.map((p) => R(p[1]));
+      const lin = r2(xs, ys);
+      if (cmp(lin.r2, R("7/10")) >= 0) return lin.sign > 0 ? "positive linear" : "negative linear";
+      const mx = sum(xs).div(I(xs.length));
+      const us = xs.map((x) => x.sub(mx).mul(x.sub(mx)));
+      if (cmp(r2(us, ys).r2, R("4/5")) >= 0) return "non-linear";
+      return "no association";
+    }
+    case "predict": {
+      const m = R(spec.m);
+      const b = R(spec.b);
+      if (spec.find === "y") return fmt(m.mul(R(spec.x)).add(b));
+      if (spec.find === "x") return fmt(R(spec.y).sub(b).div(m));
+      return fmt(abs(R(spec.actual).sub(m.mul(R(spec.x)).add(b))));
+    }
+    case "interpret": {
+      const m = R(spec.m);
+      const b = R(spec.b);
+      if (spec.ask === "slope") return `${dtext(abs(m))} ${sign(m) > 0 ? "more" : "fewer"} ${spec.y[1]} for each extra ${spec.x[0]}`;
+      return `${dtext(b)} ${spec.y[1]} when there are 0 ${spec.x[1]}`;
+    }
+    case "outlier": {
+      const m = R(spec.m);
+      const b = R(spec.b);
+      const res = spec.points.map(([x, y]) => ({ x, y, d: abs(R(y).sub(m.mul(R(x)).add(b))) }));
+      res.sort((p, q) => cmp(q.d, p.d));
+      need(cmp(res[0].d, res[1].d) > 0, "no unique outlier");
+      return pairOf(R(res[0].x), R(res[0].y));
+    }
+    default:
+      throw new Error(`unknown scatter type ${spec.type}`);
+  }
+};

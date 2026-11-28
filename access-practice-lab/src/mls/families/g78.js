@@ -3521,3 +3521,853 @@ FAMILIES.irrational = {
     return done({ family: "irrational", level, ...t.gen({ rng, level, ctx: opts.ctx }) });
   },
 };
+
+// ================================================================================================================ transformations
+const pairF = (x, y) => `(${S(x)},${S(y)})`;
+const applyStep = (st, [x, y]) => {
+  if (st.op === "translate") return [x.add(fr(st.dx)), y.add(fr(st.dy))];
+  if (st.op === "reflect") return st.axis === "x" ? [x, negF(y)] : [negF(x), y];
+  if (st.op === "rotate") return st.deg === 180 ? [negF(x), negF(y)] : st.dir === "ccw" ? [negF(y), x] : [y, negF(x)];
+  return [x.mul(st.kF), y.mul(st.kF)];
+};
+const stepMutants = (st) => {
+  if (st.op === "translate")
+    return [[(p) => [p[0].add(fr(st.dy)), p[1].add(fr(st.dx))], "swaps-the-horizontal-and-vertical-moves"], [(p) => [p[0].sub(fr(st.dx)), p[1].sub(fr(st.dy))], "moves-in-the-opposite-direction"], [(p) => [p[0].add(fr(st.dx)), p[1].sub(fr(st.dy))], "gets-the-vertical-direction-wrong"]];
+  if (st.op === "reflect") {
+    const wrongAxis = st.axis === "x" ? (p) => [negF(p[0]), p[1]] : (p) => [p[0], negF(p[1])];
+    return [[wrongAxis, "reflects-over-the-wrong-axis"], [(p) => [negF(p[0]), negF(p[1])], "changes-the-signs-of-both-coordinates"], [(p) => [p[1], p[0]], "swaps-the-coordinates"]];
+  }
+  if (st.op === "rotate") {
+    if (st.deg === 180) return [[(p) => [negF(p[0]), p[1]], "reflects-instead-of-rotating"], [(p) => [p[0], negF(p[1])], "reflects-instead-of-rotating"], [(p) => [p[1], negF(p[0])], "rotates-90-instead-of-180"]];
+    return [[(p) => (st.dir === "ccw" ? [p[1], negF(p[0])] : [negF(p[1]), p[0]]), "rotates-the-wrong-direction"], [(p) => [p[1], p[0]], "swaps-the-coordinates-without-changing-a-sign"], [(p) => [negF(p[0]), negF(p[1])], "rotates-180-instead-of-90"]];
+  }
+  const k = st.kF;
+  return [[(p) => [p[0].add(k), p[1].add(k)], "adds-the-scale-factor"], [(p) => [p[0].mul(k), p[1]], "scales-only-the-x-coordinate"], [(p) => [p[0].div(k), p[1].div(k)], "divides-instead-of-multiplying"]];
+};
+const unitsW = (n) => `${Math.abs(n)} ${Math.abs(n) === 1 ? "unit" : "units"}`;
+const stepPhrase = (st) => {
+  if (st.op === "translate") {
+    const parts = [];
+    if (st.dx) parts.push(`${unitsW(st.dx)} ${st.dx > 0 ? "right" : "left"}`);
+    if (st.dy) parts.push(`${unitsW(st.dy)} ${st.dy > 0 ? "up" : "down"}`);
+    return `translated ${parts.join(" and ")}`;
+  }
+  if (st.op === "reflect") return `reflected over the ${st.axis}-axis`;
+  if (st.op === "rotate") return st.deg === 180 ? "rotated 180° about the origin" : `rotated 90° ${st.dir === "cw" ? "clockwise" : "counterclockwise"} about the origin`;
+  return `dilated by a scale factor of ${T(st.kF, true)} from the origin`;
+};
+const stepRule = (st) => {
+  if (st.op === "translate") return `A translation adds ${num(st.dx)} to x and ${num(st.dy)} to y.`;
+  if (st.op === "reflect") return st.axis === "x" ? "A reflection over the x-axis keeps x and changes the sign of y." : "A reflection over the y-axis changes the sign of x and keeps y.";
+  if (st.op === "rotate") return st.deg === 180 ? "A rotation of 180° about the origin changes the sign of both coordinates." : st.dir === "cw" ? "A rotation of 90° clockwise about the origin sends (x, y) to (y, −x)." : "A rotation of 90° counterclockwise about the origin sends (x, y) to (−y, x).";
+  return `A dilation from the origin multiplies both coordinates by the scale factor, ${T(st.kF, true)}.`;
+};
+const specStep = (st) => (st.op === "dilate" ? { op: "dilate", k: S(st.kF) } : st);
+function makeShape(rng, level, even) {
+  const tri = level === 1 || rng.chance(0.55);
+  for (let t = 0; t < 400; t++) {
+    const step = even ? 2 : 1;
+    const R = (lo, hi) => step * rng.int(lo, hi);
+    if (tri) {
+      const pts = [[R(-5, 4), R(-5, 4)], [R(-5, 5), R(-5, 5)], [R(-5, 5), R(-5, 5)]];
+      const area2 = (pts[1][0] - pts[0][0]) * (pts[2][1] - pts[0][1]) - (pts[2][0] - pts[0][0]) * (pts[1][1] - pts[0][1]);
+      if (area2 !== 0 && new Set(pts.map((p) => p.join())).size === 3) return { names: "ABC", pts };
+    } else {
+      const x = R(-5, 2);
+      const y = R(-5, 2);
+      const w = R(1, 4);
+      const h = R(1, 4);
+      if (w !== h || rng.chance(0.3)) return { names: "ABCD", pts: [[x, y], [x + w, y], [x + w, y + h], [x, y + h]] };
+    }
+  }
+  return { names: "ABC", pts: [[1, 1], [4, 1], [1, 5]] };
+}
+function randomSteps(rng, level) {
+  const tr = () => ({ op: "translate", dx: nz(rng, -6, 6), dy: rng.pick([0, nz(rng, -6, 6), nz(rng, -5, 5)]) });
+  const rf = () => ({ op: "reflect", axis: rng.pick(["x", "y"]) });
+  const ro = () => (rng.chance(0.3) ? { op: "rotate", deg: 180, dir: "" } : { op: "rotate", deg: 90, dir: rng.pick(["cw", "ccw"]) });
+  const di = () => ({ op: "dilate", kF: rng.pick([fr(2), fr(3), fr(1, 2), fr(2)]) });
+  if (level === 1) return [rng.chance(0.5) ? tr() : rf()];
+  if (level === 2) return rng.pick([[ro()], [di()], [rf(), tr()], [tr(), rf()], [ro()], [di()]]);
+  const a = [tr, rf, ro, di];
+  const first = rng.pick(a)();
+  let second = rng.pick(a)();
+  while (second.op === first.op) second = rng.pick(a)();
+  return [first, second];
+}
+const shapeVisual = (names, pts, alt) => {
+  const bx = box(Math.max(...pts.map((p) => p[0])) + 1, Math.max(...pts.map((p) => p[1])) + 1, Math.min(...pts.map((p) => p[0])) - 1, Math.min(...pts.map((p) => p[1])) - 1);
+  return { kind: "coord", alt, xmin: bx.xmin, xmax: bx.xmax, ymin: bx.ymin, ymax: bx.ymax, step: bx.step, points: [], lines: [], polys: [{ pts: pts.map(([x, y], i) => ({ x: String(x), y: String(y), label: names[i] })), label: names }], labelAxes: ["x", "y"] };
+};
+const shapeText = (names, pts) => {
+  const parts = pts.map(([x, y], i) => `${names[i]}(${num(x)}, ${num(y)})`);
+  return parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
+};
+const shapeNoun = (names) => (names.length === 3 ? "Triangle" : "Rectangle");
+const trImage = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    let steps;
+    let shape;
+    for (let t = 0; t < 400; t++) {
+      steps = randomSteps(rng, level);
+      const hasHalf = steps.some((s) => s.op === "dilate" && s.kF.d !== 1);
+      shape = makeShape(rng, level, hasHalf);
+      const target = rng.int(0, shape.pts.length - 1);
+      shape.target = target;
+      const imgs = shape.pts.map((p) => steps.reduce((q, s) => applyStep(s, q), [fr(p[0]), fr(p[1])]));
+      if (imgs.every(([x, y]) => Math.abs(x.n / x.d) <= 14 && Math.abs(y.n / y.d) <= 14) && imgs.every(([x, y]) => x.d === 1 && y.d === 1)) break;
+    }
+    const { names, pts, target } = shape;
+    const v = names[target];
+    let cur = [fr(pts[target][0]), fr(pts[target][1])];
+    const work = [];
+    for (const st of steps) {
+      const next = applyStep(st, cur);
+      work.push(`${stepRule(st)} The point (${T(cur[0])}, ${T(cur[1])}) goes to (${T(next[0])}, ${T(next[1])}).`);
+      cur = next;
+    }
+    const noun = shapeNoun(names);
+    const seq = steps.map(stepPhrase);
+    const did = seq.length === 1 ? seq[0] : `${seq[0]}, and then ${seq[1]}`;
+    const prime = `${names.split("").map((c) => `${c}′`).join("")}`;
+    const ans = pairF(cur[0], cur[1]);
+    const cands = [];
+    steps.forEach((st, i) => {
+      for (const [fn, tag] of stepMutants(st)) {
+        let q = [fr(pts[target][0]), fr(pts[target][1])];
+        steps.forEach((s, j) => {
+          q = j === i ? fn(q) : applyStep(s, q);
+        });
+        cands.push([pairF(q[0], q[1]), tag]);
+      }
+    });
+    const x0 = pts[target][0];
+    const y0 = pts[target][1];
+    cands.push([pairF(fr(x0), fr(y0)), "forgets-to-transform-the-point"]);
+    cands.push([pairF(cur[0].add(fr(1)), cur[1]), "arithmetic-slip-in-x"]);
+    cands.push([pairF(cur[0], cur[1].add(fr(1))), "arithmetic-slip-in-y"]);
+    return {
+      spec: { type: "transform", names, pts, target, steps: steps.map(specStep) },
+      stem: ST(`${noun} ${names} has vertices ${shapeText(names, pts)}. It is ${did}. The new vertices are ${prime}.`, `${noun} ${names} has vertices ${shapeText(names, pts)}. It is ${did}. The image is ${prime}.`, `${noun} ${names} has vertices ${shapeText(names, pts)}. It is ${did}, producing the image ${prime}.`),
+      ask: ST(`What are the coordinates of ${v}′? Write them as (x,y).`, `What are the coordinates of ${v}′? Write them as (x,y).`, `Determine the coordinates of ${v}′. Write them as an ordered pair (x,y).`),
+      expr: null,
+      answer: { value: ans, kind: "pair" },
+      work: [...work, `So ${v}′ is at ${ans}.`],
+      visual: shapeVisual(names, pts, `A coordinate grid with ${noun.toLowerCase()} ${names}: ${shapeText(names, pts)}.`),
+      distractors: DS(ans, cands),
+      hints: H("Every point of a shape moves by the same rule, so you can follow one vertex through each step.", "Write the rule for each transformation as a change to (x, y), then apply the steps to the vertex in order."),
+    };
+  },
+};
+
+const trCongruent = {
+  lv: [3],
+  gen({ rng, level }) {
+    const withDil = rng.chance(0.5);
+    const rigid = () => rng.pick([{ op: "translate", dx: nz(rng, -6, 6), dy: nz(rng, -6, 6) }, { op: "reflect", axis: rng.pick(["x", "y"]) }, { op: "rotate", deg: 90, dir: rng.pick(["cw", "ccw"]) }, { op: "rotate", deg: 180, dir: "" }]);
+    const steps = [rigid(), rigid()];
+    if (rng.chance(0.4)) steps.push(rigid());
+    if (withDil) steps.splice(rng.int(0, steps.length), 0, { op: "dilate", kF: rng.pick([fr(2), fr(3), fr(1, 2)]) });
+    const shape = makeShape(rng, 1, withDil && steps.some((s) => s.kF && s.kF.d !== 1));
+    const names = shape.names;
+    const noun = shapeNoun(names);
+    const prime = names.split("").map((c) => `${c}′`).join("");
+    const seq = steps.map(stepPhrase);
+    const did = `${seq.slice(0, -1).join(", ")}, and then ${seq[seq.length - 1]}`;
+    const congruent = !withDil;
+    const dil = steps.find((s) => s.op === "dilate");
+    return {
+      spec: { type: "congruent", steps: steps.map(specStep) },
+      stem: ST(`${noun} ${names} has vertices ${shapeText(names, shape.pts)}. It is ${did}. The new shape is ${prime}.`, `${noun} ${names} has vertices ${shapeText(names, shape.pts)}. It is ${did}. The image is ${prime}.`, `${noun} ${names} has vertices ${shapeText(names, shape.pts)}. It is ${did}, producing the image ${prime}.`),
+      ask: ST(`Is ${prime} congruent to ${names}?`, `Is the image ${prime} congruent to the original ${names}?`, `Is the image ${prime} congruent to the original figure ${names}?`),
+      expr: null,
+      answer: { value: congruent ? "true" : "false", kind: "bool", text: congruent ? "Yes. Translations, reflections and rotations keep every length and angle the same." : `No. The dilation by a scale factor of ${T(dil.kF, true)} changes the side lengths.` },
+      work: congruent ? ["Translations, reflections and rotations are rigid motions. They keep side lengths and angle measures the same.", "All the steps are rigid motions, so the image is congruent to the original."] : ["Translations, reflections and rotations are rigid motions. They keep side lengths and angle measures the same.", `A dilation by a scale factor of ${T(dil.kF, true)} changes the side lengths. The image is similar to the original but not congruent.`],
+      visual: shapeVisual(names, shape.pts, `A coordinate grid with ${noun.toLowerCase()} ${names}: ${shapeText(names, shape.pts)}.`),
+      distractors: dist(congruent ? [["No. The image is in a different place.", "thinks-moving-a-figure-makes-it-not-congruent"], ["No. The image is flipped or turned.", "thinks-flipping-or-turning-makes-it-not-congruent"], ["No. The coordinates are different.", "thinks-different-coordinates-mean-not-congruent"]] : [["Yes. The image has the same shape.", "thinks-same-shape-means-congruent"], ["Yes. The matching angles are equal.", "thinks-equal-angles-mean-congruent"], ["Yes. Every step is a slide, flip or turn.", "overlooks-the-dilation"]]),
+      hints: H("Congruent figures have the same size and the same shape. Some transformations keep the size and others change it.", "Look at each step. Does it keep the side lengths the same?"),
+    };
+  },
+};
+
+FAMILIES.transform = {
+  title: "Transformations",
+  grades: [8],
+  defaults: {},
+  gen(rng, params, opts) {
+    const level = opts.level;
+    const t = pickType(rng, level, [trImage, trImage, trCongruent]);
+    return done({ family: "transform", level, ...t.gen({ rng, level, ctx: opts.ctx }) });
+  },
+};
+
+// ================================================================================================================ congruence and similarity
+const RIGHT = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10], [9, 12, 15]];
+const OBLIQUE = [[4, 5, 6], [6, 7, 8], [5, 6, 7], [7, 8, 9], [4, 6, 8]];
+const sideList = (arr) => (arr.length === 3 ? `${arr[0]}, ${arr[1]} and ${arr[2]}` : arr.join(", "));
+const smMissing = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    let k;
+    let base;
+    let right;
+    for (let t = 0; t < 400; t++) {
+      right = level < 3 || rng.chance(0.4);
+      k = level === 1 ? fr(rng.pick([2, 3, 4])) : level === 2 ? rng.pick([fr(2), fr(3), fr(3, 2), fr(1, 2), fr(5, 2), fr(4)]) : rng.pick([fr(3, 2), fr(5, 2), fr(7, 2), fr(3, 4)]);
+      base = rng.pick(right ? RIGHT : OBLIQUE);
+      if (level === 3) {
+        // allow decimals in the image
+        break;
+      }
+      if (base.every((s) => k.mul(fr(s)).d === 1)) break;
+    }
+    const t1 = base.map(String);
+    const t2F = base.map((s) => k.mul(fr(s)));
+    const idx = rng.int(0, 2);
+    const which = level >= 2 && rng.chance(0.5) ? "t1" : "t2";
+    const unknownInSecond = which === "t2";
+    const shown1 = t1.map((s, i) => (!unknownInSecond && i === idx ? "x" : s));
+    const shown2 = t2F.map((f, i) => (unknownInSecond && i === idx ? "x" : T(f, true)));
+    const j = [0, 1, 2].find((i) => i !== idx && (level !== 3 || true));
+    const ans = unknownInSecond ? t2F[idx] : fr(base[idx]);
+    const spec1 = base.map((s, i) => (!unknownInSecond && i === idx ? null : s));
+    const spec2 = t2F.map((f, i) => (unknownInSecond && i === idx ? null : S(f)));
+    const dm = true;
+    const visSides = unknownInSecond ? t2F : base.map((s) => fr(s));
+    const visShown = unknownInSecond ? shown2 : shown1;
+    const bigger = unknownInSecond ? t2F : base.map((s) => fr(s));
+    const scaleKnown = unknownInSecond ? t2F[j].div(fr(base[j])) : fr(base[j]).div(t2F[j]);
+    const wrong = unknownInSecond
+      ? [[fr(base[idx]).add(t2F[j].sub(fr(base[j]))), "adds-the-same-amount-instead-of-multiplying"], [fr(base[idx]).div(k), "uses-the-inverse-of-the-scale-factor"], [fr(base[idx]), "reports-the-matching-side-of-the-first-triangle"], [t2F[j], "reports-a-known-side-of-the-second-triangle"]]
+      : [[t2F[idx].sub(t2F[j].sub(fr(base[j]))), "subtracts-the-same-amount-instead-of-dividing"], [t2F[idx].mul(k), "uses-the-inverse-of-the-scale-factor"], [t2F[idx], "reports-the-matching-side-of-the-second-triangle"], [fr(base[j]), "reports-a-known-side-of-the-first-triangle"]];
+    const unitText = "centimeters";
+    const dims = visSides.map((f) => f.n / f.d);
+    const aTri = { a: dims[0], b: dims[1], c: dims[2] };
+    return {
+      spec: { type: "missing", t1: spec1, t2: spec2, idx, which },
+      stem: ST(
+        `Triangle ABC has sides ${sideList(shown1)} centimeters. Triangle DEF is similar to triangle ABC. Its sides, in the same order, are ${sideList(shown2)} centimeters.`,
+        `Triangle ABC has side lengths ${sideList(shown1)} centimeters. Triangle DEF is similar to triangle ABC, and its side lengths in the same order are ${sideList(shown2)} centimeters.`,
+        `Triangle ABC has side lengths ${sideList(shown1)} centimeters and is similar to triangle DEF, whose corresponding side lengths are ${sideList(shown2)} centimeters.`,
+      ),
+      ask: ST("What is x?", "What is the value of x, in centimeters?", "Determine the value of x, in centimeters."),
+      expr: null,
+      answer: A(ans, { dec: dm, unit: unitText }),
+      work: [`The scale factor from ${unknownInSecond ? "ABC to DEF" : "DEF to ABC"} is found from two sides that you know: ${T(unknownInSecond ? t2F[j] : fr(base[j]), true)} ${DIVIDE} ${T(unknownInSecond ? fr(base[j]) : t2F[j], true)} is ${T(scaleKnown, true)}.`, `Multiply the matching known side by the scale factor: ${T(unknownInSecond ? fr(base[idx]) : t2F[idx], true)} ${TIMES} ${T(scaleKnown, true)} is ${T(ans, true)}.`],
+      visual: { kind: "triangle", alt: `Triangle ${unknownInSecond ? "DEF" : "ABC"} with side lengths ${sideList(visShown)} centimeters.`, a: aTri.a, b: aTri.b, c: aTri.c, right, labels: visShown.map((s) => (s === "x" ? "x" : `${s} cm`)), unit: "cm" },
+      distractors: D(ans, wrong, dm),
+      hints: H("Similar triangles have matching sides in the same ratio, so one scale factor connects every pair of matching sides.", "Use the two matching sides that you know to find the scale factor, then use it on the matching side of the unknown one."),
+    };
+  },
+};
+
+const smAngleSum = {
+  lv: [1, 2],
+  gen({ rng, level }) {
+    const kind = level === 1 ? "general" : rng.pick(["general", "isosceles", "right"]);
+    let given;
+    let story;
+    if (kind === "isosceles") {
+      const b = rng.int(25, 80);
+      given = [b, b];
+      story = ST(`A triangle has two angles that are the same. Each of them is ${b}°.`, `An isosceles triangle has two equal angles. Each of them measures ${b}°.`, `An isosceles triangle has two congruent angles, each measuring ${b}°.`);
+    } else if (kind === "right") {
+      const a = rng.int(20, 70);
+      given = [90, a];
+      story = ST(`A triangle has a right angle. Another angle is ${a}°.`, `A right triangle has an angle that measures ${a}°.`, `A right triangle has one acute angle that measures ${a}°.`);
+    } else {
+      let a;
+      let b;
+      do {
+        a = rng.int(20, 90);
+        b = rng.int(20, 90);
+      } while (a + b >= 165 || a + b <= 60 || a === b);
+      given = [a, b];
+      story = ST(`A triangle has two angles. They are ${a}° and ${b}°.`, `Two angles of a triangle measure ${a}° and ${b}°.`, `Two interior angles of a triangle measure ${a}° and ${b}°.`);
+    }
+    const ans = 180 - given[0] - given[1];
+    const [a, b] = given;
+    const askT = kind === "isosceles" ? ST("What is the third angle?", "What is the measure of the third angle, in degrees?", "Determine the measure of the third angle, in degrees.") : ST("What is the third angle?", "What is the measure of the third angle, in degrees?", "Determine the measure of the third angle, in degrees.");
+    return {
+      spec: { type: "angle-sum", given },
+      stem: story,
+      ask: askT,
+      expr: null,
+      answer: A(fr(ans), { unit: "degrees" }),
+      work: ["The angles of a triangle add up to 180°.", `${E(sumTxt(a, b), a + b)}.`, `${E(subTxt(180, a + b), ans)}.`],
+      visual: null,
+      distractors: D(fr(ans), [[fr(180 - a), "forgets-one-of-the-given-angles"], [fr(a + b), "adds-the-given-angles-and-stops"], [fr(360 - a - b), "uses-360-degrees"], [fr(90 - Math.min(a + b, 89)), "uses-90-degrees"]]),
+      hints: H("The three angles of any triangle always add up to the same total.", "Add the two angles you know, then subtract the sum from the total."),
+    };
+  },
+};
+
+const smExterior = {
+  lv: [2, 3],
+  gen({ rng, level }) {
+    const ask = level === 2 ? "ext" : rng.pick(["ext", "remote"]);
+    let a;
+    let b;
+    do {
+      a = rng.int(25, 80);
+      b = rng.int(25, 85);
+    } while (a + b >= 170);
+    const ext = a + b;
+    return {
+      spec: ask === "ext" ? { type: "exterior", ask, a, b } : { type: "exterior", ask, ext, a },
+      stem: ask === "ext" ? ST(`A triangle has two inside angles of ${a}° and ${b}°. One side is made longer. This makes an outside angle next to the third inside angle.`, `Two interior angles of a triangle measure ${a}° and ${b}°. One side is extended to form an exterior angle at the third vertex.`, `Two interior angles of a triangle measure ${a}° and ${b}°. A side is extended to form an exterior angle at the third vertex.`) : ST(`A triangle has an outside angle of ${ext}°. One of the two far inside angles is ${a}°.`, `A triangle has an exterior angle of ${ext}°. One of the two remote interior angles measures ${a}°.`, `An exterior angle of a triangle measures ${ext}°. One of its two remote interior angles measures ${a}°.`),
+      ask: ask === "ext" ? ST("What is the outside angle?", "What is the measure of the exterior angle, in degrees?", "Determine the measure of the exterior angle, in degrees.") : ST("What is the other far inside angle?", "What is the measure of the other remote interior angle, in degrees?", "Determine the measure of the other remote interior angle, in degrees."),
+      expr: null,
+      answer: A(fr(ask === "ext" ? ext : ext - a), { unit: "degrees" }),
+      work: ask === "ext" ? ["An exterior angle equals the sum of the two remote interior angles.", `${E(sumTxt(a, b), ext)}.`] : ["An exterior angle equals the sum of the two remote interior angles.", `${E(subTxt(ext, a), ext - a)}.`],
+      visual: null,
+      distractors: ask === "ext" ? D(fr(ext), [[fr(180 - ext), "finds-the-third-interior-angle-instead"], [fr(180 - a), "uses-only-one-of-the-angles"], [fr(Math.abs(a - b)), "subtracts-the-angles"], [fr(360 - ext), "uses-360-degrees"]]) : D(fr(ext - a), [[fr(180 - ext), "finds-the-third-interior-angle-instead"], [fr(180 - a), "uses-the-straight-angle-with-one-angle"], [fr(ext + a), "adds-instead-of-subtracting"], [fr(360 - ext - a), "uses-360-degrees"]]),
+      hints: H("An exterior angle and the inside angle next to it make a straight line. Both facts about triangles help.", "Use the rule that the exterior angle equals the sum of the two inside angles that are not next to it."),
+    };
+  },
+};
+
+const REL = { corresponding: ["corresponding angles", false], "alternate interior": ["alternate interior angles", false], "alternate exterior": ["alternate exterior angles", false], "same-side interior": ["same-side interior angles", true], "linear pair": ["a linear pair", true] };
+const smParallel = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const rels = level === 1 ? ["corresponding", "alternate interior", "same-side interior"] : Object.keys(REL);
+    const rel = rng.pick(rels);
+    let a;
+    do a = rng.int(2, 34) * 5;
+    while (a === 90 || a >= 175);
+    const supp = REL[rel][1];
+    const ans = supp ? 180 - a : a;
+    const ctx = rel === "linear pair" ? ST(`Two angles make a straight line. One of them is ${a}°.`, `Two angles form a linear pair. One of them measures ${a}°.`, `Two angles form a linear pair, and one of them measures ${a}°.`) : ST(`Two parallel lines are cut by a third line. One angle is ${a}°. Another angle is called ${REL[rel][0]} with it.`, `Two parallel lines are cut by a transversal. One angle measures ${a}°. A second angle forms ${REL[rel][0]} with it.`, `Two parallel lines are cut by a transversal. One angle measures ${a}°. A second angle and the first form ${REL[rel][0]}.`);
+    return {
+      spec: { type: "parallel", rel, a },
+      stem: ctx,
+      ask: ST("What is the other angle, in degrees?", "What is the measure of the second angle, in degrees?", "Determine the measure of the second angle, in degrees."),
+      expr: null,
+      answer: A(fr(ans), { unit: "degrees" }),
+      work: supp ? [`${cap(REL[rel][0])} ${rel === "linear pair" ? "are" : "between parallel lines are"} supplementary: they add to 180°.`, `${E(subTxt(180, a), ans)}.`] : [`${cap(REL[rel][0])} between parallel lines are equal.`, `So the second angle measures ${a}°.`],
+      visual: { kind: "angle", alt: `An angle that measures ${a} degrees.`, deg: a, label: `${a}°`, protractor: false },
+      distractors: D(fr(ans), supp ? [[fr(a), "treats-supplementary-angles-as-equal"], [fr(a < 90 ? 90 - a : 360 - a), "treats-the-angles-as-complementary"], [fr(360 - a), "uses-360-degrees"], [fr(180 + a), "adds-to-180-instead-of-subtracting"]] : [[fr(180 - a), "treats-equal-angles-as-supplementary"], [fr(a < 90 ? 90 - a : 360 - a), "treats-the-angles-as-complementary"], [fr(360 - a), "uses-360-degrees"], [fr(2 * a), "doubles-the-angle"]]),
+      hints: H("When a line cuts two parallel lines, the angles it makes come in two sizes: some are equal and the rest add to 180 degrees.", `Decide whether ${REL[rel][0]} are equal or add up to 180°, then find the second angle.`),
+    };
+  },
+};
+
+const smDecision = {
+  lv: [2, 3],
+  gen({ rng, level }) {
+    const kind = rng.pick(level === 2 ? ["congruent", "similar", "similar", "neither"] : ["similar", "neither", "neither", "congruent", "similar"]);
+    const base = rng.pick([...RIGHT, ...OBLIQUE]);
+    let t1 = [...base];
+    let t2;
+    if (kind === "congruent") t2 = rng.shuffle([...base]);
+    else if (kind === "similar") {
+      const k = rng.pick([2, 3, 2]);
+      t2 = rng.shuffle(base.map((s) => s * k));
+    } else if (rng.chance(0.6)) {
+      const c = rng.int(1, 3);
+      t2 = rng.shuffle(base.map((s) => s + c));
+    } else {
+      t2 = [...base];
+      t2[rng.int(0, 2)] += rng.pick([1, 2, 3]);
+      t2 = rng.shuffle(t2);
+    }
+    t1 = rng.shuffle(t1);
+    const ok = (t) => t[0] + t[1] > t[2] && t[0] + t[2] > t[1] && t[1] + t[2] > t[0];
+    if (!ok(t1) || !ok(t2)) return smDecision.gen({ rng, level });
+    const sortN = (t) => [...t].sort((a, b) => a - b);
+    const s1 = sortN(t1);
+    const s2 = sortN(t2);
+    const congruent = s1.every((v, i) => v === s2[i]);
+    const similar = !congruent && s1[0] * s2[1] === s1[1] * s2[0] && s1[0] * s2[2] === s1[2] * s2[0];
+    const real = congruent ? "congruent" : similar ? "similar but not congruent" : "neither";
+    const ASK = ST("Are the two triangles congruent, similar, or neither?", "Are the two triangles congruent, similar but not congruent, or neither?", "Are the two triangles congruent, similar but not congruent, or neither?");
+    const pool = [["congruent", "thinks-same-shape-means-congruent"], ["similar but not congruent", real === "neither" ? "thinks-adding-the-same-amount-keeps-the-shape" : "thinks-different-side-lengths-mean-similar-only"], ["neither", real === "similar but not congruent" ? "thinks-different-side-lengths-mean-not-similar" : "thinks-matching-sides-are-not-enough"], ["not enough information", "thinks-the-angles-are-needed-too"]].filter(([t]) => t !== real);
+    return {
+      spec: { type: "decision", t1, t2 },
+      stem: ST(`Triangle P has sides ${sideList(t1)} centimeters. Triangle Q has sides ${sideList(t2)} centimeters.`, `Triangle P has side lengths ${sideList(t1)} centimeters. Triangle Q has side lengths ${sideList(t2)} centimeters.`, `Triangle P has side lengths ${sideList(t1)} centimeters, and triangle Q has side lengths ${sideList(t2)} centimeters.`),
+      ask: ASK,
+      expr: null,
+      answer: { value: real, kind: "text" },
+      work: congruent ? [`Put each list in order: ${sideList(s1)} and ${sideList(s2)}.`, "The side lengths match exactly, so the triangles are congruent."] : similar ? [`Put each list in order: ${sideList(s1)} and ${sideList(s2)}.`, `Divide matching sides: ${T(fr(s2[0], s1[0]))} for the shortest sides, and the same number for the others.`, "Every side is multiplied by the same number, so the triangles are similar, but the sides are not equal, so they are not congruent."] : [`Put each list in order: ${sideList(s1)} and ${sideList(s2)}.`, `Divide matching sides: ${T(fr(s2[0], s1[0]))}, ${T(fr(s2[1], s1[1]))} and ${T(fr(s2[2], s1[2]))}. The ratios are not all the same.`, "The sides are not equal and not in the same ratio, so the triangles are neither congruent nor similar."],
+      visual: null,
+      distractors: pool.slice(0, 3).map(([text, misconception]) => ({ text, misconception })),
+      hints: H("Congruent triangles have equal matching sides. Similar triangles have matching sides in the same ratio.", "Put the sides of each triangle in order, then compare the matching sides by subtracting (equal?) and by dividing (same ratio?)."),
+    };
+  },
+};
+
+FAMILIES.similarity = {
+  title: "Congruence and similarity",
+  grades: [8],
+  defaults: {},
+  gen(rng, params, opts) {
+    const level = opts.level;
+    const t = pickType(rng, level, [smMissing, smMissing, smAngleSum, smExterior, smParallel, smParallel, smDecision]);
+    return done({ family: "similarity", level, ...t.gen({ rng, level, ctx: opts.ctx }) });
+  },
+};
+
+// ================================================================================================================ Pythagorean theorem
+const PY = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25], [20, 21, 29]];
+const exactOrRound = (v) => {
+  const r = isqrt(v);
+  return r * r === v ? { exact: true, text: String(r), kind: "int" } : { exact: false, text: roundSqrt(v, 1), kind: "dec" };
+};
+const STORIES = {
+  hyp: [
+    { ctx: "ladder", mk: (a, b, u) => ST(`A ladder leans on a wall. The bottom of the ladder is ${a} ${u} from the wall. The top reaches ${b} ${u} up the wall. The wall and the ground make a right angle.`, `A ladder leans against a wall. The bottom of the ladder is ${a} ${u} from the wall, and the top reaches ${b} ${u} up the wall.`, `A ladder leans against a vertical wall. Its base is ${a} ${u} from the wall, and its top reaches a height of ${b} ${u}.`), q: ST("How long is the ladder?", "How long is the ladder?", "Determine the length of the ladder.") },
+    { ctx: "screen", mk: (a, b, u) => ST(`A TV screen is a rectangle. It is ${a} ${u} wide and ${b} ${u} tall.`, `A TV screen is a rectangle that is ${a} ${u} wide and ${b} ${u} tall.`, `A rectangular TV screen measures ${a} ${u} wide and ${b} ${u} tall.`), q: ST("How long is the diagonal of the screen?", "What is the length of the diagonal of the screen?", "Determine the length of the diagonal of the screen.") },
+    { ctx: "field", mk: (a, b, u) => ST(`A field is a rectangle. It is ${a} ${u} long and ${b} ${u} wide. A path goes from one corner to the opposite corner.`, `A rectangular field is ${a} ${u} long and ${b} ${u} wide. A path crosses the field from one corner to the opposite corner.`, `A rectangular field measures ${a} ${u} by ${b} ${u}. A straight path joins two opposite corners.`), q: ST("How long is the path?", "How long is the path across the field?", "Determine the length of the path across the field.") },
+    { ctx: "ramp", mk: (a, b, u) => ST(`A ramp goes up to a platform. The ramp starts ${a} ${u} away from the platform. The platform is ${b} ${u} high.`, `A ramp rises to a platform that is ${b} ${u} high. The bottom of the ramp is ${a} ${u} from the platform.`, `A straight ramp rises to a platform ${b} ${u} high. The base of the ramp is ${a} ${u} from the platform.`), q: ST("How long is the ramp?", "How long is the ramp?", "Determine the length of the ramp.") },
+  ],
+};
+const pyHyp = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const exactMode = level < 3 ? true : rng.chance(0.3);
+    let a;
+    let b;
+    if (exactMode) {
+      const [x, y] = rng.pick(level === 1 ? PY.slice(0, 2) : PY);
+      const k = level === 1 ? rng.pick([1, 2]) : rng.pick([1, 1, 2, 3]);
+      a = x * k;
+      b = y * k;
+      if (rng.chance(0.5)) [a, b] = [b, a];
+    } else {
+      do {
+        a = rng.int(3, 15);
+        b = rng.int(3, 15);
+      } while (a === b || isqrt(a * a + b * b) ** 2 === a * a + b * b);
+    }
+    const v = a * a + b * b;
+    const res = exactOrRound(v);
+    const story = rng.pick(STORIES.hyp);
+    const u = rng.pick(["feet", "meters", "inches", "centimeters"]);
+    const stem = story.mk(a, b, u);
+    const ask = res.exact ? story.q : ST(`${story.q.plain.replace("?", "")} Round to the nearest tenth.`, `${story.q.standard.replace("?", "")}? Round to the nearest tenth.`, `${story.q.rich.replace(".", "")}. Round to the nearest tenth.`);
+    const cands = res.exact
+      ? [[String(a + b), "adds-the-legs"], [String(v), "forgets-to-take-the-square-root"], [String(Math.max(a, b) + 1), "guesses-near-the-longer-leg"], [String(Math.abs(a - b)), "subtracts-the-legs"]]
+      : [[String(a + b), "adds-the-legs"], [String(v), "forgets-to-take-the-square-root"], [roundSqrt(Math.abs(b * b - a * a) || 1, 1), "subtracts-the-squares"], [roundSqrt(v, 0).replace(/\.0*$/, ""), "rounds-to-the-nearest-whole-number"], [roundSqrt(v, 2), "rounds-to-the-wrong-place"]];
+    const dd = res.exact ? DS(res.text, cands) : DS(res.text, cands.filter(([t]) => t !== res.text));
+    return {
+      spec: { type: "hyp", a, b, round: res.exact ? 0 : 1 },
+      stem,
+      ask,
+      expr: null,
+      answer: { value: res.text, kind: res.kind, unit: u },
+      work: [`The legs of the right triangle are ${a} ${u} and ${b} ${u}. The Pythagorean theorem says a² + b² = c².`, `${E(`${a * a} + ${b * b}`, v)}, because ${a} times ${a} is ${a * a} and ${b} times ${b} is ${b * b}.`, res.exact ? `√${v} = ${res.text}, so the length is ${res.text} ${u}.` : `√${v} is about ${res.text} when rounded to the nearest tenth, so the length is about ${res.text} ${u}.`],
+      visual: { kind: "triangle", alt: `A right triangle with legs ${a} and ${b} and an unknown hypotenuse.`, a: Math.max(a, b), b: Math.min(a, b), c: "?", right: true, labels: [String(Math.max(a, b)), String(Math.min(a, b)), "?"] },
+      distractors: dd,
+      hints: H("In a right triangle, the square of the longest side equals the sum of the squares of the two shorter sides.", "Square each leg, add the squares, then take the square root of the total."),
+    };
+  },
+};
+
+const pyLeg = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const exactMode = level < 3 ? true : rng.chance(0.3);
+    let leg;
+    let hyp;
+    let other;
+    if (exactMode) {
+      const [x, y, z] = rng.pick(level === 1 ? PY.slice(0, 2) : PY);
+      const k = level === 1 ? rng.pick([1, 2]) : rng.pick([1, 1, 2, 3]);
+      [leg, other] = rng.chance(0.5) ? [x * k, y * k] : [y * k, x * k];
+      hyp = z * k;
+    } else {
+      do {
+        leg = rng.int(3, 14);
+        hyp = leg + rng.int(1, 9);
+        other = hyp * hyp - leg * leg;
+      } while (isqrt(other) ** 2 === other);
+    }
+    const v = hyp * hyp - leg * leg;
+    const res = exactOrRound(v);
+    const u = rng.pick(["feet", "meters", "inches", "centimeters"]);
+    const st = rng.pick([
+      { stem: ST(`A ladder is ${hyp} ${u} long. It leans on a wall. The bottom is ${leg} ${u} from the wall.`, `A ${hyp} ${u} ladder leans against a wall. Its bottom is ${leg} ${u} from the wall.`, `A ladder that is ${hyp} ${u} long leans against a vertical wall. Its base is ${leg} ${u} from the wall.`), q: ST("How high does it reach on the wall?", "How high up the wall does the ladder reach?", "Determine the height that the ladder reaches on the wall.") },
+      { stem: ST(`A rectangle has a diagonal of ${hyp} ${u}. One side is ${leg} ${u}.`, `A rectangle has a diagonal of ${hyp} ${u} and one side of ${leg} ${u}.`, `A rectangle has a diagonal measuring ${hyp} ${u} and one side measuring ${leg} ${u}.`), q: ST("How long is the other side?", "What is the length of the other side?", "Determine the length of the other side.") },
+      { stem: ST(`A kite string is ${hyp} ${u} long and goes straight to the ground. The kite is ${leg} ${u} high.`, `A kite string ${hyp} ${u} long is pulled straight to the ground. The kite is ${leg} ${u} above the ground, directly over a point on the ground.`, `A kite string of length ${hyp} ${u} is stretched straight to the ground. The kite is ${leg} ${u} above the ground.`), q: ST("How far is the kite's spot on the ground from the person?", "How far is the person from the point on the ground directly below the kite?", "Determine the horizontal distance from the person to the point on the ground directly below the kite.") },
+    ]);
+    const ask = res.exact ? st.q : ST(`${st.q.plain.replace("?", "")} Round to the nearest tenth.`, `${st.q.standard.replace("?", "")}? Round to the nearest tenth.`, `${st.q.rich.replace(".", "")}. Round to the nearest tenth.`);
+    const cands = res.exact ? [[String(hyp - leg), "subtracts-the-lengths"], [String(hyp + leg), "adds-the-lengths"], [String(v), "forgets-to-take-the-square-root"], [roundSqrt(hyp * hyp + leg * leg, 0).replace(/\.0*$/, ""), "adds-the-squares-instead-of-subtracting"]] : [[String(hyp - leg), "subtracts-the-lengths"], [roundSqrt(hyp * hyp + leg * leg, 1), "adds-the-squares-instead-of-subtracting"], [String(v), "forgets-to-take-the-square-root"], [roundSqrt(v, 0).replace(/\.0*$/, ""), "rounds-to-the-nearest-whole-number"], [roundSqrt(v, 2), "rounds-to-the-wrong-place"]];
+    return {
+      spec: { type: "leg", leg, hyp, round: res.exact ? 0 : 1 },
+      stem: st.stem,
+      ask,
+      expr: null,
+      answer: { value: res.text, kind: res.kind, unit: u },
+      work: [`The hypotenuse is ${hyp} and one leg is ${leg}. The Pythagorean theorem says a² + b² = c², so b² = c² ${MINUS} a².`, `${hyp} times ${hyp} is ${hyp * hyp} and ${leg} times ${leg} is ${leg * leg}, and ${E(`${hyp * hyp} ${MINUS} ${leg * leg}`, v)}.`, res.exact ? `√${v} = ${res.text}, so the length is ${res.text} ${u}.` : `√${v} is about ${res.text} when rounded to the nearest tenth, so the length is about ${res.text} ${u}.`],
+      visual: { kind: "triangle", alt: `A right triangle with hypotenuse ${hyp}, one leg ${leg} and an unknown leg.`, a: leg, b: "?", c: hyp, right: true, labels: [String(leg), "?", String(hyp)] },
+      distractors: DS(res.text, cands),
+      hints: H("The longest side of a right triangle is the hypotenuse. The squares of the two legs add up to its square.", "Square the hypotenuse and the known leg, subtract, then take the square root."),
+    };
+  },
+};
+
+const pyConverse = {
+  lv: [2, 3],
+  gen({ rng, level }) {
+    const truth = rng.chance(0.5);
+    let sides;
+    for (;;) {
+      const [x, y, z] = rng.pick(PY);
+      const k = rng.pick([1, 1, 2, 3]);
+      if (truth) sides = [x * k, y * k, z * k];
+      else {
+        const d = rng.pick([-2, -1, 1, 2]);
+        sides = [x * k, y * k, z * k + d];
+        if (d < 0 && sides[2] <= Math.max(sides[0], sides[1])) continue;
+      }
+      const s = [...sides].sort((p, q) => p - q);
+      if (s[0] + s[1] > s[2]) break;
+    }
+    sides = rng.shuffle(sides);
+    const s = [...sides].sort((p, q) => p - q);
+    const u = rng.pick(["feet", "meters", "inches", "centimeters"]);
+    const lhs = s[0] * s[0] + s[1] * s[1];
+    const rhs = s[2] * s[2];
+    return {
+      spec: { type: "converse", sides },
+      stem: ST(`A triangle has sides of ${sideList(sides)} ${u}.`, `A triangle has side lengths of ${sideList(sides)} ${u}.`, `A triangle has side lengths of ${sideList(sides)} ${u}.`),
+      ask: ST("Is it a right triangle?", "Is the triangle a right triangle?", "Is the triangle a right triangle?"),
+      expr: null,
+      answer: { value: truth ? "true" : "false", kind: "bool", text: truth ? `Yes. ${s[0] * s[0]} + ${s[1] * s[1]} = ${rhs}, so the squares add up.` : `No. ${s[0] * s[0]} + ${s[1] * s[1]} is ${lhs}, but ${s[2]} squared is ${rhs}.` },
+      work: [`Put the sides in order. The longest side is ${s[2]}.`, `Square the two shorter sides and add: ${s[0] * s[0]} + ${s[1] * s[1]} is ${lhs}.`, `Square the longest side: ${s[2]} times ${s[2]} is ${rhs}.`, truth ? "The two results are equal, so the triangle is a right triangle." : "The two results are not equal, so the triangle is not a right triangle."],
+      visual: null,
+      distractors: dist(truth ? [["No. The sides are not all equal.", "thinks-a-right-triangle-needs-equal-sides"], ["No. The two short sides do not add up to the long side.", "adds-the-sides-instead-of-squaring-them"], ["No. Only the 3-4-5 triangle is a right triangle.", "thinks-only-one-triple-works"]] : [["Yes. The two short sides add up to more than the long side.", "mixes-up-the-triangle-inequality-with-the-right-angle-test"], ["Yes. The sides make a triangle.", "thinks-every-triangle-is-a-right-triangle"], ["Yes. The sides are all different.", "thinks-different-sides-mean-a-right-triangle"]]),
+      hints: H("If the squares of the two shorter sides add up to the square of the longest side, the triangle has a right angle.", "Square all three sides. Check whether the two smaller squares add to the largest square."),
+    };
+  },
+};
+
+const pyDistance = {
+  lv: [2, 3],
+  gen({ rng, level }) {
+    const exactMode = level === 2 ? true : rng.chance(0.35);
+    let p1;
+    let p2;
+    for (let t = 0; t < 2000; t++) {
+      let dx;
+      let dy;
+      if (exactMode) {
+        const [x, y] = rng.pick(PY.slice(0, 3));
+        const k = x <= 5 ? rng.pick([1, 1, 2]) : 1;
+        [dx, dy] = rng.chance(0.5) ? [x * k, y * k] : [y * k, x * k];
+        if (rng.chance(0.5)) dx = -dx;
+        if (rng.chance(0.5)) dy = -dy;
+      } else {
+        dx = nz(rng, -9, 9);
+        dy = nz(rng, -9, 9);
+        const q = dx * dx + dy * dy;
+        if (isqrt(q) ** 2 === q) continue;
+      }
+      p1 = [nz(rng, -6, 6), nz(rng, -6, 6)];
+      p2 = [p1[0] + dx, p1[1] + dy];
+      if (Math.max(...p1.map(Math.abs), ...p2.map(Math.abs)) <= 11) break;
+    }
+    const dx = Math.abs(p2[0] - p1[0]);
+    const dy = Math.abs(p2[1] - p1[1]);
+    const v = dx * dx + dy * dy;
+    const res = exactOrRound(v);
+    const a1 = pairText(num(p1[0]), num(p1[1]));
+    const a2 = pairText(num(p2[0]), num(p2[1]));
+    const cands = res.exact ? [[String(dx + dy), "adds-the-horizontal-and-vertical-distances"], [String(v), "forgets-to-take-the-square-root"], [String(Math.max(dx, dy)), "uses-only-the-longer-distance"], [String(Math.abs(dx - dy)), "subtracts-the-distances"]] : [[String(dx + dy), "adds-the-horizontal-and-vertical-distances"], [String(v), "forgets-to-take-the-square-root"], [String(Math.max(dx, dy)), "uses-only-the-longer-distance"], [roundSqrt(Math.abs(dx * dx - dy * dy) || 1, 1), "subtracts-the-squares"], [roundSqrt(v, 0).replace(/\.0*$/, ""), "rounds-to-the-nearest-whole-number"]];
+    const bx = box(Math.max(p1[0], p2[0]) + 1, Math.max(p1[1], p2[1]) + 1, Math.min(p1[0], p2[0]) - 1, Math.min(p1[1], p2[1]) - 1);
+    return {
+      spec: { type: "distance", p1, p2, round: res.exact ? 0 : 1 },
+      stem: ST(`On a coordinate grid, point P is at ${a1} and point Q is at ${a2}. Each grid square is 1 unit long.`, `On a coordinate plane, point P is at ${a1} and point Q is at ${a2}. Each grid square is 1 unit long.`, `On a coordinate plane, point P is at ${a1} and point Q is at ${a2}. Each grid square has a side of 1 unit.`),
+      ask: res.exact ? ST("How far is P from Q, in units?", "What is the distance from P to Q, in units?", "Determine the distance from P to Q, in units.") : ST("How far is P from Q, in units? Round to the nearest tenth.", "What is the distance from P to Q, in units? Round to the nearest tenth.", "Determine the distance from P to Q, in units. Round to the nearest tenth."),
+      expr: null,
+      answer: { value: res.text, kind: res.kind, unit: "units" },
+      work: [`The horizontal distance is ${dx} and the vertical distance is ${dy}. These are the legs of a right triangle, and the distance is its hypotenuse.`, `${E(`${dx * dx} + ${dy * dy}`, v)}, because ${dx} times ${dx} is ${dx * dx} and ${dy} times ${dy} is ${dy * dy}.`, res.exact ? `√${v} = ${res.text}, so the distance is ${res.text} units.` : `√${v} is about ${res.text} when rounded to the nearest tenth, so the distance is about ${res.text} units.`],
+      visual: { kind: "coord", alt: `A coordinate grid with points P ${a1} and Q ${a2} and the segment between them.`, xmin: bx.xmin, xmax: bx.xmax, ymin: bx.ymin, ymax: bx.ymax, step: bx.step, points: [{ x: String(p1[0]), y: String(p1[1]), label: "P" }, { x: String(p2[0]), y: String(p2[1]), label: "Q" }], lines: [{ p1: { x: p1[0], y: p1[1] }, p2: { x: p2[0], y: p2[1] } }], labelAxes: ["x", "y"] },
+      distractors: DS(res.text, cands),
+      hints: H("The horizontal and vertical distances between two points are the legs of a right triangle. The distance between the points is its hypotenuse.", "Find how far apart the x-coordinates and the y-coordinates are, square both distances, add, and take the square root."),
+    };
+  },
+};
+
+FAMILIES.pythag = {
+  title: "Pythagorean theorem",
+  grades: [8],
+  defaults: {},
+  gen(rng, params, opts) {
+    const level = opts.level;
+    const t = pickType(rng, level, [pyHyp, pyHyp, pyLeg, pyLeg, pyConverse, pyDistance, pyDistance]);
+    return done({ family: "pythag", level, ...t.gen({ rng, level, ctx: opts.ctx }) });
+  },
+};
+
+// ================================================================================================================ scatter plots
+const mean1 = (a) => a.reduce((s, v) => s + v, 0) / a.length;
+function corr2(xs, ys) {
+  const mx = mean1(xs);
+  const my = mean1(ys);
+  let sxy = 0;
+  let sxx = 0;
+  let syy = 0;
+  xs.forEach((x, i) => {
+    sxy += (x - mx) * (ys[i] - my);
+    sxx += (x - mx) ** 2;
+    syy += (ys[i] - my) ** 2;
+  });
+  return sxx === 0 || syy === 0 ? 0 : (sxy * sxy) / (sxx * syy);
+}
+const covSign = (xs, ys) => {
+  const mx = mean1(xs);
+  const my = mean1(ys);
+  return xs.reduce((s, x, i) => s + (x - mx) * (ys[i] - my), 0);
+};
+function genCloud(rng, kind) {
+  const n = rng.int(8, 11);
+  const xs = Array.from({ length: n }, (_, i) => i + 1);
+  for (let t = 0; t < 5000; t++) {
+    let ys;
+    if (kind === "pos" || kind === "neg") {
+      const m = rng.int(1, 4);
+      const noise = Math.max(1, Math.round(m * 1.2));
+      const b = kind === "pos" ? rng.int(1, 8) : rng.int(m * n + 2, m * n + 12);
+      ys = xs.map((x) => (kind === "pos" ? m * x + b : b - m * x) + rng.int(-noise, noise));
+      if (corr2(xs, ys) < 0.85) continue;
+    } else if (kind === "none") {
+      ys = xs.map(() => rng.int(2, 22));
+      if (corr2(xs, ys) > 0.15) continue;
+      const mx = mean1(xs);
+      if (corr2(xs.map((x) => (x - mx) ** 2), ys) > 0.4) continue;
+    } else {
+      const a = rng.pick([1, 2, -1, -2]);
+      const c = (n + 1) / 2;
+      const d = a > 0 ? rng.int(1, 6) : rng.int(a * -1 * Math.ceil(((n - 1) / 2) ** 2) + 2, a * -1 * Math.ceil(((n - 1) / 2) ** 2) + 8);
+      ys = xs.map((x) => Math.round(a * (x - c) ** 2 + d) + rng.int(-1, 1));
+      if (ys.some((y) => y < 0)) continue;
+      const mx = mean1(xs);
+      if (corr2(xs, ys) > 0.25 || corr2(xs.map((x) => (x - mx) ** 2), ys) < 0.9) continue;
+    }
+    return { xs, ys };
+  }
+  throw new Error("could not generate a scatter cloud");
+}
+const scatterVis = (xs, ys, scene, alt, line) => {
+  const maxY = Math.max(...ys);
+  const maxX = Math.max(...xs);
+  const stepY = niceStep(maxY + 2);
+  const ymax = (Math.floor((maxY + 1) / stepY) + 1) * stepY;
+  const v = { kind: "scatter", alt, xmin: 0, xmax: maxX + 1, ymin: 0, ymax, points: xs.map((x, i) => ({ x, y: ys[i] })), xLabel: cap(scene.x[1]), yLabel: cap(scene.y[1]) };
+  if (line) v.line = line;
+  return v;
+};
+const ASSOC = { pos: "A positive linear association", neg: "A negative linear association", none: "No association", nonlin: "A non-linear association" };
+const SC_TOKEN = { pos: "positive linear", neg: "negative linear", none: "no association", nonlin: "non-linear" };
+const scAssoc = {
+  lv: [1, 2, 3],
+  gen({ rng, level, ctx }) {
+    const kind = level === 1 ? rng.pick(["pos", "neg", "none"]) : level === 2 ? rng.pick(["pos", "neg", "none", "nonlin"]) : rng.pick(["nonlin", "none", "pos", "neg", "nonlin"]);
+    const { xs, ys } = genCloud(rng, kind);
+    const sc = modelOf(rng, ctx, kind !== "neg");
+    const list = xs.map((x, i) => pairText(num(x), num(ys[i]))).join(", ");
+    const tagsFor = {
+      pos: { neg: "reverses-the-direction-of-the-trend", none: "ignores-the-trend", nonlin: "sees-a-curve-in-a-line" },
+      neg: { pos: "reverses-the-direction-of-the-trend", none: "ignores-the-trend", nonlin: "sees-a-curve-in-a-line" },
+      none: { pos: "sees-a-trend-in-scattered-points", neg: "sees-a-trend-in-scattered-points", nonlin: "sees-a-curve-in-scattered-points" },
+      nonlin: { pos: "fits-a-line-to-a-curve", neg: "fits-a-line-to-a-curve", none: "sees-no-pattern-in-a-curve" },
+    }[kind];
+    const peak = kind === "nonlin" ? ys[Math.floor(ys.length / 2)] > ys[0] : null;
+    return {
+      spec: { type: "assoc", points: xs.map((x, i) => [x, ys[i]]) },
+      stem: ST(`A scatter plot shows ${sc.x[1]} (x) and the ${sc.what} (y, in ${sc.y[1]}). The points (x, y) are ${list}.`, `A scatter plot shows the number of ${sc.x[1]} (x) and the ${sc.what} (y, in ${sc.y[1]}). The points (x, y) are ${list}.`, `A scatter plot displays the number of ${sc.x[1]} (x) against the ${sc.what} (y, in ${sc.y[1]}). The points (x, y) are ${list}.`),
+      ask: ST("What pattern do the points show?", "Which statement best describes the association between x and y?", "Which statement best describes the association between the two variables?"),
+      expr: null,
+      answer: { value: SC_TOKEN[kind], kind: "text", text: ASSOC[kind] },
+      work: kind === "pos" ? ["Look at the points from left to right.", "They go up in a fairly straight band, so y gets larger as x gets larger.", "This is a positive linear association."] : kind === "neg" ? ["Look at the points from left to right.", "They go down in a fairly straight band, so y gets smaller as x gets larger.", "This is a negative linear association."] : kind === "none" ? ["Look at the points from left to right.", "They are spread out with no direction: they do not follow a line or a curve.", "There is no association."] : ["Look at the points from left to right.", `They ${peak ? "rise and then fall" : "fall and then rise"}, following a curve and not a straight band.`, "This is a non-linear association."],
+      visual: scatterVis(xs, ys, sc, `A scatter plot of the ${sc.what} against the number of ${sc.x[1]}: ${list}.`),
+      distractors: Object.keys(tagsFor).map((k) => ({ text: ASSOC[k], misconception: tagsFor[k] })),
+      hints: H("An association describes how y changes as x changes. Look for a direction and for the shape of the pattern.", "Scan the points from left to right. Do they go up, go down, bend, or show no pattern at all?"),
+    };
+  },
+};
+
+function pointsAround(rng, m, b, xs, noise) {
+  return xs.map((x) => m.mul(fr(x)).add(b).n / m.mul(fr(x)).add(b).d + rng.int(-noise, noise)).map((y) => Math.round(y));
+}
+const scPredict = {
+  lv: [1, 2, 3],
+  gen({ rng, level, ctx }) {
+    const grows = level === 1 || rng.chance(0.65);
+    const sc = modelOf(rng, ctx, grows);
+    const find = level === 3 ? rng.pick(["x", "resid", "y"]) : "y";
+    let m;
+    let b;
+    if (level === 1) {
+      m = fr(rng.int(2, 6));
+      b = fr(rng.int(2, 15));
+    } else if (level === 2) {
+      m = grows ? rng.pick([fr(5, 2), fr(3, 2), fr(7, 2), fr(3), fr(4), fr(9, 2)]) : fr(-rng.pick([2, 3, 4, 5]));
+      b = grows ? fr(rng.int(3, 25)) : fr(rng.int(40, 80));
+    } else {
+      m = grows ? rng.pick([fr(5, 2), fr(3, 4), fr(7, 2), fr(9, 4), fr(6, 5), fr(4)]) : fr(-rng.pick([2, 3, 4, 5, 6]));
+      b = grows ? fr(rng.int(5, 40)) : fr(rng.int(50, 100));
+    }
+    const dm = true;
+    const unitX = m.d === 1 ? 1 : m.d;
+    const xs = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => x);
+    let x0 = m.d === 1 ? rng.int(3, 12) : unitX * rng.int(1, 3);
+    if (!grows) x0 = Math.min(x0, Math.max(2, Math.floor((b.n / b.d - 1) / Math.abs(m.n / m.d))));
+    const predAt = (x) => m.mul(fr(x)).add(b);
+    const y0 = predAt(x0);
+    let ysPts;
+    let actual = null;
+    if (find === "resid") {
+      let delta;
+      do delta = rng.pick([-6, -5, -4, -3, 3, 4, 5, 6, 7]);
+      while (y0.add(fr(delta)).cmp(fr(1)) < 0);
+      actual = y0.add(fr(delta));
+    }
+    const lineStr = `y = ${linText(m, b, dm)}`;
+    const mathLine = { m: S(m), b: S(b) };
+    const ptsX = [1, 2, 3, 4, 5, 6, 7, 8].filter((x) => x !== x0);
+    const ptsY = pointsAround(rng, m, b, ptsX, Math.max(1, Math.round(Math.abs(m.n / m.d))));
+    const allX = find === "resid" ? [...ptsX, x0] : ptsX;
+    const allY = find === "resid" ? [...ptsY, Math.round(actual.n / actual.d)] : ptsY;
+    const stemBase = (x0txt) => ST(`A scatter plot shows the number of ${sc.x[1]} (x) and the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}.${x0txt.plain}`, `A scatter plot shows the number of ${sc.x[1]} (x) and the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}.${x0txt.standard}`, `A scatter plot relates the number of ${sc.x[1]} (x) to the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}.${x0txt.rich}`);
+    const xT = T(fr(x0), dm);
+    const yT = T(y0, dm);
+    const vis = (alt) => {
+      const ymaxPts = Math.max(...allY, Math.round(y0.n / y0.d), Math.round(b.n / b.d)) + 2;
+      const v = scatterVis(allX, allY, sc, alt, mathLine);
+      v.ymax = Math.max(v.ymax, (Math.floor(ymaxPts / niceStep(ymaxPts)) + 1) * niceStep(ymaxPts));
+      v.xmax = Math.max(v.xmax, x0 + 1);
+      return v;
+    };
+    if (find === "y") {
+      const ans = A(y0, { dec: dm, unit: sc.y[1] });
+      return {
+        spec: { type: "predict", find, m: S(m), b: S(b), x: String(x0) },
+        stem: stemBase(ST(` Use it to predict the ${sc.what} for ${x0} ${sc.x[1]}.`, ` Use the line to predict the ${sc.what} for ${x0} ${sc.x[1]}.`, ` Use the line of best fit to predict the ${sc.what} for ${x0} ${sc.x[1]}.`)),
+        ask: ST("What is the prediction?", "What is the predicted value of y?", "Determine the predicted value of y."),
+        expr: lineStr,
+        answer: ans,
+        work: [`Put x = ${x0} into ${lineStr}.`, ...(m.n * x0 >= 0 ? [`${E(`${T(m, dm)} ${TIMES} ${x0}`, m.mul(fr(x0)), dm)}.`, `${E(`${T(m.mul(fr(x0)), dm)} + ${T(b, dm)}`, y0, dm)}.`] : [`${E(`${T(m, dm)} ${TIMES} ${x0}`, m.mul(fr(x0)), dm)}.`, `${E(`${T(b, dm)} ${MINUS} ${T(absF(m.mul(fr(x0))), dm)}`, y0, dm)}.`])],
+        visual: vis(`A scatter plot with the line of best fit ${lineStr}.`),
+        distractors: D(y0, [[m.add(b), "adds-the-slope-and-the-intercept"], [m.mul(fr(x0)), "forgets-the-intercept"], [b.mul(fr(x0)).add(m), "swaps-the-slope-and-the-intercept"], [fr(x0).add(b), "adds-x-and-the-intercept"]], dm),
+        hints: H("The line of best fit is a rule that gives a predicted y for any x.", "Replace x in the equation with the given number. Multiply first, then add or subtract."),
+      };
+    }
+    if (find === "x") {
+      return {
+        spec: { type: "predict", find, m: S(m), b: S(b), y: S(y0) },
+        stem: stemBase(ST(` The ${sc.what} is ${yT} ${sc.y[1]}.`, ` Suppose the predicted ${sc.what} is ${yT} ${sc.y[1]}.`, ` Suppose the predicted ${sc.what} is ${yT} ${sc.y[1]}.`)),
+        ask: ST(`How many ${sc.x[1]} does the line predict?`, `For how many ${sc.x[1]} does the line predict that value?`, `Determine the number of ${sc.x[1]} for which the line predicts that value.`),
+        expr: lineStr,
+        answer: A(fr(x0), { unit: sc.x[1] }),
+        work: [`Put y = ${yT} into ${lineStr}.`, `Subtract ${T(b, dm)} from both sides: ${E(`${yT} ${MINUS} ${T(b, dm)}`, y0.sub(b), dm)}.`, `Divide both sides by ${T(m, dm)}: ${E(`${T(y0.sub(b), dm)} ${DIVIDE} ${T(m, dm)}`, fr(x0))}.`],
+        visual: vis(`A scatter plot with the line of best fit ${lineStr}.`),
+        distractors: D(fr(x0), [[y0.add(b).div(m), "adds-the-intercept-instead-of-subtracting"], [y0.div(m), "ignores-the-intercept"], [y0.sub(b), "forgets-to-divide-by-the-slope"], [y0.mul(m), "multiplies-instead-of-dividing"]], dm),
+        hints: H("Working backward from a predicted value to x means undoing the rule: first the intercept, then the slope.", "Subtract the intercept from the predicted value, then divide by the slope."),
+      };
+    }
+    const act = actual;
+    const diff = absF(act.sub(y0));
+    return {
+      spec: { type: "predict", find, m: S(m), b: S(b), x: String(x0), actual: S(act) },
+      stem: stemBase(ST(` One real data point is at x = ${x0}. Its y-value is ${T(act, dm)}.`, ` One real data point has x = ${x0} and y = ${T(act, dm)}.`, ` One observed data point has x = ${x0} and y = ${T(act, dm)}.`)),
+      ask: ST("How far is the real y from the y that the line predicts?", "What is the difference between the actual y-value and the y-value that the line predicts?", "Determine the absolute difference between the observed y-value and the y-value that the line predicts."),
+      expr: lineStr,
+      answer: A(diff, { dec: dm, unit: sc.y[1] }),
+      work: [`Put x = ${x0} into ${lineStr} to get the predicted y: ${T(y0, dm)}.`, `The real y is ${T(act, dm)}.`, `Subtract the smaller from the larger: ${E(`${T(act.cmp(y0) > 0 ? act : y0, dm)} ${MINUS} ${T(act.cmp(y0) > 0 ? y0 : act, dm)}`, diff, dm)}.`],
+      visual: vis(`A scatter plot with the line of best fit ${lineStr}. One point is not on the line.`),
+      distractors: D(diff, [[act, "reports-the-actual-value"], [y0, "reports-the-predicted-value"], [act.add(y0), "adds-the-two-values"], [fr(x0).sub(diff), "mixes-up-x-and-the-difference"]], dm),
+      hints: H("The difference between a real value and the predicted value shows how far a point is from the line.", "Find the predicted y first. Then subtract the smaller of the two y-values from the larger."),
+    };
+  },
+};
+
+const scInterpret = {
+  lv: [2, 3],
+  gen({ rng, level, ctx }) {
+    const ask = rng.pick(["slope", "intercept"]);
+    const grows = rng.chance(0.65);
+    const sc = modelOf(rng, ctx, grows);
+    let m;
+    do m = grows ? rng.pick([fr(2), fr(3), fr(4), fr(5, 2), fr(3, 2), fr(6), fr(7, 2), fr(9, 2)]) : fr(-rng.pick([2, 3, 4, 5, 6]));
+    while (level === 2 && m.d !== 1);
+    const b = fr(grows ? rng.int(2, 40) : rng.int(30, 90));
+    const dm = true;
+    const lineStr = `y = ${linText(m, b, dm)}`;
+    const mathLine = { m: S(m), b: S(b) };
+    const amt = T(absF(m), dm);
+    const more = m.n > 0 ? "more" : "fewer";
+    const ans = ask === "slope" ? `${amt} ${more} ${sc.y[1]} for each extra ${sc.x[0]}` : `${T(b, dm)} ${sc.y[1]} when there are 0 ${sc.x[1]}`;
+    const wrong =
+      ask === "slope"
+        ? [[`${amt} ${sc.x[1]} for each extra ${sc.y[0]}`, "reverses-the-two-quantities"], [`${T(b, dm)} ${more} ${sc.y[1]} for each extra ${sc.x[0]}`, "reads-the-intercept-as-the-slope"], [`${amt} ${m.n > 0 ? "fewer" : "more"} ${sc.y[1]} for each extra ${sc.x[0]}`, "gets-the-direction-of-the-change-wrong"], [`${amt} ${sc.y[1]} when there are 0 ${sc.x[1]}`, "reads-the-slope-as-the-intercept"]]
+        : [[`${T(b, dm)} more ${sc.y[1]} for each extra ${sc.x[0]}`, "reads-the-intercept-as-the-slope"], [`${amt} ${sc.y[1]} when there are 0 ${sc.x[1]}`, "reads-the-slope-as-the-intercept"], [`${T(b, dm)} ${sc.x[1]} when there are 0 ${sc.y[1]}`, "swaps-the-two-quantities"], [`${T(b.add(m), dm)} ${sc.y[1]} when there are 0 ${sc.x[1]}`, "adds-the-slope-to-the-intercept"]];
+    const xs = [1, 2, 3, 4, 5, 6, 7, 8];
+    const ys = pointsAround(rng, m, b, xs, Math.max(1, Math.round(Math.abs(m.n / m.d) * 0.8)));
+    const v = scatterVis(xs, ys, sc, `A scatter plot of the ${sc.what} against the number of ${sc.x[1]} with the line of best fit ${lineStr}.`, mathLine);
+    return {
+      spec: { type: "interpret", ask, m: S(m), b: S(b), x: sc.x, y: sc.y },
+      stem: ST(`A scatter plot shows the number of ${sc.x[1]} (x) and the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}.`, `A scatter plot shows the number of ${sc.x[1]} (x) and the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}.`, `A scatter plot relates the number of ${sc.x[1]} (x) to the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}.`),
+      ask: ask === "slope" ? ST("What does the slope tell us?", "What does the slope of the line mean in this situation?", "Interpret the slope of the line in the context of this situation.") : ST("What does the y-intercept tell us?", "What does the y-intercept of the line mean in this situation?", "Interpret the y-intercept of the line in the context of this situation."),
+      expr: lineStr,
+      answer: { value: ans, kind: "text" },
+      work: ask === "slope" ? [`In y = mx + b, the slope m is the change in y for each 1 that x goes up.`, `Here m is ${T(m, dm)}, so y ${m.n > 0 ? "goes up" : "goes down"} by ${amt} for each extra ${sc.x[0]}.`] : [`In y = mx + b, the y-intercept b is the value of y when x is 0.`, `Here b is ${T(b, dm)}, so the predicted ${sc.what} is ${T(b, dm)} ${sc.y[1]} when there are 0 ${sc.x[1]}.`],
+      visual: v,
+      distractors: dist(wrong),
+      hints: H(ask === "slope" ? "The slope is a rate: it compares the change in y with a change of 1 in x." : "The y-intercept is the predicted y when x is 0.", ask === "slope" ? "Say what y does for each extra 1 of x, using the units of the problem." : "Replace x with 0 in the equation and say what the result means, with units."),
+    };
+  },
+};
+
+const scOutlier = {
+  lv: [3],
+  gen({ rng, level, ctx }) {
+    const sc = modelOf(rng, ctx, true);
+    const m = fr(rng.int(2, 5));
+    const b = fr(rng.int(2, 12));
+    const n = rng.int(7, 9);
+    const xs = Array.from({ length: n }, (_, i) => i + 1);
+    const out = rng.int(2, n - 1);
+    const pts = xs.map((x) => {
+      const yline = m.mul(fr(x)).add(b).n / m.mul(fr(x)).add(b).d;
+      return [x, yline + rng.int(-2, 2)];
+    });
+    pts[out - 1][1] += (pts[out - 1][1] >= 17 && rng.chance(0.5) ? -1 : 1) * rng.int(9, 14);
+    const res = (p) => Math.abs(p[1] - (m.n / m.d) * p[0] - b.n / b.d);
+    const sorted = [...pts].sort((p, q) => res(q) - res(p));
+    const o = sorted[0];
+    const lineStr = `y = ${linText(m, b, true)}`;
+    const list = pts.map(([x, y]) => pairText(num(x), num(y))).join(", ");
+    const ans = pairStr(o[0], o[1]);
+    const others = pts.filter((p) => p !== o);
+    const hiPoint = [...others].sort((p, q) => q[1] - p[1])[0];
+    const rightPoint = others[others.length - 1];
+    const cands = [[pairStr(o[0], o[1]) === pairStr(hiPoint[0], hiPoint[1]) ? null : pairStr(hiPoint[0], hiPoint[1]), "picks-the-highest-point"], [pairStr(rightPoint[0], rightPoint[1]), "picks-the-point-farthest-to-the-right"], [pairStr(others[0][0], others[0][1]), "picks-the-first-point"], [pairStr(others[Math.floor(others.length / 2)][0], others[Math.floor(others.length / 2)][1]), "picks-a-point-that-fits-the-trend"]];
+    const v = scatterVis(pts.map((p) => p[0]), pts.map((p) => p[1]), sc, `A scatter plot with the line of best fit ${lineStr}. The points are ${list}.`, { m: S(m), b: S(b) });
+    return {
+      spec: { type: "outlier", m: S(m), b: S(b), points: pts },
+      stem: ST(`A scatter plot shows the number of ${sc.x[1]} (x) and the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}. The points are ${list}.`, `A scatter plot shows the number of ${sc.x[1]} (x) and the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}. The points (x, y) are ${list}.`, `A scatter plot relates the number of ${sc.x[1]} (x) to the ${sc.what} (y, in ${sc.y[1]}). The line of best fit is ${lineStr}. The points (x, y) are ${list}.`),
+      ask: ST("Which point is the outlier, the point farthest from the line? Write it as (x,y).", "Which point is an outlier, the point farthest from the line? Write it as (x,y).", "Which point is an outlier, that is, the point farthest from the line of best fit? Write it as an ordered pair (x,y)."),
+      expr: lineStr,
+      answer: { value: ans, kind: "pair" },
+      work: [`For each point, find how far its y-value is from the y that the line predicts.`, `Most points are within 2 of the line. The point (${num(o[0])}, ${num(o[1])}) is ${Math.round(res(o))} away, much farther than the rest.`, `So the outlier is (${num(o[0])}, ${num(o[1])}).`],
+      visual: v,
+      distractors: DS(ans, cands),
+      hints: H("An outlier is a point that is far from the pattern of the rest, so it is far from the line of best fit.", "Use the equation to find the predicted y for each x, and compare it with the real y."),
+    };
+  },
+};
+
+FAMILIES.scatter = {
+  title: "Scatter plots and association",
+  grades: [8],
+  defaults: {},
+  gen(rng, params, opts) {
+    const level = opts.level;
+    const t = pickType(rng, level, [scAssoc, scAssoc, scPredict, scPredict, scInterpret, scOutlier]);
+    return done({ family: "scatter", level, ...t.gen({ rng, level, ctx: opts.ctx }) });
+  },
+};
