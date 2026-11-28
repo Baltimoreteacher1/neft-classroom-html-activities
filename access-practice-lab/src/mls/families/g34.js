@@ -42,7 +42,7 @@ function mkD(ans, ansText, cands, fmt, n = 3) {
     const [v, tag, over] = c;
     if (v == null) continue;
     const x = vnum(v);
-    if (!Number.isFinite(x) || x < -1e-9 || Math.abs(x - a) < 1e-9) continue;
+    if (!Number.isFinite(x) || x < 1e-9 || Math.abs(x - a) < 1e-9) continue;
     const t = over ?? fmt(v);
     if (t == null) continue;
     const k = String(t).trim().toLowerCase();
@@ -103,12 +103,12 @@ function pack(rng, ctx) {
 
 // ---------------------------------------------------------------------------------------------------- muldiv
 const MD_HINT_C = "Equal groups: the number of groups times the size of each group is the total.";
-function mdEq(rng, M, lv) {
+function mdEq(rng, M, lv, poolOverride) {
   const lo = lv === 3 && M >= 8 ? 4 : 2;
   const hi = lv === 1 ? Math.min(M, 5) : M;
   const f = () => rng.int(lo, Math.max(lo, hi));
   const pool = lv === 1 ? ["mulc", "divc"] : lv === 2 ? ["mulc", "mula", "mulb", "divc", "divb"] : ["mula", "mulb", "diva", "divb", "divc", "mulc"];
-  const kind = rng.pick(pool);
+  const kind = rng.pick(poolOverride || pool);
   let a, b, c, op, unknown, ans;
   if (kind.startsWith("mul")) {
     a = f();
@@ -366,7 +366,7 @@ function mdFam(rng, M, lv) {
 function genMuldiv(rng, p, o) {
   const M = Math.max(3, p.max | 0 || 10);
   const lv = o.level;
-  if (p.mode === "factfamily") return rng.chance(0.55) ? mdFam(rng, M, lv) : rng.chance(0.5) ? mdEq(rng, M, lv) : mdGroups(rng, M, lv, o.ctx, lv === 1 ? "e" : undefined);
+  if (p.mode === "factfamily") return rng.chance(0.55) ? mdFam(rng, M, lv) : rng.chance(0.5) ? mdEq(rng, M, lv, lv === 1 ? ["divc", "divb"] : ["divc", "divb", "diva", "mulb"]) : mdGroups(rng, M, lv, o.ctx, lv === 1 ? "e" : undefined);
   if (p.story) {
     if ((p.steps || 1) >= 2) return until(() => mdTwoStep(rng, M, lv, o.ctx));
     return mdGroups(rng, M, lv, o.ctx);
@@ -576,7 +576,7 @@ function prDProd(rng, lv) {
   const [A] = rng.sample(NAMES, 1);
   const a = rng.int(3, lv === 2 ? 8 : 9);
   const b1 = rng.int(2, 5);
-  const b2 = rng.int(2, 5);
+  const b2 = rng.pick([2, 3, 4, 5, 6].filter((v) => v !== b1));
   const b = b1 + b2;
   const ans = a * b;
   return finalize({
@@ -1541,13 +1541,15 @@ function genMultidigit(rng, p, o) {
     const two = lv >= 2 && rng.chance(lv === 2 ? 0.45 : 0.5);
     if (two) {
       a = rng.int(lv === 2 ? 12 : 23, lv === 2 ? 52 : 99);
+      if (a % 10 === 0) a += 1;
       b = rng.int(lv === 2 ? 11 : 24, lv === 2 ? 49 : 98);
       work = mulWork2(a, b);
       hints = MDHINTS.mul2;
       const tens = Math.floor(b / 10) * 10;
       const ones = b % 10;
       cands = [[a * ones + a * (tens / 10), "forgot-the-zero-placeholder"], [a * ones, "left-out-the-tens-partial-product"], [a * tens, "left-out-the-ones-partial-product"], [a * b + a * 10, "added-an-extra-partial-product"], [a * b - a, "one-group-too-few"], [a * b + 100, "regrouping-slip"]];
-      visual = lv === 2 && rng.chance(0.5) ? { kind: "areamodel", alt: `A partial-product rectangle for ${a} times ${b}.`, w: a, h: b, cutW: Math.floor(a / 10) * 10, cutH: tens, labels: true } : null;
+      const cutW = Math.floor(a / 10) * 10;
+      visual = lv === 2 && rng.chance(0.5) ? { kind: "areamodel", alt: `A partial-product rectangle for ${a} times ${b}.`, w: a, h: b, ...(cutW > 0 && cutW < a ? { cutW } : {}), ...(tens > 0 && tens < b ? { cutH: tens } : {}), labels: true } : null;
     } else {
       const m = rng.int(2, 9);
       a = lv === 1 ? rng.int(120, 999) : rng.int(1200, 9999);
@@ -1556,7 +1558,8 @@ function genMultidigit(rng, p, o) {
       hints = MDHINTS.mul1;
       const noCarry = fromDigitsRev(digitsRev(a).map((d) => (d * m) % 10));
       cands = [[noCarry, "forgot-to-add-the-regrouped-amount"], [a * (m - 1), "one-group-too-few"], [a * (m + 1), "one-group-too-many"], [a * m * 10, "place-value-slip"], [a + m, "added-instead-of-multiplied"], [a * m + 100, "regrouping-slip"]];
-      visual = lv === 1 && a < 1000 ? { kind: "areamodel", alt: `A partial-product rectangle for ${a} times ${m}.`, w: a, h: m, cutW: Math.floor(a / 100) * 100, labels: true } : null;
+      const cut = Math.floor(a / 100) * 100;
+      visual = lv === 1 && a < 1000 ? { kind: "areamodel", alt: `A partial-product rectangle for ${a} times ${m}.`, w: a, h: m, ...(cut > 0 && cut < a ? { cutW: cut } : {}), labels: true } : null;
     }
     ans = a * b;
     sym = TIMES;
@@ -1956,7 +1959,8 @@ function faPick(rng, lv, M, prop) {
     answer = rng.pick(primes.filter((x) => x > 7));
     const bad = rng.sample(lv === 1 ? composites.filter((x) => x > 7) : oddComp, 3);
     options = [answer, ...bad];
-    tags = new Map(bad.map((x) => [x, x % 2 === 1 ? "thought-odd-means-prime" : "did-not-check-all-the-factors"]));
+    const spf = (x) => divisors(x).find((f) => f > 1);
+    tags = new Map(bad.map((x) => [x, `did-not-test-${spf(x)}-as-a-factor`]));
     stemText = `Look at these numbers: ${listText(rng.shuffle(options))}.`;
     askText = "Which number is prime?";
   } else {
@@ -2082,7 +2086,7 @@ function feWrite(rng, lv) {
   let D;
   let x;
   if (down) {
-    const [bd, k] = rng.pick(eqPairs(false).filter(([a]) => a <= 6));
+    const [bd, k] = rng.pick(eqPairs(false).filter(([a]) => a >= 3 && a <= 6));
     const bn = rng.pick(coprimeNums(bd));
     n = bn * k;
     d = bd * k;
@@ -2097,7 +2101,7 @@ function feWrite(rng, lv) {
   }
   const ans = `${x}/${D}`;
   const reduced = gcd(x, D) === 1;
-  const cands = down ? [[`${n - (d - D)}/${D}`, "subtracted-the-same-amount"], [`${n}/${D}`, "changed-only-the-denominator"], [`${d - D}/${D}`, "used-the-difference-as-the-numerator"], [`${x}/${d}`, "changed-only-the-numerator"], [`${x + 1}/${D}`, "off-by-one"]] : [[`${n + (D - d)}/${D}`, "added-the-same-amount"], [`${n}/${D}`, "changed-only-the-denominator"], [`${D / d}/${D}`, "used-the-multiplier-as-the-numerator"], [`${x}/${d}`, "changed-only-the-numerator"], [`${x + 1}/${D}`, "off-by-one"]];
+  const cands = down ? [[`${n - (d - D)}/${D}`, "subtracted-the-same-amount"], [`${n}/${D}`, "changed-only-the-denominator"], [`${d - D}/${D}`, "used-the-difference-as-the-numerator"], [`${x}/${d}`, "changed-only-the-numerator"], [`${x + 1}/${D}`, "off-by-one"], [`${x}/${D + 1}`, "changed-the-denominator-by-one"]] : [[`${n + (D - d)}/${D}`, "added-the-same-amount"], [`${n}/${D}`, "changed-only-the-denominator"], [`${D / d}/${D}`, "used-the-multiplier-as-the-numerator"], [`${x}/${d}`, "changed-only-the-numerator"], [`${x + 1}/${D}`, "off-by-one"]];
   const ansObj = reduced ? { value: ans, text: ans, kind: "frac" } : { value: ans, text: ans, kind: "text" };
   return finalize({
     family: "fracequiv",
@@ -2127,7 +2131,10 @@ function fePick(rng, lv) {
       [[n, D], "multiplied-only-the-denominator"],
       [[bd, n], "flipped-the-numerator-and-denominator"],
       [[n + 1, D - 1], "changed-the-top-and-bottom-by-different-amounts"],
-    ].filter(([f]) => f[1] > 0 && f[0] > 0 && new Fr(f[0], f[1]).cmp(target) !== 0);
+      [[x + 1, D], "was-off-by-one-in-the-numerator"],
+      [[x, D + 1], "was-off-by-one-in-the-denominator"],
+      [[x - 1, D], "was-off-by-one-in-the-numerator"],
+    ].filter(([f]) => f[1] > 0 && f[0] > 0 && f[0] < f[1] && (f[1] <= 12 || f[1] === 100) && new Fr(f[0], f[1]).cmp(target) !== 0);
     if (wrong.length < 3) return null;
     const bad = rng.sample(wrong, 3);
     const options = rng.shuffle([[x, D], ...bad.map((b) => b[0])]);
@@ -2171,7 +2178,7 @@ function feCmpList(rng, lv) {
     const shown = rng.shuffle(fr4);
     const list = `${shown.slice(0, 3).map(([n, d]) => `${n}/${d}`).join(", ")} and ${shown[3][0]}/${shown[3][1]}`;
     const word = pick === "max" ? "greatest" : "least";
-    const tagOf = (f) => (f[1] === extD ? "bigger-denominator-means-bigger-fraction" : f[0] === extN ? "compared-numerators-only" : "compared-different-size-parts");
+    const tagOf = (f) => (f[1] === extD && f[0] !== extN ? "bigger-denominator-means-bigger-fraction" : f[0] === extN ? "compared-numerators-only" : "compared-different-size-parts");
     const cands = shown.filter((f) => f !== best).map((f) => [new Fr(f[0], f[1]), tagOf(f), `${f[0]}/${f[1]}`]);
     const L = fr4.reduce((t, f) => (t * f[1]) / gcd(t, f[1]), 1);
     return finalize({
@@ -2184,7 +2191,7 @@ function feCmpList(rng, lv) {
       work: [`Rename every fraction with the same denominator, ${L}, so the parts are the same size.`, shown.map(([n, d]) => `${n}/${d} = ${(n * L) / d}/${L}`).join(", "), `The ${word} is ${best[0]}/${best[1]}.`],
       visual: null,
       distractors: mkD(new Fr(best[0], best[1]), `${best[0]}/${best[1]}`, cands, fmtFr),
-      hints: { conceptual: "You can only compare fractions fairly when the parts are the same size, or when you compare each one with a benchmark such as 1/2 or 1.", procedural: "Rename the fractions with a common denominator, or sort them by comparing each one with 1/2." },
+      hints: { conceptual: "You can only compare fractions fairly when the parts are the same size, or when you compare each one with a benchmark such as one half or one whole.", procedural: "Rename the fractions with a common denominator, or sort them by comparing each one with one half." },
       level: lv,
     });
   });
@@ -2208,7 +2215,7 @@ function feBench(rng, lv) {
     work: [half !== null ? `Half of ${d} is ${half}. Compare the numerator ${n} with ${half}.` : `Compare ${n} out of ${d} equal parts with half of the parts.`, `So ${n}/${d} is ${ans}.`],
     visual: lv === 1 ? { kind: "fracstrip", alt: `Two strips of the same length. One has ${d} equal parts with ${n} shaded. The other has 2 equal parts with 1 shaded.`, parts: d, shaded: n, compare: { parts: 2, shaded: 1 } } : null,
     distractors: mkT(ans, cands),
-    hints: { conceptual: "One half is a benchmark. A fraction is equal to 1/2 when the numerator is half of the denominator.", procedural: "Find half of the denominator. Then compare it with the numerator." },
+    hints: { conceptual: "One half is a benchmark. A fraction names exactly one half when its numerator is half of its denominator.", procedural: "Find half of the denominator. Then compare it with the numerator." },
     level: lv,
   });
 }
@@ -2218,6 +2225,1521 @@ function genFracequiv(rng, p, o) {
   if (lv === 1) return r < 0.4 ? feMissing(rng, 1) : r < 0.7 ? feBench(rng, 1) : feCmpList(rng, 1);
   if (lv === 2) return r < 0.25 ? feMissing(rng, 2) : r < 0.45 ? feWrite(rng, 2) : r < 0.65 ? fePick(rng, 2) : r < 0.85 ? feCmpList(rng, 2) : feBench(rng, 2);
   return r < 0.25 ? feMissing(rng, 3) : r < 0.5 ? feWrite(rng, 3) : r < 0.7 ? fePick(rng, 3) : feCmpList(rng, 3);
+}
+
+// ---------------------------------------------------------------------------------------------------- fracops
+const lcm2 = (a, b) => (a * b) / gcd(a, b);
+const mixedOf = (f) => {
+  if (f.d === 1) return num(f.n);
+  if (f.n > f.d) return `${Math.floor(f.n / f.d)} ${f.n % f.d}/${f.d}`;
+  return `${f.n}/${f.d}`;
+};
+const fracAnswer = (f) => (f.d === 1 ? ansInt(f.n) : { value: `${f.n}/${f.d}`, text: mixedOf(f), kind: "frac" });
+/** A [n, d] operand as text; mixed numbers print as "2 1/4" when `mix` is set and n/d > 1. */
+const pText = (p, mix) => {
+  const [n, d] = p;
+  if (d === 1) return num(n);
+  if (mix && n > d) return mixedOf(new Fr(n, d));
+  return `${n}/${d}`;
+};
+const QTYF = {
+  store: { one: "yard", many: "yards", what: "ribbon" },
+  garden: { one: "pound", many: "pounds", what: "soil" },
+  sports: { one: "meter", many: "meters", what: "rope" },
+  kitchen: { one: "cup", many: "cups", what: "flour" },
+  pets: { one: "pound", many: "pounds", what: "dog food" },
+  library: { one: "yard", many: "yards", what: "book tape" },
+  crafts: { one: "yard", many: "yards", what: "yarn" },
+  travel: { one: "gallon", many: "gallons", what: "fuel" },
+  science: { one: "liter", many: "liters", what: "water" },
+  community: { one: "gallon", many: "gallons", what: "paint" },
+};
+const amt = (p, Q, mix) => `${pText(p, mix)} ${p[0] <= p[1] ? Q.one : Q.many} of ${Q.what}`;
+const INSTR = { plain: "Write the answer in simplest form.", standard: "Write your answer in simplest form. Use a mixed number if it is greater than one.", rich: "Write the answer in simplest form, using a mixed number if it is greater than one." };
+const withInstr = (ask) => ({ plain: `${ask.plain} ${INSTR.plain}`, standard: `${ask.standard} ${INSTR.standard}`, rich: `${ask.rich} ${INSTR.rich}` });
+const VERB = { add: T3("Add.", "Find the sum.", "Calculate the sum."), sub: T3("Subtract.", "Find the difference.", "Calculate the difference."), mul: T3("Multiply.", "Find the product.", "Calculate the product."), div: T3("Divide.", "Find the quotient.", "Calculate the quotient.") };
+const FOHINT = {
+  likeAdd: { conceptual: "When the denominators are the same, the parts are the same size. You add the number of parts and keep the denominator.", procedural: "Add the numerators and keep the denominator. Then simplify." },
+  likeSub: { conceptual: "When the denominators are the same, the parts are the same size. You take away parts and keep the denominator.", procedural: "Subtract the numerators and keep the denominator. Then simplify." },
+  unlike: { conceptual: "You can only add or subtract fractions when the parts are the same size, so rename both fractions with a common denominator first.", procedural: "Find a common denominator, rename both fractions, then add or subtract the numerators and simplify." },
+  mixed: { conceptual: "A mixed number is a whole number plus a fraction. You can work with the parts separately or rename each as an improper fraction.", procedural: "Rename each mixed number as an improper fraction, or add the wholes and the fractions separately. Regroup if the fractions make more than one whole." },
+  mulWhole: { conceptual: "Multiplying a fraction by a whole number repeats the fraction that many times.", procedural: "Multiply the numerator by the whole number and keep the denominator. Then simplify." },
+  mulFrac: { conceptual: "A fraction of a fraction is a part of a part, so the product is made of smaller parts.", procedural: "Multiply the numerators, multiply the denominators, then simplify." },
+  unitWhole: { conceptual: "Sharing a part equally among more pieces makes each piece smaller.", procedural: "Multiply the denominator by the whole number to find the size of each piece." },
+  wholeUnit: { conceptual: "Ask how many small pieces fit into the whole. Each whole holds as many pieces as the denominator says.", procedural: "Multiply the whole number by the denominator." },
+  divFrac: { conceptual: "Dividing asks how many times the second fraction fits into the first one.", procedural: "Rename both with a common denominator and divide the numerators, or multiply by the reciprocal of the second fraction." },
+};
+function foWork(op, x, y, mix, ans) {
+  const lines = [];
+  const xt = pText(x, mix);
+  const yt = pText(y, mix);
+  if (mix && x[0] > x[1] && x[1] !== 1) lines.push(`Write ${xt} as an improper fraction: ${x[0]}/${x[1]}.`);
+  if (mix && y[0] > y[1] && y[1] !== 1) lines.push(`Write ${yt} as an improper fraction: ${y[0]}/${y[1]}.`);
+  let nn;
+  let dd;
+  if (op === "add" || op === "sub") {
+    if (x[1] === y[1]) {
+      const r = op === "add" ? x[0] + y[0] : x[0] - y[0];
+      lines.push(op === "add" ? `The denominators are the same. Add the numerators: ${x[0]} + ${y[0]} = ${r}` : `The denominators are the same. Subtract the numerators: ${x[0]} ${MINUS} ${y[0]} = ${r}`);
+      nn = r;
+      dd = x[1];
+    } else {
+      const L = lcm2(x[1], y[1]);
+      const xa = (x[0] * L) / x[1];
+      const ya = (y[0] * L) / y[1];
+      lines.push(`A common denominator is ${L}.`);
+      lines.push(`${x[0]}/${x[1]} is the same as ${xa}/${L}, and ${y[0]}/${y[1]} is the same as ${ya}/${L}.`);
+      const r = op === "add" ? xa + ya : xa - ya;
+      lines.push(op === "add" ? `Add the numerators: ${xa} + ${ya} = ${r}` : `Subtract the numerators: ${xa} ${MINUS} ${ya} = ${r}`);
+      nn = r;
+      dd = L;
+    }
+  } else if (op === "mul") {
+    nn = x[0] * y[0];
+    dd = x[1] * y[1];
+    lines.push(`Multiply the numerators: ${x[0]} ${TIMES} ${y[0]} = ${nn}`);
+    lines.push(`Multiply the denominators: ${x[1]} ${TIMES} ${y[1]} = ${dd}`);
+  } else if (x[1] === y[1] && x[0] % y[0] === 0) {
+    nn = x[0] / y[0];
+    dd = 1;
+    lines.push(`Both fractions are made of parts of size 1/${x[1]}, so ask how many groups of ${y[0]} parts fit in ${x[0]} parts: ${x[0]} ${DIVIDE} ${y[0]} = ${nn}`);
+  } else {
+    nn = x[0] * y[1];
+    dd = x[1] * y[0];
+    lines.push(`Dividing by ${y[0]}/${y[1]} is the same as multiplying by its reciprocal, ${y[1]}/${y[0]}.`);
+    lines.push(`Multiply the numerators: ${x[0]} ${TIMES} ${y[1]} = ${nn}`);
+    lines.push(`Multiply the denominators: ${x[1]} ${TIMES} ${y[0]} = ${dd}`);
+  }
+  if (dd !== 1) lines.push(`The result is ${nn}/${dd}.`);
+  if (gcd(nn, dd) !== 1 || ans.d === 1) lines.push(`In simplest form that is ${ans.d === 1 ? num(ans.n) : `${ans.n}/${ans.d}`}.`);
+  if (ans.d !== 1 && ans.n > ans.d) lines.push(`As a mixed number: ${mixedOf(ans)}.`);
+  return lines;
+}
+function foCands(op, x, y) {
+  const X = new Fr(x[0], x[1]);
+  const Y = new Fr(y[0], y[1]);
+  const F = (n, d, tag, text) => (d > 0 && n >= 0 ? [new Fr(n, d), tag, text] : null);
+  if (op === "add") {
+    return [F(x[0] + y[0], x[1] + y[1], "added-the-denominators", `${x[0] + y[0]}/${x[1] + y[1]}`), F(x[0] + y[0], x[1] * y[1], "added-numerators-and-multiplied-denominators"), x[1] !== y[1] ? F(x[0] + y[0], lcm2(x[1], y[1]), "added-numerators-without-renaming") : F(x[0] * y[0], x[1], "multiplied-the-numerators"), [X.mul(Y), "multiplied-instead-of-added"], [X.sub(Y).n >= 0 ? X.sub(Y) : Y.sub(X), "subtracted-instead-of-added"], [X.add(Y).add(new Fr(1, X.d * Y.d)), "off-by-one-part"]];
+  }
+  if (op === "sub") {
+    return [[X.add(Y), "added-instead-of-subtracted"], x[1] !== y[1] ? F(x[0] - y[0], lcm2(x[1], y[1]), "subtracted-numerators-without-renaming") : F(x[0] - y[0] - 1, x[1], "counted-one-part-too-many"), x[1] !== y[1] && x[1] > y[1] ? F(x[0] - y[0], x[1] - y[1], "subtracted-the-denominators") : F(x[0] - y[0] + 1, x[1], "counted-one-part-too-few"), F(x[0] - y[0], x[1] * y[1], "subtracted-numerators-and-multiplied-denominators"), [X.mul(Y), "multiplied-instead-of-subtracted"]];
+  }
+  if (op === "mul") {
+    const whole = y[1] === 1;
+    return [whole ? F(x[0] * y[0], x[1] * y[0], "multiplied-the-denominator-too") : [X.add(Y), "added-instead-of-multiplied"], whole ? F(x[0], x[1] * y[0], "divided-instead-of-multiplied") : [X.div(Y), "divided-instead-of-multiplied"], whole ? [X.add(Y), "added-the-whole-number"] : F(x[0] * y[0], x[1] + y[1], "added-the-denominators"), whole ? F(x[0] + y[0], x[1], "added-the-whole-number-to-the-numerator") : F(x[0] + y[0], x[1] * y[1], "added-the-numerators"), [X.mul(Y).add(new Fr(1, X.d * Y.d)), "off-by-one-part"]];
+  }
+  return [[X.mul(Y), "multiplied-without-flipping"], [Y.div(X), "divided-in-the-wrong-order"], [Y.d * X.d > 0 ? new Fr(X.d * Y.n, X.n * Y.d) : null, "flipped-the-first-fraction"], [new Fr(X.n * Y.n, X.d * Y.d + 1), "changed-the-denominator"], X.sub(Y).n >= 0 ? [X.sub(Y), "subtracted-instead-of-divided"] : [X.add(Y), "added-instead-of-divided"], [X.div(Y).add(new Fr(1, 2)), "off-by-half"]];
+}
+function foVisual(op, x, y, lv, mode) {
+  if (lv !== 1) return null;
+  if ((op === "add" || op === "sub") && x[1] === y[1]) {
+    const d = x[1];
+    const end = op === "add" ? x[0] + y[0] : x[0] - y[0];
+    const top = Math.max(1, Math.ceil(Math.max(x[0], end) / d));
+    return { kind: "numberline", alt: `A number line from 0 to ${top} split into ${d} equal parts, with a jump of ${x[0]}/${d} from 0 and then a jump ${op === "add" ? "forward" : "back"} of ${y[0]}/${d}.`, min: 0, max: top, ticks: d * top, marks: [], hops: [{ from: 0, to: `${x[0]}/${d}`, label: `${x[0]}/${d}` }, { from: `${x[0]}/${d}`, to: `${end}/${d}`, label: `${op === "add" ? "+" : MINUS}${y[0]}/${d}` }], show: "frac" };
+  }
+  if (op === "mul" && y[1] === 1 && y[0] <= 6) {
+    return { kind: "tape", alt: `A tape made of ${y[0]} equal parts, each ${x[0]}/${x[1]}.`, rows: [{ label: `${y[0]} groups`, parts: [{ label: `${x[0]}/${x[1]}`, value: `${x[0]}/${x[1]}`, n: y[0] }] }] };
+  }
+  if (op === "div" && x[1] === y[1] && mode === "divide") {
+    return { kind: "tape", alt: `Two tapes made of ${x[1]}ths. The first has ${x[0]} parts and the second has ${y[0]} parts.`, rows: [{ label: `${x[0]}/${x[1]}`, parts: [{ label: `1/${x[1]}`, value: `1/${x[1]}`, n: x[0] }] }, { label: `${y[0]}/${y[1]}`, parts: [{ label: `1/${y[1]}`, value: `1/${y[1]}`, n: y[0] }] }] };
+  }
+  return null;
+}
+function foStory(rng, o, ans) {
+  const { op, x, y, mix, ctx } = o;
+  const Q = QTYF[ctx] || QTYF.kitchen;
+  const [N] = rng.sample(NAMES, 1);
+  const ax = amt(x, Q, mix);
+  const ay = amt(y, Q, mix);
+  const w = y[0];
+  let stem;
+  let ask;
+  let known;
+  let unknown;
+  let rel;
+  let model;
+  let reasonable;
+  let happening;
+  if (o.scale) {
+    stem = T3(`${N} plans a project that uses ${ax}. A small version uses ${pText(y, mix)} as much.`, `${N} plans a project that uses ${ax}. A small version of the project uses ${pText(y, mix)} as much ${Q.what}.`, `${N} plans a project that calls for ${ax}, and a scaled version uses ${pText(y, mix)} as much ${Q.what}.`);
+    ask = T3(`How much ${Q.what} does the small version use?`, `How much ${Q.what} does the small version use?`, `How much ${Q.what} does the scaled version use?`);
+    happening = `${N} scales a project.`;
+    known = [{ label: "amount in the project", value: pText(x, mix) }, { label: "scale factor", value: pText(y, mix) }];
+    unknown = `amount in the small version`;
+    rel = "amount x scale factor = new amount";
+    model = "tape diagram or area model";
+    reasonable = y[0] < y[1] ? "The small version uses less than the original project." : "The new version uses more than the original project.";
+  } else if (op === "add") {
+    stem = T3(`${N} uses ${ax} for the first part. ${N} uses ${ay} for the second part.`, `${N} uses ${ax} for the first part of a project and ${ay} for the second part.`, `${N} uses ${ax} in the first part of a project and ${ay} in the second part.`);
+    ask = T3(`How much ${Q.what} does ${N} use in all?`, `How much ${Q.what} does ${N} use in all?`, `What is the total amount of ${Q.what} that ${N} uses?`);
+    happening = `${N} uses ${Q.what} in two parts of a project.`;
+    known = [{ label: "first part", value: pText(x, mix) }, { label: "second part", value: pText(y, mix) }];
+    unknown = "the total amount";
+    rel = "part + part = whole";
+    model = "part-part-whole tape or number line";
+    reasonable = "The total is more than either part.";
+  } else if (op === "sub") {
+    stem = T3(`${N} has ${ax}. ${N} uses ${ay}.`, `${N} has ${ax} and uses ${ay} for a project.`, `${N} begins with ${ax} and uses ${ay} for a project.`);
+    ask = T3(`How much ${Q.what} is left?`, `How much ${Q.what} is left?`, `How much ${Q.what} remains?`);
+    happening = `${N} uses part of an amount.`;
+    known = [{ label: "amount at the start", value: pText(x, mix) }, { label: "amount used", value: pText(y, mix) }];
+    unknown = "the amount left";
+    rel = "whole - part = other part";
+    model = "tape diagram or number line";
+    reasonable = "The amount left is less than the amount at the start.";
+  } else if (op === "mul" && y[1] === 1) {
+    stem = T3(`${N} makes ${w} batches. Each batch uses ${ax}.`, `${N} makes ${w} batches, and each batch uses ${ax}.`, `${N} makes ${w} batches, using ${ax} in each batch.`);
+    ask = T3(`How much ${Q.what} does ${N} use in all?`, `How much ${Q.what} does ${N} use in all?`, `What is the total amount of ${Q.what} that ${N} uses?`);
+    happening = `${N} makes equal batches.`;
+    known = [{ label: "number of batches", value: w }, { label: "amount in each batch", value: pText(x, mix) }];
+    unknown = "the total amount";
+    rel = "number of groups x amount in each group = total";
+    model = "equal groups (tape)";
+    reasonable = "The total is more than the amount in one batch.";
+  } else if (op === "mul") {
+    stem = T3(`${N} has ${ax}. ${N} uses ${pText(y, mix)} of it.`, `${N} has ${ax} and uses ${pText(y, mix)} of it.`, `${N} has ${ax} and uses ${pText(y, mix)} of that amount.`);
+    ask = T3(`How much ${Q.what} does ${N} use?`, `How much ${Q.what} does ${N} use?`, `How much ${Q.what} does ${N} use?`);
+    happening = `${N} uses a fraction of an amount.`;
+    known = [{ label: "amount", value: pText(x, mix) }, { label: "fraction used", value: pText(y, mix) }];
+    unknown = "the amount used";
+    rel = "fraction of an amount = fraction x amount";
+    model = "area model";
+    reasonable = "The amount used is less than the amount N has, since the fraction is less than one.";
+  } else if (op === "div" && y[1] !== 1 && y[0] === 1 && x[1] === 1) {
+    stem = T3(`${N} has ${x[0]} ${x[0] === 1 ? Q.one : Q.many} of ${Q.what}. Each project uses ${pText(y, mix)} ${Q.one}.`, `${N} has ${x[0]} ${x[0] === 1 ? Q.one : Q.many} of ${Q.what}, and each project uses ${pText(y, mix)} ${Q.one}.`, `${N} has ${x[0]} ${x[0] === 1 ? Q.one : Q.many} of ${Q.what}. Each project uses ${pText(y, mix)} ${Q.one}.`);
+    ask = T3(`How many projects can ${N} make?`, `How many projects can ${N} make?`, `How many projects can ${N} complete?`);
+    happening = `${N} splits an amount into small equal portions.`;
+    known = [{ label: "total amount", value: x[0] }, { label: "amount for each project", value: pText(y, mix) }];
+    unknown = "number of projects";
+    rel = "total / amount for each project = number of projects";
+    model = "number line or tape";
+    reasonable = "There are more projects than the number of whole units, because each project uses less than one unit.";
+  } else if (op === "div" && y[1] === 1) {
+    stem = T3(`${N} has ${ax}. ${N} shares it equally among ${w} people.`, `${N} shares ${ax} equally among ${w} people.`, `${N} divides ${ax} equally among ${w} people.`);
+    ask = T3(`How much ${Q.what} does each person get?`, `How much ${Q.what} does each person get?`, `How much ${Q.what} does each person receive?`);
+    happening = `${N} shares an amount equally.`;
+    known = [{ label: "amount", value: pText(x, mix) }, { label: "number of people", value: w }];
+    unknown = "the amount each person gets";
+    rel = "amount / number of people = share";
+    model = "tape diagram";
+    reasonable = "Each share is less than the whole amount.";
+  } else {
+    stem = T3(`${N} has ${ax}. Each project uses ${ay}.`, `${N} has ${ax}, and each project uses ${ay}.`, `${N} has ${ax}. Each project uses ${ay}.`);
+    ask = T3(`How many projects can ${N} make? A part of a project counts.`, `How many projects can ${N} make? A part of a project counts.`, `How many projects can ${N} make? Count a part of a project as a fraction.`);
+    happening = `${N} divides an amount into equal portions of a fraction size.`;
+    known = [{ label: "total amount", value: pText(x, mix) }, { label: "amount for each project", value: pText(y, mix) }];
+    unknown = "number of projects";
+    rel = "total / amount for each project = number of projects";
+    model = "tape diagram or number line";
+    reasonable = "Check whether each project uses more or less than the whole amount.";
+  }
+  return { stem, ask: withInstr(ask), structure: STRUCT(happening, known, unknown, rel, model, reasonable) };
+}
+function foBuild(rng, o) {
+  const { op, x, y, mix = false, lv, mode } = o;
+  const X = new Fr(x[0], x[1]);
+  const Y = new Fr(y[0], y[1]);
+  const ans = op === "add" ? X.add(Y) : op === "sub" ? X.sub(Y) : op === "mul" ? X.mul(Y) : X.div(Y);
+  const sym = { add: "+", sub: MINUS, mul: TIMES, div: DIVIDE }[op];
+  const expr = `${pText(x, mix)} ${sym} ${pText(y, mix)}`;
+  const story = o.story ? foStory(rng, o, ans) : null;
+  const hintKey = op === "add" ? (x[1] === y[1] && !mix ? "likeAdd" : mix ? "mixed" : "unlike") : op === "sub" ? (x[1] === y[1] && !mix ? "likeSub" : mix ? "mixed" : "unlike") : op === "mul" ? (y[1] === 1 ? "mulWhole" : "mulFrac") : y[1] === 1 ? "unitWhole" : x[1] === 1 && y[0] === 1 ? "wholeUnit" : "divFrac";
+  const ansObj = fracAnswer(ans);
+  const fmt = (v) => (v.d === 1 ? num(v.n) : mixedOf(v));
+  const cands = [
+    ...foCands(op, x, y)
+      .filter(Boolean)
+      .map(([v, tag, text]) => [v, tag, text && !(v.n > v.d) ? text : undefined]),
+    [ans.add(new Fr(1, 2)), "off-by-one-half"],
+    [ans.add(new Fr(1, 1)), "off-by-one-whole"],
+    [ans.mul(new Fr(2, 1)), "doubled-the-answer"],
+    [ans.add(new Fr(1, ans.d + 1)), "off-by-one-part"],
+  ];
+  const p = {
+    family: "fracops",
+    spec: { type: "calc", op, x, y },
+    stem: story ? story.stem : S3(expr),
+    ask: story ? story.ask : withInstr(VERB[op]),
+    expr,
+    answer: ansObj,
+    work: foWork(op, x, y, mix, ans),
+    visual: foVisual(op, x, y, lv, mode),
+    distractors: mkD(ans, ansObj.text, cands, fmt),
+    hints: FOHINT[hintKey],
+    level: lv,
+  };
+  if (story) p.structure = story.structure;
+  return finalize(p);
+}
+const LIKE_D = [3, 4, 5, 6, 8, 10, 12];
+const REL = [[2, 4], [2, 6], [3, 6], [2, 8], [4, 8], [5, 10], [3, 12], [4, 12], [6, 12]];
+const COP = [[2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [5, 6], [3, 8], [5, 8]];
+const coprimeOf = (rng, d) => rng.pick(coprimeNums(d));
+function mixedPair(rng, d, wHi) {
+  const w = rng.int(1, wHi);
+  const n = coprimeOf(rng, d);
+  return [w * d + n, d];
+}
+function foLike(rng, lv, ctx) {
+  const d = rng.pick(LIKE_D);
+  const story = lv >= 2 && rng.chance(0.3);
+  if (lv === 1) {
+    const k = rng.pick(["add", "sub", "mulunit"]);
+    if (k === "add") {
+      const n1 = rng.int(1, d - 2);
+      return { op: "add", x: [n1, d], y: [rng.int(1, d - n1), d], lv, ctx, mode: "like" };
+    }
+    if (k === "sub") {
+      const n1 = rng.int(2, d - 1);
+      return { op: "sub", x: [n1, d], y: [rng.int(1, n1 - 1), d], lv, ctx, mode: "like" };
+    }
+    return { op: "mul", x: [1, d], y: [rng.int(2, 6), 1], lv, ctx, mode: "like" };
+  }
+  if (lv === 2) {
+    const k = rng.pick(["add", "sub", "mul", "mul", "mixadd"]);
+    if (k === "add") {
+      const n1 = rng.int(2, d - 1);
+      return { op: "add", x: [n1, d], y: [rng.int(Math.max(1, d - n1 + 1), d - 1), d], lv, ctx, story, mode: "like" };
+    }
+    if (k === "sub") {
+      const n1 = rng.int(2, d - 1);
+      return { op: "sub", x: [n1, d], y: [rng.int(1, n1 - 1), d], lv, ctx, story, mode: "like" };
+    }
+    if (k === "mixadd") return { op: "add", x: mixedPair(rng, d, 3), y: [coprimeOf(rng, d), d], mix: true, lv, ctx, story, mode: "like" };
+    return { op: "mul", x: [rng.int(2, d - 1), d], y: [rng.int(2, 9), 1], lv, ctx, story, mode: "like" };
+  }
+  const k = rng.pick(["mixadd", "mixsub", "mixsub", "mul"]);
+  if (k === "mul") return { op: "mul", x: [rng.int(2, d - 1), d], y: [rng.int(3, 12), 1], lv, ctx, story: rng.chance(0.5), mode: "like" };
+  const a = mixedPair(rng, d, 4);
+  const b = mixedPair(rng, d, 3);
+  if (k === "mixadd") return { op: "add", x: a, y: b, mix: true, lv, ctx, story, mode: "like" };
+  const big = a[0] >= b[0] ? a : b;
+  const small = a[0] >= b[0] ? b : a;
+  return big[0] === small[0] ? null : { op: "sub", x: big, y: small, mix: true, lv, ctx, story, mode: "like" };
+}
+function foUnlike(rng, lv, ctx) {
+  const story = lv >= 2 && rng.chance(0.35);
+  if (lv === 1) {
+    const k = rng.pick(["add", "sub", "unitwhole", "wholeunit"]);
+    if (k === "unitwhole") return { op: "div", x: [1, rng.int(2, 6)], y: [rng.int(2, 5), 1], lv, ctx, mode: "unlike" };
+    if (k === "wholeunit") return { op: "div", x: [rng.int(2, 6), 1], y: [1, rng.int(2, 6)], lv, ctx, mode: "unlike" };
+    const [d1, d2] = rng.pick(REL);
+    let x = [coprimeOf(rng, d1), d1];
+    let y = [coprimeOf(rng, d2), d2];
+    if (rng.chance(0.5)) [x, y] = [y, x];
+    if (k === "sub") {
+      if (x[0] * y[1] === y[0] * x[1]) return null;
+      if (x[0] * y[1] < y[0] * x[1]) [x, y] = [y, x];
+    }
+    return { op: k, x, y, lv, ctx, mode: "unlike" };
+  }
+  if (lv === 2) {
+    const k = rng.pick(["add", "sub", "mul", "mul", "unitwhole", "wholeunit"]);
+    if (k === "unitwhole") return { op: "div", x: [1, rng.int(2, 8)], y: [rng.int(2, 6), 1], lv, ctx, story, mode: "unlike" };
+    if (k === "wholeunit") return { op: "div", x: [rng.int(2, 9), 1], y: [1, rng.int(2, 8)], lv, ctx, story, mode: "unlike" };
+    if (k === "mul") {
+      const d1 = rng.int(2, 8);
+      const d2 = rng.int(2, 8);
+      return { op: "mul", x: [coprimeOf(rng, d1), d1], y: [coprimeOf(rng, d2), d2], lv, ctx, story, mode: "unlike" };
+    }
+    const [d1, d2] = rng.pick(COP);
+    let x = [coprimeOf(rng, d1), d1];
+    let y = [coprimeOf(rng, d2), d2];
+    if (k === "sub") {
+      if (x[0] * y[1] === y[0] * x[1]) return null;
+      if (x[0] * y[1] < y[0] * x[1]) [x, y] = [y, x];
+    }
+    return { op: k, x, y, lv, ctx, story, mode: "unlike" };
+  }
+  const k = rng.pick(["mixadd", "mixsub", "mixsub", "mixmul", "mixadd"]);
+  const [d1, d2] = rng.pick([...COP, [4, 6], [6, 8], [2, 3], [3, 4]]);
+  if (k === "mixmul") return { op: "mul", x: mixedPair(rng, d1, 3), y: [coprimeOf(rng, d2), d2], mix: true, lv, ctx, story, mode: "unlike" };
+  const a = mixedPair(rng, d1, 4);
+  const b = mixedPair(rng, d2, 3);
+  if (k === "mixadd") return { op: "add", x: a, y: b, mix: true, lv, ctx, story, mode: "unlike" };
+  const A = new Fr(a[0], a[1]);
+  const B = new Fr(b[0], b[1]);
+  const c = A.cmp(B);
+  if (c === 0) return null;
+  return { op: "sub", x: c > 0 ? a : b, y: c > 0 ? b : a, mix: true, lv, ctx, story, mode: "unlike" };
+}
+function foDivide(rng, lv, ctx) {
+  const story = lv >= 2 && rng.chance(0.4);
+  if (lv === 1) {
+    const b = rng.int(1, 2);
+    const k = rng.int(2, 4);
+    const a = b * k;
+    const d = rng.int(a + 1, a + 3);
+    return { op: "div", x: [a, d], y: [b, d], lv, ctx, story: false, mode: "divide" };
+  }
+  if (lv === 2) {
+    const kind = rng.pick(["frac", "frac", "fracwhole", "wholefrac"]);
+    if (kind === "fracwhole") {
+      const d = rng.int(2, 8);
+      return { op: "div", x: [coprimeOf(rng, d), d], y: [rng.int(2, 5), 1], lv, ctx, story, mode: "divide" };
+    }
+    if (kind === "wholefrac") {
+      const d = rng.int(2, 8);
+      return { op: "div", x: [rng.int(2, 6), 1], y: [coprimeOf(rng, d), d], lv, ctx, story, mode: "divide" };
+    }
+    const [d1, d2] = rng.pick([...COP, [2, 4], [3, 6], [2, 6]]);
+    const x = [coprimeOf(rng, d1), d1];
+    const y = [coprimeOf(rng, d2), d2];
+    return { op: "div", x, y, lv, ctx, story, mode: "divide" };
+  }
+  const kind = rng.pick(["mixfrac", "mixfrac", "wholefrac", "frac"]);
+  const d = rng.int(2, 8);
+  if (kind === "wholefrac") return { op: "div", x: [rng.int(3, 9), 1], y: [coprimeOf(rng, d), d], lv, ctx, story: true, mode: "divide" };
+  if (kind === "frac") {
+    const [d1, d2] = rng.pick(COP);
+    return { op: "div", x: [coprimeOf(rng, d1), d1], y: [coprimeOf(rng, d2), d2], lv, ctx, story: true, mode: "divide" };
+  }
+  const d2 = rng.pick([2, 3, 4, 5, 6, 8].filter((v) => v !== d));
+  return { op: "div", x: mixedPair(rng, d, 3), y: [coprimeOf(rng, d2), d2], mix: true, lv, ctx, story, mode: "divide" };
+}
+// -- scaling: multiplication as scaling (5.NF.B.5) ---------------------------------------------------
+const M_LT = [[1, 2], [2, 3], [3, 4], [1, 4], [3, 5], [5, 8], [4, 5], [1, 3], [7, 8]];
+const M_GT = [[5, 4], [3, 2], [4, 3], [7, 4], [5, 3], [9, 8], [8, 5], [7, 6]];
+function foScaleCmp(rng, lv) {
+  const equal = lv === 3 && rng.chance(0.3);
+  const m = equal ? rng.pick([[2, 2], [3, 3], [4, 4], [5, 5]]) : rng.chance(0.5) ? rng.pick(M_LT) : rng.pick(M_GT);
+  let base;
+  if (lv === 1) base = [rng.int(4, 12), 1];
+  else {
+    const d = rng.pick([2, 3, 4, 5, 8]);
+    base = rng.chance(0.5) ? [coprimeOf(rng, d), d] : [rng.int(1, 3) * d + coprimeOf(rng, d), d];
+  }
+  const bt = pText(base, true);
+  const mt = pText(m, lv >= 2);
+  const cmp = new Fr(m[0], m[1]).cmp(new Fr(1, 1));
+  const texts = { 1: `greater than ${bt}`, [-1]: `less than ${bt}`, 0: `equal to ${bt}` };
+  const ans = texts[cmp];
+  const why = cmp === 0 ? `${mt} is the same as one whole, so the product is the same as ${bt}.` : cmp > 0 ? `${mt} is more than one whole, so the product is more than ${bt}.` : `${mt} is less than one whole, so the product is less than ${bt}.`;
+  const cands = [[texts[1], cmp === -1 ? "multiplication-always-makes-bigger" : "did-not-compare-the-factor-with-one"], [texts[-1], cmp === 1 ? "multiplying-by-a-fraction-always-makes-smaller" : "did-not-compare-the-factor-with-one"], [texts[0], "thought-fractions-do-not-change-the-value"], ["cannot tell without multiplying", "thinks-you-must-calculate"]];
+  return finalize({
+    family: "fracops",
+    spec: { type: "scalecmp", baseText: bt, base, m },
+    stem: T3(`Look at this product: ${bt} ${TIMES} ${mt}.`, `Look at this product: ${bt} ${TIMES} ${mt}.`, `Consider the product ${bt} ${TIMES} ${mt}.`),
+    ask: T3(`Without multiplying, how does the product compare with ${bt}?`, `Without multiplying, how does the product compare with ${bt}?`, `Without calculating, how does the product compare with the factor ${bt}?`),
+    expr: `${bt} ${TIMES} ${mt}`,
+    answer: { value: ans, text: ans, kind: "text" },
+    work: [why],
+    visual: null,
+    distractors: mkT(ans, cands),
+    hints: { conceptual: "Multiplying by a number less than one makes the result smaller than the starting number. Multiplying by a number greater than one makes it larger. Multiplying by exactly one keeps it the same.", procedural: "Look only at the second factor. Compare it with one whole and decide whether it scales the first factor up, down, or not at all." },
+    level: lv,
+  });
+}
+function foScaleFactor(rng, lv) {
+  return until(() => {
+    const a = rng.int(4, lv === 1 ? 12 : 24);
+    const b = rng.int(3, lv === 1 ? 16 : 30);
+    if (a === b) return null;
+    const f = new Fr(b, a);
+    if (f.d === 1 || f.d > 12) return null;
+    const u = rng.pick(["centimeters", "inches"]);
+    const cands = [[new Fr(a, b), "flipped-the-comparison", `${a / gcd(a, b)}/${b / gcd(a, b)}`], [new Fr(Math.abs(a - b), a), "used-the-difference-over-the-original"], [new Fr(b, a + b), "compared-the-copy-with-the-total"], [new Fr(Math.abs(a - b), b), "used-the-difference-over-the-copy"], [new Fr(b, a).add(new Fr(1, 2)), "added-one-half"]];
+    const fmt = (v) => (v.d === 1 ? num(v.n) : `${v.n}/${v.d}`);
+    return finalize({
+      family: "fracops",
+      spec: { type: "ratio", from: a, to: b },
+      stem: T3(`A photo is ${a} ${u} wide. A copy of the photo is ${b} ${u} wide.`, `A photo is ${a} ${u} wide, and its copy is ${b} ${u} wide.`, `An original photo is ${a} ${u} wide. A copy of it is ${b} ${u} wide.`),
+      ask: T3("The copy is what fraction of the original width? Write it in simplest form.", "The copy is what fraction of the original width? Write the fraction in simplest form.", "What fraction of the original width is the copy's width? Write the fraction in simplest form."),
+      expr: null,
+      answer: { value: `${f.n}/${f.d}`, text: `${f.n}/${f.d}`, kind: "frac" },
+      work: [`Compare the copy with the original: ${b} out of ${a}, which is ${b}/${a}.`, `In simplest form that is ${f.n}/${f.d}.`],
+      visual: null,
+      distractors: mkD(f, `${f.n}/${f.d}`, cands, fmt),
+      hints: { conceptual: "The scale factor is the new size compared with the original size, written as a fraction: new over original.", procedural: "Put the copy's width on top and the original's width on the bottom. Then simplify." },
+      level: lv,
+    });
+  });
+}
+function foScale2(rng, lv) {
+  return until(() => {
+    const base = lv === 1 ? [rng.int(3, 9), 1] : [rng.int(2, 9), 1];
+    const pool = [...M_LT, ...M_GT];
+    const m1 = rng.pick(pool);
+    const m2 = rng.pick(pool);
+    if (new Fr(m1[0], m1[1]).cmp(new Fr(m2[0], m2[1])) === 0) return null;
+    const pick = rng.pick(["greater", "less"]);
+    const bt = pText(base, false);
+    const e1 = `${bt} ${TIMES} ${m1[0]}/${m1[1]}`;
+    const e2 = `${bt} ${TIMES} ${m2[0]}/${m2[1]}`;
+    const c = new Fr(m1[0], m1[1]).cmp(new Fr(m2[0], m2[1]));
+    const ans = (pick === "greater" ? c > 0 : c < 0) ? e1 : e2;
+    const other = ans === e1 ? e2 : e1;
+    const cands = [[other, "chose-the-wrong-multiplier"], ["The two products are equal", "thought-the-products-are-the-same"], ["Cannot tell without multiplying", "thinks-you-must-calculate"]];
+    return finalize({
+      family: "fracops",
+      spec: { type: "scale2", base: bt, m1: `${m1[0]}/${m1[1]}`, m2: `${m2[0]}/${m2[1]}`, pick },
+      stem: T3(`Look at ${e1} and ${e2}.`, `Compare the products ${e1} and ${e2}.`, `Compare the two products ${e1} and ${e2}.`),
+      ask: T3(`Which product is ${pick}? Do not multiply.`, `Without multiplying, which product is ${pick}?`, `Without calculating, which product has the ${pick === "greater" ? "greater" : "lesser"} value?`),
+      expr: null,
+      answer: { value: ans, text: ans, kind: "text" },
+      work: [`Both products start with ${bt}. The only difference is the scale factor, so compare ${m1[0]}/${m1[1]} and ${m2[0]}/${m2[1]}.`, `The ${pick} scale factor gives the ${pick} product, so the answer is ${ans}.`],
+      visual: null,
+      distractors: mkT(ans, cands),
+      hints: { conceptual: "When the first factor is the same, the product that is scaled by the larger factor is larger.", procedural: "Compare the two multipliers with each other. Use one whole or a common denominator to decide which is larger." },
+      level: lv,
+    });
+  });
+}
+function foScaleFind(rng, lv, ctx) {
+  return until(() => {
+    const d = rng.pick(lv === 1 ? [2, 3, 4, 5] : [3, 4, 5, 6, 8]);
+    const n = coprimeOf(rng, d);
+    const gt = lv === 3 && rng.chance(0.4);
+    const m = gt ? [d + coprimeOf(rng, d), d] : [n, d];
+    const a = lv === 1 ? d * rng.int(2, 4) : rng.int(2, 9);
+    if (new Fr(a * m[0], m[1]).d > 12) return null;
+    return foBuild(rng, { op: "mul", x: [a, 1], y: m, lv, ctx, story: true, scale: true, mode: "scale" });
+  });
+}
+function genFracops(rng, p, o) {
+  const lv = o.level;
+  const mode = p.level || "like";
+  const ctx = o.ctx;
+  if (mode === "scale") {
+    const r = rng.next();
+    if (lv === 1) return r < 0.55 ? foScaleCmp(rng, 1) : r < 0.8 ? foScaleFind(rng, 1, ctx) : foScaleFactor(rng, 1);
+    if (lv === 2) return r < 0.3 ? foScaleCmp(rng, 2) : r < 0.5 ? foScaleFactor(rng, 2) : r < 0.75 ? foScale2(rng, 2) : foScaleFind(rng, 2, ctx);
+    return r < 0.3 ? foScaleCmp(rng, 3) : r < 0.5 ? foScale2(rng, 3) : r < 0.7 ? foScaleFactor(rng, 3) : foScaleFind(rng, 3, ctx);
+  }
+  const sampler = mode === "unlike" ? foUnlike : mode === "divide" ? foDivide : foLike;
+  return foBuild(rng, until(() => sampler(rng, lv, ctx)));
+}
+
+// ---------------------------------------------------------------------------------------------------- decimals
+// A decimal is carried as a scaled integer {i, p}: the value is i / 10^p. Nothing here uses floating point for a result.
+const PN = { "-1": "tens", 0: "ones", 1: "tenths", 2: "hundredths", 3: "thousandths" };
+const SING = { 0: "whole number", 1: "tenth", 2: "hundredth", 3: "thousandth" };
+const dstr = (i, p) => {
+  const s = String(i).padStart(p + 1, "0");
+  return p === 0 ? s : `${s.slice(0, s.length - p)}.${s.slice(s.length - p)}`;
+};
+const dparse = (s) => {
+  const [a, b = ""] = String(s).split(".");
+  return { i: Number(a + b), p: b.length };
+};
+const dtrim = (i, p, minP = 0) => {
+  while (p > minP && i % 10 === 0) {
+    i /= 10;
+    p--;
+  }
+  return { i, p };
+};
+const withCommas = (v) => {
+  const [a, b] = String(v).split(".");
+  const w = a.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return b ? `${w}.${b}` : w;
+};
+/** An answer object from a scaled decimal. Money keeps exactly two places; otherwise trailing zeros are dropped and a whole result is an int. */
+function decAnswer(i, p, money) {
+  if (money) {
+    const v = dstr(i * 10 ** (2 - p), 2);
+    return { value: v, text: `$${withCommas(v)}`, kind: "dec" };
+  }
+  const t = dtrim(i, p);
+  if (t.p === 0) return { value: String(t.i), text: withCommas(t.i), kind: "int" };
+  const v = dstr(t.i, t.p);
+  return { value: v, text: withCommas(v), kind: "dec" };
+}
+/** A distractor from a scaled decimal, shown the same way the answer is shown. */
+const decCand = (i, p, tag, money) => {
+  if (i < 0 || !Number.isFinite(i)) return null;
+  const a = decAnswer(i, p, money);
+  return [i / 10 ** p, tag, a.text];
+};
+/** A random scaled decimal with exactly p places (last digit never zero), whole part in [lo, hi]. */
+const rdec = (rng, p, lo, hi) => {
+  const whole = rng.int(lo, hi);
+  if (p === 0) return { i: whole, p };
+  let frac = rng.int(1, 10 ** p - 1);
+  if (frac % 10 === 0) frac += rng.int(1, 9);
+  return { i: whole * 10 ** p + frac, p };
+};
+const align = (a, b) => {
+  const p = Math.max(a.p, b.p);
+  return [a.i * 10 ** (p - a.p), b.i * 10 ** (p - b.p), p];
+};
+const DCH = {
+  place: { conceptual: "Each place in a decimal is worth one tenth of the place to its left. The name of the place tells its size.", procedural: "Count places to the right of the decimal point: tenths first, then hundredths, then thousandths." },
+  compare: { conceptual: "Compare decimals place by place from the left, using the same place values. The number of digits does not tell the size.", procedural: "Line up the decimal points. Compare the ones, then the tenths, then the hundredths, and so on." },
+  round: { conceptual: "Rounding finds the nearest number with fewer decimal places. Look at the digit just to the right of the place you are rounding to.", procedural: "Underline the place you round to. If the next digit is 5 or more, round up; if it is less than 5, keep the digit." },
+  convert: { conceptual: "Tenths, hundredths and thousandths are fractions with denominators 10, 100 and 1,000. The number of zeros tells the number of decimal places.", procedural: "Count the zeros in the denominator. That is the number of places after the decimal point." },
+  add: { conceptual: "You can only add or subtract digits that have the same place value, so line up the decimal points.", procedural: "Line up the decimal points, write zeros as placeholders, then add or subtract as with whole numbers." },
+  mul: { conceptual: "Multiply as if there were no decimal points, then place the point so the product has as many decimal places as both factors together.", procedural: "Multiply the digits, count the decimal places in both factors, then place the decimal point." },
+  div: { conceptual: "Dividing by a decimal gives the same answer as dividing by a whole number if you multiply both numbers by the same power of ten.", procedural: "Move the decimal point in both numbers the same number of places until the divisor is a whole number. Then divide." },
+  scale10: { conceptual: "Multiplying by 10 moves each digit one place to the left. Dividing by 10 moves each digit one place to the right.", procedural: "Count the zeros in the power of ten. Move the digits that many places." },
+};
+function dcPlaceName(rng, lv, P) {
+  const wd = 2;
+  const ds = rng.sample([1, 2, 3, 4, 5, 6, 7, 8, 9], wd + P);
+  const x = `${ds.slice(0, wd).join("")}.${ds.slice(wd).join("")}`;
+  const k = rng.int(1, P);
+  const ans = ds[wd + k - 1];
+  const nameOf = (idx) => (idx < wd ? (idx === wd - 1 ? "ones" : "tens") : PN[idx - wd + 1]);
+  const cands = ds.map((d, idx) => (idx === wd + k - 1 ? null : [d, `read-the-${nameOf(idx)}-place`])).filter(Boolean);
+  return finalize({
+    family: "decimals",
+    spec: { type: "placename", x, place: PN[k] },
+    stem: T3(`Look at the number ${x}.`, `Look at the number ${x}.`, `Consider the number ${x}.`),
+    ask: T3(`What digit is in the ${PN[k]} place?`, `What digit is in the ${PN[k]} place?`, `Which digit is in the ${PN[k]} place?`),
+    expr: null,
+    answer: ansInt(ans),
+    work: [`Start at the decimal point and move right. The first place is tenths, the second is hundredths${P >= 3 ? ", and the third is thousandths" : ""}.`, `The digit in the ${PN[k]} place is ${ans}.`],
+    visual: null,
+    distractors: mkD(ans, num(ans), [...cands, [(ans % 9) + 1, "misread-a-digit"]], fmtInt),
+    hints: DCH.place,
+    level: lv,
+  });
+}
+function dcPlaceValue(rng, lv, P) {
+  const wd = 2;
+  const ds = rng.sample([1, 2, 3, 4, 5, 6, 7, 8, 9], wd + P);
+  const x = `${ds.slice(0, wd).join("")}.${ds.slice(wd).join("")}`;
+  const ks = [1, 2, 3].filter((k) => k <= P);
+  if (lv >= 2) ks.push(0, -1);
+  const k = rng.pick(ks);
+  const idx = k >= 1 ? wd + k - 1 : k === 0 ? wd - 1 : 0;
+  const d = ds[idx];
+  const val = (kk) => (kk >= 1 ? { i: d, p: kk } : { i: d * 10 ** -kk, p: 0 });
+  const v = val(k);
+  const cands = [];
+  for (const kk of [-1, 0, 1, 2, 3]) if (kk !== k && (kk <= P || kk === -1)) cands.push(decCand(val(kk).i, val(kk).p, `read-it-as-${PN[kk]}`, false));
+  cands.push([d, "gave-the-digit-not-its-value", String(d)]);
+  const a = decAnswer(v.i, v.p, false);
+  return finalize({
+    family: "decimals",
+    spec: { type: "placevalue", x, digitPlace: PN[k] },
+    stem: T3(`Look at the number ${x}.`, `Look at the number ${x}.`, `Consider the number ${x}.`),
+    ask: T3(`What is the value of the digit ${d}?`, `What is the value of the digit ${d} in this number?`, `What is the value of the digit ${d} in this number?`),
+    expr: null,
+    answer: a,
+    work: [`The digit ${d} is in the ${PN[k]} place, so its value is ${d} ${k >= 1 ? `${PN[k]}` : PN[k]}, which is ${a.value}.`],
+    visual: null,
+    distractors: mkD(Number(a.value), a.text, cands, (z) => String(z)),
+    hints: DCH.place,
+    level: lv,
+  });
+}
+function dcCompare(rng, lv, P) {
+  return until(() => {
+    const maxP = lv === 1 ? Math.min(P, 2) : P;
+    const vals = [];
+    const tries = 30;
+    for (let t = 0; t < tries && vals.length < 4; t++) {
+      const p = rng.int(1, maxP);
+      const w = lv === 1 ? rng.int(0, 1) : rng.int(0, 9);
+      const d = rdec(rng, p, w, w);
+      if (vals.some((v) => v.i * 10 ** (4 - v.p) === d.i * 10 ** (4 - d.p))) continue;
+      vals.push(d);
+    }
+    if (vals.length < 4) return null;
+    const pick = lv === 1 ? "max" : rng.pick(["max", "min"]);
+    const key = (v) => v.i * 10 ** (4 - v.p);
+    const sorted = vals.slice().sort((a, b) => key(a) - key(b));
+    const best = pick === "max" ? sorted[3] : sorted[0];
+    const strs = vals.map((v) => dstr(v.i, v.p));
+    if (new Set(strs).size < 4) return null;
+    const bestS = dstr(best.i, best.p);
+    const longest = vals.reduce((m, v) => (v.p > m.p ? v : m), vals[0]);
+    const shortest = vals.reduce((m, v) => (v.p < m.p ? v : m), vals[0]);
+    const wholeKey = (v) => v.i;
+    const maxWhole = vals.reduce((m, v) => (wholeKey(v) > wholeKey(m) ? v : m), vals[0]);
+    const word = pick === "max" ? "greatest" : "least";
+    const tagOf = (v) => (pick === "max" ? (v === longest ? "more-digits-means-greater" : v === maxWhole ? "compared-as-whole-numbers" : "compared-only-the-first-digit") : v === shortest ? "fewer-digits-means-smaller" : v === maxWhole ? "compared-as-whole-numbers" : "compared-only-the-first-digit");
+    const shown = rng.shuffle(vals).map((v) => dstr(v.i, v.p));
+    const list = `${shown.slice(0, 3).join(", ")} and ${shown[3]}`;
+    const cands = vals.filter((v) => v !== best).map((v) => [v.i / 10 ** v.p, tagOf(v), dstr(v.i, v.p)]);
+    return finalize({
+      family: "decimals",
+      spec: { type: "cmp", vals: strs, pick },
+      stem: T3(`Look at these decimals: ${list}.`, `Here are four decimals: ${list}.`, `Consider the decimals ${list}.`),
+      ask: T3(`Which decimal is the ${word}?`, `Which decimal is the ${word}?`, `Which of these decimals has the ${word} value?`),
+      expr: null,
+      answer: { value: bestS, text: bestS, kind: "dec" },
+      work: [`Compare place by place. Line up the decimal points: ${vals.map((v) => dstr(v.i * 10 ** (maxP - v.p), maxP)).join(", ")}`, `The ${word} is ${bestS}.`],
+      visual: null,
+      distractors: mkD(best.i / 10 ** best.p, bestS, cands, (z) => String(z)),
+      hints: DCH.compare,
+      level: lv,
+    });
+  });
+}
+function dcRound(rng, lv) {
+  const ds = rng.sample([1, 2, 3, 4, 5, 6, 7, 8, 9], 4);
+  const whole = lv === 1 ? ds[0] : Number(`${ds[0]}${ds[1]}`);
+  const frac = ds.slice(2).concat([rng.int(1, 9)]).slice(0, 3).join("");
+  const i3 = whole * 1000 + Number(frac);
+  const x = dstr(i3, 3);
+  const k = rng.pick(lv === 1 ? [1, 2] : [0, 1, 2]);
+  const rnd = (kk) => Math.floor((i3 + 10 ** (3 - kk) / 2) / 10 ** (3 - kk));
+  const trunc = (kk) => Math.floor(i3 / 10 ** (3 - kk));
+  const fmtK = (v, kk) => (kk === 0 ? String(v) : dstr(v, kk));
+  const r = rnd(k);
+  const ans = { value: fmtK(r, k), text: withCommas(fmtK(r, k)), kind: k === 0 ? "int" : "dec" };
+  const cands = [[trunc(k) / 10 ** k, "dropped-the-extra-digits-without-rounding", withCommas(fmtK(trunc(k), k))], [(trunc(k) + 1) / 10 ** k, "always-rounded-up", withCommas(fmtK(trunc(k) + 1, k))]];
+  for (const kk of [0, 1, 2]) if (kk !== k) cands.push([rnd(kk) / 10 ** kk, `rounded-to-the-${PN[kk]}-place-instead`, withCommas(fmtK(rnd(kk), kk))]);
+  cands.push([(r + 1) / 10 ** k, "moved-one-place-value-up", withCommas(fmtK(r + 1, k))], [(r - 1) / 10 ** k, "moved-one-place-value-down", withCommas(fmtK(r - 1, k))]);
+  const visual =
+    lv === 1
+      ? { kind: "numberline", alt: `A number line between ${fmtK(trunc(k), k)} and ${fmtK(trunc(k) + 1, k)} split into 10 equal parts with ${x} marked.`, min: fmtK(trunc(k), k), max: fmtK(trunc(k) + 1, k), ticks: 10, marks: [{ at: x, label: x }], show: "dec" }
+      : null;
+  return finalize({
+    family: "decimals",
+    spec: { type: "round", x, place: PN[k] },
+    stem: S3(`${x}`),
+    ask: T3(`Round ${x} to the nearest ${SING[k]}.`, `Round ${x} to the nearest ${SING[k]}.`, `Round ${x} to the nearest ${SING[k]}.`),
+    expr: null,
+    answer: ans,
+    work: [`The digit to the right of the ${PN[k]} place decides: ${k === 0 ? x.split(".")[1][0] : x.split(".")[1][k]} is ${Number(k === 0 ? x.split(".")[1][0] : x.split(".")[1][k]) >= 5 ? "5 or more, so round up" : "less than 5, so keep the digit"}.`, `${x} rounds to ${ans.text}.`],
+    visual,
+    distractors: mkD(Number(ans.value), ans.text, cands, (z) => String(z)),
+    hints: DCH.round,
+    level: lv,
+  });
+}
+function dcFracDec(rng, lv, P) {
+  const dens = P >= 3 && lv >= 2 ? [10, 100, 1000] : [10, 100];
+  const d = rng.pick(dens);
+  const k = Math.log10(d);
+  const toDec = rng.chance(0.5);
+  let n = rng.int(1, d - 1);
+  while (n % 10 === 0) n = rng.int(1, d - 1);
+  const x = dstr(n, k);
+  if (toDec) {
+    const cands = [decCand(n, k + 1, "put-one-place-too-many-after-the-point"), decCand(n, Math.max(0, k - 1), "put-one-place-too-few-after-the-point"), [Number(`0.${n}`), "ignored-the-denominator", `0.${n}`], decCand(n * 10, k, "moved-the-decimal-point-the-wrong-way"), decCand(n, k + 2, "put-two-places-too-many-after-the-point"), decCand(n, Math.max(0, k - 2), "put-the-decimal-point-too-far-right")];
+    return finalize({
+      family: "decimals",
+      spec: { type: "f2d", n, d },
+      stem: "",
+      ask: T3(`Write ${n}/${d} as a decimal.`, `Write ${n}/${d} as a decimal.`, `Express ${n}/${d} as a decimal.`),
+      expr: null,
+      answer: { value: x, text: x, kind: "dec" },
+      work: [`The denominator ${d} has ${k} zero${k > 1 ? "s" : ""}, so the decimal has ${k} place${k > 1 ? "s" : ""}.`, `${n}/${d} is ${n} ${PN[k]}, which is ${x}.`],
+      visual: null,
+      distractors: mkD(n / d, x, cands, (z) => String(z)),
+      hints: DCH.convert,
+      level: lv,
+    });
+  }
+  const gc = gcd(n, d);
+  const ans = `${n}/${d}`;
+  const cands = [[`${n}/${d * 10}`, "used-the-wrong-denominator"], [`${n * 10}/${d}`, "used-the-wrong-numerator"], [`${n}/${d / 10 >= 10 ? d / 10 : d * 100}`, "used-the-wrong-denominator"], [`${d}/${n}`, "flipped-the-numerator-and-denominator"], [`${n + 1}/${d}`, "off-by-one"]];
+  const reduced = gc === 1;
+  return finalize({
+    family: "decimals",
+    spec: { type: "d2f", x, d },
+    stem: "",
+    ask: T3(`Write ${x} as a fraction with ${d} on the bottom.`, `Write ${x} as a fraction with a denominator of ${d}.`, `Express ${x} as a fraction with denominator ${d}.`),
+    expr: null,
+    answer: { value: ans, text: ans, kind: reduced ? "frac" : "text" },
+    work: [`${x} has ${k} decimal place${k > 1 ? "s" : ""}, so the denominator is ${d}.`, `The digits after the point make the numerator: ${x} is ${ans}.`],
+    visual: null,
+    distractors: reduced ? mkD(new Fr(n, d), ans, cands.map(([t, g]) => [(([a, b]) => new Fr(Number(a), Number(b)))(t.split("/")), g, t]), fmtFr) : mkT(ans, cands),
+    hints: DCH.convert,
+    level: lv,
+  });
+}
+function dcFracSum(rng, lv) {
+  const a = rng.int(1, 8);
+  const c = rng.int(1, 9);
+  const total = a * 10 + c;
+  const ans = dstr(total, 2);
+  const cands = [decCand(a + c, 2, "added-numerators-over-hundredths"), decCand(a + c, 1, "added-numerators-over-tenths"), decCand(c * 10 + a, 2, "swapped-the-places"), decCand(total, 1, "put-the-sum-in-tenths")];
+  return finalize({
+    family: "decimals",
+    spec: { type: "fsum", n1: a, d1: 10, n2: c, d2: 100 },
+    stem: S3(`${a}/10 + ${c}/100`),
+    ask: T3("Add. Write the sum as a decimal.", "Find the sum. Write it as a decimal.", "Calculate the sum and write it as a decimal."),
+    expr: `${a}/10 + ${c}/100`,
+    answer: { value: ans, text: ans, kind: "dec" },
+    work: [`Rename ${a}/10 with a denominator of 100: ${a}/10 is the same as ${a * 10}/100.`, `Add: ${a * 10} + ${c} = ${total}, so the sum is ${total}/100, which is ${ans}.`],
+    visual: null,
+    distractors: mkD(total / 100, ans, cands, (z) => String(z)),
+    hints: { conceptual: "Tenths and hundredths can only be added after the tenths are renamed as hundredths.", procedural: "Rename the tenths as hundredths, add the numerators, then write the sum as a decimal." },
+    level: lv,
+  });
+}
+function dcScale10(rng, lv) {
+  const mul = rng.chance(0.5);
+  const bp = mul ? rng.int(1, 2) : rng.int(0, 1);
+  const pw = rng.pick([1, 2, 3].filter((v) => mul || v <= 3 - bp));
+  const base = mul ? rdec(rng, bp, 1, 9) : rdec(rng, bp, 1, 99);
+  const baseS = dstr(base.i, base.p);
+  const m = 10 ** pw;
+  const res = mul ? { i: base.i * m, p: base.p } : { i: base.i, p: base.p + pw };
+  const ans = decAnswer(res.i, res.p, false);
+  const rv = res.i / 10 ** res.p;
+  const cands = [];
+  for (const sh of [-1, 1, -2, 2]) {
+    const np = res.p + sh;
+    if (np < 0 || np > 5) continue;
+    const t = decAnswer(res.i, np, false);
+    cands.push([res.i / 10 ** np, sh > 0 ? "moved-the-digits-too-far-right" : "moved-the-digits-too-far-left", t.text]);
+  }
+  cands.push([mul ? base.i / 10 ** base.p / m : (base.i / 10 ** base.p) * m, "moved-the-decimal-point-the-wrong-way", decAnswer(mul ? base.i : base.i * m, mul ? base.p + pw : base.p, false).text]);
+  return finalize({
+    family: "decimals",
+    spec: { type: "scale10", x: baseS, p: pw, dir: mul ? "mul" : "div" },
+    stem: S3(`${baseS} ${mul ? TIMES : DIVIDE} ${num(m)}`),
+    ask: T3(mul ? "Multiply." : "Divide.", mul ? "Find the product." : "Find the quotient.", mul ? "Calculate the product." : "Calculate the quotient."),
+    expr: `${baseS} ${mul ? TIMES : DIVIDE} ${num(m)}`,
+    answer: ans,
+    work: [`${num(m)} has ${pw} zero${pw > 1 ? "s" : ""}, so move the digits ${pw} place${pw > 1 ? "s" : ""} to the ${mul ? "left" : "right"}.`, `${baseS} ${mul ? TIMES : DIVIDE} ${num(m)} = ${ans.value}`],
+    visual: null,
+    distractors: mkD(rv, ans.text, cands, (z) => String(z)),
+    hints: DCH.scale10,
+    level: lv,
+  });
+}
+const MONEY_CTX = new Set(["store", "kitchen", "community", "library"]);
+const LENQ = {
+  garden: { item: "garden hose", items: "garden hoses", one: "meter", many: "meters" },
+  sports: { item: "chalk line", items: "chalk lines", one: "meter", many: "meters" },
+  pets: { item: "roll of fencing", items: "rolls of fencing", one: "meter", many: "meters" },
+  crafts: { item: "roll of ribbon", items: "rolls of ribbon", one: "meter", many: "meters" },
+  travel: { item: "bike path", items: "bike paths", one: "kilometer", many: "kilometers" },
+  science: { item: "roll of wire", items: "rolls of wire", one: "meter", many: "meters" },
+  library: { item: "roll of tape", items: "rolls of tape", one: "meter", many: "meters" },
+  store: { item: "roll of ribbon", items: "rolls of ribbon", one: "meter", many: "meters" },
+  kitchen: { item: "roll of foil", items: "rolls of foil", one: "meter", many: "meters" },
+  community: { item: "fence", items: "fences", one: "meter", many: "meters" },
+};
+function dcStory(rng, ctx, op, x, y, divByDecimal) {
+  const [N] = rng.sample(NAMES, 1);
+  const money = MONEY_CTX.has(ctx) && x.p <= 2 && y.p <= 2 && x.i >= 10 ** x.p && (op !== "div" || y.i >= 10 ** y.p || y.p === 0 || divByDecimal);
+  const ft = (v) => (money ? `$${dstr(v.i * 10 ** (2 - v.p), 2)}` : dstr(v.i, v.p));
+  const Q = LENQ[ctx] || LENQ.crafts;
+  const u = (v) => (v.i === 10 ** v.p ? Q.one : Q.many);
+  const lenT = (v) => `${ft(v)} ${u(v)}`;
+  const A = ft(x);
+  const B = ft(y);
+  const item = rng.pick(["pen", "notebook", "folder", "sticker book"]);
+  let stem;
+  let ask;
+  let known;
+  let unknown;
+  let rel;
+  let reasonable;
+  let happening;
+  let unit;
+  if (op === "add" || op === "sub") {
+    stem = money
+      ? T3(`A pen costs ${A}. A notebook costs ${B}.`, `A pen costs ${A}, and a notebook costs ${B}.`, `A pen costs ${A} and a notebook costs ${B}.`)
+      : T3(`A ${Q.item} is ${lenT(x)} long. Another ${Q.item} is ${lenT(y)} long.`, `A ${Q.item} is ${lenT(x)} long, and another ${Q.item} is ${lenT(y)} long.`, `One ${Q.item} is ${lenT(x)} long and another ${Q.item} is ${lenT(y)} long.`);
+    ask =
+      op === "add"
+        ? money
+          ? T3("What is the total cost?", "What is the total cost of the pen and the notebook?", "What is the combined cost of the pen and the notebook?")
+          : T3(`How long are the two ${Q.items} together?`, `How long are the two ${Q.items} when put together?`, `What is the combined length of the two ${Q.items}?`)
+        : money
+          ? T3("How much more does the pen cost?", "How much more does the pen cost than the notebook?", "By how much does the cost of the pen exceed the cost of the notebook?")
+          : T3(`How much longer is the first ${Q.item}?`, `How much longer is the first ${Q.item} than the second one?`, `By how much does the first ${Q.item} exceed the second in length?`);
+    happening = money ? "Two prices are given." : "Two lengths are given.";
+    known = [{ label: money ? "price of the pen" : "first length", value: A }, { label: money ? "price of the notebook" : "second length", value: B }];
+    unknown = op === "add" ? "the total" : "the difference";
+    rel = op === "add" ? "part + part = whole" : "bigger - smaller = difference";
+    reasonable = op === "add" ? "The total is more than either amount." : "The difference is less than the bigger amount.";
+  } else if (op === "mul") {
+    stem = money ? T3(`One ${item} costs ${A}. ${N} buys ${y.i} ${item}s.`, `One ${item} costs ${A}. ${N} buys ${y.i} of them.`, `${N} buys ${y.i} ${item}s that each cost ${A}.`) : T3(`${N} cuts ${y.i} pieces. Each piece is ${lenT(x)} long.`, `${N} cuts ${y.i} pieces, and each piece is ${lenT(x)} long.`, `${N} cuts ${y.i} equal pieces, each ${lenT(x)} long.`);
+    ask = money ? T3(`How much do they cost?`, `What is the total cost?`, `What is the total cost of the ${item}s?`) : T3("How long are the pieces in all?", "What is the total length of the pieces?", "What is the combined length of the pieces?");
+    happening = money ? "Equal-priced items are bought." : "Equal pieces are cut.";
+    known = [{ label: money ? "price of one" : "length of one piece", value: A }, { label: "how many", value: y.i }];
+    unknown = money ? "the total cost" : "the total length";
+    rel = "size of each group x number of groups = total";
+    reasonable = "The total is more than the amount for one.";
+  } else if (divByDecimal) {
+    stem = money ? T3(`${N} has ${A}. Each ${item} costs ${B}.`, `${N} has ${A}, and each ${item} costs ${B}.`, `${N} has ${A} to spend. Each ${item} costs ${B}.`) : T3(`${N} has ${lenT(x)} of ${Q.item}. Each piece needs ${lenT(y)}.`, `${N} has ${lenT(x)} of ${Q.item}, and each piece needs ${lenT(y)}.`, `${N} has ${lenT(x)} of ${Q.item} and cuts pieces that are each ${lenT(y)}.`);
+    ask = money ? T3(`How many ${item}s can ${N} buy?`, `How many ${item}s can ${N} buy?`, `How many ${item}s can ${N} buy?`) : T3("How many pieces can N make?".replace("N", N), `How many pieces can ${N} make?`, `How many pieces can ${N} cut?`);
+    happening = money ? "A budget is spent on equal-priced items." : "A length is cut into equal pieces.";
+    known = [{ label: money ? "money" : "total length", value: A }, { label: money ? "price of one" : "length of each piece", value: B }];
+    unknown = "how many";
+    rel = "total / amount for each = number of groups";
+    reasonable = "Each piece is shorter than the whole length, so there are several pieces.";
+    unit = "";
+  } else {
+    stem = money ? T3(`${N} pays ${A} for ${y.i} ${item}s. The ${item}s cost the same.`, `${N} pays ${A} for ${y.i} ${item}s that cost the same.`, `${N} pays ${A} for ${y.i} identical ${item}s.`) : T3(`${N} cuts a ${Q.item} that is ${lenT(x)} long into ${y.i} equal pieces.`, `${N} cuts a ${Q.item} that is ${lenT(x)} long into ${y.i} equal pieces.`, `${N} cuts a ${Q.item} that is ${lenT(x)} long into ${y.i} pieces of equal length.`);
+    ask = money ? T3(`How much does one ${item} cost?`, `How much does one ${item} cost?`, `What is the cost of one ${item}?`) : T3("How long is each piece?", "How long is each piece?", "What is the length of each piece?");
+    happening = money ? "A price is shared across equal items." : "A length is cut into equal pieces.";
+    known = [{ label: money ? "total cost" : "total length", value: A }, { label: "number of equal parts", value: y.i }];
+    unknown = money ? "the cost of one" : "the length of each piece";
+    rel = "total / number of groups = size of each group";
+    reasonable = "Each part is less than the total.";
+  }
+  return { stem, ask, money, unit: money ? undefined : unit === "" ? undefined : Q.many, structure: STRUCT(happening, known, unknown, rel, "tape diagram", reasonable) };
+}
+function dcOp(rng, lv, P, ctx) {
+  const op = rng.pick(lv === 1 ? ["add", "sub", "mul", "div"] : ["add", "sub", "mul", "div", "mul", "div"]);
+  const story = lv >= 2 && rng.chance(0.4);
+  let x;
+  let y;
+  let res;
+  let cands;
+  let hints;
+  let divByDecimal = false;
+  const SH = (i, p, tag) => decCand(i, p, tag, false);
+  if (op === "add" || op === "sub") {
+    const [p1, p2] = lv === 1 ? (rng.chance(0.5) ? [1, 1] : [2, 2]) : lv === 2 ? rng.pick([[1, 2], [2, 1], [2, 2], [1, 1]]) : rng.pick([[2, 3], [3, 3], [1, 3], [3, 2], [2, 2]]);
+    const pp1 = Math.min(P, p1);
+    const pp2 = Math.min(P, p2);
+    x = rdec(rng, pp1, op === "sub" ? 5 : 1, 60);
+    y = rdec(rng, pp2, 1, op === "sub" ? 4 : 60);
+    if (op === "sub" && lv === 3 && rng.chance(0.4)) x = { i: rng.int(3, 9), p: 0 };
+    const [a, b, p] = align(x, y);
+    if (op === "sub" && a <= b) return null;
+    res = { i: op === "add" ? a + b : a - b, p };
+    const unaligned = op === "add" ? x.i + y.i : Math.abs(x.i - y.i);
+    cands = [SH(unaligned, Math.max(x.p, y.p), op === "add" ? "added-without-lining-up-the-decimal-points" : "subtracted-without-lining-up-the-decimal-points"), SH(res.i, res.p + 1, "moved-the-decimal-point-left"), SH(res.i * 10, res.p, "moved-the-decimal-point-right"), SH(op === "add" ? Math.abs(a - b) : a + b, p, op === "add" ? "subtracted-instead-of-added" : "added-instead-of-subtracted"), SH(res.i + 10 ** p, p, "regrouping-slip"), SH(res.i + 1, p, "off-by-one-in-the-last-place")];
+    hints = DCH.add;
+  } else if (op === "mul") {
+    const kind = lv === 1 ? "whole" : lv === 2 ? rng.pick(["whole", "tt", "tt"]) : rng.pick(["tt", "ht", "ht", "whole"]);
+    if (kind === "whole") {
+      x = rdec(rng, Math.min(P, rng.int(1, 2)), 1, 9);
+      y = { i: rng.int(2, 9), p: 0 };
+    } else if (kind === "tt") {
+      x = { i: rng.int(2, 9), p: 1 };
+      y = { i: rng.int(2, 9), p: 1 };
+    } else {
+      x = rdec(rng, 2, 0, 4);
+      y = { i: rng.int(2, 9), p: 1 };
+    }
+    res = { i: x.i * y.i, p: x.p + y.p };
+    cands = [SH(res.i, Math.max(x.p, y.p), "put-the-decimal-point-in-the-wrong-place"), SH(res.i, res.p + 1, "one-decimal-place-too-many"), res.p > 0 ? SH(res.i, res.p - 1, "one-decimal-place-too-few") : null, SH(...(([a, b, p]) => [a + b, p, "added-instead-of-multiplied"])(align(x, y))), SH(res.i * 10, res.p, "moved-the-decimal-point-right")];
+    hints = DCH.mul;
+  } else {
+    const kind = lv === 1 ? "decwhole" : lv === 2 ? rng.pick(["decwhole", "decdec", "wholedec"]) : rng.pick(["decdec", "decdec", "decdec2", "wholedec"]);
+    if (kind === "decwhole") {
+      const q = rdec(rng, rng.int(1, 2), 1, 9);
+      const w = rng.int(2, 9);
+      x = { i: q.i * w, p: q.p };
+      y = { i: w, p: 0 };
+      res = q;
+    } else if (kind === "decdec") {
+      const yi = rng.int(2, 9);
+      const q = rng.int(2, 30);
+      x = { i: q * yi, p: 1 };
+      y = { i: yi, p: 1 };
+      res = { i: q, p: 0 };
+      divByDecimal = true;
+    } else if (kind === "wholedec") {
+      const [yv, yp, mult] = rng.pick([[5, 1, 2], [2, 1, 5], [25, 2, 4], [1, 1, 10]]);
+      const xw = rng.int(2, 12);
+      x = { i: xw, p: 0 };
+      y = { i: yv, p: yp };
+      res = { i: xw * mult, p: 0 };
+      divByDecimal = true;
+    } else {
+      const yi = rng.int(2, 9);
+      const q = rng.int(2, 40);
+      x = { i: q * yi, p: 2 };
+      y = { i: yi, p: 2 };
+      res = { i: q, p: 0 };
+      divByDecimal = true;
+    }
+    const [qa, qb, qp] = align(x, y);
+    cands = [SH(res.i * 10, res.p, "moved-the-decimal-point-the-wrong-way"), SH(res.i, res.p + 1, "moved-the-decimal-point-the-wrong-way"), SH(res.i + 1, res.p, "off-by-one"), SH(res.i * 100, res.p, "moved-the-decimal-point-two-places"), qa > qb ? SH(qa - qb, qp, "subtracted-instead-of-divided") : null];
+    hints = DCH.div;
+  }
+  const sym = { add: "+", sub: MINUS, mul: TIMES, div: DIVIDE }[op];
+  const xs = dstr(x.i, x.p);
+  const ys = dstr(y.i, y.p);
+  const storyOK = op === "add" || op === "sub" || (op === "mul" && y.p === 0) || (op === "div" && (y.p === 0 || divByDecimal));
+  const S = story && storyOK ? dcStory(rng, ctx, op, x, y, divByDecimal) : null;
+  if (S && S.money && !divByDecimal) {
+    if (res.p > 2) return null;
+  }
+  const money = !!(S && S.money) && !divByDecimal;
+  const ans = decAnswer(res.i, res.p, money);
+  if (money && ans.kind === "int") ans.kind = "dec";
+  const dists = mkD(res.i / 10 ** res.p, ans.text, cands.filter(Boolean).map(([v, t, text]) => [v, t, money ? `$${dstr(Math.round(v * 100), 2)}` : text]), (z) => String(z));
+  const verbs = { add: T3("Add.", "Find the sum.", "Calculate the sum."), sub: T3("Subtract.", "Find the difference.", "Calculate the difference."), mul: T3("Multiply.", "Find the product.", "Calculate the product."), div: T3("Divide.", "Find the quotient.", "Calculate the quotient.") };
+  const aW = (() => {
+    if (op === "add" || op === "sub") {
+      const [a, b, p] = align(x, y);
+      return [`Line up the decimal points: ${dstr(a, p)} ${sym} ${dstr(b, p)}`, `${dstr(a, p)} ${sym} ${dstr(b, p)} = ${dstr(res.i, p)}`];
+    }
+    if (op === "mul") return [`Multiply as whole numbers: ${x.i} ${TIMES} ${y.i} = ${res.i}`, `Together the factors have ${x.p + y.p} decimal place${x.p + y.p === 1 ? "" : "s"}, so the product is ${dstr(res.i, res.p)}`];
+    if (y.p === 0) return [`Divide as with whole numbers and keep the decimal point in the same place: ${xs} ${DIVIDE} ${ys} = ${ans.value}`];
+    const X = x.i * 10 ** (y.p - x.p);
+    return [`Multiply both numbers by ${num(10 ** y.p)} so the divisor is a whole number: ${xs} ${DIVIDE} ${ys} becomes ${X} ${DIVIDE} ${y.i}`, `${X} ${DIVIDE} ${y.i} = ${ans.value}`];
+  })();
+  return finalize({
+    family: "decimals",
+    spec: { type: "op", op, x: xs, y: ys },
+    stem: S ? S.stem : S3(`${xs} ${sym} ${ys}`),
+    ask: S ? S.ask : verbs[op],
+    expr: `${xs} ${sym} ${ys}`,
+    answer: S && S.unit && !(op === "div" && divByDecimal) ? { ...ans, unit: S.unit } : ans,
+    work: aW,
+    visual: null,
+    distractors: dists,
+    hints,
+    structure: S ? S.structure : undefined,
+    level: lv,
+  });
+}
+function genDecimals(rng, p, o) {
+  const P = Math.max(2, Math.min(3, p.places | 0 || 2));
+  const lv = o.level;
+  const ops = !!p.ops;
+  const r = rng.next();
+  const pick = (...fns) => until(() => fns[Math.min(fns.length - 1, Math.floor(r * fns.length))]());
+  if (lv === 1) return pick(() => dcPlaceName(rng, 1, P), () => dcPlaceValue(rng, 1, P), () => dcCompare(rng, 1, P), () => dcFracDec(rng, 1, P), () => dcFracSum(rng, 1), ...(ops ? [() => dcOp(rng, 1, P, o.ctx)] : []), ...(P >= 3 ? [() => dcRound(rng, 1)] : []));
+  if (lv === 2) return pick(() => dcCompare(rng, 2, P), () => dcPlaceValue(rng, 2, P), () => dcFracDec(rng, 2, P), ...(P >= 3 ? [() => dcRound(rng, 2), () => dcScale10(rng, 2)] : [() => dcFracSum(rng, 2)]), ...(ops ? [() => dcOp(rng, 2, P, o.ctx), () => dcOp(rng, 2, P, o.ctx), () => dcOp(rng, 2, P, o.ctx)] : []));
+  return pick(...(ops ? [() => dcOp(rng, 3, P, o.ctx), () => dcOp(rng, 3, P, o.ctx), () => dcOp(rng, 3, P, o.ctx), () => dcOp(rng, 3, P, o.ctx)] : []), ...(P >= 3 ? [() => dcRound(rng, 3), () => dcCompare(rng, 3, P), () => dcScale10(rng, 3)] : [() => dcCompare(rng, 3, P), () => dcFracDec(rng, 3, P), () => dcPlaceValue(rng, 3, P)]));
+}
+function checkDecimals(p, params) {
+  const P = Math.max(2, Math.min(3, (params && params.places) | 0 || 2));
+  const s = p.spec;
+  const places = (str) => (String(str).split(".")[1] || "").length;
+  const vals = s.type === "cmp" ? s.vals : s.type === "op" ? [s.x, s.y] : s.x != null ? [s.x] : [];
+  if (vals.some((v) => places(v) > P)) return `an operand has more than ${P} decimal places`;
+  if (s.type === "op" && !(params && params.ops)) return "operations asked of a skill without ops:true";
+  if (s.type === "round" && P < 3) return "rounding asked of a two-place skill";
+  if ((s.type === "f2d" || s.type === "d2f") && Math.log10(s.d) > P) return "denominator beyond the skill's places";
+  return null;
+}
+
+// ---------------------------------------------------------------------------------------------------- convert
+const CVP = [
+  { big: "km", small: "m", f: 1000, sys: "metric" },
+  { big: "m", small: "cm", f: 100, sys: "metric" },
+  { big: "cm", small: "mm", f: 10, sys: "metric" },
+  { big: "m", small: "mm", f: 1000, sys: "metric", hard: true },
+  { big: "kg", small: "g", f: 1000, sys: "metric" },
+  { big: "L", small: "mL", f: 1000, sys: "metric" },
+  { big: "ft", small: "in", f: 12, sys: "customary" },
+  { big: "yd", small: "ft", f: 3, sys: "customary" },
+  { big: "yd", small: "in", f: 36, sys: "customary", hard: true },
+  { big: "lb", small: "oz", f: 16, sys: "customary" },
+  { big: "gal", small: "qt", f: 4, sys: "customary" },
+  { big: "qt", small: "pt", f: 2, sys: "customary" },
+  { big: "pt", small: "c", f: 2, sys: "customary" },
+  { big: "gal", small: "pt", f: 8, sys: "customary", hard: true },
+  { big: "gal", small: "c", f: 16, sys: "customary", hard: true },
+  { big: "qt", small: "c", f: 4, sys: "customary", hard: true },
+  { big: "hr", small: "min", f: 60, sys: "time" },
+  { big: "min", small: "s", f: 60, sys: "time" },
+  { big: "hr", small: "s", f: 3600, sys: "time", hard: true },
+];
+const UNAME = { km: ["kilometer", "kilometers"], m: ["meter", "meters"], cm: ["centimeter", "centimeters"], mm: ["millimeter", "millimeters"], kg: ["kilogram", "kilograms"], g: ["gram", "grams"], L: ["liter", "liters"], mL: ["milliliter", "milliliters"], ft: ["foot", "feet"], in: ["inch", "inches"], yd: ["yard", "yards"], lb: ["pound", "pounds"], oz: ["ounce", "ounces"], gal: ["gallon", "gallons"], qt: ["quart", "quarts"], pt: ["pint", "pints"], c: ["cup", "cups"], hr: ["hour", "hours"], min: ["minute", "minutes"], s: ["second", "seconds"] };
+const uText = (u, isOne) => UNAME[u][isOne ? 0 : 1];
+const CVTHING = {
+  length: { store: "roll of ribbon", garden: "garden hose", sports: "running track", kitchen: "roll of foil", pets: "leash", library: "bookshelf", crafts: "piece of string", travel: "bike path", science: "wire", community: "fence" },
+  mass: { store: "bag of rice", garden: "bag of soil", sports: "bag of sand", kitchen: "bag of flour", pets: "bag of dog food", library: "box of books", crafts: "block of clay", travel: "suitcase", science: "rock sample", community: "bag of apples" },
+  cap: { store: "bottle of juice", garden: "watering can", sports: "water jug", kitchen: "pitcher of milk", pets: "water bowl", library: "bottle of ink", crafts: "bottle of paint", travel: "fuel tank", science: "beaker of water", community: "bucket of paint" },
+};
+const CVKIND = { km: "length", m: "length", cm: "length", mm: "length", ft: "length", yd: "length", in: "length", kg: "mass", g: "mass", lb: "mass", oz: "mass", L: "cap", mL: "cap", gal: "cap", qt: "cap", pt: "cap", c: "cap" };
+const CVTIME = { store: "A shift at the store", garden: "A watering session", sports: "A practice", kitchen: "A baking time", pets: "A dog walk", library: "A reading time", crafts: "A craft project", travel: "A bus ride", science: "An experiment", community: "A park clean-up" };
+/** Terminating decimal string of a Fr, or null. */
+function frDec(f) {
+  let d = f.d;
+  while (d % 2 === 0) d /= 2;
+  while (d % 5 === 0) d /= 5;
+  if (d !== 1) return null;
+  if (f.d === 1) return String(f.n);
+  let p = 0;
+  while (10 ** p % f.d !== 0 && p < 8) p++;
+  return dstr((f.n * 10 ** p) / f.d, p);
+}
+const cvAns = (f) => {
+  const s = frDec(f);
+  if (s == null) return null;
+  return f.d === 1 ? { value: s, text: withCommas(s), kind: "int" } : { value: s, text: withCommas(s), kind: "dec" };
+};
+function cvPickValue(rng, lv, f, dec, cap = 60) {
+  // the big-unit value as a Fr whose small-unit count is a whole number
+  const hi = Math.min(cap, lv === 1 ? 9 : lv === 2 ? 20 : 60);
+  if (!dec || rng.chance(lv === 1 ? 0.4 : 0.25)) return new Fr(rng.int(2, hi), 1);
+  for (let t = 0; t < 80; t++) {
+    const hund = rng.int(5, hi * 100);
+    if (hund % 100 === 0) continue;
+    if ((hund * f) % 100 === 0) return new Fr(hund, 100);
+  }
+  return new Fr(rng.int(2, hi), 1);
+}
+const WRONGF = { 1000: 100, 100: 1000, 10: 100, 12: 10, 3: 10, 16: 10, 4: 10, 2: 10, 60: 100, 3600: 1000, 36: 10, 8: 10 };
+function cvBuild(rng, p, o) {
+  const lv = o.level;
+  const dec = !!p.decimals;
+  const sysP = p.system || "mixed";
+  const all = CVP.filter((c) => (sysP === "mixed" ? true : c.sys === sysP || c.sys === "time"));
+  const easy = all.filter((c) => !c.hard && (lv > 1 || ["km", "m", "kg", "L", "ft", "hr", "yd"].includes(c.big)));
+  const pair = rng.pick(lv === 3 ? all : easy.length ? easy : all);
+  const f = pair.f;
+  const bigName = (one) => uText(pair.big, one);
+  const smallName = (one) => uText(pair.small, one);
+  if (lv === 3 && !dec && rng.chance(0.2)) {
+    const a = rng.int(2, 9);
+    const b = rng.int(1, Math.min(f - 1, 59));
+    const ans = a * f + b;
+    return finalize({
+      family: "convert",
+      spec: { type: "mixed", big: pair.big, small: pair.small, a, b },
+      stem: T3(`A measure is ${a} ${bigName(false)} ${b} ${smallName(b === 1)}.`, `A measure is ${a} ${bigName(false)} ${b} ${smallName(b === 1)}.`, `A measure is given as ${a} ${bigName(false)} and ${b} ${smallName(b === 1)}.`),
+      ask: T3(`How many ${smallName(false)} is that in all?`, `Write the measure in ${smallName(false)} only.`, `Express the whole measure in ${smallName(false)}.`),
+      expr: null,
+      answer: { ...ansInt(ans), unit: smallName(false) },
+      work: [`Change the larger unit: ${a} ${bigName(false)} is ${a} ${TIMES} ${f} = ${a * f} ${smallName(false)}.`, `Add the extra ${smallName(false)}: ${a * f} + ${b} = ${ans}`],
+      visual: null,
+      distractors: mkD(ans, num(ans), [[a + b, "added-the-numbers-without-converting"], [a * f, "left-out-the-extra-units"], [a * b, "multiplied-the-two-numbers"], [a * (f + b), "converted-the-extra-units-too"], ...nearInts(ans)], fmtInt),
+      hints: { conceptual: "A mixed measure has a larger unit and a smaller unit. Write the whole measure in the smaller unit by converting only the larger part.", procedural: "Convert the larger unit to the smaller unit, then add the smaller units that were left over." },
+      level: lv,
+    });
+  }
+  const up = rng.chance(lv === 1 ? 0.3 : 0.5);
+  const isTable = lv >= 2 && rng.chance(0.25);
+  const V = isTable ? new Fr(rng.int(2, 12), 1) : cvPickValue(rng, lv, f, dec, pair.big === "hr" ? 12 : pair.big === "km" ? 30 : 60);
+  const Sm = V.mul(new Fr(f, 1));
+  const given = up ? Sm : V;
+  const res = up ? V : Sm;
+  const unitFrom = up ? pair.small : pair.big;
+  const unitTo = up ? pair.big : pair.small;
+  const givenText = frDec(given);
+  const ansO = cvAns(res);
+  if (!ansO || givenText == null) return null;
+  if (!dec && ansO.kind !== "int") return null;
+  const wf = WRONGF[f] ?? 10;
+  const mulK = (g, k) => new Fr(g.n * k, g.d);
+  const divK = (g, k) => new Fr(g.n, g.d * k);
+  const cands = [];
+  const push = (v, tag) => {
+    const t = frDec(v);
+    if (t != null) cands.push([v.value, tag, withCommas(t)]);
+  };
+  const fTen = f % 10 === 0 ? f / 10 : null;
+  if (!up) {
+    push(divK(given, f), "divided-instead-of-multiplied");
+    push(mulK(given, f * 10), "added-an-extra-zero");
+    if (fTen) push(mulK(given, fTen), "left-out-a-zero");
+    push(given.add(new Fr(f, 1)), "added-the-conversion-number");
+    push(mulK(given, wf), "used-the-wrong-conversion-number");
+  } else {
+    push(mulK(given, f), "multiplied-instead-of-divided");
+    push(divK(given, f * 10), "divided-by-too-large-a-power-of-ten");
+    if (fTen) push(divK(given, fTen), "divided-by-too-small-a-power-of-ten");
+    push(given.sub(new Fr(f, 1)).n > 0 ? given.sub(new Fr(f, 1)) : given.add(new Fr(f, 1)), "subtracted-the-conversion-number");
+    push(divK(given, wf), "used-the-wrong-conversion-number");
+  }
+  push(res.add(new Fr(1, 1)), "off-by-one");
+  push(res.mul(new Fr(10, 1)), "added-an-extra-zero");
+  const answer = { ...ansO, unit: smallOrBig(unitTo) };
+  function smallOrBig(u) {
+    return uText(u, false);
+  }
+  const gOne = given.d === 1 && given.n === 1;
+  const gShow = withCommas(givenText);
+  const spec = { type: "conv", from: unitFrom, to: unitTo, x: givenText };
+  const hints = { conceptual: "A larger unit is made of many smaller units. A measure in the smaller unit has a bigger number, and a measure in the larger unit has a smaller number.", procedural: `Find how many ${smallName(false)} make 1 ${bigName(true)}. Multiply to change to the smaller unit and divide to change to the larger unit.` };
+  const distractors = mkD(res, ansO.text, [...cands, ...nearInts(Number(ansO.value)).map(([v, t]) => [v, t, withCommas(String(Number(v.toFixed(6))))])], (z) => String(z));
+  if (isTable) {
+    const others = rng.sample([2, 3, 4, 5, 6, 8, 10, 12].filter((v) => v !== V.n), 3);
+    const xs = others.concat([V.n]).sort((a, b) => a - b);
+    const hideIdx = xs.indexOf(V.n);
+    const cell = (fr) => withCommas(frDec(fr));
+    const rows = xs.map((x, i) => {
+      const bigV = new Fr(x, 1);
+      const smallV = bigV.mul(new Fr(f, 1));
+      const [a, b] = up ? [smallV, bigV] : [bigV, smallV];
+      return [cell(a), i === hideIdx ? "?" : cell(b)];
+    });
+    const hdrs = up ? [smallName(false), bigName(false)] : [bigName(false), smallName(false)];
+    return finalize({
+      family: "convert",
+      spec: { ...spec, table: rows },
+      stem: T3("Look at the table of equal measures.", "Use the table of equal measures.", "Use the pattern in the table of equal measures."),
+      ask: T3("What number goes in the empty box?", "What number goes in the empty box?", "What number belongs in the empty box?"),
+      expr: null,
+      answer,
+      work: [`Find the conversion number from a row with no empty box: 1 ${bigName(true)} is ${f} ${smallName(false)}.`, up ? `The ${smallName(false)} column is ${f} times the ${bigName(false)} column, so divide: ${givenText} ${DIVIDE} ${f} = ${ansO.value}` : `The ${smallName(false)} column is ${f} times the ${bigName(false)} column, so multiply: ${givenText} ${TIMES} ${f} = ${ansO.value}`],
+      visual: { kind: "table", alt: `A table converting ${hdrs[0]} to ${hdrs[1]}. One box is empty.`, headers: hdrs.map(cap), rows, caption: "Equal measures" },
+      distractors,
+      hints: { conceptual: "The two columns of a table of equal measures follow one rule: multiply or divide every row by the same conversion number.", procedural: "Find the conversion number from a complete row. Then use it on the row with the empty box." },
+      level: lv,
+    });
+  }
+  const objKind = CVKIND[pair.big];
+  const useStory = rng.chance(lv >= 2 ? 0.5 : 0.3);
+  const [N] = rng.sample(NAMES, 1);
+  let stem;
+  let ask;
+  if (useStory) {
+    const bigUnit = pair.big;
+    const pickThing = (kind) => {
+      if (bigUnit === "km") return rng.pick(["bike path", "hiking trail", "road", "canal"]);
+      if (bigUnit === "gal" || bigUnit === "qt") return rng.pick(["bucket", "fish tank", "water cooler", "watering can"]);
+      return CVTHING[kind][o.ctx] || CVTHING[kind].store;
+    };
+    if (objKind === undefined) {
+      const lead = CVTIME[o.ctx] || CVTIME.store;
+      stem = T3(`${lead} takes ${gShow} ${uText(unitFrom, gOne)}.`, `${lead} takes ${gShow} ${uText(unitFrom, gOne)}.`, `${lead} lasts ${gShow} ${uText(unitFrom, gOne)}.`);
+    } else {
+      const thing = pickThing(objKind);
+      const verb = objKind === "length" ? "is" : objKind === "mass" ? "has a mass of" : "holds";
+      const tail = objKind === "length" ? " long" : "";
+      stem = T3(`A ${thing} ${verb} ${gShow} ${uText(unitFrom, gOne)}${tail}.`, `A ${thing} ${verb} ${gShow} ${uText(unitFrom, gOne)}${tail}.`, `${N} measures a ${thing} that ${verb} ${gShow} ${uText(unitFrom, gOne)}${tail}.`);
+    }
+    ask = T3(`How many ${uText(unitTo, false)} is that?`, `How many ${uText(unitTo, false)} is that?`, `Express this measure in ${uText(unitTo, false)}.`);
+  } else {
+    stem = S3(`${gShow} ${uText(unitFrom, gOne)}`);
+    ask = T3(`Write it in ${uText(unitTo, false)}.`, `How many ${uText(unitTo, false)} is that?`, `Convert the measure to ${uText(unitTo, false)}.`);
+  }
+  return finalize({
+    family: "convert",
+    spec,
+    stem,
+    ask,
+    expr: `${givenText} ${unitFrom} = ? ${unitTo}`,
+    answer,
+    work: up ? [`${f} ${smallName(false)} make 1 ${bigName(true)}, so divide: ${givenText} ${DIVIDE} ${f} = ${ansO.value}`] : [`1 ${bigName(true)} is ${f} ${smallName(false)}, so multiply: ${givenText} ${TIMES} ${f} = ${ansO.value}`],
+    visual: null,
+    distractors,
+    hints,
+    level: lv,
+  });
+}
+const genConvert = (rng, p, o) => until(() => cvBuild(rng, p, o), 200);
+function checkConvert(p, params) {
+  const s = p.spec;
+  if (!(params && params.decimals) && p.answer.kind === "dec") return "a non-integer result from a skill without decimals:true";
+  const sys = params && params.system;
+  if (sys && sys !== "mixed") {
+    const SYS = { km: "metric", m: "metric", cm: "metric", mm: "metric", kg: "metric", g: "metric", L: "metric", mL: "metric", ft: "customary", in: "customary", yd: "customary", lb: "customary", oz: "customary", gal: "customary", qt: "customary", pt: "customary", c: "customary", hr: "time", min: "time", s: "time" };
+    const u = s.from || s.big;
+    if (SYS[u] !== sys && SYS[u] !== "time") return `unit ${u} is outside the ${sys} system`;
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------------------------------- angles
+const ANGH = {
+  classify: { conceptual: "Angles are sorted by comparing them with a square corner, which is 90 degrees, and with a flat line, which is 180 degrees: less than the corner, exactly the corner, between the corner and the flat line, or exactly the flat line.", procedural: "Compare the angle with the square corner first. Then compare it with the flat line." },
+  measure: { conceptual: "A protractor measures an angle in degrees. Line one ray up with zero and read where the other ray crosses the scale that starts at that zero.", procedural: "Find the scale that starts at zero on the first ray. Read the number where the second ray crosses it. Check that it is reasonable: is the angle acute or obtuse?" },
+  line: { conceptual: "Angles that make a straight line together add up to a straight angle, which is 180 degrees.", procedural: "Subtract the angle you know from the measure of a straight angle." },
+  around: { conceptual: "The angles around one point make a full turn, which is 360 degrees, so they add up to a full circle.", procedural: "Add the angles you know, then subtract the total from the measure of a full turn." },
+  adjacentWhole: { conceptual: "When a ray splits an angle into two parts, the measures of the parts add up to the measure of the whole angle.", procedural: "Add the measures of the two smaller angles." },
+  adjacentPart: { conceptual: "When a ray splits an angle into two parts, the two parts add up to the whole angle, so a missing part is a missing addend.", procedural: "Subtract the part you know from the whole angle." },
+  circ: { conceptual: "A full circle is 360 degrees. A fraction of a circle is the same fraction of 360 degrees.", procedural: "Divide 360 by the denominator to find one part, then multiply by the numerator." },
+};
+const KIND_OF = (d) => (d < 90 ? "acute" : d === 90 ? "right" : d < 180 ? "obtuse" : "straight");
+function anClassify(rng, lv) {
+  const kind = rng.pick(lv === 1 ? ["acute", "acute", "obtuse", "obtuse", "right", "straight"] : ["acute", "obtuse", "right", "straight", "acute", "obtuse"]);
+  const deg = kind === "acute" ? (lv === 3 ? rng.int(8, 88) : 5 * rng.int(2, 17)) : kind === "obtuse" ? (lv === 3 ? rng.int(92, 178) : 5 * rng.int(19, 35)) : kind === "right" ? 90 : 180;
+  const tag = (right, wrong) => {
+    if (right === "acute") return wrong === "right" ? (deg >= 80 ? "near-90-called-right" : "confused-acute-with-right") : wrong === "obtuse" ? "confused-acute-with-obtuse" : "confused-acute-with-straight";
+    if (right === "obtuse") return wrong === "acute" ? "confused-obtuse-with-acute" : wrong === "right" ? (deg <= 100 ? "near-90-called-right" : "confused-obtuse-with-right") : deg >= 170 ? "near-180-called-straight" : "confused-obtuse-with-straight";
+    if (right === "right") return wrong === "acute" ? "thought-90-is-acute" : wrong === "obtuse" ? "thought-90-is-obtuse" : "confused-right-with-straight";
+    return wrong === "obtuse" ? "called-a-straight-angle-obtuse" : wrong === "acute" ? "confused-straight-with-acute" : "confused-straight-with-right";
+  };
+  const cands = ["acute", "right", "obtuse", "straight"].filter((k) => k !== kind).map((k) => [k, tag(kind, k)]);
+  return finalize({
+    family: "angles",
+    spec: { type: "classify", deg },
+    stem: S3(`An angle measures ${deg}°.`),
+    ask: T3("What kind of angle is it?", "Is the angle acute, right, obtuse, or straight?", "Classify the angle as acute, right, obtuse, or straight."),
+    expr: null,
+    answer: { value: kind, text: kind, kind: "text" },
+    work: [kind === "acute" ? `${deg}° is less than 90°, so the angle is acute.` : kind === "right" ? `${deg}° is exactly 90°, so the angle is a right angle.` : kind === "obtuse" ? `${deg}° is more than 90° and less than 180°, so the angle is obtuse.` : `${deg}° makes a straight line, so the angle is a straight angle.`],
+    visual: lv === 1 ? { kind: "angle", alt: "An angle drawn with two rays that meet at a point.", deg, label: "P", protractor: false } : null,
+    distractors: mkT(kind, cands),
+    hints: ANGH.classify,
+    level: lv,
+  });
+}
+function anMeasure(rng, lv) {
+  const deg = 5 * rng.int(2, 34);
+  const cands = [[180 - deg, "read-the-wrong-scale"], [deg + 10, "misread-by-two-marks"], [deg - 10, "misread-by-two-marks"], [deg === 90 ? null : Math.abs(90 - deg), "gave-the-distance-from-90"], [deg + 5, "misread-by-one-mark"]];
+  return finalize({
+    family: "angles",
+    spec: { type: "measure", deg },
+    stem: T3("Use the protractor picture.", "Use the protractor in the picture.", "Read the measure from the protractor in the picture."),
+    ask: T3("What is the measure of the angle in degrees?", "What is the measure of the angle in degrees?", "What is the measure of the angle, in degrees?"),
+    expr: null,
+    answer: { ...ansInt(deg), unit: "degrees" },
+    work: [`One ray lines up with zero. The other ray crosses the same scale at ${deg}.`, `The angle is ${deg}°, which is ${KIND_OF(deg)}, so the reading is reasonable.`],
+    visual: { kind: "angle", alt: "A protractor with an angle drawn from its center point.", deg, label: "P", protractor: true },
+    distractors: mkD(deg, num(deg), [...cands, ...nearInts(deg)], fmtInt),
+    hints: ANGH.measure,
+    level: lv,
+  });
+}
+function anLine(rng, lv) {
+  const a = lv === 3 ? rng.int(12, 168) : 5 * rng.int(3, 33);
+  if (a === 90) return null;
+  const ans = 180 - a;
+  return finalize({
+    family: "angles",
+    spec: { type: "line", a },
+    stem: T3(`Two angles are next to each other on a straight line. One angle is ${a}°.`, `Two angles are next to each other on a straight line. One of them measures ${a}°.`, `Two adjacent angles together form a straight line. One angle measures ${a}°.`),
+    ask: T3("What is the other angle?", "What is the measure of the other angle?", "What is the measure of the other angle, in degrees?"),
+    expr: `${a} + ? = 180`,
+    answer: { ...ansInt(ans), unit: "degrees" },
+    work: [`A straight line is 180°, so the two angles add up to 180°.`, `${a} + ${ans} = 180, so the other angle is ${ans}°.`],
+    visual: null,
+    distractors: mkD(ans, num(ans), [[Math.abs(90 - a), "used-90-instead-of-180"], [360 - a, "used-360-instead-of-180"], [a, "repeated-the-given-angle"], [180 + a, "added-instead-of-subtracted"], [ans + 10, "regrouping-slip"], [ans - 10, "regrouping-slip"]], fmtInt),
+    hints: ANGH.line,
+    level: lv,
+  });
+}
+function anAround(rng, lv) {
+  const n = lv === 2 ? 2 : 3;
+  const draw = () => (lv === 3 ? rng.int(25, 130) : 5 * rng.int(6, 26));
+  const known = Array.from({ length: n }, draw);
+  const sum = known.reduce((t, v) => t + v, 0);
+  const ans = 360 - sum;
+  if (ans < 20) return null;
+  const list = n === 2 ? `${known[0]}° and ${known[1]}°` : `${known[0]}°, ${known[1]}° and ${known[2]}°`;
+  return finalize({
+    family: "angles",
+    spec: { type: "around", known },
+    stem: T3(`Angles meet at one point and fill the whole turn. The known angles are ${list}.`, `Angles meet at one point and fill the whole turn around it. The known angles measure ${list}.`, `Several angles meet at one point and together fill the whole turn. The angles ${list} are known.`),
+    ask: T3("What is the last angle?", "What is the measure of the last angle?", "What is the measure of the remaining angle, in degrees?"),
+    expr: null,
+    answer: { ...ansInt(ans), unit: "degrees" },
+    work: [`A full turn is 360°. Add the known angles: ${known.slice(0, -1).reduce((t, v) => t + v, 0)} + ${known[n - 1]} = ${sum}`, `Subtract from 360: 360 ${MINUS} ${sum} = ${ans}`],
+    visual: null,
+    distractors: mkD(ans, num(ans), [[180 - sum > 0 ? 180 - sum : null, "used-180-instead-of-360"], [sum, "gave-the-total-of-the-known-angles"], [ans + 10, "regrouping-slip"], [ans - 10, "regrouping-slip"], [360 + sum, "added-instead-of-subtracted"]], fmtInt),
+    hints: ANGH.around,
+    level: lv,
+  });
+}
+function anAdjacent(rng, lv, forced) {
+  const find = forced || (lv === 1 ? "whole" : rng.pick(["part", "part", "whole"]));
+  const step = lv === 3 ? 1 : 5;
+  const whole = step * rng.int(lv === 3 ? 40 : 8, lv === 3 ? 170 : 34);
+  const p1 = step * rng.int(Math.ceil(10 / step), Math.floor((whole - 10) / step));
+  const p2 = whole - p1;
+  if (p1 < 10 || p2 < 10) return null;
+  const ans = find === "whole" ? whole : p2;
+  const stem = find === "whole" ? T3(`Ray BD splits angle ABC into two angles. Angle ABD is ${p1}°. Angle DBC is ${p2}°.`, `Ray BD splits angle ABC into two smaller angles. Angle ABD measures ${p1}° and angle DBC measures ${p2}°.`, `Ray BD divides angle ABC into angle ABD, which measures ${p1}°, and angle DBC, which measures ${p2}°.`) : T3(`Angle ABC is ${whole}°. Ray BD splits it into two angles. Angle ABD is ${p1}°.`, `Angle ABC measures ${whole}°. Ray BD splits it into two smaller angles, and angle ABD measures ${p1}°.`, `Angle ABC measures ${whole}°. Ray BD divides it into two angles, and angle ABD measures ${p1}°.`);
+  const ask = find === "whole" ? T3("What is the measure of angle ABC?", "What is the measure of angle ABC?", "What is the measure of angle ABC, in degrees?") : T3("What is the measure of angle DBC?", "What is the measure of angle DBC?", "What is the measure of angle DBC, in degrees?");
+  const cands = find === "whole" ? [[Math.abs(p1 - p2), "subtracted-instead-of-added"], [180 - ans > 0 ? 180 - (p1 + p2) : null, "used-180-instead-of-adding"], [p1, "gave-one-of-the-parts"], [ans + 10, "regrouping-slip"], [ans - 10, "regrouping-slip"]] : [[whole + p1, "added-instead-of-subtracted"], [p1, "gave-the-known-part"], [whole, "gave-the-whole-angle"], [ans + 10, "regrouping-slip"], [ans - 10, "regrouping-slip"]];
+  return finalize({
+    family: "angles",
+    spec: find === "whole" ? { type: "adjacent", find, p1, p2 } : { type: "adjacent", find, whole, p1 },
+    stem,
+    ask,
+    expr: find === "whole" ? `${p1} + ${p2} = ?` : `${p1} + ? = ${whole}`,
+    answer: { ...ansInt(ans), unit: "degrees" },
+    work: find === "whole" ? [`The two smaller angles make the whole angle, so add: ${p1} + ${p2} = ${whole}`, `Angle ABC is ${whole}°.`] : [`The two smaller angles add up to the whole angle, so subtract: ${whole} ${MINUS} ${p1} = ${p2}`, `Angle DBC is ${p2}°.`],
+    visual: lv === 1 ? { kind: "angle", alt: "An angle split into two parts by a ray.", deg: whole, label: find === "whole" ? "?" : `${whole}°`, protractor: false } : null,
+    distractors: mkD(ans, num(ans), [...cands, ...nearInts(ans)], fmtInt),
+    hints: find === "whole" ? ANGH.adjacentWhole : ANGH.adjacentPart,
+    level: lv,
+  });
+}
+function anCirc(rng, lv) {
+  const d = rng.pick([2, 3, 4, 5, 6, 8, 9, 10, 12]);
+  const n = rng.int(1, d - 1);
+  const ans = (360 * n) / d;
+  const one = 360 / d;
+  const cands = [[n > 1 ? one : null, "named-only-one-part"], [d, "gave-the-denominator"], [(180 * n) / d, "used-half-a-circle-as-the-whole"], [360 - ans, "gave-the-rest-of-the-circle"], [n, "gave-the-numerator"]];
+  return finalize({
+    family: "angles",
+    spec: { type: "circfrac", n, d },
+    stem: T3(`A turn is ${n}/${d} of a full circle.`, `An angle turns through ${n}/${d} of a full circle.`, `An angle opens through ${n}/${d} of a complete circle.`),
+    ask: T3("How many degrees is the angle?", "How many degrees is the angle?", "What is the measure of the angle, in degrees?"),
+    expr: null,
+    answer: { ...ansInt(ans), unit: "degrees" },
+    work: [`One part of ${d} equal parts of a circle is 360 ${DIVIDE} ${d} = ${one}°.`, `${n} parts: ${n} ${TIMES} ${one} = ${ans}°.`],
+    visual: null,
+    distractors: mkD(ans, num(ans), [...cands, ...nearInts(ans)], fmtInt),
+    hints: ANGH.circ,
+    level: lv,
+  });
+}
+function genAngles(rng, p, o) {
+  const lv = o.level;
+  const r = rng.next();
+  return until(() => {
+    if (lv === 1) return r < 0.4 ? anClassify(rng, 1) : r < 0.7 ? anMeasure(rng, 1) : anAdjacent(rng, 1, "whole");
+    if (lv === 2) return r < 0.3 ? anLine(rng, 2) : r < 0.55 ? anAdjacent(rng, 2) : r < 0.7 ? anClassify(rng, 2) : anAround(rng, 2);
+    return r < 0.25 ? anAround(rng, 3) : r < 0.5 ? anCirc(rng, 3) : r < 0.7 ? anAdjacent(rng, 3) : anLine(rng, 3);
+  });
+}
+
+// ---------------------------------------------------------------------------------------------------- lineplot
+const LP = {
+  store: { items: "pencils", one: "inch", many: "inches", verb: "measured", noun: "length", title: "lengths of pencils, in inches" },
+  garden: { items: "bean seedlings", one: "inch", many: "inches", verb: "measured", noun: "height", title: "heights of bean seedlings, in inches" },
+  sports: { items: "cones", one: "foot", many: "feet", verb: "measured", noun: "height", title: "heights of cones, in feet" },
+  kitchen: { items: "bowls", one: "cup", many: "cups", verb: "held", noun: "amount", title: "amounts of flour in bowls, in cups" },
+  pets: { items: "goldfish", one: "inch", many: "inches", verb: "measured", noun: "length", title: "lengths of goldfish, in inches" },
+  library: { items: "bookmarks", one: "inch", many: "inches", verb: "measured", noun: "length", title: "lengths of bookmarks, in inches" },
+  crafts: { items: "ribbons", one: "inch", many: "inches", verb: "measured", noun: "length", title: "lengths of ribbons, in inches" },
+  travel: { items: "luggage tags", one: "inch", many: "inches", verb: "measured", noun: "length", title: "lengths of luggage tags, in inches" },
+  science: { items: "plant cuttings", one: "inch", many: "inches", verb: "measured", noun: "length", title: "lengths of plant cuttings, in inches" },
+  community: { items: "paper chains", one: "foot", many: "feet", verb: "measured", noun: "length", title: "lengths of paper chains, in feet" },
+};
+const vStr = (f) => (f.d === 1 ? String(f.n) : `${f.n}/${f.d}`);
+const vText = (f) => mixedOf(f);
+const sumFr = (xs) => xs.reduce((t, x) => t.add(x), new Fr(0, 1));
+/** Counts of data points at each tick of a line plot. */
+function lpData(rng, q, W, s0, nLo, nHi, kLo, kHi) {
+  const T = W * q + 1;
+  const k = rng.int(Math.min(kLo, T - 1), Math.min(kHi, T - 1));
+  const first = s0 === 0 ? 1 : 0;
+  const idxs = rng.sample(Array.from({ length: T - first }, (_, i) => i + first), k).sort((a, b) => a - b);
+  const n = Math.max(k, rng.int(nLo, nHi));
+  const counts = new Array(T).fill(0);
+  for (const i of idxs) counts[i] = 1;
+  for (let r = k; r < n; r++) counts[rng.pick(idxs)]++;
+  const vals = [];
+  counts.forEach((c, i) => {
+    for (let j = 0; j < c; j++) vals.push(new Fr(s0 * q + i, q));
+  });
+  return { counts, vals, idxs, n, T, at: (i) => new Fr(s0 * q + i, q) };
+}
+function lpBuild(rng, lv, ctx, type, operations) {
+  const L = LP[ctx] || LP.store;
+  const q = lv === 1 ? 2 : lv === 2 ? 4 : 8;
+  const W = lv === 1 ? 2 : lv === 2 ? rng.pick([1, 2]) : 1;
+  const s0 = rng.int(0, lv === 3 ? 2 : 1);
+  const meanType = type === "mean";
+  const D = lpData(rng, q, W, s0, meanType ? 4 : lv === 1 ? 8 : 9, meanType ? 8 : lv === 1 ? 12 : 14, meanType ? 3 : lv === 1 ? 4 : 5, lv === 1 ? 5 : 7);
+  const maxC = Math.max(...D.counts);
+  if (maxC > 6) return null;
+  const mean = sumFr(D.vals).div(new Fr(D.n, 1));
+  if (meanType && ![1, 2, 4, 8].includes(mean.d)) return null;
+  const nonIntSeen = D.vals.some((v) => v.d !== 1);
+  if (!nonIntSeen) return null;
+  const strs = D.vals.map(vStr);
+  const unitOf = (f) => (f.value <= 1 ? L.one : L.many);
+  const tv = (f) => `${vText(f)} ${unitOf(f)}`;
+  const picks = D.idxs.map((i) => D.at(i));
+  const countOf = (f) => D.vals.filter((v) => v.cmp(f) === 0).length;
+  const visual = { kind: "lineplot", alt: `A line plot of the ${L.title}. Each x is one measurement.`, min: s0, max: s0 + W, step: `1/${q}`, values: strs, label: cap(L.title) };
+  const stem = T3(`Look at the line plot. It shows the ${L.title}.`, `The line plot shows the ${L.title}.`, `The line plot displays data on the ${L.title}.`);
+  const common = { family: "lineplot", stem, expr: null, visual, level: lv };
+  const fmtF = (v) => (v instanceof Fr ? (v.d === 1 ? num(v.n) : mixedOf(v)) : num(v));
+  let spec;
+  let ask;
+  let answer;
+  let work;
+  let cands;
+  let hints;
+  let fmt = fmtInt;
+  let ans;
+  if (type === "howmany") {
+    const t = rng.pick(picks);
+    ans = countOf(t);
+    spec = { type, values: strs, t: vStr(t) };
+    ask = S3(`How many ${L.items} ${L.verb} ${tv(t)}?`);
+    answer = ansInt(ans);
+    const nb = picks.filter((f) => f.cmp(t) !== 0).map(countOf);
+    cands = [[D.n, "counted-all-the-marks"], [ans + 1, "counted-an-extra-mark"], [ans - 1, "missed-a-mark"], [picks.length, "counted-the-columns"], nb.length ? [nb[0], "read-the-wrong-column"] : null, ...nearInts(ans)];
+    work = [`Find ${vText(t)} on the number line and count the x marks above it.`, `There are ${ans} marks above ${vText(t)}.`];
+    hints = { conceptual: "In a line plot, each x stands for one measurement. The marks stacked above a number tell how many measurements have that value.", procedural: "Find the number on the line, then count the x marks that are stacked above it." };
+  } else if (type === "most") {
+    let best = picks[0];
+    for (const f of picks) if (countOf(f) > countOf(best)) best = f;
+    if (picks.filter((f) => countOf(f) === countOf(best)).length > 1) return null;
+    const lo = picks[0];
+    const hi = picks[picks.length - 1];
+    ans = best;
+    spec = { type, values: strs };
+    ask = S3(`Which ${L.noun} was the most common?`);
+    answer = fracAnswer(best);
+    cands = picks.filter((f) => f.cmp(best) !== 0).map((f) => [f, f.cmp(hi) === 0 ? "chose-the-greatest-value" : f.cmp(lo) === 0 ? "chose-the-least-value" : "chose-a-value-with-fewer-marks"]);
+    fmt = fmtF;
+    work = [`The most common value has the tallest stack of x marks. That stack is above ${vText(best)}, with ${countOf(best)} marks.`];
+    hints = { conceptual: "The most common value is the one that appears most often, so it has the tallest stack of x marks.", procedural: "Compare the heights of the stacks. Read the number under the tallest stack." };
+  } else if (type === "more") {
+    const t = rng.pick(picks.slice(0, -1));
+    ans = D.vals.filter((v) => v.cmp(t) > 0).length;
+    spec = { type, values: strs, t: vStr(t) };
+    ask = S3(`How many ${L.items} ${L.verb} more than ${tv(t)}?`);
+    answer = ansInt(ans);
+    cands = [[D.vals.filter((v) => v.cmp(t) >= 0).length, "included-the-value-that-is-equal"], [D.vals.filter((v) => v.cmp(t) < 0).length, "counted-the-wrong-side"], [D.n, "counted-all-the-marks"], [ans + 1, "counted-an-extra-mark"], ...nearInts(ans)];
+    work = [`Count the x marks to the right of ${vText(t)}. Do not count the marks above ${vText(t)} itself.`, `There are ${ans} marks.`];
+    hints = { conceptual: "More than a number means greater than it, so only the values to the right of it on the number line count.", procedural: "Find the number on the line. Count the marks only on the numbers to its right." };
+  } else if (type === "range") {
+    const lo = picks[0];
+    const hi = picks[picks.length - 1];
+    const diff = hi.sub(lo);
+    ans = diff;
+    spec = { type, values: strs };
+    ask = S3(`What is the difference between the greatest ${L.noun} and the least ${L.noun}?`);
+    answer = fracAnswer(diff);
+    const steps = Math.round(diff.value * q);
+    cands = [[hi, "gave-the-greatest-value", fmtF(hi)], [hi.add(lo), "added-instead-of-subtracted"], [steps, "counted-the-intervals", String(steps)], [diff.add(new Fr(1, q)), "off-by-one-interval"], [diff.sub(new Fr(1, q)).n > 0 ? diff.sub(new Fr(1, q)) : null, "off-by-one-interval"], [lo, "gave-the-least-value"]];
+    fmt = fmtF;
+    work = [`The greatest value is ${vText(hi)} and the least value is ${vText(lo)}.`, `The difference is ${vText(hi)} ${MINUS} ${vText(lo)}, which is ${vText(diff)}.`];
+    hints = { conceptual: "The difference between the greatest and the least values is how far apart the two ends of the data are.", procedural: "Read the value of the last x on the right and the first x on the left, then subtract." };
+  } else if (type === "diffcount") {
+    const opts = [];
+    for (const a of picks) for (const b of picks) if (countOf(a) > countOf(b)) opts.push([a, b]);
+    if (!opts.length) return null;
+    const [t1, t2] = rng.pick(opts);
+    ans = countOf(t1) - countOf(t2);
+    spec = { type, values: strs, t: vStr(t1), t2: vStr(t2) };
+    ask = S3(`How many more ${L.items} ${L.verb} ${tv(t1)} than ${tv(t2)}?`);
+    answer = ansInt(ans);
+    cands = [[countOf(t1) + countOf(t2), "added-instead-of-subtracted"], [countOf(t1), "gave-one-of-the-counts"], [countOf(t2), "gave-one-of-the-counts"], [ans + 1, "off-by-one"], ...nearInts(ans)];
+    work = [`Count the marks above ${vText(t1)}: ${countOf(t1)}. Count the marks above ${vText(t2)}: ${countOf(t2)}.`, `Subtract: ${countOf(t1)} ${MINUS} ${countOf(t2)} = ${ans}`];
+    hints = { conceptual: "How many more asks for the difference between two counts, so compare the heights of two stacks.", procedural: "Count the marks in each of the two stacks, then subtract the smaller count from the larger count." };
+  } else if (type === "total") {
+    const total = sumFr(D.vals);
+    ans = total;
+    spec = { type, values: strs };
+    ask = S3(`What is the total ${L.noun} of all the ${L.items}, in ${L.many}?`);
+    answer = fracAnswer(total);
+    const distinct = sumFr(picks);
+    cands = [[mean, "found-the-average", fmtF(mean)], [distinct, "forgot-the-repeated-values", fmtF(distinct)], [D.n, "gave-the-number-of-items"], [total.add(new Fr(1, q)), "off-by-one-interval"], [total.sub(new Fr(1, q)).n > 0 ? total.sub(new Fr(1, q)) : null, "off-by-one-interval"]];
+    fmt = fmtF;
+    const ex = picks.find((f) => countOf(f) > 1) || picks[picks.length - 1];
+    work = [`Add the value of every x mark. A stack of ${countOf(ex)} marks above ${vText(ex)} adds ${countOf(ex)} copies of ${vText(ex)}.`, `The total is ${vText(total)}.`];
+    hints = { conceptual: "A line plot stores every measurement, so the total adds all of them, including repeats.", procedural: "For each number on the line, multiply the number by the count of marks above it. Then add those amounts." };
+  } else {
+    ans = mean;
+    spec = { type, values: strs };
+    ask = T3(`If all the ${L.items} had the same ${L.noun}, what would that ${L.noun} be?`, `If all the ${L.items} had the same ${L.noun}, what would it be?`, `If the total were shared equally among all the ${L.items}, what would each ${L.noun} be?`);
+    answer = fracAnswer(mean);
+    const sorted = D.vals.slice().sort((a, b) => a.cmp(b));
+    const med = sorted[Math.floor(sorted.length / 2)];
+    let best = picks[0];
+    for (const f of picks) if (countOf(f) > countOf(best)) best = f;
+    const total = sumFr(D.vals);
+    cands = [[total, "forgot-to-divide", fmtF(total)], [best, "chose-the-most-common-value", fmtF(best)], [med, "chose-the-middle-value", fmtF(med)], [total.div(new Fr(picks.length, 1)), "divided-by-the-number-of-different-values", fmtF(total.div(new Fr(picks.length, 1)))], [mean.add(new Fr(1, q)), "off-by-one-interval"], [mean.sub(new Fr(1, q)).n > 0 ? mean.sub(new Fr(1, q)) : null, "off-by-one-interval"], [picks[picks.length - 1], "chose-the-greatest-value"], [picks[0], "chose-the-least-value"]];
+    fmt = fmtF;
+    work = [`Add all the values: the total is ${vText(total)}.`, `Share the total equally among the ${D.n} ${L.items}: ${vText(total)} ${DIVIDE} ${D.n} gives ${vText(mean)}.`];
+    hints = { conceptual: "Making all the amounts the same means sharing the total equally. That equal share is the mean.", procedural: "Find the total of all the measurements. Then divide the total by how many measurements there are." };
+  }
+  const ansO = answer;
+  const distractors = mkD(vnum(ans), ansO.text, cands.filter(Boolean).map(([v, t, text]) => [v, t, text ?? (v instanceof Fr ? fmtF(v) : undefined)]), fmt);
+  if (distractors.length < 3) return null;
+  return finalize({
+    ...common,
+    spec,
+    ask,
+    answer: ansO,
+    work,
+    distractors,
+    hints,
+  });
+}
+function genLineplot(rng, p, o) {
+  const lv = o.level;
+  const ops = !!p.operations;
+  const r = rng.next();
+  let type;
+  if (lv === 1) type = ops && r < 0.3 ? "total" : r < 0.55 ? "howmany" : r < 0.8 ? "most" : "more";
+  else if (lv === 2) type = ops && r < 0.25 ? "total" : ops && r < 0.45 ? "mean" : r < 0.55 ? "howmany" : r < 0.7 ? "most" : r < 0.8 ? "range" : r < 0.9 ? "diffcount" : "more";
+  else type = ops && r < 0.4 ? "mean" : ops && r < 0.6 ? "total" : r < 0.7 ? "range" : r < 0.85 ? "diffcount" : "more";
+  return until(() => lpBuild(rng, lv, o.ctx, type, ops), 800);
+}
+function checkLineplot(p, params) {
+  const s = p.spec;
+  if (!(params && params.operations) && (s.type === "total" || s.type === "mean")) return "operations asked of a skill without operations:true";
+  const ds = s.values.map((v) => (String(v).split("/")[1] ? Number(String(v).split("/")[1]) : 1));
+  if (ds.some((d) => ![1, 2, 4, 8].includes(d))) return "a value is not a half, fourth or eighth";
+  if (!ds.some((d) => d !== 1)) return "no fractional value on the line plot";
+  return null;
 }
 
 export const FAMILIES = {
@@ -2231,4 +3753,9 @@ export const FAMILIES = {
   multcompare: { title: "Multiplicative comparison", grades: [4], defaults: {}, gen: genMultcompare },
   factors: { title: "Factors and multiples", grades: [4], defaults: { max: 100 }, gen: genFactors, check: checkFactors },
   fracequiv: { title: "Equivalent fractions and comparing", grades: [4], defaults: {}, gen: genFracequiv },
+  fracops: { title: "Fraction operations", grades: [4, 5, 6], defaults: { level: "like" }, gen: genFracops },
+  decimals: { title: "Decimals", grades: [4, 5], defaults: { places: 2, ops: false }, gen: genDecimals, check: checkDecimals },
+  convert: { title: "Measurement conversions", grades: [4, 5], defaults: { system: "mixed", decimals: false }, gen: genConvert, check: checkConvert },
+  angles: { title: "Angles", grades: [4], defaults: {}, gen: genAngles },
+  lineplot: { title: "Line plots with fractions", grades: [4, 5], defaults: { frac: true, operations: false }, gen: genLineplot, check: checkLineplot },
 };

@@ -3,7 +3,7 @@
 // never the only way to read it. Exact arithmetic everywhere (Fr from kit.js), no timers, nothing drag-only.
 //
 // Actions (apply an operation to both sides, run trials, undo, feed an input ...) are real buttons built with h() and returned in `extra`.
-// Their history lives in state.x (one object, so the whole history is one assignment). manip-kit.js re-renders the picture after every
+// Their history lives in state._ (one object, so the whole history is one assignment; "_" cannot clash with a control id). manip-kit.js re-renders the picture after every
 // change, which would drop keyboard focus from a button inside it, so run() puts focus back on the same button.
 // A text note from the last action ("Not allowed: ...") is shown at the front of the live summary until a control changes.
 import { defineManip } from "./manip-kit.js";
@@ -15,7 +15,7 @@ import { fr, makeRng, hashStr, MINUS } from "./kit.js";
 
 export const META = {};
 const REG = new WeakMap();
-const fp = (s) => JSON.stringify(Object.entries(s).filter(([k]) => k !== "x"));
+const fp = (s) => JSON.stringify(Object.entries(s).filter(([k]) => k !== "_"));
 
 /** Run one action: fn(x, state) -> { x?, ctl?, note }. A refused action returns only a note, so the state does not change. */
 function run(o, id, fn) {
@@ -24,12 +24,12 @@ function run(o, id, fn) {
   const st = r.handle.state;
   let res;
   try {
-    res = fn(st.x || {}, st) || {};
+    res = fn(st._ || {}, st) || {};
   } catch {
     res = { note: "That did not work. Try again." };
   }
   for (const [k, v] of Object.entries(res.ctl || {})) r.handle.set(k, v);
-  r.handle.set("x", { ...(res.x || st.x || {}), note: res.note || "", noteFp: fp({ ...st, ...(res.ctl || {}) }) });
+  r.handle.set("_", { ...(res.x || st._ || {}), note: res.note || "", noteFp: fp({ ...st, ...(res.ctl || {}) }) });
   r.el.querySelector(`[data-act="${id}"]`)?.focus();
 }
 
@@ -54,7 +54,7 @@ function manip(def) {
   const base = defineManip({
     ...def,
     model(s, o) {
-      const x = s.x || {};
+      const x = s._ || {};
       const note = x.noteFp === fp(s) ? x.note || "" : "";
       const ctx = {
         x,
@@ -742,11 +742,12 @@ const machine = manip({
         return { x: { ...x, fedKey: key, fed: [...cur, input] }, note: `Fed ${T(fr(input))}; the machine gave ${T(out)}.` };
       }),
       c.btn("clear", "Clear the table", (x) => ({ x: { ...x, fedKey: key, fed: [] }, note: "Cleared the table." }), !fed.length),
-      mode === "guess" && !committed
-        ? c.btn("commit", "Commit my guess and show the rule", (x) => {
+      mode === "guess"
+        ? c.btn("commit", committed ? "The rule is shown" : "Commit my guess and show the rule", (x) => {
+            if (committed) return { note: "The rule is already shown. Choose another puzzle number to try a new one." };
             const d = mDiff(mine, real);
             return { x: { ...x, commitKey: key, commit: { ok: d === null, at: d } }, note: d === null ? "Your rule matches the machine for every input from −10 to 10." : "Your rule does not match the machine." };
-          })
+          }, !!committed)
         : null,
     );
     const parts = [];
@@ -1031,7 +1032,7 @@ const statviz = manip({
 
 /* ================================================================ 12. construction */
 
-const dPhrase = (f) => dec(f, 3).text;
+const D = (f) => dec(f, 3).text; // every length here is a multiple of 0.5, so these decimals are exact
 const UNITS = { none: "", cm: "cm", in: "in", m: "m" };
 const construction = manip({
   id: "construction",
@@ -1061,9 +1062,9 @@ const construction = manip({
       const C314 = fr(628, 100).mul(r);
       const A314 = fr(314, 100).mul(r.mul(r));
       const sq = u ? `${u}²` : "square units";
-      const out = [vsum(spec), `The radius is ${both(r)}${us} and the diameter is ${both(r.mul(fr(2)))}${us}.`];
-      out.push(`Circumference C = 2 × π × r. With 3.14 for π: C = 2 × 3.14 × ${T(r)} = ${dPhrase(C314)}${us}. In terms of π: C = ${both(r.mul(fr(2)))}π${us}.`);
-      out.push(`Area A = π × r × r. With 3.14 for π: A = 3.14 × ${T(r)} × ${T(r)} = ${dPhrase(A314)} ${sq}. In terms of π: A = ${both(r.mul(r))}π ${sq}.`);
+      const out = [vsum(spec), `The radius is ${D(r)}${us} and the diameter is ${D(r.mul(fr(2)))}${us}.`];
+      out.push(`Circumference C = 2 × π × r. With 3.14 for π: C = 2 × 3.14 × ${D(r)} = ${D(C314)}${us}. In terms of π: C = ${D(r.mul(fr(2)))}π${us}.`);
+      out.push(`Area A = π × r × r. With 3.14 for π: A = 3.14 × ${D(r)} × ${D(r)} = ${D(A314)} ${sq}. In terms of π: A = ${D(r.mul(r))}π ${sq}.`);
       return { spec, summary: out.join(" ") };
     }
     const sides = ["a", "b", "c"].map((k) => Hf(s[k], 0.5, 30, k === "a" ? 3 : k === "b" ? 4 : 5));
@@ -1071,15 +1072,15 @@ const construction = manip({
     const sorted = [...q].sort((p, r) => p.cmp(r));
     const [s1, s2, s3] = sorted;
     const short = s1.add(s2);
-    const lbl = (f) => `${T(f)}${us}`;
+    const lbl = (f) => `${D(f)}${us}`;
     const cmp = short.cmp(s3);
     const out = [];
     let spec;
     if (cmp <= 0) {
       spec = { kind: "tape", rows: [{ label: "Two shorter sides", parts: [{ label: "shorter side", value: V(s1) }, { label: "shorter side", value: V(s2) }] }, { label: "Longest side", parts: [{ label: "longest side", value: V(s3) }] }] };
       out.push(vsum(spec));
-      out.push(`These three sides cannot build a triangle: the two shorter sides add up to ${T(s1)} + ${T(s2)} = ${T(short)}${us}, and the longest side is ${lbl(s3)}.`);
-      out.push(cmp === 0 ? `${T(short)} is exactly equal to ${T(s3)}, so the two shorter sides would lie flat along the longest side and there is no triangle.` : `${T(short)} is less than ${T(s3)}, so the two shorter sides are too short to reach each other.`);
+      out.push(`These three sides cannot build a triangle: the two shorter sides add up to ${D(s1)} + ${D(s2)} = ${D(short)}${us}, and the longest side is ${lbl(s3)}.`);
+      out.push(cmp === 0 ? `${D(short)} is exactly equal to ${D(s3)}, so the two shorter sides would lie flat along the longest side and there is no triangle.` : `${D(short)} is less than ${D(s3)}, so the two shorter sides are too short to reach each other.`);
       out.push("For a triangle, the two shorter sides must add up to more than the longest side.");
       return { spec, summary: out.join(" ") };
     }
@@ -1092,8 +1093,8 @@ const construction = manip({
     const ns = sides.slice().sort((p, r) => p - r);
     spec = c2 === 0 ? { kind: "triangle", a: ns[0], b: ns[1], c: ns[2], right: true, ...(u ? { unit: u } : {}) } : { kind: "triangle", a: sides[0], b: sides[1], c: sides[2], right: false, ...(u ? { unit: u } : {}) };
     out.push(vsum(spec));
-    out.push(`These sides can build a triangle. The triangle inequality holds for every pair: ${T(s1)} + ${T(s2)} = ${T(short)} is more than ${T(s3)}, ${T(s1)} + ${T(s3)} = ${T(s1.add(s3))} is more than ${T(s2)}, and ${T(s2)} + ${T(s3)} = ${T(s2.add(s3))} is more than ${T(s1)}.`);
-    out.push(`The Pythagorean check, with a = ${T(s1)}, b = ${T(s2)} and c = ${T(s3)} (the longest side): a² + b² = ${T(sq1)} + ${T(sq2)} = ${T(lhs)} and c² = ${T(sq3)}. Since a² + b² is ${c2 === 0 ? "equal to" : c2 > 0 ? "greater than" : "less than"} c², the triangle is ${kind === "right" ? "a right triangle" : kind === "acute" ? "an acute triangle (all angles less than 90°)" : "an obtuse triangle (one angle greater than 90°)"}.`);
+    out.push(`These sides can build a triangle. The triangle inequality holds for every pair: ${D(s1)} + ${D(s2)} = ${D(short)} is more than ${D(s3)}, ${D(s1)} + ${D(s3)} = ${D(s1.add(s3))} is more than ${D(s2)}, and ${D(s2)} + ${D(s3)} = ${D(s2.add(s3))} is more than ${D(s1)}.`);
+    out.push(`The Pythagorean check, with a = ${D(s1)}, b = ${D(s2)} and c = ${D(s3)} (the longest side): a² + b² = ${D(sq1)} + ${D(sq2)} = ${D(lhs)} and c² = ${D(sq3)}. Since a² + b² is ${c2 === 0 ? "equal to" : c2 > 0 ? "greater than" : "less than"} c², the triangle is ${kind === "right" ? "a right triangle" : kind === "acute" ? "an acute triangle (all angles less than 90°)" : "an obtuse triangle (one angle greater than 90°)"}.`);
     const eqs = q[0].cmp(q[1]) === 0 && q[1].cmp(q[2]) === 0 ? "equilateral" : q[0].cmp(q[1]) === 0 || q[1].cmp(q[2]) === 0 || q[0].cmp(q[2]) === 0 ? "isosceles" : "scalene";
     out.push(`By its sides it is ${eqs}.`);
     const [x, y, z] = sorted.map((f) => f.n / f.d);

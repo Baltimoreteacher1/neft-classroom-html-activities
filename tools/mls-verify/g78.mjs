@@ -467,3 +467,105 @@ SOLVERS.slope = (spec) => {
       throw new Error(`unknown slope type ${spec.type}`);
   }
 };
+
+// ---------------------------------------------------------------------------------------------------------------- exponents
+const TEN = I(10);
+const pw = (b, e) => {
+  const r = b.pow(I(e));
+  need(r, "power out of range");
+  return r;
+};
+/** Positive rational -> "m x 10^e" with 1 <= m < 10 (ASCII x, signed exponent). */
+function sciString(v) {
+  need(sign(v) > 0, "scientific notation needs a positive number");
+  let e = 0;
+  let m = v;
+  while (cmp(m, TEN) >= 0) {
+    m = m.div(TEN);
+    e++;
+  }
+  while (cmp(m, ONE) < 0) {
+    m = m.mul(TEN);
+    e--;
+  }
+  return `${dtext(m)} x 10^${e}`;
+}
+SOLVERS.exponents = (spec) => {
+  switch (spec.type) {
+    case "expo-n": {
+      const B = I(spec.base);
+      const V = spec.op === "mul" ? pw(B, spec.a).mul(pw(B, spec.b)) : spec.op === "div" ? pw(B, spec.a).div(pw(B, spec.b)) : pw(pw(B, spec.a), spec.b);
+      for (let n = -80; n <= 80; n++) if (eq(pw(B, n), V)) return String(n);
+      throw new Error("not a power of the base");
+    }
+    case "eval": {
+      const vals = spec.terms.map((t) => pw(R(t.base), t.e));
+      if (!spec.op) return fmt(vals[0]);
+      return fmt(spec.op === "mul" ? vals[0].mul(vals[1]) : vals[0].div(vals[1]));
+    }
+    case "sci-to":
+      return sciString(R(spec.v));
+    case "sci-from":
+      return fmt(R(spec.m).mul(pw(TEN, spec.e)));
+    case "sci-ratio":
+      return fmt(R(spec.a.m).div(R(spec.b.m)).mul(pw(TEN, spec.a.e - spec.b.e)));
+    case "sci-mul": {
+      const a = R(spec.a.m);
+      const b = R(spec.b.m);
+      const v = spec.op === "mul" ? a.mul(b).mul(pw(TEN, spec.a.e + spec.b.e)) : a.div(b).mul(pw(TEN, spec.a.e - spec.b.e));
+      return sciString(v);
+    }
+    default:
+      throw new Error(`unknown exponents type ${spec.type}`);
+  }
+};
+
+// ---------------------------------------------------------------------------------------------------------------- irrational numbers
+const rootOrThrow = (v, idx) => {
+  const r = exactRoot(R(v), idx);
+  need(r, `${v} is not a perfect ${idx === 2 ? "square" : "cube"}`);
+  return r;
+};
+SOLVERS.irrational = (spec) => {
+  switch (spec.type) {
+    case "root":
+      return fmt(rootOrThrow(spec.v, spec.n));
+    case "between": {
+      const v = BigInt(spec.v);
+      const root = spec.n === 3 ? icbrt : isqrt;
+      const pow = (x) => (spec.n === 3 ? x * x * x : x * x);
+      const k = root(v);
+      need(pow(k) < v && v < pow(k + 1n), "the number is a perfect power");
+      return `${k} and ${k + 1n}`;
+    }
+    case "closest": {
+      const v = BigInt(spec.v);
+      const k = isqrt(v);
+      return String(v <= k * k + k ? k : k + 1n);
+    }
+    case "compare": {
+      const a = R(spec.a);
+      const b = R(spec.b);
+      const c = cmp(a, b.mul(b));
+      need(c !== 0, "the two numbers are equal");
+      return c > 0 ? `√${spec.a}` : spec.b;
+    }
+    case "classify": {
+      if (spec.kind === "sqrt") return exactRoot(R(spec.v), 2) ? "rational" : "irrational";
+      if (spec.kind === "cbrt") return exactRoot(R(spec.v), 3) ? "rational" : "irrational";
+      if (["dec", "rep", "frac"].includes(spec.kind)) return "rational";
+      if (["pi", "pattern"].includes(spec.kind)) return "irrational";
+      throw new Error(`unknown number kind ${spec.kind}`);
+    }
+    case "order": {
+      const sq = (it) => (it.k === "sqrt" ? R(it.v) : R(it.v).mul(R(it.v)));
+      const sorted = [...spec.items].sort((a, b) => cmp(sq(a), sq(b)));
+      for (let i = 1; i < sorted.length; i++) need(cmp(sq(sorted[i]), sq(sorted[i - 1])) !== 0, "tie in the ordering");
+      return sorted.map((it) => (it.k === "sqrt" ? `√${it.v}` : it.v)).join(", ");
+    }
+    case "solve":
+      return fmt(rootOrThrow(spec.v, spec.n));
+    default:
+      throw new Error(`unknown irrational type ${spec.type}`);
+  }
+};

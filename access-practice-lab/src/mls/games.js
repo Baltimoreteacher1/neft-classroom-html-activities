@@ -251,7 +251,7 @@ function parallelFromFamily(c, p) {
 function problemOptions(c, p) {
   const all = choicesOf(p, c.S.seed * 131 + c.i);
   const right = all.find((x) => x.correct);
-  const wrong = c.rng.sample(all.filter((x) => !x.correct), c.S.level === 1 ? 2 : 3);
+  const wrong = c.rng.sample(all.filter((x) => !x.correct), 3);
   return c.rng.shuffle([right, ...wrong]).map((x) => ({
     text: x.text,
     correct: x.correct,
@@ -289,7 +289,7 @@ function solveStep(c, p, over = {}) {
 /** "Why does that work?" A reason from the problem's conceptual hint or the skill's big idea, against foils from the misconceptions. */
 function reasonStep(c, round, over = {}) {
   const { S, rng } = c;
-  const nOpt = S.level === 1 ? 3 : 4;
+  const nOpt = 4;
   let truth = over.true;
   if (!truth) {
     const cands = [round?.problem?.hints?.conceptual, S.skill.bigIdea].filter(Boolean);
@@ -494,7 +494,7 @@ function runGame(el, opts, def) {
       console.warn?.(`[mls games] ${def.id}: ${e?.message || e}`);
     }
     if (!round || !round.steps?.length) round = ideaRound(c);
-    round.steps = round.steps.filter((s) => s && (s.type === "custom" || (s.options && s.options.length >= 2)));
+    round.steps = round.steps.filter((s) => s && (s.type === "custom" || (s.options && s.options.length >= 2 && s.options.filter((o) => o.correct).length === 1)));
     if (!round.noReason && !round.steps.some((s) => s.reason)) {
       const r = reasonStep(c, round);
       if (r.options.length >= 2) round.steps.push(r);
@@ -740,8 +740,10 @@ function runGame(el, opts, def) {
     peek() {
       const st = cur?.round?.steps?.[cur.idx];
       if (!st || cur?.wrap?.dataset.done === "1") return null;
-      if (st.type === "custom") return { type: "custom", kind: st.kind, solution: st.solution || null, needed: st.needed || 0 };
-      return { type: "mc", reason: Boolean(st.reason), correct: st.options.findIndex((o) => o.correct), n: st.options.length };
+      const hints = curHints();
+      if (st.type === "custom") return { type: "custom", kind: st.kind, solution: st.solution || null, needed: st.needed || 0, hints };
+      const correct = st.options.findIndex((o) => o.correct);
+      return { type: "mc", reason: Boolean(st.reason), correct, n: st.options.length, correctText: st.options[correct]?.text || "", hints, misses: cur.misses };
     },
   };
 }
@@ -756,7 +758,7 @@ function vocabRound(c) {
   S.vocabOrder = S.vocabOrder || rng.shuffle(terms);
   const t = S.vocabOrder[c.i % S.vocabOrder.length];
   const others_ = terms.filter((x) => x !== t);
-  const nOpt = S.level === 1 ? 3 : 4;
+  const nOpt = 4;
   const modes = ["def", "cloze"];
   if (t.visual && visualInfo(t.visual) && others_.some((x) => x.visual && visualInfo(x.visual))) modes.push("pic");
   if (S.level >= 2) modes.push("eg");
@@ -857,7 +859,7 @@ function wpRound(c) {
   const body = problemBody(c, p, { picture: true });
   const steps = [];
   const st = p.structure;
-  const nOpt = S.level === 1 ? 3 : 4;
+  const nOpt = 4;
   const invHints = { conceptual: "Read the story again. Picture what is happening before you look at the numbers.", procedural: "Name each number and what it counts. Then ask: what is not known yet?" };
   if (st) {
     const oth = others(c, 4, (q) => q.structure?.happening || "", { salt: 700 });
@@ -885,7 +887,7 @@ function wpRound(c) {
         hints: invHints,
         ok: "Each number is matched with what it counts.",
       });
-      const labels = distinctBy([...kn.map((k) => k.label), st.unknown], (x) => x);
+      const labels = distinctBy([st.unknown, ...kn.map((k) => k.label)], (x) => x);
       if (st.unknown && labels.length >= 3) {
         steps.push({
           type: "mc",
@@ -1031,7 +1033,7 @@ function repRound(c) {
   for (const [from, to] of pairs) {
     const oth = others(c, 5, (q) => (repAvail(q)[to] ? repDesc[to](q, S) : ""), { salt: 400 + steps.length * 50 }).filter((o) => norm(o.v) !== norm(repDesc[to](p, S)));
     if (oth.length < 2) continue;
-    const nOpt = S.level === 1 ? 3 : 4;
+    const nOpt = 4;
     const mk = (q, correct) => {
       const o = { text: to === "pic" ? "" : repDesc[to](q, S), correct };
       if (to === "pic") o.visual = q.visual;
@@ -1068,7 +1070,7 @@ function detectiveRound(c) {
   const { S, rng } = c;
   const cases = mcCases(S);
   const all = S.skill.misconceptions;
-  const nOpt = S.level === 1 ? 3 : 4;
+  const nOpt = 4;
   const fresh = S.gen(21);
   const freshStep = fresh ? { ...solveStep(c, fresh, { prompt: `Now solve a new problem correctly. ${problemText(fresh, S.band).ask}` }), ok: "You solved a fresh problem correctly." } : null;
   const beliefOpts = (m) => {
@@ -1513,7 +1515,7 @@ function claimSteps(c, q, { noun }) {
   const evid = lastIdeaLine(q.work);
   const oth = others(c, 5, (x) => lastIdeaLine(x.work), { salt: 1100 }).filter((o) => norm(o.v) !== norm(evid));
   const foils = distinctBy([...oth.map((o) => o.v), ...S.skill.misconceptions.map((m) => m.belief)], (x) => x);
-  const nOpt = S.level === 1 ? 3 : 4;
+  const nOpt = 4;
   const evidence = {
     type: "mc",
     reason: true,
@@ -1534,7 +1536,7 @@ function graphRound(c, { data }) {
   const steps = [];
   const invented = h("p", { class: "ml-gm-invent" }, data ? "This data set is invented for practice. It is not about real people." : "The data in these pictures is invented for practice.");
   if (data && p.visual && DISPLAYS[p.visual.kind]) {
-    const kinds = rng.sample(Object.keys(DISPLAYS).filter((k) => k !== p.visual.kind), S.level === 1 ? 2 : 3);
+    const kinds = rng.sample(Object.keys(DISPLAYS).filter((k) => k !== p.visual.kind), 3);
     steps.push({
       type: "mc",
       prompt: "Which kind of display shows this data?",
@@ -1570,7 +1572,7 @@ function debateRound(c) {
   if (!plan.length) return null;
   const item = plan[c.i % plan.length];
   const d = S.skill.discourse;
-  const nOpt = S.level === 1 ? 3 : 4;
+  const nOpt = 4;
   const beliefs = S.skill.misconceptions.map((m) => m.belief);
   if (item.t === "asn") {
     const a = d.asn[item.i];
@@ -1655,7 +1657,7 @@ function strategyRound(c) {
   const { S, rng } = c;
   const cmp = S.skill.discourse.compare;
   const authored = cmp?.a && cmp?.b && cmp.prompt && BOTH_VALID.test(cmp.prompt) && !FLAW_WORDS.test(cmp.prompt);
-  const nOpt = S.level === 1 ? 3 : 4;
+  const nOpt = 4;
   const fresh = S.gen(31);
   const apply = fresh ? { ...solveStep(c, fresh, { prompt: `Now use a valid strategy on a new problem. ${problemText(fresh, S.band).ask}` }), ok: "You applied a valid strategy." } : null;
   const p = S.gen(37);
@@ -1848,7 +1850,7 @@ function explorerRound(c) {
   if (!ex) return null;
   const pats = ex.patterns;
   const pat = pats[c.i % pats.length];
-  const nOpt = S.level === 1 ? 3 : 4;
+  const nOpt = 4;
   const gen = (extra) => distinctBy([...pat.foils, ...extra], (x) => x).filter((x) => norm(x) !== norm(pat.say));
   const oth = pats.filter((x) => x !== pat).map((x) => x.say);
   const foils = gen(S.skill.misconceptions.map((m) => m.belief)).slice(0, Math.max(nOpt - 1, pat.foils.length));

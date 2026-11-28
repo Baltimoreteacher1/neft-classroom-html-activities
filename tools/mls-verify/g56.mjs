@@ -1,6 +1,6 @@
 // Independent solvers for the grade 4-7 families (tools/mls-verify.mjs). Each reads `spec` only and uses exact rational arithmetic.
 // Nothing here imports the generators or the kit.
-import { Rat, evaluateExpression } from "../../scripts/lib/rational.mjs";
+import { evaluateExpression, Rat } from "../../scripts/lib/rational.mjs";
 
 export const SOLVERS = {};
 
@@ -14,7 +14,8 @@ function R(x) {
   if (typeof x === "number") return Rat.fromDecimal(String(x));
   const t = String(x).trim().replace(/−/g, "-").replace(/,/g, "");
   let m = /^(-?)(\d+)\s+(\d+)\/(\d+)$/.exec(t);
-  if (m) return new Rat((m[1] ? -1n : 1n) * (BigInt(m[2]) * BigInt(m[4]) + BigInt(m[3])), BigInt(m[4]));
+  if (m)
+    return new Rat((m[1] ? -1n : 1n) * (BigInt(m[2]) * BigInt(m[4]) + BigInt(m[3])), BigInt(m[4]));
   m = /^(-?\d+)\/(\d+)$/.exec(t);
   if (m) return new Rat(BigInt(m[1]), BigInt(m[2]));
   const r = Rat.fromDecimal(t);
@@ -42,20 +43,19 @@ const roundTo = (a, place) => floorR(a.div(R(place)).add(new Rat(1n, 2n))).mul(R
 const out = (r) => r.toString();
 /** Integer thousands commas, as the displayed text writes them. */
 const commas = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-/** Plain decimal string of a Rat with exactly `p` places (the Rat must fit). */
-function decStr(r, p) {
-  const scaled = r.mul(I(10 ** p));
-  if (scaled.d !== 1n) throw new Error(`${r} does not fit ${p} places`);
-  const neg = scaled.n < 0n;
-  const s = String(neg ? -scaled.n : scaled.n).padStart(p + 1, "0");
-  return (neg ? "-" : "") + (p ? `${s.slice(0, -p)}.${s.slice(-p)}` : s);
-}
 const pairOf = (a, b) => `(${out(a)},${out(b)})`;
 
 // ------------------------------------------------------------------------------------------------ multistep
 function runProg(prog, outName) {
   const env = {};
-  const val = (x) => (typeof x === "string" && /^[a-z]\w*$/i.test(x) ? (x in env ? env[x] : (() => { throw new Error(`unset ${x}`); })()) : R(x));
+  const val = (x) =>
+    typeof x === "string" && /^[a-z]\w*$/i.test(x)
+      ? x in env
+        ? env[x]
+        : (() => {
+            throw new Error(`unset ${x}`);
+          })()
+      : R(x);
   for (const [dest, op, x, y] of prog) {
     const a = val(x);
     const b = val(y);
@@ -147,7 +147,8 @@ SOLVERS.patterns = (s) => {
         if (a.n !== 0n) diffs.push(b.div(a));
       } else diffs.push(b.sub(a));
     }
-    if (!diffs.length || !diffs.every((d) => d.eq(diffs[0]))) throw new Error("relation is not constant");
+    if (!diffs.length || !diffs.every((d) => d.eq(diffs[0])))
+      throw new Error("relation is not constant");
     return out(diffs[0]);
   }
   if (s.kind === "rule") {
@@ -183,7 +184,8 @@ SOLVERS.coordinate = (s) => {
   if (s.kind === "dist") {
     const dx = abs(R(s.p[0]).sub(R(s.q[0])));
     const dy = abs(R(s.p[1]).sub(R(s.q[1])));
-    if (dx.n !== 0n && dy.n !== 0n) throw new Error("points are not on a horizontal or vertical line");
+    if (dx.n !== 0n && dy.n !== 0n)
+      throw new Error("points are not on a horizontal or vertical line");
     return out(dx.add(dy));
   }
   if (s.kind === "rule") return out(s.op === "add" ? R(s.x).add(R(s.by)) : R(s.x).mul(R(s.by)));
@@ -218,8 +220,13 @@ SOLVERS.ratio = (s) => {
     const bot = s.bottom.values;
     const idx = top.findIndex((t, i) => t !== null && bot[i] !== null);
     const miss = top.findIndex((t, i) => t === null || bot[i] === null);
-    if (idx < 0 || miss < 0) throw new Error("double number line needs a complete pair and a missing number");
-    return out(top[miss] === null ? R(bot[miss]).mul(R(top[idx])).div(R(bot[idx])) : R(top[miss]).mul(R(bot[idx])).div(R(top[idx])));
+    if (idx < 0 || miss < 0)
+      throw new Error("double number line needs a complete pair and a missing number");
+    return out(
+      top[miss] === null
+        ? R(bot[miss]).mul(R(top[idx])).div(R(bot[idx]))
+        : R(top[miss]).mul(R(bot[idx])).div(R(top[idx])),
+    );
   }
   if (s.kind === "compare") {
     const c = cmp(R(s.m1[0]).div(R(s.m1[1])), R(s.m2[0]).div(R(s.m2[1])));
@@ -251,16 +258,29 @@ SOLVERS.percent = (s) => {
   if (s.kind === "whole") return out(R(s.part).div(R(s.pct).mul(H)));
   if (s.kind === "pct") return out(R(s.part).div(R(s.whole)).mul(I(100)));
   if (s.kind === "app") {
-    if (s.app === "change") return out(abs(R(s.to).sub(R(s.from))).div(R(s.from)).mul(I(100)));
+    if (s.app === "change")
+      return out(
+        abs(R(s.to).sub(R(s.from)))
+          .div(R(s.from))
+          .mul(I(100)),
+      );
     const rate = R(s.rate).mul(H);
-    if (s.app === "tax" || s.app === "tip" || s.app === "markup") return out(s.ask === "total" ? R(s.price).mul(ONE.add(rate)) : R(s.price).mul(rate));
-    if (s.app === "discount") return out(s.ask === "total" ? R(s.price).mul(ONE.sub(rate)) : R(s.price).mul(rate));
-    if (s.app === "change") return out(abs(R(s.to).sub(R(s.from))).div(R(s.from)).mul(I(100)));
+    if (s.app === "tax" || s.app === "tip" || s.app === "markup")
+      return out(s.ask === "total" ? R(s.price).mul(ONE.add(rate)) : R(s.price).mul(rate));
+    if (s.app === "discount")
+      return out(s.ask === "total" ? R(s.price).mul(ONE.sub(rate)) : R(s.price).mul(rate));
+    if (s.app === "change")
+      return out(
+        abs(R(s.to).sub(R(s.from)))
+          .div(R(s.from))
+          .mul(I(100)),
+      );
     if (s.app === "interest") {
       const i = R(s.P).mul(rate).mul(R(s.t));
       return out(s.ask === "interest" ? i : i.add(R(s.P)));
     }
-    if (s.app === "orig") return out(R(s.price).div(s.dir === "off" ? ONE.sub(rate) : ONE.add(rate)));
+    if (s.app === "orig")
+      return out(R(s.price).div(s.dir === "off" ? ONE.sub(rate) : ONE.add(rate)));
   }
   throw new Error(`percent: unknown kind ${s.kind}`);
 };
@@ -284,7 +304,13 @@ SOLVERS.integers = (s) => {
     const x = R(s.x);
     const y = R(s.y);
     if (x.n === 0n || y.n === 0n) throw new Error("point on an axis");
-    return x.n > 0n ? (y.n > 0n ? "Quadrant I" : "Quadrant IV") : y.n > 0n ? "Quadrant II" : "Quadrant III";
+    return x.n > 0n
+      ? y.n > 0n
+        ? "Quadrant I"
+        : "Quadrant IV"
+      : y.n > 0n
+        ? "Quadrant II"
+        : "Quadrant III";
   }
   if (s.kind === "reflect") {
     const x = R(s.x);
@@ -300,7 +326,8 @@ SOLVERS.integers = (s) => {
   if (s.kind === "op") {
     const a = R(s.a);
     const b = R(s.b);
-    const r = s.op === "+" ? a.add(b) : s.op === MINUS ? a.sub(b) : s.op === TIMES ? a.mul(b) : a.div(b);
+    const r =
+      s.op === "+" ? a.add(b) : s.op === MINUS ? a.sub(b) : s.op === TIMES ? a.mul(b) : a.div(b);
     if (r === null) throw new Error("division by zero");
     return out(r);
   }
@@ -325,7 +352,7 @@ const AWF = {
   lessTimes: (k, b, v) => `${k}${v} ${MINUS} ${b}`,
   sumTimes: (k, b, v) => `${k}(${v} + ${b})`,
   divPlus: (k, b, v) => `${v} ${DIVIDE} ${k} + ${b}`,
-  lessFrom: (k, b, v) => `${b} ${MINUS} ${v}`,
+  lessFrom: (_k, b, v) => `${b} ${MINUS} ${v}`,
   diffTimes: (k, b, v) => `${k}(${v} ${MINUS} ${b})`,
 };
 SOLVERS.algexpr = (s) => {
@@ -394,7 +421,14 @@ SOLVERS.inequality = (s) => {
   if (s.kind === "solve1") {
     const p = R(s.p);
     const q = R(s.q);
-    const b = s.form === "add" ? q.sub(p) : s.form === "sub" ? q.add(p) : s.form === "mul" ? q.div(p) : q.mul(p);
+    const b =
+      s.form === "add"
+        ? q.sub(p)
+        : s.form === "sub"
+          ? q.add(p)
+          : s.form === "mul"
+            ? q.div(p)
+            : q.mul(p);
     return `${s.v} ${s.op} ${mm(b)}`;
   }
   if (s.kind === "solve2") {
@@ -437,4 +471,104 @@ SOLVERS.indepdep = (s) => {
     return out(s.form === "mul" ? v.div(k) : v.sub(k));
   }
   throw new Error(`indepdep: unknown kind ${s.kind}`);
+};
+
+// ------------------------------------------------------------------------------------------------ surfarea
+SOLVERS.surfarea = (s) => {
+  const half = new Rat(1n, 2n);
+  if (s.kind === "tri") return out(R(s.b).mul(R(s.h)).mul(half));
+  if (s.kind === "para") return out(R(s.b).mul(R(s.h)));
+  if (s.kind === "trap") return out(R(s.b1).add(R(s.b2)).mul(R(s.h)).mul(half));
+  if (s.kind === "comp")
+    return out(
+      R(s.w)
+        .mul(R(s.h))
+        .add(R(s.w).mul(R(s.t)).mul(half)),
+    );
+  if (s.kind === "sa") {
+    const [l, w, h] = [R(s.l), R(s.w), R(s.h)];
+    return out(I(2).mul(l.mul(w).add(l.mul(h)).add(w.mul(h))));
+  }
+  if (s.kind === "net") return out(sumR(s.faces.map((f) => R(f.n).mul(R(f.w)).mul(R(f.h)))));
+  if (s.kind === "volfrac") return out(R(s.l).mul(R(s.w)).mul(R(s.h)));
+  if (s.kind === "poly") {
+    const dx = abs(R(s.x2).sub(R(s.x1)));
+    const dy = abs(R(s.y2).sub(R(s.y1)));
+    if (s.ask === "side") return out(dx);
+    if (s.ask === "perimeter") {
+      if (s.shape !== "rect") throw new Error("perimeter of a triangle needs the hypotenuse");
+      return out(I(2).mul(dx.add(dy)));
+    }
+    return out(s.shape === "rect" ? dx.mul(dy) : dx.mul(dy).mul(half));
+  }
+  throw new Error(`surfarea: unknown kind ${s.kind}`);
+};
+
+// ------------------------------------------------------------------------------------------------ stats
+const medR = (sortedR) => {
+  const n = sortedR.length;
+  return n % 2 ? sortedR[(n - 1) / 2] : sortedR[n / 2 - 1].add(sortedR[n / 2]).div(I(2));
+};
+SOLVERS.stats = (s) => {
+  if (s.kind === "statq") {
+    const hits = s.options.filter((o) => (s.ask === "is" ? o.stat : !o.stat));
+    if (hits.length !== 1) throw new Error(`${hits.length} options match`);
+    return hits[0].q;
+  }
+  if (s.kind === "read") {
+    const v = s.values;
+    if (s.ask === "count") return String(v.length);
+    if (s.ask === "at") return String(v.filter((x) => x === s.t).length);
+    if (s.ask === "above") return String(v.filter((x) => x > s.t).length);
+    if (s.ask === "below") return String(v.filter((x) => x < s.t).length);
+    if (s.ask === "mode") {
+      const counts = new Map();
+      for (const x of v) counts.set(x, (counts.get(x) || 0) + 1);
+      const mx = Math.max(...counts.values());
+      const modes = [...counts].filter(([, c]) => c === mx);
+      if (modes.length !== 1) throw new Error("no unique mode");
+      return String(modes[0][0]);
+    }
+  }
+  if (s.kind === "box") {
+    const [mn, q1, md, q3, mx] = s.five.map(R);
+    const m = { min: mn, q1, median: md, q3, max: mx, range: mx.sub(mn), iqr: q3.sub(q1) };
+    if (!(s.ask in m)) throw new Error(`unknown box question ${s.ask}`);
+    return out(m[s.ask]);
+  }
+  if (s.kind === "shape") {
+    const v = s.values.map(R).sort(cmp);
+    const n = v.length;
+    const mirror = v.every((x, i) => x.add(v[n - 1 - i]).eq(v[0].add(v[n - 1])));
+    if (mirror) return "symmetric";
+    const mean = sumR(v).div(I(n));
+    const med = medR(v);
+    const d = cmp(mean, med);
+    if (d === 0) throw new Error("mean equals median but not symmetric");
+    return d > 0 ? "skewed right" : "skewed left";
+  }
+  if (s.kind === "center") {
+    const v = s.values.map(R);
+    const sorted = v.slice().sort(cmp);
+    const n = v.length;
+    const mean = sumR(v).div(I(n));
+    if (s.stat === "mean") return out(mean);
+    if (s.stat === "median") return out(medR(sorted));
+    if (s.stat === "range") return out(sorted[n - 1].sub(sorted[0]));
+    if (s.stat === "mode") {
+      const counts = new Map();
+      for (const x of sorted) counts.set(x.toString(), (counts.get(x.toString()) || 0) + 1);
+      const mx = Math.max(...counts.values());
+      const modes = [...counts].filter(([, c]) => c === mx);
+      if (modes.length !== 1) throw new Error("no unique mode");
+      return modes[0][0];
+    }
+    if (s.stat === "mad") return out(sumR(v.map((x) => abs(x.sub(mean)))).div(I(n)));
+    if (s.stat === "iqr") {
+      const lower = sorted.slice(0, Math.floor(n / 2));
+      const upper = sorted.slice(Math.ceil(n / 2));
+      return out(medR(upper).sub(medR(lower)));
+    }
+  }
+  throw new Error(`stats: unknown kind ${s.kind}`);
 };

@@ -1284,7 +1284,7 @@ function transferLab(el, opts) {
           [bs, bd].forEach((b) => b.setAttribute("aria-disabled", "true"));
           (same ? bs : bd).classList.add("eb-right");
           (same ? bs : bd).append(h("span", { class: "eb-mark" }, " (Yes)"));
-          feedback(fb, "ok", it.same ? "Yes. It says the same relationship in other words or another form." : `Yes, it is different. ${it.why}`);
+          feedback(fb, "ok", it.same ? "It says the same relationship in other words or another form." : `It is a different relationship. ${it.why}`);
           if (!--left) {
             sec.append(h("p", { class: "eb-finish" }, "All sorted."), nextRow("Next: match the forms", () => advance()));
             say(root, "All statements sorted.");

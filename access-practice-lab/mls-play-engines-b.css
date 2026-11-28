@@ -45,12 +45,13 @@
 /* choices and feedback (a word and a mark always accompany colour) */
 .eb-choices { display: grid; gap: 0.5rem; grid-template-columns: 1fr; }
 @media (min-width: 40rem) { .eb-choices { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); } .eb-stepchoices { grid-template-columns: 1fr; } }
-.eb-choice { text-align: start; padding: 0.6rem 0.9rem; border: 2px solid var(--eb-navy); border-radius: 10px; background: #fff; color: var(--eb-navy); line-height: 1.4; min-inline-size: 0; overflow-wrap: anywhere; }
+.eb .eb-choice { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: start; padding: 0.6rem 0.9rem; border: 2px solid var(--eb-navy); border-radius: 10px; background: #fff; color: var(--eb-navy); line-height: 1.4; min-inline-size: 0; overflow-wrap: anywhere; }
 .eb-choice:hover { background: var(--eb-paper); }
 .eb-choice.eb-wrong { border-style: dashed; background: var(--eb-coralL); color: var(--eb-ink); }
 .eb-choice.eb-right { border-inline-start-width: 10px; background: var(--eb-tealL); color: var(--eb-ink); font-weight: 700; }
 .eb-choice[aria-disabled="true"] { cursor: default; }
-.eb-mark { font-weight: 700; white-space: nowrap; }
+.eb-mark { display: block; font-weight: 700; }
+.eb blockquote { font: inherit; }
 .eb .ml-fb { margin: 0; padding: 0.6rem 0.8rem; border-radius: 8px; border: 2px solid var(--eb-navy); background: #fff; }
 .eb .ml-fb:empty { display: none; }
 .eb .ml-fb-info { border-style: dotted; background: var(--eb-paper); }
@@ -62,10 +63,11 @@
 .eb-prompt { display: grid; gap: 0.4rem; }
 .eb-stem, .eb-ask { margin: 0; }
 .eb-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
-.eb-primary { background: var(--eb-navy); color: #fff; border: 2px solid var(--eb-navy); border-radius: 10px; padding: 0.5rem 1rem; font-weight: 700; }
-.eb-primary:hover { background: #0f2438; }
-.eb-primary[aria-disabled="true"] { background: #5b6b79; border-color: #5b6b79; cursor: default; }
-.eb .btn.small { padding: 0.4rem 0.8rem; }
+.eb .eb-primary, .eb .eb-primary:hover, .eb .eb-primary:active, .eb .eb-primary:focus { background: var(--eb-navy); color: #fff; border: 2px solid var(--eb-navy); border-radius: 10px; padding: 0.5rem 1rem; font-weight: 700; }
+.eb .eb-primary:hover { background: #0f2438; border-color: #0f2438; }
+.eb .eb-primary[aria-disabled="true"] { background: #4a5a68; border-color: #4a5a68; cursor: default; opacity: 1; }
+.eb .btn[aria-disabled="true"] { opacity: 1; }
+.eb .btn.small { padding: 0.4rem 0.8rem; min-inline-size: 2.75rem; }
 .eb-worked, .eb-how { padding: 0.7rem 0.9rem; background: var(--eb-amberL); border: 2px solid var(--eb-navy); border-radius: 8px; }
 .eb-how:empty, .eb-worked-slot:empty { display: none; }
 .eb-how { background: var(--eb-paper); }
@@ -149,9 +151,9 @@
 .eb-avatar { flex: none; line-height: 0; }
 .eb-bubble { position: relative; flex: 1; min-inline-size: 0; padding: 0.6rem 0.8rem; background: #fff; border: 2px solid var(--eb-navy); border-radius: 16px; }
 .eb-bubble p { margin: 0; }
-.eb-speaker { display: block; font-weight: 700; color: var(--eb-teal-d); }
-.eb-bubble::before { content: ""; position: absolute; inset-block-start: 1rem; inset-inline-start: -0.6rem; inline-size: 0.9rem; block-size: 0.9rem; background: #fff; border-inline-start: 2px solid var(--eb-navy); border-block-end: 2px solid var(--eb-navy); transform: rotate(45deg); }
-.eb-side-1 .eb-bubble::before { inset-inline-start: auto; inset-inline-end: -0.6rem; transform: rotate(-135deg); }
+.eb-speaker { display: block; font-weight: 700; color: #0b5f5c; }
+.eb-bubble::before { content: ""; position: absolute; inset-block-start: 1rem; left: -0.6rem; inline-size: 0.9rem; block-size: 0.9rem; background: #fff; border-left: 2px solid var(--eb-navy); border-bottom: 2px solid var(--eb-navy); transform: rotate(45deg); }
+.eb-side-1 .eb-bubble::before { left: auto; right: -0.6rem; border-left: 0; border-bottom: 0; border-right: 2px solid var(--eb-navy); border-top: 2px solid var(--eb-navy); }
 .eb-predict, .eb-why, .eb-talk { padding: 0.8rem 1rem; background: var(--eb-paper); border: 2px solid var(--eb-navy); border-radius: 10px; display: grid; gap: 0.5rem; }
 .eb-after { display: grid; gap: 0.8rem; }
 .eb-after ul { margin: 0; padding-inline-start: 1.3rem; }

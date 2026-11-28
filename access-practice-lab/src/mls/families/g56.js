@@ -65,7 +65,6 @@ function dStr(f, p, pretty) {
   if (pretty) ip = ip.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return (neg ? (pretty ? MINUS : "-") : "") + ip + (p ? `.${fp}` : "");
 }
-const usd = (cents) => `$${num(Math.floor(cents / 100))}.${String(cents % 100).padStart(2, "0")}`;
 /** Text of a fraction in an answer style: {k:"int"|"dec"|"money"|"frac", p, mixed, sfx}. null when the style cannot show it. */
 function fmt(f, st) {
   const sfx = st.sfx || "";
@@ -74,6 +73,7 @@ function fmt(f, st) {
   const p = st.k === "money" ? 2 : st.p;
   const dp = decPlaces(f);
   if (dp < 0 || dp > p) return null;
+  if (st.k === "dec") return dStr(f, dp, true) + sfx;
   if (st.k === "money") return (f.n < 0 ? MINUS : "") + "$" + dStr(new Fr(Math.abs(f.n), f.d), 2, true) + sfx;
   return dStr(f, p, true) + sfx;
 }
@@ -391,7 +391,7 @@ function mRemainder(rng, L, ctx) {
       { val: N - q, m: "subtracts-the-quotient-from-the-total" },
     ],
     work: [`${N} ${DIVIDE} ${c} = ${q} remainder ${r}`, `${q} full ${pk.gs} use ${num(q * c)} ${pk.item}`, `Left over: ${N} ${MINUS} ${num(q * c)} = ${r}`],
-    hints: { conceptual: `Left over means what stays after all the full ${pk.gs} are made.`, procedural: `Divide, then look at the remainder. You can check by multiplying the quotient by ${c} and comparing with the total.` },
+    hints: { conceptual: `Left over means what stays after all the full ${pk.gs} are made.`, procedural: `Divide, then look at the remainder. You can check by multiplying the quotient by the number in each ${pk.g} and comparing with the total.` },
     structure: S(`${who} packs ${pk.item}`, [{ label: pk.item, value: N }, { label: `${pk.item} per ${pk.g}`, value: c }], `${pk.item} left over`, "division; the remainder is the answer", "equal groups with a leftover part", `The leftover must be less than ${c}.`),
   };
 }
@@ -582,7 +582,7 @@ function fPieces(rng, L, ctx) {
       { expr: `${N} ${MINUS} ${u}`, val: N - u, m: "ignores-the-length-of-each-piece" },
     ],
     work: [`Pieces in ${N} meters: each meter makes ${m} pieces, so ${N} ${TIMES} ${m} = ${total}`, `Pieces left: ${total} ${MINUS} ${u} = ${total - u}`],
-    hints: { conceptual: "How many pieces of length 1/" + m + " fit into one whole meter? Use that to count the pieces in all the meters.", procedural: "Find the number of pieces first. Then take away the pieces that were used." },
+    hints: { conceptual: "How many pieces of that length fit into one whole meter? Use that to count the pieces in all the meters.", procedural: "Find the number of pieces first. Then take away the pieces that were used." },
     structure: S(`${who} cuts a ${o.one}`, [{ label: "length", value: `${N} meters` }, { label: "piece length", value: `1/${m} meter` }, { label: "used", value: `${u} pieces` }], "pieces left", "divide a whole number by a unit fraction, then subtract", "number line marked in equal pieces", `The number of pieces should be greater than ${N} because each piece is shorter than 1 meter.`),
     eqOK: true,
   };
@@ -724,16 +724,17 @@ function mEstimate(rng, L, ctx, frac) {
   const sym = op === "mul" ? TIMES : op === "add" ? "+" : MINUS;
   const placeName = place === 10 ? "ten" : "hundred";
   const stems = {
-    mul: T3(`A hall has ${a} rows. Each row has ${b} seats.`, `A concert hall has ${a} rows with ${b} seats in each row.`, `A concert hall contains ${a} rows, and every row has ${b} seats.`),
-    add: T3(`${who} reads ${a} pages in one month and ${b} pages in the next month.`, `${who} read ${a} pages one month and ${b} pages the next month.`, `${who} read ${a} pages during one month and ${b} pages during the following month.`),
-    sub: T3(`A game has ${a} points to win. ${who} has ${b} points.`, `A game needs ${a} points to win. ${who} has scored ${b} points so far.`, `A game is won at ${a} points. ${who} has scored ${b} points so far.`),
+    mul: T3(`A hall has ${num(a)} rows. Each row has ${num(b)} seats.`, `A concert hall has ${num(a)} rows with ${num(b)} seats in each row.`, `A concert hall contains ${num(a)} rows, and every row has ${num(b)} seats.`),
+    add: T3(`${who} reads ${num(a)} pages in one month and ${num(b)} pages in the next month.`, `${who} read ${num(a)} pages one month and ${num(b)} pages the next month.`, `${who} read ${num(a)} pages during one month and ${num(b)} pages during the following month.`),
+    sub: T3(`A game has ${num(a)} points to win. ${who} has ${num(b)} points.`, `A game needs ${num(a)} points to win. ${who} has scored ${num(b)} points so far.`, `A game is won at ${num(a)} points. ${who} has scored ${num(b)} points so far.`),
   };
   const noun = op === "mul" ? "seats" : op === "add" ? "pages" : "points";
-  const ask = op === "sub" ? "How many more points does " + who + " need" : op === "add" ? "How many pages did " + who + " read" : "How many seats are there";
+  const verb = op === "mul" ? "multiply" : op === "add" ? "add" : "subtract";
+  const aboutQ = op === "sub" ? `About how many more points does ${who} need?` : op === "add" ? `About how many pages did ${who} read in all?` : "About how many seats are there?";
   return {
     spec: { kind: "estimate", op, a, b, place },
     stem: stems[op],
-    ask: T3(`Round each number to the nearest ${placeName}. Then ${op === "mul" ? "multiply" : op === "add" ? "add" : "subtract"}. About how many ${noun}?`, `Round each number to the nearest ${placeName}, then ${op === "mul" ? "multiply" : op === "add" ? "add" : "subtract"}. ${ask}, about?`, `Estimate by rounding each number to the nearest ${placeName} first. ${ask}, approximately?`),
+    ask: T3(`Round each number to the nearest ${placeName}. Then ${verb}. ${aboutQ}`, `Round each number to the nearest ${placeName}, then ${verb}. ${aboutQ}`, `Estimate by rounding each number to the nearest ${placeName} first, then ${verb}. ${aboutQ}`),
     expr: `${num(a)} ${sym} ${num(b)}`,
     answer: { value: String(val), text: num(val), kind: "int", unit: noun },
     work: [`Round ${num(a)} to ${num(ra)} and ${num(b)} to ${num(rb)}`, `Compute with the rounded numbers: ${num(ra)} ${sym} ${num(rb)} = ${num(val)}`, `The estimate is about ${num(val)}. The exact answer is ${num(exact)}, which is close`],
@@ -1180,7 +1181,7 @@ function patRelation(rng, L) {
     distractors: distr(fr(ans), { k: "int" }, how === "times"
       ? [[Bp.by - A.by, "compares-the-steps-by-subtracting"], [ans + 1, "off-by-one"], [Bp.by, "uses-the-step-of-rule-B"], [A.by, "uses-the-step-of-rule-A"], [ans * 2, "doubles-the-factor"], ...slips(ans)]
       : [[A.start, "uses-the-starting-number-of-rule-A"], [Bp.start, "uses-the-starting-number-of-rule-B"], [ans + 1, "off-by-one"], [A.by, "uses-the-step-instead-of-the-difference"], [ans * 2, "doubles-the-difference"], ...slips(ans)]),
-    hints: { conceptual: how === "times" ? "Divide a B term by the matching A term to see how many times as large it is. Skip the pair with 0." : "Subtract an A term from the matching B term. Check that another pair gives the same difference.", procedural: "Line the terms up in pairs. Choose one pair, compare it, then check a second pair." },
+    hints: { conceptual: how === "times" ? "Divide a B term by the matching A term to see how many times as large it is. Skip the pair of zeros." : "Subtract an A term from the matching B term. Check that another pair gives the same difference.", procedural: "Line the terms up in pairs. Choose one pair, compare it, then check a second pair." },
   });
 }
 
@@ -1775,11 +1776,11 @@ FAMILIES.ratio = {
 
 // ================================================================================================ unitrate (g6.unitrates)
 const RATES = [
-  { who: "A cyclist", verb: "rides", q: "miles", per: "hours", per1: "hour", unit: "miles per hour" },
-  { who: "A water pump", verb: "moves", q: "liters", per: "minutes", per1: "minute", unit: "liters per minute" },
-  { who: "A reader", verb: "reads", q: "pages", per: "minutes", per1: "minute", unit: "pages per minute" },
-  { who: "A machine", verb: "fills", q: "bottles", per: "minutes", per1: "minute", unit: "bottles per minute" },
-  { who: "A hiker", verb: "walks", q: "kilometers", per: "hours", per1: "hour", unit: "kilometers per hour" },
+  { who: "A cyclist", agent: "the cyclist", base: "ride", verb: "rides", q: "miles", per: "hours", per1: "hour", unit: "miles per hour" },
+  { who: "A water pump", agent: "the pump", base: "move", verb: "moves", q: "liters", per: "minutes", per1: "minute", unit: "liters per minute" },
+  { who: "A reader", agent: "the reader", base: "read", verb: "reads", q: "pages", per: "minutes", per1: "minute", unit: "pages per minute" },
+  { who: "A machine", agent: "the machine", base: "fill", verb: "fills", q: "bottles", per: "minutes", per1: "minute", unit: "bottles per minute" },
+  { who: "A hiker", agent: "the hiker", base: "walk", verb: "walks", q: "kilometers", per: "hours", per1: "hour", unit: "kilometers per hour" },
 ];
 const D2 = (cents) => (cents / 100).toFixed(2);
 function urUnit(rng, L, ctx) {
@@ -1889,7 +1890,7 @@ function urSolve(rng, L) {
       level: L,
       spec: { kind: "solve", qty: qtyS, per, given: g, find: "qty" },
       stem: T3(`${sc.who} ${sc.verb} ${qtyS} ${sc.q} in ${per} ${sc.per}. The rate stays the same.`, `${sc.who} ${sc.verb} ${qtyS} ${sc.q} in ${per} ${sc.per} at a constant rate.`, `${sc.who} ${sc.verb} ${qtyS} ${sc.q} in ${per} ${sc.per} at a constant rate.`),
-      ask: T3(`How many ${sc.q} in ${g} ${sc.per}?`, `At this rate, how many ${sc.q} will there be in ${g} ${sc.per}?`, `At this constant rate, how many ${sc.q} correspond to ${g} ${sc.per}?`),
+      ask: T3(`How many ${sc.q} will ${sc.agent} ${sc.base} in ${g} ${sc.per}?`, `At this rate, how many ${sc.q} will ${sc.agent} ${sc.base} in ${g} ${sc.per}?`, `At this constant rate, how many ${sc.q} will ${sc.agent} ${sc.base} in ${g} ${sc.per}?`),
       expr: null,
       answer: ans(val, st, sc.q),
       work: [`Find the unit rate: ${qtyS} ${DIVIDE} ${per} = ${fmtPlain(u)} ${sc.unit}`, `Multiply by the time: ${fmtPlain(u)} ${TIMES} ${g} = ${fmtPlain(val)}`],
@@ -1906,7 +1907,7 @@ function urSolve(rng, L) {
     level: L,
     spec: { kind: "solve", qty: qtyS, per, given: needS, find: "per" },
     stem: T3(`${sc.who} ${sc.verb} ${qtyS} ${sc.q} in ${per} ${sc.per}. The rate stays the same.`, `${sc.who} ${sc.verb} ${qtyS} ${sc.q} in ${per} ${sc.per} at a constant rate.`, `${sc.who} ${sc.verb} ${qtyS} ${sc.q} in ${per} ${sc.per} at a constant rate.`),
-    ask: T3(`How many ${sc.per} for ${needS} ${sc.q}?`, `At this rate, how many ${sc.per} will it take for ${needS} ${sc.q}?`, `At this constant rate, how many ${sc.per} are needed for ${needS} ${sc.q}?`),
+    ask: T3(`How many ${sc.per} will it take ${sc.agent} to ${sc.base} ${needS} ${sc.q}?`, `At this rate, how many ${sc.per} will it take ${sc.agent} to ${sc.base} ${needS} ${sc.q}?`, `At this constant rate, how many ${sc.per} are needed for ${sc.agent} to ${sc.base} ${needS} ${sc.q}?`),
     expr: null,
     answer: ans(fr(m), { k: "int" }, sc.per),
     work: [`Find the unit rate: ${qtyS} ${DIVIDE} ${per} = ${fmtPlain(u)} ${sc.unit}`, `Find how many ${sc.per} give ${needS} ${sc.q}: ${needS} ${DIVIDE} ${fmtPlain(u)} = ${m}`],
@@ -1986,7 +1987,7 @@ function pcPercent(rng, L, ctx) {
     stem: bare ? T3(`A fraction is ${part}/${whole}.`, `Consider the fraction ${part}/${whole}.`, `Consider the fraction ${part}/${whole}.`) : T3(`${part} of the ${whole} ${pk.item} are new.`, `${part} out of ${whole} ${pk.item} are new.`, `${part} of the ${whole} ${pk.item} are new.`),
     ask: bare ? T3(`What is ${part}/${whole} as a percent?`, `Write ${part}/${whole} as a percent.`, `Express ${part}/${whole} as a percent.`) : T3("What percent are new?", "What percent of the " + pk.item + " are new?", "What percent of the " + pk.item + " are new?"),
     expr: null,
-    answer: { value: pctS, text: `${pct}%`, kind: "int", unit: "percent" },
+    answer: { value: pctS, text: `${pct}%`, kind: "int" },
     work: [`Write the part as a fraction of the whole: ${part}/${whole}`, `Scale to a denominator of 100: ${part}/${whole} = ${pct}/100`, `${pct} out of 100 is ${pct}%`],
     visual: L === 1 ? pctModel(`A ratio table with percent and amount. The row 100 percent matches ${whole}. The row with ${part} has an empty percent.`, [[100, whole], [pct, part]], [[1, 0]]) : null,
     distractors: distr(fr(pct), { k: "int", sfx: "%" }, [[Math.round((part / (whole + part)) * 100) || part, "uses-the-sum-as-the-whole"], [part, "gives-the-part-as-the-percent"], [whole - part, "gives-the-part-that-is-not-new"], [100 - pct, "subtracts-from-100"], [Math.round((whole / part) * 10) / 10, "divides-whole-by-part"], ...slips(pct)]),
@@ -2000,9 +2001,9 @@ function pcApp(rng, L, ctx) {
   const who = rng.pick(NAMES);
   const money = (f) => ({ k: "money" });
   const price = L === 1 ? ri(rng, 4, 40) * 5 : L === 2 ? ri(rng, 10, 90) * 2 + 0 : ri(rng, 20, 190);
-  const rates = L === 1 ? [5, 10, 20, 25] : [5, 6, 8, 10, 12, 15, 20, 25, 30, 40];
-  const rate = rng.pick(rates);
   const app = rng.pick(L === 1 ? ["tax", "tip", "discount", "change"] : ["tax", "tip", "discount", "markup", "change", "interest", "orig", "orig"]);
+  const RATES_BY = { tax: L === 1 ? [5, 10] : [4, 5, 6, 7, 8, 9, 10], tip: L === 1 ? [10, 20] : [10, 15, 18, 20, 25], discount: L === 1 ? [10, 20, 25, 50] : [10, 15, 20, 25, 30, 40, 50], markup: [10, 20, 25, 30, 40, 50] };
+  const rate = rng.pick(RATES_BY[app] || [10, 20, 25]);
   const pr = fr(price);
   const amt = pr.mul(fr(rate, 100));
   const cents = (f) => f.mul(fr(100));
@@ -2051,7 +2052,7 @@ function pcApp(rng, L, ctx) {
       stem: T3(`The number of ${sc.n} went from ${from} to ${to}.`, `The number of ${sc.n} changed from ${from} to ${to}.`, `The number of ${sc.n} changed from ${from} to ${to}.`),
       ask: T3(`What is the percent ${inc ? "increase" : "decrease"}?`, `What is the percent ${inc ? "increase" : "decrease"}?`, `Find the percent ${inc ? "increase" : "decrease"}.`),
       expr: null,
-      answer: { value: String(p), text: `${p}%`, kind: "int", unit: "percent" },
+      answer: { value: String(p), text: `${p}%`, kind: "int" },
       work: [`Find the change: ${Math.max(from, to)} ${MINUS} ${Math.min(from, to)} = ${dif}`, `Compare the change with the original amount, ${from}: ${dif}/${from} = ${p}/100`, `The percent ${inc ? "increase" : "decrease"} is ${p}%`],
       distractors: distr(fr(p), { k: "int", sfx: "%" }, [[Math.round((dif / to) * 100), "divides-by-the-new-amount"], [dif, "gives-the-change-not-the-percent"], [Math.round((to / from) * 100), "gives-the-new-amount-as-a-percent-of-the-old"], [100 - p, "subtracts-from-100"], [p + 10, "slip"], [p * 2, "doubles"]]),
       hints: { conceptual: "A percent change compares the amount of change with the starting amount, not with the new amount.", procedural: "Find how much the amount changed. Divide that change by the original amount. Write the result as a percent." },
@@ -2083,7 +2084,7 @@ function pcApp(rng, L, ctx) {
   }
   // orig: find the original price after a percent off or a percent added on
   const off = rng.chance(0.6);
-  const rr = rng.pick(off ? [10, 20, 25, 30, 40, 50] : [5, 10, 20, 25]);
+  const rr = rng.pick(off ? [10, 20, 25, 30, 40, 50] : [5, 6, 8, 10]);
   const orig = ri(rng, 4, 40) * 20;
   const finalP = off ? fr(orig * (100 - rr), 100) : fr(orig * (100 + rr), 100);
   if (decPlaces(finalP) > 2) return pcApp(rng, L, ctx);
@@ -2253,12 +2254,12 @@ function inRead(rng, L) {
     family: "integers",
     level: L,
     spec: { kind: "read", value: v },
-    stem: T3("A number line has a point P.", "A number line has a point labeled P.", "A number line shows a point labeled P."),
-    ask: T3("What number is at point P?", "What number is marked by point P?", "What number does point P represent?"),
+    stem: T3("A number line has one point with a question mark on it.", "A number line has one point marked with a question mark.", "A number line shows one point marked with a question mark."),
+    ask: T3("What number is at the question mark?", "What number does the marked point represent?", "What number does the point marked with a question mark represent?"),
     expr: null,
     answer: { value: String(v), text: sgnN(v), kind: "int" },
     work: [`Find zero on the number line`, `Count the steps to point P, to the ${v < 0 ? "left" : "right"} of zero`, `Left of zero means negative, right of zero means positive`],
-    visual: { kind: "numberline", alt: `A number line from ${-m} to ${m} with one point labeled P.`, min: -m, max: m, ticks: 2 * m, marks: [{ at: v, label: "P" }], show: "int" },
+    visual: { kind: "numberline", alt: `A number line from ${-m} to ${m} with one point marked with a question mark.`, min: -m, max: m, ticks: 2 * m, marks: [{ at: v, label: "?" }], show: "int" },
     distractors: distr(fr(v), { k: "int" }, [[-v, "reads-the-wrong-side-of-zero"], [v + 1, "counts-one-too-far-right"], [v - 1, "counts-one-too-far-left"], [0, "reads-zero-for-a-point-not-at-zero"], [v * 2, "doubles"]], { pos: false }),
     hints: { conceptual: "Numbers to the left of zero are negative and numbers to the right are positive.", procedural: "Start at zero. Count the tick marks to the point, and decide whether you moved left or right." },
   });
@@ -2373,7 +2374,11 @@ function opHops(op, a, res) {
   const max = Math.ceil(hi) + 2;
   if (max - min > 26) return null;
   const net = res - a;
-  return { kind: "numberline", alt: `A number line showing a move from ${sgnN(a)} by ${net >= 0 ? "adding" : "subtracting"} ${Math.abs(net)}.`, min, max, ticks: max - min, marks: [{ at: a, label: "start" }], hops: [{ from: a, to: res, label: net >= 0 ? `+${net}` : `${MINUS}${-net}` }], show: "int" };
+  const base = { kind: "numberline", min, max, ticks: max - min, marks: [{ at: a, label: "start" }], show: "int" };
+  return {
+    visual: { ...base, alt: `A number line with the starting number ${sgnN(a)} marked.` },
+    solutionVisual: { ...base, alt: `A number line showing a move from ${sgnN(a)} by ${net >= 0 ? "adding" : "subtracting"} ${Math.abs(net)}.`, hops: [{ from: a, to: res, label: net >= 0 ? `+${net}` : `${MINUS}${-net}` }] },
+  };
 }
 const OPCTX = [
   { up: (a, b, who) => `The temperature is ${sgnN(a)} degrees. It rises ${b} degrees.`, down: (a, b) => `The temperature is ${sgnN(a)} degrees. It drops ${b} degrees.`, ask: "What is the new temperature, in degrees?" },
@@ -2455,19 +2460,22 @@ function inOp(rng, L, ctx) {
   if (mode === "dec") wrong.push([res.mul(fr(10)), "decimal-point-slip"], [res.div(fr(10)), "decimal-point-slip"]);
   if (mode === "int") wrong.push([res.add(fr(res.n < 0 ? 1 : -1)), "off-by-one"], [res.mul(fr(2)), "doubles-the-result"]);
   const hops = mode === "int" && (op === "+" || op === MINUS) ? opHops(op, a.n, res.n) : null;
-  return finalize({
+  const prob = finalize({
     family: "integers",
     level: L,
     spec: { kind: "op", op, a: `${a.n}/${a.d}`, b: `${b.n}/${b.d}` },
-    stem: ctxText ? T3(ctxText.stem, ctxText.stem, ctxText.stem) : T3("", "", ""),
-    ask: ctxText ? T3(ctxText.ask, ctxText.ask, ctxText.ask) : T3(`What is ${E}?`, `Find ${E}.`, `Evaluate ${E}, and use a number line or sign rules to justify the sign.`),
+    stem: ctxText ? T3(ctxText.stem, ctxText.stem, `Consider this situation. ${ctxText.stem}`) : T3("", "", ""),
+    ask: ctxText ? T3(ctxText.ask, ctxText.ask, `${ctxText.ask} Show the move on a number line.`) : T3(`What is ${E}?`, `Find ${E}.`, `Evaluate ${E}, and use a number line or sign rules to justify the sign.`),
     expr: E,
     answer: ans(res, st),
     work: opLines(op, a, b, res, st),
-    visual: hops,
+    visual: hops ? hops.visual : null,
     distractors: distr(res, st, wrong, { pos: false }),
     hints: { conceptual: op === TIMES || op === DIVIDE ? "The size of the answer comes from the sizes of the numbers. The sign comes from whether the signs match." : "Think of moving on a number line. Adding moves one way and subtracting moves the other way, starting from the first number.", procedural: op === TIMES || op === DIVIDE ? "Work with the sizes first. Then decide the sign by comparing the signs of the two numbers." : "Rewrite subtraction as adding the opposite. Then use the sign of the number that is farther from zero." },
   });
+  // the worked number-line picture (it shows the answer) travels with the problem for the key and the worked solution
+  if (hops) prob.solutionVisual = hops.solutionVisual;
+  return prob;
 }
 
 FAMILIES.integers = {
@@ -2917,18 +2925,19 @@ function eqOne(rng, L, ctx) {
   const pk = pack(rng, ctx);
   const wordy = rng.chance(0.5);
   const st = wordy && mode === "dec" && decPlaces(x) <= 2 ? { k: "money" } : styleOf(x, mode, true);
-  const amt = (f) => (mode === "int" ? `${nt(f, mode)} ${pk.item}` : mode === "dec" ? money(f) : `${nt(f, mode)} ${f.cmp(fr(1)) <= 0 ? "cup" : "cups"} of flour`);
+  const amt = (f) => (mode === "int" ? `${nt(f, mode)} ${pk.item}` : mode === "dec" ? money(f) : `${mixS(f)} ${f.cmp(fr(1)) <= 0 ? "cup" : "cups"} of flour`);
   const thing = mode === "int" ? pk.item : mode === "dec" ? "money" : "flour";
+  const kindWord = mode === "int" ? "number" : "amount";
   const HM = mode === "int" ? `How many ${pk.item}` : mode === "dec" ? "How many dollars" : "How many cups of flour";
   let stem = T3("", "", "");
   let ask = T3(`Solve for ${v}: ${E}`, `Solve: ${E}`, `Solve the equation ${E}, and check your solution by substitution.`);
   let unit;
   if (wordy) {
     if (form === "add") {
-      stem = T3(`${W} has some ${thing}. ${W} gets ${amt(p)} from a friend. Now ${W} has ${amt(q)}.`, `${W} had some ${thing}, received ${amt(p)} from a friend, and now has ${amt(q)}.`, `${W} started with an unknown amount of ${thing}. After receiving ${amt(p)} from a friend, ${W} has ${amt(q)}.`);
+      stem = T3(`${W} has some ${thing}. ${W} gets ${amt(p)} from a friend. Now ${W} has ${amt(q)}.`, `${W} had some ${thing}, received ${amt(p)} from a friend, and now has ${amt(q)}.`, `${W} started with an unknown ${kindWord} of ${thing}. After receiving ${amt(p)} from a friend, ${W} has ${amt(q)}.`);
       ask = T3(`${HM} did ${W} start with? Let ${v} be that number.`, `${HM} did ${W} have at first? Let ${v} be that number.`, `${HM} did ${W} have at the start? Let ${v} represent that number.`);
     } else if (form === "sub") {
-      stem = T3(`${W} has some ${thing}. ${W} gives away ${amt(p)}. Then ${W} has ${amt(q)} left.`, `${W} had some ${thing}, gave away ${amt(p)}, and has ${amt(q)} left.`, `${W} started with an unknown amount of ${thing}. After giving away ${amt(p)}, ${W} has ${amt(q)} remaining.`);
+      stem = T3(`${W} has some ${thing}. ${W} gives away ${amt(p)}. Then ${W} has ${amt(q)} left.`, `${W} had some ${thing}, gave away ${amt(p)}, and has ${amt(q)} left.`, `${W} started with an unknown ${kindWord} of ${thing}. After giving away ${amt(p)}, ${W} has ${amt(q)} remaining.`);
       ask = T3(`${HM} did ${W} start with? Let ${v} be that number.`, `${HM} did ${W} have at first? Let ${v} be that number.`, `${HM} did ${W} have at the start? Let ${v} represent that number.`);
     } else if (form === "mul") {
       if (mode === "int") {
@@ -2938,7 +2947,7 @@ function eqOne(rng, L, ctx) {
         stem = T3(`${W} buys ${P} pounds of grapes. ${W} pays ${money(q)}.`, `${W} buys ${P} pounds of grapes for ${money(q)}.`, `${W} pays ${money(q)} for ${P} pounds of grapes.`);
         ask = T3(`What is the cost of one pound, in dollars? Let ${v} be that cost.`, `How many dollars does one pound cost? Let ${v} be that cost.`, `What is the price of one pound, in dollars? Let ${v} represent that price.`);
       } else {
-        stem = T3(`${W} walks for ${P} ${p.cmp(fr(1)) <= 0 ? "hour" : "hours"} at a steady speed. ${W} goes ${Q} miles.`, `${W} walks at a steady speed for ${P} ${p.cmp(fr(1)) <= 0 ? "hour" : "hours"} and covers ${Q} miles.`, `${W} walks at a constant speed for ${P} ${p.cmp(fr(1)) <= 0 ? "hour" : "hours"} and travels ${Q} miles.`);
+        stem = T3(`${W} walks for ${mixS(p)} ${p.cmp(fr(1)) <= 0 ? "hour" : "hours"} at a steady speed. ${W} goes ${mixS(q)} miles.`, `${W} walks at a steady speed for ${mixS(p)} ${p.cmp(fr(1)) <= 0 ? "hour" : "hours"} and covers ${mixS(q)} miles.`, `${W} walks at a constant speed for ${mixS(p)} ${p.cmp(fr(1)) <= 0 ? "hour" : "hours"} and travels ${mixS(q)} miles.`);
         ask = T3(`How many miles does ${W} walk in one hour? Let ${v} be that number.`, `How many miles does ${W} walk in one hour? Let ${v} be that number.`, `How many miles does ${W} travel in one hour? Let ${v} represent that number.`);
       }
     } else if (mode === "int") {
@@ -2948,7 +2957,7 @@ function eqOne(rng, L, ctx) {
       stem = T3(`${W} splits a bill equally among ${P} people. Each person pays ${money(q)}.`, `A bill is split equally among ${P} people, and each person pays ${money(q)}.`, `A bill is divided equally among ${P} people, and each person pays ${money(q)}.`);
       ask = T3(`What is the whole bill, in dollars? Let ${v} be the bill.`, `How many dollars is the whole bill? Let ${v} be the bill.`, `What is the total amount of the bill, in dollars? Let ${v} represent the bill.`);
     } else {
-      stem = T3(`${W} cuts a rope into ${P} equal pieces. Each piece is ${Q} ${q.cmp(fr(1)) <= 0 ? "meter" : "meters"} long.`, `${W} cuts a rope into ${P} equal pieces, and each piece is ${Q} ${q.cmp(fr(1)) <= 0 ? "meter" : "meters"} long.`, `${W} cuts a rope into ${P} pieces of equal length, and each piece is ${Q} ${q.cmp(fr(1)) <= 0 ? "meter" : "meters"} long.`);
+      stem = T3(`${W} cuts a rope into ${P} equal pieces. Each piece is ${mixS(q)} ${q.cmp(fr(1)) <= 0 ? "meter" : "meters"} long.`, `${W} cuts a rope into ${P} equal pieces, and each piece is ${mixS(q)} ${q.cmp(fr(1)) <= 0 ? "meter" : "meters"} long.`, `${W} cuts a rope into ${P} pieces of equal length, and each piece is ${mixS(q)} ${q.cmp(fr(1)) <= 0 ? "meter" : "meters"} long.`);
       ask = T3(`How many meters long was the rope? Let ${v} be that length.`, `How long was the rope, in meters? Let ${v} be that length.`, `What was the length of the rope, in meters? Let ${v} represent that length.`);
     }
     unit = null;
@@ -3039,21 +3048,22 @@ function eqTwoWord(rng, L, ctx) {
     tickets: [T3(`${W} buys ${p.n} tickets. Each ticket costs the same price. Each ticket also has a ${m(q)} fee. ${W} pays ${m(r)} in all.`, `${W} buys ${p.n} tickets. Each ticket costs the same price plus a ${m(q)} fee. ${W} pays ${m(r)} in all.`, `${W} buys ${p.n} tickets. Each ticket has the same price plus a ${m(q)} service fee. ${W} pays ${m(r)} in total.`), T3(`What is the price of one ticket, without the fee? Let ${v} be that price.`, `What is the price of one ticket, before the fee, in dollars? Let ${v} be that price.`, `What is the price of one ticket before the fee, in dollars? Let ${v} represent that price.`), `${p.n}(${v} + ${m(q)}) = ${m(r)}`],
     snacks: [T3(`${p.n} friends each buy a snack. Each friend also pays ${m(q)} for the bus. Together they pay ${m(r)}.`, `${p.n} friends each buy a snack and pay ${m(q)} for the bus. Together they spend ${m(r)}.`, `${p.n} friends each buy a snack and each pay ${m(q)} for the bus. Together they spend ${m(r)}.`), T3(`What is the price of one snack? Let ${v} be that price.`, `What is the price of one snack, in dollars? Let ${v} be that price.`, `What is the price of one snack, in dollars? Let ${v} represent that price.`), `${p.n}(${v} + ${m(q)}) = ${m(r)}`],
   }[k];
-  const st = styleOf(x, dec ? "dec" : "int");
+  const st = dec && form === "paren" ? { k: "money" } : styleOf(x, dec ? "dec" : "int");
+  const eqPlain = form === "lin" ? `${nt(p, "dec")}${v} + ${nt(q, "dec")} = ${nt(r, "dec")}` : `${p.n}(${v} + ${nt(q, "dec")}) = ${nt(r, "dec")}`;
   const wrongs = form === "lin"
     ? [[r.add(q).div(p), "adds-the-fee-instead-of-subtracting"], [r.div(p).sub(q), "divides-before-subtracting-the-fee"], [r.sub(q).mul(p), "multiplies-instead-of-dividing"], [r.sub(q).sub(p), "subtracts-the-rate-instead-of-dividing"]]
     : [[r.sub(q).div(p), "treats-the-parentheses-like-a-single-fee"], [r.div(p).add(q), "adds-the-fee-instead-of-subtracting"], [p.add(q).n === 0 ? null : r.div(p.add(q)), "divides-by-the-sum"], [r.sub(p).sub(q), "subtracts-instead-of-dividing"]];
   const lines = form === "lin"
-    ? [`The equation is ${stems[2]}`, `Subtract the fee from both sides: ${nt(r, "dec")} ${MINUS} ${nt(q, "dec")} = ${nt(r.sub(q), "dec")}`, `Divide both sides by the rate: ${nt(r.sub(q), "dec")} ${DIVIDE} ${nt(p, "dec")} = ${nt(x, "dec")}`, `Check: ${nt(p, "dec")} ${TIMES} ${nt(x, "dec")} = ${nt(p.mul(x), "dec")}, and ${nt(p.mul(x), "dec")} + ${nt(q, "dec")} = ${nt(r, "dec")}`]
-    : [`The equation is ${stems[2]}`, `Divide both sides by ${p.n}: ${nt(r, "dec")} ${DIVIDE} ${p.n} = ${nt(r.div(p), "dec")}`, `Subtract the fee from both sides: ${nt(r.div(p), "dec")} ${MINUS} ${nt(q, "dec")} = ${nt(x, "dec")}`, `Check: ${nt(x, "dec")} + ${nt(q, "dec")} = ${nt(x.add(q), "dec")}, and ${p.n} ${TIMES} ${nt(x.add(q), "dec")} = ${nt(r, "dec")}`];
+    ? [`The equation is ${eqPlain}`, `Subtract the fee from both sides: ${nt(r, "dec")} ${MINUS} ${nt(q, "dec")} = ${nt(r.sub(q), "dec")}`, `Divide both sides by the rate: ${nt(r.sub(q), "dec")} ${DIVIDE} ${nt(p, "dec")} = ${nt(x, "dec")}`, `Check: ${nt(p, "dec")} ${TIMES} ${nt(x, "dec")} = ${nt(p.mul(x), "dec")}, and ${nt(p.mul(x), "dec")} + ${nt(q, "dec")} = ${nt(r, "dec")}`]
+    : [`The equation is ${eqPlain}`, `Divide both sides by ${p.n}: ${nt(r, "dec")} ${DIVIDE} ${p.n} = ${nt(r.div(p), "dec")}`, `Subtract the fee from both sides: ${nt(r.div(p), "dec")} ${MINUS} ${nt(q, "dec")} = ${nt(x, "dec")}`, `Check: ${nt(x, "dec")} + ${nt(q, "dec")} = ${nt(x.add(q), "dec")}, and ${p.n} ${TIMES} ${nt(x.add(q), "dec")} = ${nt(r, "dec")}`];
   return finalize({
     family: "equation",
     level: L,
     spec: { kind: "eq2", form, p: SPEC(p), q: SPEC(q), r: SPEC(r), v },
     stem: stems[0],
     ask: stems[1],
-    expr: stems[2],
-    answer: ans(x, st, k === "gym" ? "months" : k === "taxi" ? "miles" : "dollars"),
+    expr: eqPlain,
+    answer: ans(x, st, st.k === "money" ? undefined : k === "gym" ? "months" : k === "taxi" ? "miles" : "dollars"),
     work: lines,
     visual: null,
     distractors: distr(x, st, wrongs),
@@ -3491,5 +3501,537 @@ FAMILIES.indepdep = {
   gen(rng, P, { level = 1 } = {}) {
     const pool = level === 1 ? [idRole, idRole2, idSub, idMissing] : level === 2 ? [idEqTable, idMissing, idRole, idSub, idEqTable] : [idEqTable, idMissing, idSub, idRole2, idEqTable];
     return rng.pick(pool)(rng, level);
+  },
+};
+
+// ================================================================================================ surfarea (g6.geometry)
+const dimVal = (rng, mode, lo, hi) => (mode === "int" ? fr(ri(rng, lo, hi)) : fr(2 * ri(rng, lo, hi - 1) + 1, 2));
+const dimT = (f, mode) => (mode === "frac" ? mixS(f) : nt(f, mode));
+const wk = (f, mode) => (mode === "frac" ? frS(f) : nt(f, mode));
+const areaStyle = (x, mode) => (x.d === 1 ? { k: "int" } : mode === "dec" && decPlaces(x) >= 0 && decPlaces(x) <= 3 ? { k: "dec", p: decPlaces(x) } : { k: "frac", mixed: true });
+const modeFor = (rng, L) => (L === 1 ? "int" : L === 2 ? rng.pick(["int", "int", "dec"]) : rng.pick(["dec", "frac", "frac", "int"]));
+const unitSq = (u) => ({ cm: "square centimeters", m: "square meters", in: "square inches", ft: "square feet" })[u];
+const unitCu = (u) => ({ cm: "cubic centimeters", m: "cubic meters", in: "cubic inches", ft: "cubic feet" })[u];
+const UNITS = ["cm", "m", "in", "ft"];
+
+function saTri(rng, L) {
+  const mode = modeFor(rng, L);
+  const u = rng.pick(UNITS);
+  const b = dimVal(rng, mode, 3, L === 1 ? 12 : 16);
+  const h = dimVal(rng, mode, 2, L === 1 ? 10 : 14);
+  const A = b.mul(h).div(fr(2));
+  const st = areaStyle(A, mode);
+  const right = rng.chance(0.5) && mode === "int";
+  return finalize({
+    family: "surfarea",
+    level: L,
+    spec: { kind: "tri", b: SPEC(b), h: SPEC(h) },
+    stem: right
+      ? T3(`A triangle has a square corner. The two sides that make the square corner are ${dimT(b, mode)} ${u} and ${dimT(h, mode)} ${u}.`, `A right triangle has legs of ${dimT(b, mode)} ${u} and ${dimT(h, mode)} ${u}.`, `A right triangle has legs that measure ${dimT(b, mode)} ${u} and ${dimT(h, mode)} ${u}.`)
+      : T3(`A triangle has a base of ${dimT(b, mode)} ${u}. Its height is ${dimT(h, mode)} ${u}.`, `A triangle has a base of ${dimT(b, mode)} ${u} and a height of ${dimT(h, mode)} ${u}.`, `A triangle has a base length of ${dimT(b, mode)} ${u} and a perpendicular height of ${dimT(h, mode)} ${u}.`),
+    ask: T3(`What is the area, in ${unitSq(u)}?`, `What is the area of the triangle, in ${unitSq(u)}?`, `Find the area of the triangle, in ${unitSq(u)}.`),
+    expr: `${dimT(b, mode)} ${TIMES} ${dimT(h, mode)} ${DIVIDE} 2`,
+    answer: ans(A, st, `${u}²`),
+    work: [`Two copies of the triangle make a rectangle ${wk(b, mode)} by ${wk(h, mode)}`, `Area of the rectangle: ${wk(b, mode)} ${TIMES} ${wk(h, mode)} = ${wk(b.mul(h), mode)}`, `The triangle is half of it: ${wk(b.mul(h), mode)} ${DIVIDE} 2 = ${wk(A, mode)}`],
+    visual: right ? { kind: "triangle", alt: `A right triangle with legs labeled ${dimT(b, mode)} ${u} and ${dimT(h, mode)} ${u}.`, a: b.value, b: h.value, c: "?", right: true, unit: u } : null,
+    distractors: distr(A, st, [[b.mul(h), "forgets-to-take-half"], [b.add(h), "adds-the-base-and-height"], [b.add(h).div(fr(2)), "averages-the-base-and-height"], [b.mul(h).div(fr(4)), "halves-twice"], [b.mul(h).mul(fr(2)), "doubles-instead-of-halving"]]),
+    hints: { conceptual: "A triangle is half of a rectangle (or parallelogram) with the same base and height.", procedural: "Multiply the base by the height. Then take half of the product." },
+  });
+}
+function saPara(rng, L) {
+  const mode = modeFor(rng, L);
+  const u = rng.pick(UNITS);
+  const b = dimVal(rng, mode, 3, 14);
+  const h = dimVal(rng, mode, 2, 10);
+  const s = b.add(fr(ri(rng, 1, 3)));
+  const A = b.mul(h);
+  const st = areaStyle(A, mode);
+  return finalize({
+    family: "surfarea",
+    level: L,
+    spec: { kind: "para", b: SPEC(b), h: SPEC(h), s: SPEC(s) },
+    stem: T3(`A parallelogram has a base of ${dimT(b, mode)} ${u} and a height of ${dimT(h, mode)} ${u}. Its slanted side is ${dimT(s, mode)} ${u}.`, `A parallelogram has a base of ${dimT(b, mode)} ${u}, a height of ${dimT(h, mode)} ${u}, and a slanted side of ${dimT(s, mode)} ${u}.`, `A parallelogram has a base of ${dimT(b, mode)} ${u}, a perpendicular height of ${dimT(h, mode)} ${u}, and a slanted side of ${dimT(s, mode)} ${u}.`),
+    ask: T3(`What is the area, in ${unitSq(u)}?`, `What is the area of the parallelogram, in ${unitSq(u)}?`, `Find the area of the parallelogram, in ${unitSq(u)}.`),
+    expr: `${dimT(b, mode)} ${TIMES} ${dimT(h, mode)}`,
+    answer: ans(A, st, `${u}²`),
+    work: [`Cut a triangle off one end and slide it to the other end. The parallelogram becomes a rectangle with the same base and height`, `Area = base ${TIMES} height = ${wk(b, mode)} ${TIMES} ${wk(h, mode)} = ${wk(A, mode)}`, `The slanted side is not used for area`],
+    visual: null,
+    distractors: distr(A, st, [[b.mul(s), "uses-the-slanted-side-instead-of-the-height"], [b.mul(h).div(fr(2)), "halves-the-product-as-for-a-triangle"], [b.add(h).mul(fr(2)), "finds-a-perimeter-like-sum"], [s.mul(h), "uses-the-slanted-side-instead-of-the-base"], [b.add(h), "adds-the-base-and-height"]]),
+    hints: { conceptual: "A parallelogram can be cut and rearranged into a rectangle. The height is measured straight up, not along the slanted side.", procedural: "Multiply the base by the perpendicular height. Ignore the slanted side." },
+  });
+}
+function saTrap(rng, L) {
+  const mode = modeFor(rng, L);
+  const u = rng.pick(UNITS);
+  const b1 = dimVal(rng, mode, 3, 10);
+  const b2 = b1.add(fr(ri(rng, 2, 8)));
+  const h = dimVal(rng, mode, 2, 10);
+  const A = b1.add(b2).mul(h).div(fr(2));
+  const st = areaStyle(A, mode);
+  return finalize({
+    family: "surfarea",
+    level: L,
+    spec: { kind: "trap", b1: SPEC(b1), b2: SPEC(b2), h: SPEC(h) },
+    stem: T3(`A trapezoid has two parallel sides of ${dimT(b1, mode)} ${u} and ${dimT(b2, mode)} ${u}. The height is ${dimT(h, mode)} ${u}.`, `A trapezoid has parallel sides of ${dimT(b1, mode)} ${u} and ${dimT(b2, mode)} ${u} and a height of ${dimT(h, mode)} ${u}.`, `A trapezoid has parallel sides measuring ${dimT(b1, mode)} ${u} and ${dimT(b2, mode)} ${u}, and its height is ${dimT(h, mode)} ${u}.`),
+    ask: T3(`What is the area, in ${unitSq(u)}?`, `What is the area of the trapezoid, in ${unitSq(u)}?`, `Find the area of the trapezoid, in ${unitSq(u)}.`),
+    expr: `(${dimT(b1, mode)} + ${dimT(b2, mode)}) ${TIMES} ${dimT(h, mode)} ${DIVIDE} 2`,
+    answer: ans(A, st, `${u}²`),
+    work: [`Two copies of the trapezoid fit together to make a parallelogram with base ${wk(b1, mode)} + ${wk(b2, mode)} = ${wk(b1.add(b2), mode)}`, `The parallelogram has area ${wk(b1.add(b2), mode)} ${TIMES} ${wk(h, mode)} = ${wk(b1.add(b2).mul(h), mode)}`, `One trapezoid is half of that: ${wk(b1.add(b2).mul(h), mode)} ${DIVIDE} 2 = ${wk(A, mode)}`],
+    visual: null,
+    distractors: distr(A, st, [[b1.add(b2).mul(h), "forgets-to-take-half"], [b1.add(b2).div(fr(2)), "averages-the-bases-but-forgets-the-height"], [b2.mul(h), "uses-only-the-longer-base"], [b1.mul(b2).mul(h).div(fr(2)), "multiplies-the-bases"], [b1.mul(h), "uses-only-the-shorter-base"]]),
+    hints: { conceptual: "A trapezoid is half of a parallelogram made from two copies. Its two parallel sides are both needed.", procedural: "Add the two parallel sides. Multiply by the height. Then take half." },
+  });
+}
+function saComp(rng, L) {
+  const u = rng.pick(UNITS);
+  const w = ri(rng, 4, L === 2 ? 12 : 20) * 2;
+  const h = ri(rng, 3, 12);
+  const t = ri(rng, 2, 9);
+  const A = w * h + (w * t) / 2;
+  return finalize({
+    family: "surfarea",
+    level: L,
+    spec: { kind: "comp", w, h, t },
+    stem: T3(`A shape is a rectangle with a triangle on top. The rectangle is ${w} ${u} wide and ${h} ${u} tall. The triangle has the same base as the width of the rectangle. The triangle is ${t} ${u} tall.`, `A shape is made of a rectangle that is ${w} ${u} wide and ${h} ${u} tall, with a triangle on top. The triangle's base is the top of the rectangle, and its height is ${t} ${u}.`, `A composite figure consists of a rectangle that is ${w} ${u} wide and ${h} ${u} tall, topped by a triangle whose base is the top side of the rectangle and whose height is ${t} ${u}.`),
+    ask: T3(`What is the total area, in ${unitSq(u)}?`, `What is the area of the whole shape, in ${unitSq(u)}?`, `Find the total area of the composite figure, in ${unitSq(u)}.`),
+    expr: `${w} ${TIMES} ${h} + ${w} ${TIMES} ${t} ${DIVIDE} 2`,
+    answer: { value: String(A), text: num(A), kind: "int", unit: `${u}²` },
+    work: [`Rectangle: ${w} ${TIMES} ${h} = ${num(w * h)}`, `Triangle: ${w} ${TIMES} ${t} = ${w * t}, and half of that is ${w * t} ${DIVIDE} 2 = ${num((w * t) / 2)}`, `Add the two areas: ${num(w * h)} + ${num((w * t) / 2)} = ${num(A)}`],
+    visual: null,
+    distractors: distr(fr(A), { k: "int" }, [[w * h, "ignores-the-triangle"], [w * h + w * t, "treats-the-triangle-as-a-rectangle"], [(w * t) / 2, "finds-only-the-triangle"], [w * h * t, "multiplies-all-three-numbers"], [w * h + t, "adds-the-height-of-the-triangle-instead-of-its-area"]]),
+    hints: { conceptual: "Split the shape into simple parts whose areas you know. The total area is the sum of the parts.", procedural: "Find the area of the rectangle. Find the area of the triangle (half of base times height). Then add." },
+  });
+}
+function saSurface(rng, L) {
+  const l = ri(rng, 2, L === 1 ? 6 : 12);
+  const w = ri(rng, 2, L === 1 ? 5 : 9);
+  const h = ri(rng, 2, L === 1 ? 5 : 9);
+  const u = rng.pick(UNITS);
+  const A = 2 * (l * w + l * h + w * h);
+  return finalize({
+    family: "surfarea",
+    level: L,
+    spec: { kind: "sa", l, w, h },
+    stem: T3(`A box is ${l} ${u} long, ${w} ${u} wide and ${h} ${u} tall. It has a top, a bottom and four sides.`, `A box is shaped like a rectangular prism. It is ${l} ${u} long, ${w} ${u} wide and ${h} ${u} tall.`, `A rectangular prism is ${l} ${u} long, ${w} ${u} wide and ${h} ${u} tall.`),
+    ask: T3(`What is the surface area, in ${unitSq(u)}?`, `What is the surface area of the box, in ${unitSq(u)}?`, `Use the net of the prism to find its surface area, in ${unitSq(u)}.`),
+    expr: `2(${l} ${TIMES} ${w} + ${l} ${TIMES} ${h} + ${w} ${TIMES} ${h})`,
+    answer: { value: String(A), text: num(A), kind: "int", unit: `${u}²` },
+    work: [`The net has 6 rectangles in 3 matching pairs`, `Top and bottom: 2 ${TIMES} ${l * w} = ${2 * l * w}`, `Front and back: 2 ${TIMES} ${l * h} = ${2 * l * h}`, `Left and right: 2 ${TIMES} ${w * h} = ${2 * w * h}`, `Add the faces: ${2 * l * w} + ${2 * l * h} = ${2 * l * w + 2 * l * h}, and ${2 * l * w + 2 * l * h} + ${2 * w * h} = ${num(A)}`],
+    visual: { kind: "prism", alt: `A rectangular prism with length ${l} ${u}, width ${w} ${u} and height ${h} ${u}.`, l, w, h, units: false },
+    distractors: distr(fr(A), { k: "int" }, [[l * w + l * h + w * h, "counts-each-different-face-only-once"], [l * w * h, "finds-the-volume"], [2 * (l * w + l * h), "leaves-out-two-faces"], [2 * (l + w + h), "adds-the-dimensions"], [4 * (l * w + l * h + w * h), "counts-too-many-faces"]]),
+    hints: { conceptual: "Surface area is the total area of all the faces. A rectangular prism has three pairs of matching faces.", procedural: "Find the area of each different face, double each one, and add the three results." },
+  });
+}
+function saNet(rng, L) {
+  const u = rng.pick(UNITS);
+  let a;
+  let b;
+  let c;
+  do {
+    a = ri(rng, 2, 9);
+    b = ri(rng, 2, 9);
+    c = ri(rng, 2, 9);
+  } while (a === b || b === c || a === c);
+  const faces = [{ w: a, h: b, n: 2 }, { w: a, h: c, n: 2 }, { w: b, h: c, n: 2 }];
+  const A = 2 * (a * b + a * c + b * c);
+  const list = faces.map((f) => `${f.n} rectangles that are ${f.w} ${u} by ${f.h} ${u}`);
+  return finalize({
+    family: "surfarea",
+    level: L,
+    spec: { kind: "net", faces },
+    stem: T3(`A net folds into a box. The net has ${list[0]}, ${list[1]}, and ${list[2]}.`, `The net of a box has ${list[0]}, ${list[1]}, and ${list[2]}.`, `The net of a rectangular prism is made of ${list[0]}, ${list[1]}, and ${list[2]}.`),
+    ask: T3(`What is the surface area of the box, in ${unitSq(u)}?`, `What is the surface area of the box, in ${unitSq(u)}?`, `Find the surface area of the prism, in ${unitSq(u)}.`),
+    expr: null,
+    answer: { value: String(A), text: num(A), kind: "int", unit: `${u}²` },
+    work: [`Area of each kind of rectangle: ${a} ${TIMES} ${b} = ${a * b}, ${a} ${TIMES} ${c} = ${a * c}, ${b} ${TIMES} ${c} = ${b * c}`, `Each kind appears twice: 2 ${TIMES} ${a * b + a * c + b * c} = ${num(A)}`],
+    visual: null,
+    distractors: distr(fr(A), { k: "int" }, [[a * b + a * c + b * c, "counts-each-kind-of-rectangle-once"], [a * b * c, "finds-the-volume"], [2 * (a + b + c), "adds-the-side-lengths"], [2 * (a * b + a * c), "leaves-out-one-pair-of-faces"], [2 * a * b * c, "doubles-the-volume"]]),
+    hints: { conceptual: "The surface area of a solid is the total area of its net. Add the areas of all the faces.", procedural: "Find the area of one rectangle of each size. Multiply each by how many there are. Then add." },
+  });
+}
+function saVolFrac(rng, L) {
+  const mode = rng.pick(["frac", "frac", "dec"]);
+  const u = rng.pick(UNITS);
+  const l = dimVal(rng, mode, 2, 6);
+  const w = rng.chance(0.5) ? dimVal(rng, mode, 2, 5) : fr(ri(rng, 2, 6));
+  const h = dimVal(rng, mode, 2, 6);
+  const V = l.mul(w).mul(h);
+  const st = areaStyle(V, mode);
+  return finalize({
+    family: "surfarea",
+    level: L,
+    spec: { kind: "volfrac", l: SPEC(l), w: SPEC(w), h: SPEC(h) },
+    stem: T3(`A box is ${dimT(l, mode)} ${u} long, ${dimT(w, mode)} ${u} wide and ${dimT(h, mode)} ${u} tall.`, `A rectangular prism is ${dimT(l, mode)} ${u} long, ${dimT(w, mode)} ${u} wide and ${dimT(h, mode)} ${u} tall.`, `A right rectangular prism has edge lengths of ${dimT(l, mode)} ${u}, ${dimT(w, mode)} ${u} and ${dimT(h, mode)} ${u}.`),
+    ask: T3(`What is the volume, in ${unitCu(u)}?`, `What is the volume of the box, in ${unitCu(u)}?`, `Find the volume of the prism, in ${unitCu(u)}.`),
+    expr: `${dimT(l, mode)} ${TIMES} ${dimT(w, mode)} ${TIMES} ${dimT(h, mode)}`,
+    answer: ans(V, st, `${u}³`),
+    work: [`Volume = length ${TIMES} width ${TIMES} height`, `${wk(l, mode)} ${TIMES} ${wk(w, mode)} = ${wk(l.mul(w), mode)}`, `${wk(l.mul(w), mode)} ${TIMES} ${wk(h, mode)} = ${wk(V, mode)}`],
+    visual: { kind: "prism", alt: `A rectangular prism with edges ${dimT(l, mode)} ${u}, ${dimT(w, mode)} ${u} and ${dimT(h, mode)} ${u}.`, l: l.value, w: w.value, h: h.value, units: false },
+    distractors: distr(V, st, [[l.add(w).add(h), "adds-the-edge-lengths"], [l.mul(w), "finds-the-base-area-only"], [l.mul(w).add(h), "adds-the-height-to-the-base-area"], [V.mul(fr(2)), "doubles-the-volume"], [l.add(w).add(h).mul(fr(2)), "doubles-the-sum-of-the-edges"]]),
+    hints: { conceptual: "Volume works the same with fraction edge lengths: it is how many unit cubes, or parts of cubes, fill the prism.", procedural: "Multiply length, width and height. Multiply two at a time and keep track of the denominators." },
+  });
+}
+function saPoly(rng, L) {
+  const m = L === 1 ? 6 : 8;
+  const quad = L === 1 ? 1 : 4;
+  const pick = () => (quad === 1 ? ri(rng, 1, m) : ri(rng, -m, m));
+  let x1;
+  let y1;
+  let x2;
+  let y2;
+  do {
+    x1 = pick();
+    y1 = pick();
+    x2 = pick();
+    y2 = pick();
+  } while (x1 === x2 || y1 === y2 || Math.abs(x1 - x2) > 12 || Math.abs(y1 - y2) > 12 || (quad === 1 ? false : Math.abs(x1 - x2) < 2 && Math.abs(y1 - y2) < 2));
+  const shape = L === 1 ? "rect" : rng.pick(["rect", "rect", "tri"]);
+  const ask = shape === "tri" ? "area" : rng.pick(["area", "perimeter", "side"]);
+  const dx = Math.abs(x2 - x1);
+  const dy = Math.abs(y2 - y1);
+  const pts = shape === "rect" ? [[x1, y1], [x2, y1], [x2, y2], [x1, y2]] : [[x1, y1], [x2, y1], [x1, y2]];
+  const names = ["A", "B", "C", "D"];
+  const val = ask === "area" ? (shape === "rect" ? dx * dy : (dx * dy) / 2) : ask === "perimeter" ? 2 * (dx + dy) : dx;
+  const sh = shape === "rect" ? "rectangle" : "right triangle";
+  const label = pts.map((p, i) => `${names[i]}(${num(p[0])}, ${num(p[1])})`).join(", ");
+  const askT = ask === "area" ? `What is the area of the ${sh}, in square units?` : ask === "perimeter" ? "What is the perimeter of the rectangle, in units?" : `How long is side AB, in units?`;
+  return finalize({
+    family: "surfarea",
+    level: L,
+    spec: { kind: "poly", shape, x1, y1, x2, y2, ask },
+    stem: T3(`A ${sh} has corners at ${label}.`, `A ${sh} is drawn on a coordinate plane. Its corners are ${label}.`, `A ${sh} has vertices at ${label} on a coordinate plane.`),
+    ask: T3(askT, askT, ask === "side" ? "Use the coordinates to find the length of side AB, in units." : askT),
+    expr: null,
+    answer: { value: String(val), text: num(val), kind: Number.isInteger(val) ? "int" : "dec", unit: ask === "area" ? "square units" : "units" },
+    work: [`Side AB is horizontal, so its length is the distance between the x-coordinates: ${dx}`, ...(ask === "side" ? [] : [`The other side is vertical, so its length is the distance between the y-coordinates: ${dy}`]), ...(ask === "area" ? [shape === "rect" ? `Area = ${dx} ${TIMES} ${dy} = ${dx * dy}` : `The triangle is half of a ${dx} by ${dy} rectangle: ${dx} ${TIMES} ${dy} = ${dx * dy}, and half of that is ${dx * dy} ${DIVIDE} 2 = ${(dx * dy) / 2}`] : ask === "perimeter" ? [`Perimeter = 2 ${TIMES} (${dx} + ${dy}) = ${2 * (dx + dy)}`] : [])],
+    visual: { kind: "coord", alt: `A coordinate plane with a ${sh} drawn on it.`, xmin: -m, xmax: m, ymin: -m, ymax: m, step: 1, points: pts.map((p, i) => ({ x: p[0], y: p[1], label: names[i] })), polys: [{ pts: pts.map((p, i) => ({ x: p[0], y: p[1], label: names[i] })), label: "" }], labelAxes: ["x", "y"] },
+    distractors: (() => {
+      const st = Number.isInteger(val) ? { k: "int" } : { k: "dec", p: 1 };
+      const wrong = ask === "area" ? [[2 * (dx + dy), "finds-the-perimeter"], [dx + dy, "adds-the-side-lengths"], [shape === "tri" ? dx * dy : (dx * dy) / 2, shape === "tri" ? "forgets-to-take-half" : "takes-half-as-for-a-triangle"], [Math.abs(Math.abs(x2) - Math.abs(x1)) * dy, "subtracts-the-sizes-of-the-coordinates-instead-of-finding-the-distance"]] : ask === "perimeter" ? [[dx * dy, "finds-the-area"], [dx + dy, "adds-only-two-sides"], [4 * Math.max(dx, dy), "treats-it-as-a-square"], [Math.abs(Math.abs(x2) - Math.abs(x1)) * 2 + 2 * dy, "subtracts-the-sizes-of-the-coordinates"]] : [[dy, "measures-the-vertical-side"], [Math.abs(Math.abs(x2) - Math.abs(x1)), "subtracts-the-sizes-of-the-coordinates"], [Math.abs(x1 + x2), "adds-the-coordinates"], [dx + 1, "counts-both-end-points"]];
+      return distr(fr(Math.round(val * 2), 2), st, [...wrong, ...slips(Math.round(val))]);
+    })(),
+    hints: { conceptual: "Points with the same x-coordinate or the same y-coordinate are on a straight vertical or horizontal line. Distance along it is found from the other coordinate.", procedural: "Find the distance between the two x-coordinates and between the two y-coordinates. If a coordinate is negative, count the distance across zero." },
+  });
+}
+FAMILIES.surfarea = {
+  title: "Area, surface area and volume",
+  grades: [6],
+  defaults: {},
+  gen(rng, P, { level = 1 } = {}) {
+    const pool = level === 1 ? [saTri, saPara, saSurface, saPoly, saNet] : level === 2 ? [saTri, saPara, saTrap, saComp, saSurface, saNet, saPoly, saVolFrac] : [saTrap, saComp, saSurface, saNet, saVolFrac, saPoly, saTri];
+    return rng.pick(pool)(rng, level);
+  },
+};
+
+// ================================================================================================ stats (g6.statquestions, g6.variability)
+const STATQ = [
+  { q: "How many pets does each student in our class have?", stat: true, tag: "thinks-a-question-about-a-group-with-one-fixed-answer-is-statistical" },
+  { q: "How tall are the students in our school?", stat: true },
+  { q: "How many minutes do students in our grade spend on homework each night?", stat: true },
+  { q: "What are the prices of a loaf of bread at stores in our town?", stat: true },
+  { q: "How many books did each student read last month?", stat: true },
+  { q: "How long does it take the students in our class to get to school?", stat: true },
+  { q: "How many points does our team score in each game this season?", stat: true },
+  { q: "How old is each teacher in our school?", stat: true },
+  { q: "How many glasses of water do students drink in one day?", stat: true },
+  { q: "How much rain falls each day in our town in April?", stat: true },
+  { q: "How many brothers and sisters do the students in our club have?", stat: true },
+  { q: "How many hours do students in our school sleep on a school night?", stat: true },
+  { q: "How many students are in our class today?", stat: false, tag: "thinks-a-question-with-a-number-answer-is-statistical" },
+  { q: "How tall is the flagpole at our school?", stat: false, tag: "thinks-a-measurement-question-is-statistical" },
+  { q: "What day of the week is the school play?", stat: false, tag: "thinks-any-question-about-the-school-is-statistical" },
+  { q: "How many days are in the month of March?", stat: false, tag: "thinks-a-question-with-a-number-answer-is-statistical" },
+  { q: "What is the price of the red backpack in the store window?", stat: false, tag: "thinks-a-question-about-prices-is-statistical" },
+  { q: "How old is our principal?", stat: false, tag: "thinks-a-question-about-one-person-is-statistical" },
+  { q: "What time does school start on Monday?", stat: false, tag: "thinks-any-question-about-the-school-is-statistical" },
+  { q: "How many players from one soccer team are on the field at a time?", stat: false, tag: "thinks-a-question-with-a-number-answer-is-statistical" },
+  { q: "How many windows are in our classroom?", stat: false, tag: "thinks-a-question-with-a-number-answer-is-statistical" },
+  { q: "How much did Ana's ticket cost?", stat: false, tag: "thinks-a-question-about-prices-is-statistical" },
+];
+function stStatQ(rng, L) {
+  const asking = rng.chance(0.5) ? "is" : "not";
+  const stats = STATQ.filter((q) => q.stat);
+  const nons = STATQ.filter((q) => !q.stat);
+  const one = rng.pick(asking === "is" ? stats : nons);
+  const rest = rng.sample(asking === "is" ? nons : stats, 3);
+  const options = rng.shuffle([one, ...rest]).map((o) => ({ q: o.q, stat: o.stat }));
+  const ds = tdistr(one.q, rest.map((o) => [o.q, asking === "is" ? o.tag : "thinks-a-question-with-many-different-answers-is-not-statistical"]));
+  return finalize({
+    family: "stats",
+    level: L,
+    spec: { kind: "statq", ask: asking, options },
+    stem: T3("A statistical question is a question that expects the answers to vary.", "A statistical question is one that you expect to have many different answers.", "A statistical question anticipates variability in the answers, which means the data will not all be the same."),
+    ask: asking === "is" ? T3("Which question is a statistical question?", "Which question is a statistical question?", "Which of these questions is a statistical question?") : T3("Which question is NOT a statistical question?", "Which question is not a statistical question?", "Which of these questions is not a statistical question?"),
+    expr: null,
+    answer: { value: one.q, text: one.q, kind: "text" },
+    work: [`Ask: would everyone, or every measurement, give the same answer?`, one.stat ? `No. Different students or days would give different answers, so this question expects variability` : `Yes. There is one answer, so the data would not vary`, `So this ${one.stat ? "is" : "is not"} a statistical question`],
+    visual: null,
+    distractors: ds,
+    hints: { conceptual: "Think about the data you would collect. A statistical question needs data that can change from one person or one time to another.", procedural: "Imagine asking the question of several people or on several days. Would you get one answer or many different answers?" },
+  });
+}
+
+const DATASC = [
+  { what: "the number of books each student read", unit: "books", one: "book", who: "student", whos: "students", ylabel: "Books read" },
+  { what: "the number of minutes each student practiced", unit: "minutes", one: "minute", who: "student", whos: "students", ylabel: "Minutes practiced" },
+  { what: "the number of pets each student has", unit: "pets", one: "pet", who: "student", whos: "students", ylabel: "Pets" },
+  { what: "the number of goals each player scored", unit: "goals", one: "goal", who: "player", whos: "players", ylabel: "Goals scored" },
+  { what: "the number of pages each student read", unit: "pages", one: "page", who: "student", whos: "students", ylabel: "Pages read" },
+];
+const countOf = (vals, x) => vals.filter((v) => v === x).length;
+function stRead(rng, L) {
+  const sc = rng.pick(DATASC);
+  const top = L === 1 ? 6 : L === 2 ? 8 : 10;
+  let vals;
+  let ask;
+  let t;
+  let val;
+  for (let tries = 0; tries < 300; tries++) {
+    const n = ri(rng, 10, 14);
+    vals = Array.from({ length: n }, () => ri(rng, 0, top));
+    const counts = Array.from({ length: top + 1 }, (_, i) => countOf(vals, i));
+    const mx = Math.max(...counts);
+    ask = rng.pick(["count", "mode", "at", "above", "below"]);
+    if (ask === "count") {
+      val = n;
+      break;
+    }
+    if (ask === "mode") {
+      if (counts.filter((c) => c === mx).length === 1 && mx >= 3) {
+        val = counts.indexOf(mx);
+        break;
+      }
+      continue;
+    }
+    t = ri(rng, 1, top - 1);
+    if (ask === "at") {
+      val = countOf(vals, t);
+      if (val >= 1 && val !== n) break;
+    } else if (ask === "above") {
+      val = vals.filter((v) => v > t).length;
+      if (val >= 2 && val < n - 1) break;
+    } else {
+      val = vals.filter((v) => v < t).length;
+      if (val >= 2 && val < n - 1) break;
+    }
+  }
+  vals.sort((a, b) => a - b);
+  const q = {
+    count: ["How many data values are shown?", `How many ${sc.whos} are shown in the plot?`, "How many data values does the plot show in total?"],
+    mode: ["Which value appears most often?", "Which value appears most often in the plot?", "Which value is the mode of the data?"],
+    at: [`How many data values are exactly ${t}?`, `How many ${sc.whos} have exactly ${t} ${t === 1 ? sc.one : sc.unit}?`, `How many data values equal ${t}?`],
+    above: [`How many data values are more than ${t}?`, `How many ${sc.whos} have more than ${t} ${t === 1 ? sc.one : sc.unit}?`, `How many data values are greater than ${t}?`],
+    below: [`How many data values are less than ${t}?`, `How many ${sc.whos} have fewer than ${t} ${t === 1 ? sc.one : sc.unit}?`, `How many data values are less than ${t}?`],
+  }[ask];
+  const n = vals.length;
+  const counts0 = Array.from({ length: top + 1 }, (_, i) => countOf(vals, i));
+  const wrongs = {
+    count: [[top + 1, "counts-the-tick-marks-instead-of-the-dots"], [new Set(vals).size, "counts-only-the-different-values"], [n - 1, "misses-one-dot"], [n + 1, "counts-one-dot-twice"]],
+    mode: [[Math.max(...vals), "gives-the-greatest-value"], [Math.max(...counts0), "gives-how-many-times-it-appears-instead-of-the-value"], [Math.min(...vals), "gives-the-least-value"], [vals[Math.floor(n / 2)], "gives-the-middle-value"]],
+    at: [[vals.filter((v) => v >= t).length, "counts-values-at-or-above"], [vals.filter((v) => v <= t).length, "counts-values-at-or-below"], [t, "gives-the-value-instead-of-how-many"], [val + 1, "off-by-one"]],
+    above: [[vals.filter((v) => v >= t).length, "includes-the-value-itself"], [vals.filter((v) => v < t).length, "counts-the-wrong-side"], [t, "gives-the-value-instead-of-how-many"], [val + 1, "off-by-one"]],
+    below: [[vals.filter((v) => v <= t).length, "includes-the-value-itself"], [vals.filter((v) => v > t).length, "counts-the-wrong-side"], [t, "gives-the-value-instead-of-how-many"], [val + 1, "off-by-one"]],
+  }[ask];
+  return finalize({
+    family: "stats",
+    level: L,
+    spec: { kind: "read", values: vals, ask, t: t ?? null },
+    stem: T3(`A line plot shows ${sc.what}.`, `A line plot shows ${sc.what}. Each dot is one ${sc.who}.`, `A line plot displays ${sc.what}. Each dot represents one ${sc.who}.`),
+    ask: T3(q[0], q[1], q[2]),
+    expr: null,
+    answer: { value: String(val), text: String(val), kind: "int" },
+    work: [`Read each column of dots: the dots above a number show how many students have that number`, ask === "count" ? `Count all the dots` : ask === "mode" ? `The tallest column of dots is at ${val}` : `Add the dots in the columns that match the question`, `The answer is found from the dots, not from the tick marks`],
+    visual: { kind: "lineplot", alt: `A line plot of ${sc.what}, with ${vals.length} dots.`, min: 0, max: top, step: 1, values: vals, label: sc.ylabel },
+    distractors: distr(fr(val), { k: "int" }, [...wrongs, ...slips(val)]),
+    hints: { conceptual: "On a line plot, each dot is one data value. Tall stacks of dots mean many values at that number.", procedural: "Find the numbers the question asks about. Count the dots in only those columns." },
+  });
+}
+function stBox(rng, L) {
+  const sc = rng.pick([{ what: "the number of minutes students practice", label: "Minutes practiced", unit: "minutes" }, { what: "the number of points players score", label: "Points scored", unit: "points" }, { what: "the number of pages students read", label: "Pages read", unit: "pages" }]);
+  const mn = ri(rng, 1, 10);
+  const q1 = mn + ri(rng, 2, 8);
+  const md = q1 + ri(rng, 2, 8);
+  const q3 = md + ri(rng, 2, 9);
+  const mx = q3 + ri(rng, 2, 12);
+  const ask = rng.pick(L === 1 ? ["median", "min", "max", "range"] : L === 2 ? ["median", "range", "q1", "q3", "range"] : ["iqr", "range", "iqr", "median"]);
+  const val = { median: md, min: mn, max: mx, range: mx - mn, q1, q3, iqr: q3 - q1 }[ask];
+  const nm = { median: "median", min: "least value", max: "greatest value", range: "range", q1: "first quartile (Q1)", q3: "third quartile (Q3)", iqr: "interquartile range (IQR)" }[ask];
+  const wrong = {
+    median: [[Math.round((mn + mx) / 2), "uses-the-middle-of-the-whole-range"], [q3, "gives-the-third-quartile"], [q1, "gives-the-first-quartile"], [mx - mn, "gives-the-range"]],
+    min: [[q1, "gives-the-first-quartile"], [md, "gives-the-median"], [mx, "gives-the-greatest-value"], [mn + 1, "off-by-one"]],
+    max: [[q3, "gives-the-third-quartile"], [md, "gives-the-median"], [mn, "gives-the-least-value"], [mx - 1, "off-by-one"]],
+    range: [[mx, "gives-the-greatest-value"], [q3 - q1, "gives-the-interquartile-range"], [mx + mn, "adds-the-least-and-greatest-values"], [md, "gives-the-median"]],
+    q1: [[mn, "gives-the-least-value"], [md, "gives-the-median"], [Math.round((mn + md) / 2), "averages-instead-of-reading-the-box"], [q3, "gives-the-third-quartile"]],
+    q3: [[mx, "gives-the-greatest-value"], [md, "gives-the-median"], [q1, "gives-the-first-quartile"], [Math.round((md + mx) / 2), "averages-instead-of-reading-the-box"]],
+    iqr: [[mx - mn, "gives-the-range"], [q3, "gives-the-third-quartile-instead-of-the-difference"], [q3 + q1, "adds-the-quartiles"], [md - q1, "uses-the-median-instead-of-the-third-quartile"]],
+  }[ask];
+  return finalize({
+    family: "stats",
+    level: L,
+    spec: { kind: "box", five: [mn, q1, md, q3, mx], ask },
+    stem: T3(`A box plot shows ${sc.what}.`, `A box plot shows ${sc.what}.`, `A box plot summarizes ${sc.what}.`),
+    ask: T3(`What is the ${nm}?`, `What is the ${nm}?`, `Use the box plot to find the ${nm}.`),
+    expr: null,
+    answer: { value: String(val), text: String(val), kind: "int", unit: sc.unit },
+    work: [`The five values on the plot are ${mn}, ${q1}, ${md}, ${q3} and ${mx}, from least to greatest`, ask === "iqr" ? `IQR = Q3 ${MINUS} Q1 = ${q3} ${MINUS} ${q1} = ${q3 - q1}` : ask === "range" ? `Range = greatest ${MINUS} least = ${mx} ${MINUS} ${mn} = ${mx - mn}` : `The ${nm} is read directly from the plot`],
+    visual: { kind: "boxplot", alt: `A box plot of ${sc.what}.`, min: mn, q1, median: md, q3, max: mx, label: sc.label, showValues: true },
+    distractors: distr(fr(val), { k: "int" }, [...wrong, ...slips(val)]),
+    hints: { conceptual: "A box plot marks five values: the least, the first quartile, the median, the third quartile and the greatest. The box holds the middle half of the data.", procedural: "Find the mark the question names. For the range or the interquartile range, subtract the two marks that bound it." },
+  });
+}
+function stShape(rng, L) {
+  const kind = rng.pick(["symmetric", "skewed right", "skewed left"]);
+  const base = ri(rng, 0, 3);
+  const patterns = { symmetric: [[1, 3, 5, 3, 1], [1, 2, 4, 2, 1], [2, 3, 4, 3, 2]], "skewed right": [[5, 4, 2, 1, 1], [6, 4, 2, 1, 1], [5, 4, 3, 2, 1]], "skewed left": [[1, 1, 2, 4, 5], [1, 1, 2, 4, 6], [1, 2, 3, 4, 5]] };
+  const counts = rng.pick(patterns[kind]);
+  const vals = [];
+  counts.forEach((c, i) => {
+    for (let k = 0; k < c; k++) vals.push(base + i + 1);
+  });
+  const sc = rng.pick(DATASC);
+  const top = base + 6;
+  return finalize({
+    family: "stats",
+    level: L,
+    spec: { kind: "shape", values: vals },
+    stem: T3(`A dot plot shows ${sc.what}.`, `A dot plot shows ${sc.what}. Look at its overall shape.`, `A dot plot shows ${sc.what}. Consider its overall shape.`),
+    ask: T3("Which word best describes the shape?", "Which word best describes the shape of the data?", "Which description best fits the overall shape of the distribution?"),
+    expr: null,
+    answer: { value: kind, text: kind, kind: "text" },
+    work: [kind === "symmetric" ? `The left side of the plot is a mirror image of the right side` : kind === "skewed right" ? `Most dots are on the left, and a tail of dots stretches toward the larger values on the right` : `Most dots are on the right, and a tail of dots stretches toward the smaller values on the left`, `So the shape is ${kind}`],
+    visual: { kind: "lineplot", alt: `A dot plot of ${sc.what}.`, min: base, max: top, step: 1, values: vals, label: sc.ylabel },
+    distractors: tdistr(kind, [["symmetric", "mixes-up-the-skew-direction-with-balance"], ["skewed right", "names-the-skew-by-where-the-peak-is"], ["skewed left", "names-the-skew-by-where-the-peak-is"], ["uniform: every value appears the same number of times", "thinks-all-plots-with-spread-are-flat"]].filter((x) => x[0] !== kind)),
+    hints: { conceptual: "A long tail on one side names the skew, not where the tallest stack is. When the two sides are mirror images of each other, the data are balanced.", procedural: "Find the tallest stack. Then see which side has the longer tail of dots." },
+  });
+}
+
+const CSC = [
+  { what: "the points a team scored in each game", unit: "points", ylabel: "Points scored" },
+  { what: "the minutes Eli practiced on each day", unit: "minutes", ylabel: "Minutes practiced" },
+  { what: "the pages Mia read each night", unit: "pages", ylabel: "Pages read" },
+  { what: "the number of plants each student grew", unit: "plants", ylabel: "Plants grown" },
+  { what: "the number of goals scored in each match", unit: "goals", ylabel: "Goals scored" },
+];
+function medianOf(sorted) {
+  const n = sorted.length;
+  return n % 2 ? fr(sorted[(n - 1) / 2]) : fr(sorted[n / 2 - 1] + sorted[n / 2], 2);
+}
+function quartiles(sorted) {
+  const n = sorted.length;
+  const lower = sorted.slice(0, Math.floor(n / 2));
+  const upper = sorted.slice(Math.ceil(n / 2));
+  return [medianOf(lower), medianOf(upper)];
+}
+function stCenter(rng, L) {
+  const sc = rng.pick(CSC);
+  const stat = rng.pick(L === 1 ? ["mean", "median", "mode", "range", "mean", "median"] : L === 2 ? ["mean", "median", "mode", "range", "mad", "median"] : ["mad", "iqr", "mean", "median", "iqr", "mad"]);
+  let vals;
+  const top = L === 1 ? 12 : 20;
+  for (let tries = 0; tries < 500; tries++) {
+    let n;
+    if (stat === "mean") n = L === 3 ? rng.pick([4, 5, 8]) : rng.pick([4, 5, 6, 8]);
+    else if (stat === "median") n = L === 1 ? rng.pick([5, 7, 9]) : rng.pick([6, 7, 8, 9, 10]);
+    else if (stat === "mode") n = ri(rng, 7, 10);
+    else if (stat === "range") n = ri(rng, 5, 9);
+    else if (stat === "mad") n = rng.pick([4, 5, 8]);
+    else n = rng.pick([7, 8, 9, 10, 11]);
+    if (stat === "mean" || stat === "mad") {
+      const m = ri(rng, 4, top - 3);
+      const spread = L === 1 ? 4 : 6;
+      const arr = Array.from({ length: n - 1 }, () => Math.max(0, Math.min(top, m + ri(rng, -spread, spread))));
+      const last = m * n - sum(arr);
+      if (last < 0 || last > top + 3 || (stat === "mad" && sum(arr.map((x) => Math.abs(x - m))) + Math.abs(last - m) === 0)) continue;
+      vals = [...arr, last];
+      if (stat === "mean" && L === 3 && rng.chance(0.6)) vals[0] += 1;
+      if (stat === "mean" && L === 3 && new Set(vals).size === 1) continue;
+    } else if (stat === "mode") {
+      const m = ri(rng, 1, top);
+      const arr = [m, m, m];
+      while (arr.length < n) {
+        const x = ri(rng, 0, top);
+        if (x !== m && countOf(arr, x) < 2) arr.push(x);
+      }
+      vals = arr;
+    } else {
+      vals = Array.from({ length: n }, () => ri(rng, 0, top));
+      if (stat === "iqr") {
+        const s = vals.slice().sort((a, b) => a - b);
+        const [a, b] = quartiles(s);
+        if (b.sub(a).n <= 0) continue;
+      }
+      if (new Set(vals).size < 4) continue;
+    }
+    break;
+  }
+  vals = rng.shuffle(vals);
+  const sorted = vals.slice().sort((a, b) => a - b);
+  const n = vals.length;
+  const mean = fr(sum(vals), n);
+  let val;
+  if (stat === "mean") val = mean;
+  else if (stat === "median") val = medianOf(sorted);
+  else if (stat === "mode") val = fr(vals.slice().sort((a, b) => countOf(vals, b) - countOf(vals, a))[0]);
+  else if (stat === "range") val = fr(Math.max(...vals) - Math.min(...vals));
+  else if (stat === "mad") val = fr(sum(vals.map((x) => Math.abs(x - mean.value))), n);
+  else {
+    const [a, b] = quartiles(vals.slice().sort((x, y) => x - y));
+    val = b.sub(a);
+  }
+  const dp = decPlaces(val);
+  const st = val.d === 1 ? { k: "int" } : dp >= 0 ? { k: "dec", p: dp } : { k: "frac", mixed: true };
+  const sortedAgain = vals.slice().sort((a, b) => a - b);
+  const [Q1, Q3] = quartiles(sortedAgain);
+  const nameOf = { mean: "mean", median: "median", mode: "mode", range: "range", mad: "mean absolute deviation (MAD)", iqr: "interquartile range (IQR)" }[stat];
+  const list = vals.join(", ");
+  const T = (f) => nt(f, st.k === "frac" ? "frac" : "dec");
+  const work = {
+    mean: [`Add the values: ${sortedAgain.join(" + ")}. The total is ${sum(vals)}`, `Divide by the number of values: ${sum(vals)} ${DIVIDE} ${n} = ${T(val)}`],
+    median: [`Put the values in order: ${sortedAgain.join(", ")}`, n % 2 ? `The middle value is the median` : `There are two middle values; the median is halfway between them: ${sortedAgain[n / 2 - 1]} and ${sortedAgain[n / 2]}`],
+    mode: [`Count how many times each value appears`, `The value that appears most often is the mode`],
+    range: [`Find the greatest and least values: ${Math.max(...vals)} and ${Math.min(...vals)}`, `Range = ${Math.max(...vals)} ${MINUS} ${Math.min(...vals)} = ${Math.max(...vals) - Math.min(...vals)}`],
+    mad: [`The mean is ${sum(vals)} ${DIVIDE} ${n} = ${T(mean)}`, `Distance of each value from the mean: ${vals.map((x) => T(absF(fr(x).sub(mean)))).join(", ")}`, `Add the distances and divide by ${n}: ${T(fr(sum(vals.map((x) => Math.abs(x - mean.value))), 1))} ${DIVIDE} ${n} = ${T(val)}`],
+    iqr: [`Put the values in order: ${sortedAgain.join(", ")}`, `The median splits the data into a lower half and an upper half (an odd list leaves the median out)`, `Q1 is the median of the lower half, ${T(Q1)}. Q3 is the median of the upper half, ${T(Q3)}`, `IQR = Q3 ${MINUS} Q1 = ${T(Q3)} ${MINUS} ${T(Q1)} = ${T(val)}`],
+  }[stat];
+  const wrong = {
+    mean: [[medianOf(sortedAgain), "gives-the-median"], [fr(sum(vals)), "forgets-to-divide-by-the-number-of-values"], [fr(Math.max(...vals) - Math.min(...vals)), "gives-the-range"], [fr(sortedAgain[n - 1]), "gives-the-greatest-value"], [mean.add(fr(1)), "off-by-one"]],
+    median: [[mean, "gives-the-mean"], [fr(vals[Math.floor(n / 2)]), "takes-the-middle-of-the-unsorted-list"], [fr(Math.max(...vals) - Math.min(...vals)), "gives-the-range"], [fr(sortedAgain[Math.floor(n / 2)]), n % 2 ? "off-by-one" : "takes-only-the-upper-middle-value"]],
+    mode: [[medianOf(sortedAgain), "gives-the-median"], [mean, "gives-the-mean"], [fr(Math.max(...vals)), "gives-the-greatest-value"], [fr(3), "gives-how-many-times-it-appears"]],
+    range: [[fr(Math.max(...vals)), "gives-the-greatest-value"], [fr(Math.min(...vals)), "gives-the-least-value"], [fr(Math.max(...vals) + Math.min(...vals)), "adds-the-greatest-and-least-values"], [mean, "gives-the-mean"]],
+    mad: [[mean, "gives-the-mean"], [fr(Math.max(...vals) - Math.min(...vals)), "gives-the-range"], [fr(0), "adds-the-distances-without-absolute-value-so-they-cancel"], [Q3.sub(Q1), "gives-the-interquartile-range"], [val.mul(fr(n)), "forgets-to-divide-by-the-number-of-values"]],
+    iqr: [[fr(Math.max(...vals) - Math.min(...vals)), "gives-the-range"], [Q3, "gives-the-third-quartile-instead-of-the-difference"], [medianOf(sortedAgain), "gives-the-median"], [Q3.add(Q1), "adds-the-quartiles"], [Q3.sub(medianOf(sortedAgain)), "uses-the-median-instead-of-the-first-quartile"]],
+  }[stat];
+  const useVisual = L === 1 && Math.max(...vals) <= 14;
+  return finalize({
+    family: "stats",
+    level: L,
+    spec: { kind: "center", stat, values: vals },
+    stem: T3(`The numbers are ${list}. They show ${sc.what}.`, `This data set shows ${sc.what}: ${list}.`, `The following data set shows ${sc.what}: ${list}.`),
+    ask: T3(`What is the ${nameOf}?`, `What is the ${nameOf} of the data?`, `Find the ${nameOf} of the data.`),
+    expr: null,
+    answer: ans(val, st, sc.unit),
+    work,
+    visual: useVisual ? { kind: "lineplot", alt: `A line plot of ${sc.what}.`, min: 0, max: Math.max(...vals), step: 1, values: sortedAgain, label: sc.ylabel } : null,
+    distractors: distr(val, st, [...wrong, [val.add(fr(1)), "off-by-one"], [val.sub(fr(1)), "off-by-one"]]),
+    hints: {
+      conceptual: { mean: "The mean is the fair share: what each value would be if the total were shared equally.", median: "The median is the middle of the ordered data. Half the values are below it and half are above it.", mode: "The mode is the value that happens most often. There can be a value that appears more than once while the others do not.", range: "The range tells how far apart the least and greatest values are.", mad: "The mean absolute deviation tells the typical distance of the data from the mean, so distances are always positive.", iqr: "The interquartile range is the spread of the middle half of the data." }[stat],
+      procedural: { mean: "Add all the values. Then divide by how many values there are.", median: "Put the values in order first. Then find the middle one, or the number halfway between the two middle ones.", mode: "Tally each value. Choose the one with the greatest tally.", range: "Find the greatest and the least values. Subtract the least from the greatest.", mad: "Find the mean. Find how far each value is from it. Average those distances.", iqr: "Order the data, split it into halves, find the median of each half, and subtract the lower from the upper." }[stat],
+    },
+  });
+}
+
+FAMILIES.stats = {
+  title: "Statistics",
+  grades: [6],
+  defaults: { mode: "display" },
+  gen(rng, P, { level = 1 } = {}) {
+    if (P.mode === "center") return stCenter(rng, level);
+    const pool = level === 1 ? [stStatQ, stStatQ, stRead, stRead, stShape] : level === 2 ? [stStatQ, stRead, stBox, stShape, stBox] : [stRead, stBox, stShape, stBox, stStatQ];
+    return rng.pick(pool)(rng, level);
+  },
+  check(p, params) {
+    const P = { mode: "display", ...params };
+    if (P.mode === "center" && p.spec.kind !== "center") return "mode center produced a display problem";
+    if (P.mode !== "center" && p.spec.kind === "center") return "mode display produced a center problem";
+    return null;
   },
 };

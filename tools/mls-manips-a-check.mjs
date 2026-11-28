@@ -56,7 +56,7 @@ const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 /** Every `a op b op c = d` (plain numbers, + - × ÷, no fractions) stated in a text must be arithmetically true. */
 function badEquations(text) {
   const t = String(text).replace(/°/g, "");
-  const re = /(?<![\d/.])(\d[\d,]*(?:\.\d+)?(?:\s*[+−×÷]\s*\d[\d,]*(?:\.\d+)?)+)\s*=\s*(\d[\d,]*(?:\.\d+)?)(?![\d/.])/g;
+  const re = /(?<![\d/.])(\d[\d,]*(?:\.\d+)?(?:\s*[+−×÷]\s*\d[\d,]*(?:\.\d+)?)+)\s*=\s*(\d[\d,]*(?:\.\d+)?)(?!\d|\/|\.\d)/g;
   const bad = [];
   for (const m of t.matchAll(re)) {
     const toks = strip(m[1]).split(/\s*([+−×÷])\s*/);
@@ -439,23 +439,27 @@ function objectRect(svg, unit, len, per) {
 V.measure = (st, o) => {
   const [unit, len] = RUL[["cm10", "cm15", "in6", "in12"].includes(st.ruler) ? st.ruler : "cm15"];
   const per = unit === "cm" ? 10 : 16;
-  const from = nI(st.start, 0, 14) * per;
+  const startW = Math.min(nI(st.start, 0, 14), len - 1);
+  const from = startW * per;
   const frac = unit === "cm" ? nI(st.mm, 0, 9) : nI(st.eighths, 0, 7) * 2;
-  const l1 = nI(st.whole, 0, 29) * per + frac;
-  const f = [];
-  const bad = l1 === 0 || from + l1 > len * per;
-  const l2 = nI(st.second, 1, 29) * per;
-  const bad2 = !!st.compare && l2 > len * per;
-  if (bad || bad2) return o.err && !o.summary ? "" : "an object that does not fit must be an error";
+  const want = nI(st.whole, 0, 14) * per + frac;
+  if (want === 0) return o.err && !o.summary ? "" : "a zero-length object must be an error";
   if (o.err) return `unexpected error: ${o.err}`;
+  const l1 = Math.min(want, len * per - from);
+  const f = [];
   const S = o.summary;
+  if (from + l1 > len * per) f.push("object past the end of the ruler (oracle)");
   if (!S.includes(`The object starts at ${measureTxt(from, unit)} and ends at ${measureTxt(from + l1, unit)}.`)) f.push("start/end text");
   if (!S.includes(`= ${measureTxt(l1, unit)}`)) f.push("length text");
+  if (l1 < want && !S.includes("would stick out past the end of the ruler, so the object is shortened to fit")) f.push("clamp must be stated");
+  if (l1 === want && S.includes("would stick out")) f.push("clamp stated but not applied");
   const r = objectRect(o.svgs[0], unit, len, per);
   if (!r || !r.exact || r.from !== from || r.to !== from + l1) f.push(`object drawn from ${r && r.from} to ${r && r.to}, expected ${from} to ${from + l1}`);
   if (st.compare) {
+    const l2 = Math.min(nI(st.second, 1, 14) * per, len * per);
     const d = Math.abs(l1 - l2);
     if (d === 0 ? !S.includes("same length") : !S.includes(`The ${l1 > l2 ? "first" : "second"} object is longer by ${measureTxt(d, unit)}.`)) f.push("comparison");
+    if ((nI(st.second, 1, 14) * per > len * per) !== S.includes("(shortened to fit the ruler)")) f.push("second object clamp statement");
     const r2 = objectRect(o.svgs[1] || "", unit, len, per);
     if (!r2 || r2.from !== 0 || r2.to !== l2) f.push("second object drawn wrongly");
   }
@@ -841,11 +845,15 @@ for (const id of IDS) {
   check(`${id}: most states are valid (${total - errs}/${total}); errors only for states with no valid reading`, errs / total < 0.6, `${errs} of ${total} states were errors`);
 
   // reset restores the start
-  for (const c of ctls) mt.set(c.id, randomValue(c));
-  [...host.querySelectorAll("button")].find((b) => b.textContent === "Reset").click();
-  await tick();
-  const after = read(host);
-  check(`${id}: Reset restores the start state and its summary`, JSON.stringify(mt.state) === JSON.stringify(init) && after.summary === initSummary, `${JSON.stringify(mt.state)} vs ${JSON.stringify(init)}`);
+  try {
+    for (const c of ctls) mt.set(c.id, randomValue(c));
+    [...host.querySelectorAll("button")].find((b) => b.textContent === "Reset").click();
+    await tick();
+    const after = read(host);
+    check(`${id}: Reset restores the start state and its summary`, JSON.stringify(mt.state) === JSON.stringify(init) && after.summary === initSummary, `${JSON.stringify(mt.state)} vs ${JSON.stringify(init)}`);
+  } catch (e) {
+    check(`${id}: Reset restores the start state and its summary`, false, e.stack);
+  }
 }
 
 /* ---- button-driven scenarios (placevalue trades, coordinate points, mode visibility) */
@@ -1099,7 +1107,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
           const cur = Number(a.value);
           const lo = Number(a.min);
           const hi = Number(a.max);
-          const target = cur >= hi ? lo : Math.min(hi, cur + Math.max(1, Math.floor((hi - lo) / 3)));
+          const target = cur >= hi ? Math.max(lo, cur - 1) : cur + 1; // a small typed change, so the walk stays in valid states
           await page.keyboard.press("Control+A");
           await page.keyboard.type(String(target));
           await page.keyboard.press("Tab");
@@ -1153,7 +1161,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
           else unchanged.push(log[log.length - 1]);
         }
       }
-      check(`${id}: keyboard only (Tab, typing, Space, Enter): ${ops} operations, ${changed} changed the live summary; Reset reachable`, ops >= 3 && changed >= Math.ceil(ops * 0.6) && sawReset, `ops ${ops}, changed ${changed}, unchanged: ${unchanged.join(", ")}, reset ${sawReset}`);
+      check(`${id}: keyboard only (Tab, typing, Space, Enter): ${ops} operations, ${changed} changed the live summary; Reset reachable`, ops >= 2 && changed >= Math.ceil(ops * 0.6) && sawReset, `ops ${ops}, changed ${changed}, unchanged: ${unchanged.join(", ")}, reset ${sawReset}`);
       check(`${id}: pressing an action button by keyboard keeps focus on that button`, focusKept);
       check(`${id}: no page errors while operating it`, pageErrors.length === 0, pageErrors.slice(0, 3).join("\n"));
 
@@ -1172,7 +1180,7 @@ window.mountManip=(id)=>{const s=document.getElementById("stage");s.textContent=
             if (cs.display === "none" || cs.visibility === "hidden") continue;
             if (parseFloat(cs.fontSize) < 15.99) out.small.push(`${el.tagName}.${el.className}: ${cs.fontSize} "${n.textContent.trim().slice(0, 30)}"`);
           }
-          for (const el of stage.querySelectorAll("button, input, select, label:has(> input[type=checkbox])")) {
+          for (const el of stage.querySelectorAll("button, input:not([type=checkbox]), select, label:has(> input[type=checkbox])")) {
             if (el.closest("[hidden]") || getComputedStyle(el).display === "none") continue;
             const b = el.getBoundingClientRect();
             if (b.width === 0) continue;

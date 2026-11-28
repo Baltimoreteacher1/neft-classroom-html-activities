@@ -86,7 +86,7 @@ function A(f, { dec = false, unit } = {}) {
     value = `${f.n}/${f.d}`;
     kind = "frac";
   }
-  const a = { value, kind, text: value.replace("-", MINUS) };
+  const a = { value, kind, text: kind === "int" ? num(f.n) : value.replace("-", MINUS) };
   if (unit) a.unit = unit;
   return a;
 }
@@ -2957,5 +2957,567 @@ FAMILIES.slope = {
     const level = opts.level;
     const t = pickType(rng, level, [slTwo, slTwo, slTable, slIntercept, slGraphEq, slProp]);
     return done({ family: "slope", level, ...t.gen({ rng, level, ctx: opts.ctx }) });
+  },
+};
+
+// ================================================================================================================ exponents and scientific notation
+const caret = (base, e) => `${base}^${e < 0 ? MINUS : ""}${Math.abs(e)}`;
+const powF = (f, e) => {
+  let r = fr(1);
+  for (let i = 0; i < Math.abs(e); i++) r = r.mul(f);
+  return e < 0 ? fr(1).div(r) : r;
+};
+const sciText = (m, e) => `${m.d === 1 ? m.n : decOf(m)} x 10^${e}`;
+/** v as scientific notation: { m: Fr in [1,10), e } (v positive, and m terminating). */
+function sciOf(v) {
+  let e = 0;
+  let m = v;
+  while (m.cmp(fr(10)) >= 0) {
+    m = m.div(fr(10));
+    e++;
+  }
+  while (m.cmp(fr(1)) < 0) {
+    m = m.mul(fr(10));
+    e--;
+  }
+  return { m, e };
+}
+const pow10 = (e) => (e >= 0 ? fr(10 ** e) : fr(1, 10 ** -e));
+
+const exExpoN = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const base = rng.pick(level === 1 ? [2, 3, 4, 5, 10] : [2, 3, 5, 6, 7, 10]);
+    const op = rng.pick(["mul", "div", "pow", "mul", "div"]);
+    let a;
+    let b;
+    if (level === 1) {
+      a = rng.int(2, 7);
+      b = rng.int(2, 6);
+      if (op === "div") a = b + rng.int(1, 5);
+      if (op === "pow") {
+        a = rng.int(2, 5);
+        b = rng.int(2, 4);
+      }
+    } else if (level === 2) {
+      a = rng.int(2, 9);
+      b = rng.int(2, 9);
+      if (op === "div" && rng.chance(0.5)) b = a + rng.int(0, 4);
+      if (op === "pow") {
+        a = rng.int(2, 6);
+        b = rng.int(2, 4);
+      }
+    } else {
+      a = nz(rng, -6, 8);
+      b = nz(rng, -5, 7);
+      if (op === "pow") {
+        a = nz(rng, -5, 6);
+        b = rng.pick([2, 3, -2, -3, 4]);
+      }
+    }
+    const n = op === "mul" ? a + b : op === "div" ? a - b : a * b;
+    const outerB = b < 0 ? `(${MINUS}${Math.abs(b)})` : String(b);
+    const expr = op === "mul" ? `${caret(base, a)} ${TIMES} ${caret(base, b)} = ${base}^n` : op === "div" ? `${caret(base, a)} ${DIVIDE} ${caret(base, b)} = ${base}^n` : `(${caret(base, a)})^${outerB} = ${base}^n`;
+    const rule = op === "mul" ? "When you multiply powers with the same base, add the exponents." : op === "div" ? "When you divide powers with the same base, subtract the exponents." : "When you raise a power to a power, multiply the exponents.";
+    const calc = op === "mul" ? E(sumTxt(a, b), n) : op === "div" ? E(subTxt(a, b), n) : E(mulTxt(a, b), n);
+    const wrong = op === "mul" ? [[a * b, "multiplies-the-exponents"], [a - b, "subtracts-the-exponents"], [a + b + 1, "adds-one-too-many"]] : op === "div" ? [[a + b, "adds-the-exponents"], [b - a, "subtracts-in-the-wrong-order"], [a * b, "multiplies-the-exponents"]] : [[a + b, "adds-the-exponents"], [a ** Math.min(Math.abs(b), 3) * (b < 0 ? -1 : 1), "raises-one-exponent-to-the-other"], [a - b, "subtracts-the-exponents"]];
+    return {
+      spec: { type: "expo-n", base, op, a, b },
+      stem: ST(`Use exponent rules. ${expr}.`, `Use the properties of exponents to complete the statement ${expr}.`, `Apply the properties of exponents to complete the statement ${expr}.`),
+      ask: ST("What is the exponent n?", "What is the value of n?", "Determine the value of n."),
+      expr,
+      answer: A(fr(n)),
+      work: [rule, `${calc}.`, `So n = ${n}.`],
+      visual: null,
+      distractors: D(fr(n), wrong.map(([v, t]) => [fr(v), t])),
+      hints: H("Powers with the same base follow rules that connect the operation on the powers to an operation on the exponents.", "Decide whether the exponents should be added, subtracted or multiplied, then do that arithmetic carefully with the signs."),
+    };
+  },
+};
+
+const termTxt = (t) => `${t.base.d === 1 && t.base.n >= 0 ? T(t.base) : `(${T(t.base)})`}^${t.e < 0 ? MINUS : ""}${Math.abs(t.e)}`;
+const exEval = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    let terms;
+    let op = null;
+    if (level === 1) {
+      const kind = rng.pick(["zero", "pos", "pos", "negbase"]);
+      terms = kind === "zero" ? [{ base: fr(rng.int(2, 9)), e: 0 }] : kind === "negbase" ? [{ base: fr(-rng.int(2, 4)), e: rng.pick([2, 3]) }] : [{ base: fr(rng.int(2, 6)), e: rng.int(2, 4) }];
+    } else if (level === 2) {
+      const kind = rng.pick(["neg", "neg", "zero", "negbase", "frac"]);
+      terms = kind === "neg" ? [{ base: fr(rng.pick([2, 3, 4, 5, 10])), e: -rng.int(1, 4) }] : kind === "zero" ? [{ base: fr(-rng.int(2, 9)), e: 0 }] : kind === "negbase" ? [{ base: fr(-rng.int(2, 5)), e: rng.pick([2, 3, 4]) }] : [{ base: rng.pick([fr(1, 2), fr(1, 3), fr(2, 3)]), e: rng.pick([2, 3]) }];
+    } else {
+      const kind = rng.pick(["two", "two", "fracneg", "neg"]);
+      if (kind === "two") {
+        const base = fr(rng.pick([2, 3, 5, 10]));
+        op = rng.pick(["mul", "div"]);
+        terms = [{ base, e: nz(rng, -3, 4) }, { base, e: nz(rng, -3, 4) }];
+      } else if (kind === "fracneg") terms = [{ base: fr(1, rng.pick([2, 3, 4, 5])), e: -rng.int(1, 3) }];
+      else terms = [{ base: fr(rng.pick([2, 3, 4])), e: -rng.int(2, 4) }];
+    }
+    const val = op ? (op === "mul" ? powF(terms[0].base, terms[0].e).mul(powF(terms[1].base, terms[1].e)) : powF(terms[0].base, terms[0].e).div(powF(terms[1].base, terms[1].e))) : powF(terms[0].base, terms[0].e);
+    const expr = op ? `${termTxt(terms[0])} ${op === "mul" ? TIMES : DIVIDE} ${termTxt(terms[1])}` : termTxt(terms[0]);
+    const t0 = terms[0];
+    let wrong;
+    if (op) {
+      const b = t0.base;
+      wrong = [[powF(b, op === "mul" ? terms[0].e * terms[1].e : terms[0].e * terms[1].e), "multiplies-the-exponents"], [op === "mul" ? powF(b, terms[0].e - terms[1].e) : powF(b, terms[0].e + terms[1].e), op === "mul" ? "subtracts-the-exponents" : "adds-the-exponents"], [powF(b, terms[0].e).add(powF(b, terms[1].e)), "adds-the-values-of-the-powers"], [powF(b, -(terms[0].e + (op === "mul" ? terms[1].e : -terms[1].e))), "flips-the-sign-of-the-result-exponent"]];
+    } else if (t0.e === 0) wrong = [[fr(0), "thinks-a-zero-exponent-gives-zero"], [t0.base, "thinks-a-zero-exponent-gives-the-base"], [fr(-1), "thinks-a-zero-exponent-gives-negative-one"], [t0.base.mul(fr(2)), "doubles-the-base"]];
+    else if (t0.e < 0) wrong = [[powF(t0.base, -t0.e), "ignores-the-negative-sign-of-the-exponent"], [negF(powF(t0.base, -t0.e)), "makes-the-answer-negative"], [t0.base.mul(fr(t0.e)), "multiplies-the-base-by-the-exponent"], [powF(t0.base.mul(fr(-1)), -t0.e).mul(fr(-1)), "mixes-up-signs"]];
+    else wrong = [[t0.base.mul(fr(t0.e)), "multiplies-the-base-by-the-exponent"], [negF(powF(t0.base.n < 0 ? negF(t0.base) : t0.base, t0.e)), "gets-the-sign-wrong"], [powF(t0.base, t0.e - 1), "uses-one-fewer-factor"], [powF(t0.base, t0.e + 1), "uses-one-extra-factor"]];
+    const work = [];
+    if (op) {
+      work.push(`${termTxt(terms[0])} = ${T(powF(terms[0].base, terms[0].e))} and ${termTxt(terms[1])} = ${T(powF(terms[1].base, terms[1].e))}.`);
+      work.push(`${op === "mul" ? "Multiply" : "Divide"} the two values to get ${T(val)}.`);
+    } else if (t0.e === 0) work.push("Any nonzero number to the power 0 is 1.");
+    else if (t0.e < 0) work.push(`A negative exponent means take the reciprocal: ${T(t0.base)} to the power ${MINUS}${Math.abs(t0.e)} is 1 divided by ${T(t0.base)} to the power ${Math.abs(t0.e)}.`, `${T(t0.base)} to the power ${Math.abs(t0.e)} is ${T(powF(t0.base, -t0.e))}, so the value is 1/${T(powF(t0.base, -t0.e))}, which is ${T(val)}.`);
+    else work.push(`${T(t0.base)} to the power ${t0.e} means ${T(t0.base)} used as a factor ${t0.e} times.`, `That product is ${T(val)}.`);
+    return {
+      spec: { type: "eval", terms: terms.map((t) => ({ base: S(t.base), e: t.e })), op },
+      stem: ST(`Find the value of ${expr}.`, `Evaluate ${expr}.`, `Evaluate the expression ${expr}.`),
+      ask: ST("Write the value as a whole number or a fraction.", "Write your answer as a whole number or a fraction.", "Write the value as a whole number or as a fraction in simplest form."),
+      expr,
+      answer: A(val),
+      work,
+      visual: null,
+      distractors: D(val, wrong),
+      hints: H("An exponent tells how many times the base is used as a factor, and zero and negative exponents follow patterns that continue the same rules.", "Rewrite the power using its meaning, then compute. For a negative exponent, take the reciprocal of the matching positive power."),
+    };
+  },
+};
+
+const BIG_THINGS = ["pencils", "books", "stickers", "tickets"];
+const SMALL_ITEMS = [(v) => `A grain of dust is ${v} meters wide.`, (v) => `A thread is ${v} meters thick.`, (v) => `A cell is ${v} meters across.`, (v) => `A speck of pollen is ${v} meters wide.`];
+const sciAsk = ST("Write it in scientific notation. The first number must be at least 1 and less than 10.", "Write the number in scientific notation. The first number must be at least 1 and less than 10.", "Write the number in scientific notation, with a first factor that is at least 1 and less than 10.");
+const exSciTo = {
+  lv: [1, 2, 3],
+  gen({ rng, level, ctx }) {
+    const small = level >= 2 && rng.chance(0.55);
+    const mm = rng.chance(0.25) ? fr(rng.int(2, 9)) : level === 3 && rng.chance(0.4) ? fr(rng.int(101, 999), 100) : fr(rng.int(11, 99), 10);
+    const e = small ? -rng.int(3, 8) : rng.int(level === 1 ? 3 : 4, level === 1 ? 6 : 9);
+    const v = mm.mul(pow10(e));
+    const vT = T(v, true);
+    const { m: m2, e: e2 } = sciOf(v);
+    const zeros = e2 > 0 ? String(v.n).replace(/[1-9]/g, "").length : null;
+    const ans = sciText(m2, e2);
+    const th = thing(rng, ctx);
+    const stem = small ? (() => { const f = rng.pick(SMALL_ITEMS)(vT); return ST(f, f, f); })() : ST(`A factory makes ${vT} ${th.many}.`, `A factory makes ${vT} ${th.many} in one year.`, `A factory produces ${vT} ${th.many} in one year.`);
+    const digitsMoved = Math.abs(e2);
+    const cands = [
+      [sciText(m2.mul(fr(10)), e2 - 1), "leaves-the-first-number-too-large"],
+      [sciText(m2, e2 + (e2 > 0 ? 1 : -1)), "miscounts-the-places-moved"],
+      [sciText(m2, -e2), "gets-the-sign-of-the-exponent-wrong"],
+      [zeros != null && zeros !== e2 ? sciText(m2, zeros) : null, "counts-the-zeros-instead-of-the-places-moved"],
+    ];
+    return {
+      spec: { type: "sci-to", v: S(v) },
+      stem,
+      ask: sciAsk,
+      expr: null,
+      answer: { value: ans, kind: "text" },
+      work: [`Move the decimal point so that the first number is at least 1 and less than 10: the first number is ${m2.d === 1 ? m2.n : decOf(m2)}.`, `The decimal point moves ${digitsMoved} places ${e2 > 0 ? "to the left, so the exponent is positive" : "to the right, so the exponent is negative"}.`, `So the number is ${ans}.`],
+      visual: null,
+      distractors: DS(ans, cands),
+      hints: H("Scientific notation writes a number as a first factor between 1 and 10 times a power of 10.", "Count how many places the decimal point moves to get a first factor between 1 and 10. Large numbers give a positive exponent and small numbers give a negative exponent."),
+    };
+  },
+};
+
+const exSciFrom = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const m = rng.chance(0.3) ? fr(rng.int(2, 9)) : fr(rng.int(11, 99), 10);
+    const e = level === 1 ? rng.int(2, 5) : level === 2 ? (rng.chance(0.5) ? -rng.int(2, 5) : rng.int(3, 7)) : rng.pick([-6, -5, 6, 7, 8, -4]);
+    const v = m.mul(pow10(e));
+    const mT = m.d === 1 ? String(m.n) : decOf(m);
+    const ans = A(v, { dec: true });
+    ans.text = T(v, true);
+    const cands = e >= 0 ? [[v.mul(fr(10)), "moves-the-decimal-point-one-place-too-far"], [v.div(fr(10)), "moves-the-decimal-point-one-place-too-few"], [m.mul(m.d === 1 ? fr(1) : fr(10)).mul(pow10(e)), "adds-zeros-and-ignores-the-decimal-point"], [m.mul(pow10(-e)), "moves-the-decimal-point-the-wrong-way"]] : [[m.mul(pow10(-e)), "moves-the-decimal-point-the-wrong-way"], [v.mul(fr(10)), "moves-the-decimal-point-one-place-too-few"], [v.div(fr(10)), "moves-the-decimal-point-one-place-too-far"], [fr(-1).mul(v), "makes-the-answer-negative"]];
+    const sexp = `${mT} ${TIMES} 10^${e < 0 ? MINUS : ""}${Math.abs(e)}`;
+    return {
+      spec: { type: "sci-from", m: S(m), e },
+      stem: ST(`Write ${sexp} as a regular number.`, `Write ${sexp} in standard form.`, `Write ${sexp} in standard form.`),
+      ask: ST("What is the regular number?", "What is the number in standard form?", "What is the number in standard form?"),
+      expr: sexp,
+      answer: ans,
+      work: [`The exponent is ${e < 0 ? MINUS : ""}${Math.abs(e)}, so move the decimal point ${Math.abs(e)} places ${e > 0 ? "to the right" : "to the left"}.`, `${sexp} gives ${T(v, true)}.`],
+      visual: null,
+      distractors: D(v, cands, true),
+      hints: H("A positive power of 10 makes a number larger and a negative power of 10 makes it smaller.", "Move the decimal point as many places as the exponent says, to the right if the exponent is positive and to the left if it is negative."),
+    };
+  },
+};
+
+const SCI_THINGS = [{ what: "mass", unit: "grams", a: "Sample A", b: "Sample B" }, { what: "length", unit: "meters", a: "Rope A", b: "Rope B" }, { what: "number of seeds", unit: "seeds", a: "Bag A", b: "Bag B" }, { what: "volume", unit: "liters", a: "Tank A", b: "Tank B" }];
+const exSciRatio = {
+  lv: [2, 3],
+  gen({ rng, level }) {
+    let ma;
+    let mb;
+    let ea;
+    let eb;
+    if (level === 2) {
+      ma = fr(1);
+      mb = fr(1);
+      eb = rng.int(1, 4);
+      ea = eb + rng.int(2, 5);
+    } else {
+      mb = fr(rng.pick([1, 2, 4, 5]));
+      do ma = fr(rng.int(1, 9));
+      while (eqF(ma, mb));
+      eb = rng.int(-2, 4);
+      ea = eb + rng.int(2, 6);
+    }
+    const ratio = ma.div(mb).mul(pow10(ea - eb));
+    const th = rng.pick(SCI_THINGS);
+    const fa = `${T(ma)} ${TIMES} 10^${ea < 0 ? MINUS : ""}${Math.abs(ea)}`;
+    const fb = `${T(mb)} ${TIMES} 10^${eb < 0 ? MINUS : ""}${Math.abs(eb)}`;
+    const ans = A(ratio);
+    ans.text = T(ratio);
+    return {
+      spec: { type: "sci-ratio", a: { m: S(ma), e: ea }, b: { m: S(mb), e: eb } },
+      stem: ST(`The ${th.what} of ${th.a} is ${fa} ${th.unit}. The ${th.what} of ${th.b} is ${fb} ${th.unit}.`, `The ${th.what} of ${th.a} is ${fa} ${th.unit}, and the ${th.what} of ${th.b} is ${fb} ${th.unit}.`, `${th.a} has a ${th.what} of ${fa} ${th.unit}. ${th.b} has a ${th.what} of ${fb} ${th.unit}.`),
+      ask: ST(`How many times as big is the ${th.what} of ${th.a} as the ${th.what} of ${th.b}?`, `${th.a} is how many times as great as ${th.b}?`, `By what factor does the ${th.what} of ${th.a} exceed the ${th.what} of ${th.b}?`),
+      expr: null,
+      answer: ans,
+      work: [`Divide the first factors: ${T(ma)} ${DIVIDE} ${T(mb)} is ${T(ma.div(mb), true)}.`, `Divide the powers of 10 by subtracting the exponents: ${E(subTxt(ea, eb), ea - eb)}, so the powers of 10 give 10^${ea - eb}.`, `Multiply: ${T(ma.div(mb), true)} times ${T(pow10(ea - eb))} is ${T(ratio)}.`],
+      visual: null,
+      distractors: D(ratio, [[pow10(ea - eb), "ignores-the-first-factors"], [ma.div(mb), "ignores-the-powers-of-ten"], [ratio.mul(fr(10)), "is-off-by-one-power-of-ten"], [ratio.div(fr(10)), "is-off-by-one-power-of-ten"], [pow10(ea + eb), "adds-the-exponents"]], true),
+      hints: H("Comparing two numbers by size means dividing them. Divide the first factors and the powers of 10 separately.", "Divide the numbers in front, subtract the exponents of 10, then multiply the two results."),
+    };
+  },
+};
+
+const exSciMul = {
+  lv: [3],
+  gen({ rng }) {
+    let op;
+    let ma;
+    let mb;
+    let ea;
+    let eb;
+    let value;
+    for (let t = 0; t < 2000; t++) {
+      op = rng.pick(["mul", "div", "mul"]);
+      ma = fr(rng.pick([1.5, 2, 2.5, 3, 4, 4.8, 5, 6, 7, 8, 9].map((x) => Math.round(x * 10)), ), 10);
+      mb = fr(rng.pick([1.2, 2, 2.4, 2.5, 3, 4, 5, 6, 8].map((x) => Math.round(x * 10))), 10);
+      ea = nz(rng, -6, 8);
+      eb = nz(rng, -6, 8);
+      value = op === "mul" ? ma.mul(mb).mul(pow10(ea + eb)) : ma.div(mb).mul(pow10(ea - eb));
+      if (!isTerm(value)) continue;
+      if (Math.abs(ea + (op === "mul" ? eb : -eb)) > 11 || eqF(ma, mb)) continue;
+      break;
+    }
+    const f = (m, e) => `${T(m, true)} ${TIMES} 10^${e < 0 ? MINUS : ""}${Math.abs(e)}`;
+    const { m, e } = sciOf(value);
+    const ans = sciText(m, e);
+    const mProd = op === "mul" ? ma.mul(mb) : ma.div(mb);
+    const eRaw = op === "mul" ? ea + eb : ea - eb;
+    const normalized = mProd.cmp(fr(10)) >= 0 || mProd.cmp(fr(1)) < 0;
+    const cands = [
+      normalized ? [sciText(mProd, eRaw), "forgets-to-write-the-first-number-between-1-and-10"] : null,
+      normalized ? [sciText(m, eRaw), "forgets-to-adjust-the-exponent"] : null,
+      op === "mul" ? [sciText(mProd, ea - eb), "subtracts-the-exponents-when-multiplying"] : [sciText(mProd, ea + eb), "adds-the-exponents-when-dividing"],
+      [sciText(m, op === "mul" ? ea * eb : ea * eb), "multiplies-the-exponents"],
+      [sciText(m, e + 1), "adjusts-the-exponent-the-wrong-way"],
+    ].filter(Boolean);
+    const work = [];
+    work.push(op === "mul" ? `Multiply the first factors: ${T(ma, true)} ${TIMES} ${T(mb, true)} = ${T(mProd, true)}.` : `Divide the first factors: ${T(ma, true)} ${DIVIDE} ${T(mb, true)} = ${T(mProd, true)}.`);
+    work.push(op === "mul" ? `Add the exponents: ${E(sumTxt(ea, eb), eRaw)}.` : `Subtract the exponents: ${E(subTxt(ea, eb), eRaw)}.`);
+    if (normalized) work.push(`${T(mProd, true)} is not between 1 and 10, so rewrite ${T(mProd, true)} as ${T(m, true)} times ${mProd.cmp(fr(10)) >= 0 ? "10" : "one tenth"}, and change the exponent to ${e}.`);
+    work.push(`The answer is ${ans}.`);
+    const expr = op === "mul" ? `(${f(ma, ea)}) ${TIMES} (${f(mb, eb)})` : `(${f(ma, ea)}) ${DIVIDE} (${f(mb, eb)})`;
+    return {
+      spec: { type: "sci-mul", op, a: { m: S(ma), e: ea }, b: { m: S(mb), e: eb } },
+      stem: ST(`Work out ${expr}.`, `Find ${expr}.`, `Calculate ${expr}.`),
+      ask: ST("Write the answer in scientific notation. The first number must be at least 1 and less than 10.", "Write the answer in scientific notation. The first number must be at least 1 and less than 10.", "Write the answer in scientific notation, with a first factor that is at least 1 and less than 10."),
+      expr,
+      answer: { value: ans, kind: "text" },
+      work,
+      visual: null,
+      distractors: DS(ans, cands),
+      hints: H("Multiply or divide the first factors, and handle the powers of 10 with the exponent rules. The final first factor must be between 1 and 10.", "Do the first factors, then add the exponents for multiplication or subtract them for division. If the first factor is out of range, move the decimal point and adjust the exponent."),
+    };
+  },
+};
+
+FAMILIES.exponents = {
+  title: "Exponents and scientific notation",
+  grades: [8],
+  defaults: {},
+  gen(rng, params, opts) {
+    const level = opts.level;
+    const t = pickType(rng, level, [exExpoN, exExpoN, exEval, exSciTo, exSciFrom, exSciRatio, exSciMul]);
+    return done({ family: "exponents", level, ...t.gen({ rng, level, ctx: opts.ctx }) });
+  },
+};
+
+// ================================================================================================================ irrational numbers
+const sqrtTxt = (v) => (v.d === 1 ? `√${num(v.n)}` : `√(${T(v)})`);
+const cubeWord = (v) => (v.d === 1 ? `the cube root of ${num(v.n)}` : `the cube root of ${T(v)}`);
+const irRoot = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const cube = level === 1 ? rng.chance(0.3) : rng.chance(0.45);
+    let r = fr(2);
+    if (!cube) r = level === 1 ? fr(rng.int(2, 12)) : level === 2 ? (rng.chance(0.5) ? fr(rng.int(13, 20)) : fr(rng.int(1, 8), rng.pick([3, 4, 5, 6, 7, 9]))) : fr(rng.int(1, 9), rng.pick([2, 3, 4, 5, 7, 8, 10, 11]));
+    else r = level === 1 ? fr(rng.int(2, 5)) : level === 2 ? (rng.chance(0.6) ? fr(rng.int(2, 10)) : fr(rng.int(1, 4), rng.pick([2, 3, 4, 5]))) : fr(rng.chance(0.55) ? -rng.int(2, 9) : rng.int(1, 4), rng.chance(0.5) ? 1 : rng.pick([2, 3, 4, 5]));
+    if (eqF(r, fr(1))) r = fr(2);
+    const v = cube ? r.mul(r).mul(r) : r.mul(r);
+    const expr = cube ? cubeWord(v) : sqrtTxt(v);
+    const rT = T(r);
+    const wrong = cube ? [[v.div(fr(3)), "divides-by-3-instead-of-taking-the-root"], [r.add(fr(1)), "uses-a-nearby-cube"], [r.sub(fr(1)), "uses-a-nearby-cube"], [absF(r), "drops-the-negative-sign"], [r.mul(fr(3)), "multiplies-the-root-by-3"]] : [[v.div(fr(2)), "halves-instead-of-taking-the-root"], [r.add(fr(1)), "uses-a-nearby-square"], [r.sub(fr(1)), "uses-a-nearby-square"], [v.mul(v), "squares-instead-of-taking-the-root"], [r.mul(fr(2)), "doubles-the-root"]];
+    return {
+      spec: { type: "root", n: cube ? 3 : 2, v: S(v) },
+      stem: ST(`Find ${expr}.`, `Evaluate ${expr}.`, `Evaluate ${expr}.`),
+      ask: ST("What is the value? Write a whole number or a fraction.", "Write your answer as a whole number or a fraction.", "Write the exact value as a whole number or as a fraction in simplest form."),
+      expr: cube ? null : sqrtTxt(v),
+      answer: A(r),
+      work: cube ? [`Look for a number that, used as a factor 3 times, gives ${T(v)}.`, `${rT} times ${rT} times ${rT} makes ${T(v)}, so the cube root is ${rT}.`] : [`Look for a number that multiplies by itself to give ${T(v)}.`, `${rT} times ${rT} makes ${T(v)}, so the square root is ${rT}.`],
+      visual: null,
+      distractors: D(r, wrong),
+      hints: H(cube ? "A cube root undoes cubing: it is the number that, multiplied by itself three times, gives the number inside." : "A square root undoes squaring: it is the number that, multiplied by itself, gives the number inside.", "Think of a number that works, and check it by multiplying. For a fraction, take the root of the top and the bottom separately."),
+    };
+  },
+};
+
+const irBetween = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const cube = level === 3 && rng.chance(0.4);
+    let v;
+    let k;
+    if (cube) {
+      do v = rng.int(2, 215);
+      while (Math.round(Math.cbrt(v)) ** 3 === v);
+      k = Math.floor(Math.cbrt(v));
+      while ((k + 1) ** 3 <= v) k++;
+      while (k ** 3 > v) k--;
+    } else {
+      do v = level === 1 ? rng.int(2, 50) : rng.int(2, 170);
+      while (isqrt(v) ** 2 === v);
+      k = isqrt(v);
+    }
+    const ans = `${k} and ${k + 1}`;
+    const expr = cube ? `the cube root of ${v}` : `√${v}`;
+    const cands = [[`${k + 1} and ${k + 2}`, "picks-the-next-pair-of-integers"], [k >= 1 ? `${k - 1} and ${k}` : null, "picks-the-previous-pair-of-integers"], [`${Math.floor(v / (cube ? 3 : 2))} and ${Math.floor(v / (cube ? 3 : 2)) + 1}`, cube ? "divides-by-3-instead-of-estimating-the-root" : "halves-instead-of-estimating-the-root"], [`${k + 2} and ${k + 3}`, "overestimates-the-root"]];
+    return {
+      spec: { type: "between", n: cube ? 3 : 2, v },
+      stem: ST(`Think about ${expr}. It is not a whole number.`, `${cap(expr)} is not a whole number.`, `${cap(expr)} is irrational.`),
+      ask: ST("Between which two whole numbers is it?", "Between which two consecutive integers does it lie?", "Between which two consecutive integers does its value lie?"),
+      expr: null,
+      answer: { value: ans, kind: "text" },
+      work: cube ? [`Find the nearest perfect cubes: ${k}^3 is ${k ** 3} and ${k + 1}^3 is ${(k + 1) ** 3}.`, `${v} is between ${k ** 3} and ${(k + 1) ** 3}, so the cube root of ${v} is between ${k} and ${k + 1}.`] : [`Find the nearest perfect squares: ${k} times ${k} is ${k * k} and ${k + 1} times ${k + 1} is ${(k + 1) * (k + 1)}.`, `${v} is between ${k * k} and ${(k + 1) * (k + 1)}, so √${v} is between ${k} and ${k + 1}.`],
+      visual: { kind: "numberline", alt: `A number line from 0 to ${k + 3} with whole numbers marked.`, min: 0, max: k + 3, ticks: k + 3, marks: [], hops: [], show: "int" },
+      distractors: DS(ans, cands),
+      hints: H("A number that is not a perfect square or cube sits between two perfect squares or cubes, so its root sits between two whole numbers.", "List perfect squares (or cubes) near the number, find the two it sits between, and take their roots."),
+    };
+  },
+};
+
+const irClosest = {
+  lv: [2, 3],
+  gen({ rng }) {
+    let v;
+    do v = rng.int(3, 150);
+    while (isqrt(v) ** 2 === v);
+    const k = isqrt(v);
+    const near = v <= k * k + k ? k : k + 1;
+    return {
+      spec: { type: "closest", v },
+      stem: ST(`Think about √${v}. It is not a whole number.`, `√${v} is not a whole number.`, `√${v} is irrational.`),
+      ask: ST("Which whole number is it closest to?", "Which whole number is it closest to?", "Which integer is nearest to its value?"),
+      expr: null,
+      answer: A(fr(near)),
+      work: [`The perfect squares around ${v} are ${k * k} and ${(k + 1) * (k + 1)}, so √${v} is between ${k} and ${k + 1}.`, `The halfway point between ${k} and ${k + 1} is ${k}.5, and ${k}.5 times ${k}.5 is ${k * k + k}.25.`, `${v} is ${v <= k * k + k ? "less than" : "greater than"} ${k * k + k}.25, so √${v} is closer to ${near}.`],
+      visual: null,
+      distractors: D(fr(near), [[fr(near === k ? k + 1 : k), "picks-the-other-end-of-the-interval"], [fr(Math.round(v / 2)), "halves-instead-of-estimating-the-root"], [fr(k + 2), "overestimates-the-root"], [fr(Math.max(k - 1, 0)), "underestimates-the-root"]]),
+      hints: H("A square root is closer to the whole number whose square is closer to the number.", "Find the two perfect squares around the number, then see which one is nearer."),
+    };
+  },
+};
+
+const irCompare = {
+  lv: [2, 3],
+  gen({ rng, level }) {
+    let a;
+    let bT;
+    if (level === 2) {
+      const b = rng.int(4, 13);
+      a = b * b + rng.pick([-3, -2, -1, 1, 2, 3, 5, -5]);
+      bT = String(b);
+    } else {
+      const bd = rng.int(31, 129) / 10;
+      const b2 = bd * bd;
+      a = Math.round(b2) + rng.pick([-1, 0, 1, 2, -2]);
+      bT = bd.toFixed(1);
+      if (Math.abs(a - b2) < 0.02) a += 1;
+    }
+    const aBig = R_gt(a, bT);
+    const ans = aBig ? `√${a}` : bT;
+    const other = aBig ? bT : `√${a}`;
+    return {
+      spec: { type: "compare", a, b: bT },
+      stem: ST(`Look at the numbers √${a} and ${bT}.`, `Compare the numbers √${a} and ${bT}.`, `Compare the numbers √${a} and ${bT}.`),
+      ask: ST("Which number is greater?", "Which number is greater?", "Which number is greater?"),
+      expr: null,
+      answer: { value: ans, kind: "text" },
+      work: [`Square ${bT}: ${bT} times ${bT} is ${sqD(bT)}.`, `Compare ${a} with ${sqD(bT)}: ${a} is ${aBig ? "greater" : "less"} than ${sqD(bT)}.`, `So ${aBig ? `√${a}` : bT} is greater.`],
+      visual: null,
+      distractors: dist([[other, "compares-the-wrong-way"], ["They are equal", "assumes-a-square-root-equals-the-nearby-number"], ["It is impossible to tell without a calculator", "thinks-a-calculator-is-needed"]]),
+      hints: H("To compare a square root with another number, square both numbers and compare the squares.", "Square the number that is not a root, then compare it with the number under the square root sign."),
+    };
+  },
+};
+const sqD = (s) => {
+  const f = s.includes(".") ? Number(s.replace(".", "")) : Number(s);
+  const places = s.includes(".") ? s.split(".")[1].length : 0;
+  const sq = f * f;
+  return places === 0 ? String(sq) : (sq / 10 ** (2 * places)).toFixed(2 * places);
+};
+const R_gt = (a, bT) => {
+  // a > b^2 with b a decimal text, in exact integer arithmetic
+  const places = bT.includes(".") ? bT.split(".")[1].length : 0;
+  const bi = Number(bT.replace(".", ""));
+  return a * 10 ** (2 * places) > bi * bi;
+};
+
+const CLASSIFY = [
+  (rng) => {
+    let v;
+    do v = rng.int(2, 99);
+    while (isqrt(v) ** 2 === v);
+    return { k: "sqrt", v: String(v), text: `√${v}`, ans: "irrational", wrongTag: "thinks-a-calculator-decimal-means-rational" };
+  },
+  (rng) => {
+    const r = rng.int(2, 12);
+    return { k: "sqrt", v: String(r * r), text: `√${r * r}`, ans: "rational", wrongTag: "thinks-every-square-root-is-irrational" };
+  },
+  (rng) => {
+    const r = rng.int(2, 6);
+    return { k: "cbrt", v: String(r ** 3), text: `the cube root of ${r ** 3}`, ans: "rational", wrongTag: "thinks-every-root-is-irrational" };
+  },
+  (rng) => {
+    let v;
+    do v = rng.int(2, 100);
+    while (Math.round(Math.cbrt(v)) ** 3 === v);
+    return { k: "cbrt", v: String(v), text: `the cube root of ${v}`, ans: "irrational", wrongTag: "thinks-a-calculator-decimal-means-rational" };
+  },
+  (rng) => {
+    const d = rng.pick(["0.75", "2.5", "0.125", "3.2", "1.6"]);
+    return { k: "dec", v: d, text: d, ans: "rational", wrongTag: "thinks-decimals-are-irrational" };
+  },
+  (rng) => {
+    const d = rng.pick(["3", "6", "7", "1", "4"]);
+    return { k: "rep", v: d, text: `0.${d}${d}${d}... (the digit ${d} repeats forever)`, ans: "rational", wrongTag: "thinks-a-decimal-that-never-ends-is-irrational" };
+  },
+  () => ({ k: "pi", v: "pi", text: "π", ans: "irrational", wrongTag: "thinks-pi-equals-22-over-7" }),
+  (rng) => {
+    const f = rng.pick(["−7/3", "5/8", "−4/9", "11/6"]);
+    return { k: "frac", v: f, text: f, ans: "rational", wrongTag: "thinks-a-fraction-with-a-repeating-decimal-is-irrational" };
+  },
+  () => ({ k: "pattern", v: "pattern", text: "0.1010010001... (the pattern never repeats)", ans: "irrational", wrongTag: "thinks-a-decimal-that-never-ends-is-rational" }),
+];
+const irClassify = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const pool = level === 1 ? [0, 1, 4, 6] : level === 2 ? [0, 1, 2, 3, 4, 5, 6, 7] : [0, 3, 5, 6, 7, 8, 2];
+    const it = CLASSIFY[rng.pick(pool)](rng);
+    const opp = it.ans === "rational" ? "irrational" : "rational";
+    return {
+      spec: { type: "classify", kind: it.k, v: it.v },
+      stem: ST(`Look at this number: ${it.text}.`, `Consider the number ${it.text}.`, `Consider the number ${it.text}.`),
+      ask: ST("Is it rational or irrational?", "Is the number rational or irrational?", "Is the number rational or irrational?"),
+      expr: null,
+      answer: { value: it.ans, kind: "text" },
+      work: it.ans === "rational" ? [`A rational number can be written as a fraction of two integers.`, it.k === "sqrt" || it.k === "cbrt" ? `The number under the root is a perfect ${it.k === "sqrt" ? "square" : "cube"}, so the root is a whole number, which is rational.` : it.k === "rep" ? "A decimal that repeats can be written as a fraction, so it is rational." : it.k === "dec" ? "A decimal that stops can be written as a fraction, so it is rational." : "It is already written as a fraction of integers, so it is rational."] : [`An irrational number cannot be written as a fraction of two integers. Its decimal never stops and never repeats.`, it.k === "sqrt" || it.k === "cbrt" ? `The number under the root is not a perfect ${it.k === "sqrt" ? "square" : "cube"}, so the root is irrational.` : it.k === "pi" ? "The decimal for pi never stops and never repeats, so pi is irrational." : "The pattern in its decimal never repeats, so it is irrational."],
+      visual: null,
+      distractors: dist([[opp, it.wrongTag], ["neither rational nor irrational", "thinks-it-is-not-a-real-number"], ["both rational and irrational", "mixes-up-the-definitions"]]),
+      hints: H("A rational number can be written as a fraction of two integers. An irrational number cannot.", "Ask whether the decimal stops, repeats, or goes on forever with no pattern. For a root, ask whether the number inside is a perfect square or cube."),
+    };
+  },
+};
+
+const irOrder = {
+  lv: [3],
+  gen({ rng }) {
+    for (let t = 0; t < 500; t++) {
+      const n = 3;
+      const items = [];
+      const seen = new Set();
+      while (items.length < n) {
+        if (rng.chance(0.55)) {
+          const v = rng.int(5, 120);
+          if (isqrt(v) ** 2 === v) continue;
+          items.push({ k: "sqrt", v: String(v) });
+        } else items.push({ k: "num", v: (rng.int(20, 110) / 10).toFixed(1) });
+      }
+      const sq = (it) => (it.k === "sqrt" ? Number(it.v) : Number(it.v) ** 2);
+      const sorted = [...items].sort((a, b) => sq(a) - sq(b));
+      const sqs = sorted.map(sq);
+      if (new Set(sqs.map((v) => v.toFixed(6))).size < 3) continue;
+      if (items.filter((i) => i.k === "sqrt").length < 1 || items.filter((i) => i.k === "num").length < 1) continue;
+      if (Math.min(sqs[1] - sqs[0], sqs[2] - sqs[1]) < 1.5) continue;
+      const txt = (it) => (it.k === "sqrt" ? `√${it.v}` : it.v);
+      const ans = sorted.map(txt).join(", ");
+      const rev = [...sorted].reverse().map(txt).join(", ");
+      const lit = [...items].sort((a, b) => Number(a.v) - Number(b.v)).map(txt).join(", ");
+      const swap = [sorted[1], sorted[0], sorted[2]].map(txt).join(", ");
+      const swap2 = [sorted[0], sorted[2], sorted[1]].map(txt).join(", ");
+      const shown = rng.shuffle(items);
+      return {
+        spec: { type: "order", items: shown },
+        stem: ST(`Look at these three numbers: ${shown.map(txt).join(", ")}.`, `Consider the numbers ${shown.map(txt).join(", ")}.`, `Consider the numbers ${shown.map(txt).join(", ")}.`),
+        ask: ST("Write them from least to greatest. Put a comma between the numbers.", "Write the numbers in order from least to greatest, separated by commas.", "Order the numbers from least to greatest, separated by commas."),
+        expr: null,
+        answer: { value: ans, kind: "text" },
+        work: [`Compare √ numbers with decimals by squaring: the square of a decimal is its value times itself, and the square of √v is v.`, `The squares in order are ${sorted.map((it) => (it.k === "sqrt" ? it.v : sqD(it.v))).join(", ")}.`, `So the order is ${ans}.`],
+        visual: null,
+        distractors: DS(ans, [[rev, "orders-from-greatest-to-least"], [lit, "orders-by-the-number-without-looking-at-the-root-sign"], [swap, "mixes-up-two-numbers"], [swap2, "mixes-up-two-numbers"]]),
+        hints: H("A square root and a decimal can be compared by squaring both of them, because squaring keeps the order of positive numbers.", "Square each number. The square of √v is v. Then put the squares in order and rewrite the original numbers."),
+      };
+    }
+    throw new Error("could not build an ordering problem");
+  },
+};
+
+const irSolve = {
+  lv: [1, 2, 3],
+  gen({ rng, level }) {
+    const cube = level === 1 ? rng.chance(0.3) : rng.chance(0.4);
+    let r;
+    if (!cube) r = level === 3 ? fr(rng.int(1, 12), rng.pick([1, 2, 3, 4, 5, 6, 7, 8, 9])) : fr(rng.int(2, level === 1 ? 12 : 16));
+    else r = level === 3 ? fr(-rng.int(2, 7)) : fr(rng.int(2, level === 1 ? 5 : 8));
+    const v = cube ? r.mul(r).mul(r) : r.mul(r);
+    const story = r.d === 1 && r.n > 0 && rng.chance(0.65);
+    const u = rng.pick(["feet", "meters", "inches", "centimeters"]);
+    const units = { feet: "square feet", meters: "square meters", inches: "square inches", centimeters: "square centimeters" };
+    const cubes = { feet: "cubic feet", meters: "cubic meters", inches: "cubic inches", centimeters: "cubic centimeters" };
+    const stem = story ? (cube ? ST(`A cube-shaped box holds ${num(v.n)} ${cubes[u]}. All its edges have the same length.`, `A cube-shaped box has a volume of ${num(v.n)} ${cubes[u]}.`, `A cube has a volume of ${num(v.n)} ${cubes[u]}.`) : ST(`A square garden has an area of ${num(v.n)} ${units[u]}. All its sides have the same length.`, `A square garden has an area of ${num(v.n)} ${units[u]}.`, `A square has an area of ${num(v.n)} ${units[u]}.`)) : cube ? ST(`Look at the equation x^3 = ${T(v)}.`, `Solve the equation x^3 = ${T(v)}.`, `Solve the equation x^3 = ${T(v)}.`) : ST(`Look at the equation x^2 = ${T(v)}. Only the positive answer counts.`, `Solve the equation x^2 = ${T(v)}. Give the positive solution.`, `Solve the equation x^2 = ${T(v)}. Give the positive solution.`);
+    const ask = story ? (cube ? ST("How long is each edge?", "What is the length of each edge?", "Determine the length of each edge.") : ST("How long is each side?", "What is the length of each side?", "Determine the length of each side.")) : ST("What is x?", "What is x?", "Determine x.");
+    const wrong = cube ? [[v.div(fr(3)), "divides-by-3-instead-of-taking-the-cube-root"], [r.add(fr(1)), "uses-a-nearby-cube"], [r.sub(fr(1)), "uses-a-nearby-cube"], [absF(r), "drops-the-negative-sign"], [r.mul(fr(3)), "multiplies-the-root-by-3"]] : [[v.div(fr(2)), "divides-by-2-instead-of-taking-the-square-root"], [r.add(fr(1)), "uses-a-nearby-square"], [r.sub(fr(1)), "uses-a-nearby-square"], [v.mul(fr(2)), "doubles-instead-of-taking-the-square-root"], [r.mul(fr(2)), "doubles-the-root"]];
+    return {
+      spec: { type: "solve", n: cube ? 3 : 2, v: S(v) },
+      stem,
+      ask,
+      expr: cube ? `x^3 = ${T(v)}` : `x^2 = ${T(v)}`,
+      answer: A(r, story ? { unit: u } : {}),
+      work: cube ? [story ? `The volume of a cube is edge times edge times edge, so x^3 = ${num(v.n)}.` : `Take the cube root of both sides.`, `${T(r)} times ${T(r)} times ${T(r)} makes ${T(v)}, so x = ${T(r)}.`] : [story ? `The area of a square is side times side, so x^2 = ${num(v.n)}.` : `Take the positive square root of both sides.`, `${T(r)} times ${T(r)} makes ${T(v)}, so x = ${T(r)}.`],
+      visual: null,
+      distractors: D(r, wrong),
+      hints: H(cube ? "To undo x cubed, take the cube root of both sides." : "To undo x squared, take the square root of both sides.", "Think of a number that works and check it by multiplying it by itself the right number of times."),
+    };
+  },
+};
+
+FAMILIES.irrational = {
+  title: "Irrational numbers and square roots",
+  grades: [8],
+  defaults: {},
+  gen(rng, params, opts) {
+    const level = opts.level;
+    const t = pickType(rng, level, [irRoot, irBetween, irClosest, irCompare, irClassify, irOrder, irSolve]);
+    return done({ family: "irrational", level, ...t.gen({ rng, level, ctx: opts.ctx }) });
   },
 };

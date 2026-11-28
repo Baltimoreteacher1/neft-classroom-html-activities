@@ -448,30 +448,33 @@ const measure = defineManip({
   controls: [
     choice("ruler", "Ruler", [["cm15", "15 centimeters"], ["cm10", "10 centimeters"], ["in6", "6 inches"], ["in12", "12 inches"]], "cm15"),
     step("start", "Object starts at (whole units)", 0, 14, 2),
-    step("whole", "Object length: whole units", 0, 29, 5),
+    step("whole", "Object length: whole units", 0, 14, 5),
     choice("mm", "Plus millimeters", Array.from({ length: 10 }, (_, i) => [String(i), `${i} mm`]), "4"),
     choice("eighths", "Plus part of an inch", EIGHTHS.map((l, i) => [String(i), l === "0" ? "none" : `${l} in`]), "0"),
     toggle("compare", "Compare with a second object", false),
-    step("second", "Second object length (whole units)", 1, 29, 8),
+    step("second", "Second object length (whole units)", 1, 14, 8),
   ],
   start: seed,
   model(s) {
     const [unit, len] = RULERS[oneOf(s.ruler, Object.keys(RULERS), "cm15")];
     const per = unit === "cm" ? 10 : 16;
-    const from = I(s.start, 0, 14) * per;
+    const startW = Math.min(I(s.start, 0, 14), len - 1);
+    const from = startW * per;
     const frac = unit === "cm" ? I(s.mm, 0, 9) : I(s.eighths, 0, 7) * 2;
-    const l1 = I(s.whole, 0, 29) * per + frac;
-    if (l1 === 0) return { error: "The object has no length. Make it longer than 0 so it can be measured." };
+    const want = I(s.whole, 0, 14) * per + frac;
+    if (want === 0) return { error: "The object has no length. Make it longer than 0 so it can be measured." };
+    const l1 = Math.min(want, len * per - from);
     const to = from + l1;
-    if (to > len * per) return { error: `The object would stick out past the end of the ${len} ${unit} ruler. Make it shorter or start it closer to 0.` };
     const at = (u) => u / per;
     let t = `A ruler in ${unit === "cm" ? "centimeters" : "inches"} from 0 to ${len}. The object starts at ${lenText(from, unit)} and ends at ${lenText(to, unit)}. Its length is ${lenText(to, unit)} ${MINUS} ${lenText(from, unit)} = ${lenText(l1, unit)}${unit === "cm" ? ` (${l1} mm)` : ""}.`;
+    if (l1 < want) t += ` (The length you set, ${lenText(want, unit)}, would stick out past the end of the ruler, so the object is shortened to fit.)`;
+    if (startW < I(s.start, 0, 14)) t += ` (The ruler is only ${len} ${unit} long, so the object starts at ${startW}.)`;
     let ex = box();
     if (s.compare) {
-      const l2 = I(s.second, 1, 29) * per;
-      if (l2 > len * per) return { error: `The second object is longer than the ${len} ${unit} ruler. Make it shorter.` };
+      const want2 = I(s.second, 1, 14) * per;
+      const l2 = Math.min(want2, len * per);
       const d = Math.abs(l1 - l2);
-      t += ` The second object starts at 0 and is ${lenText(l2, unit)} long. ${d === 0 ? "The two objects are the same length." : `The ${l1 > l2 ? "first" : "second"} object is longer by ${lenText(d, unit)}.`}`;
+      t += ` The second object starts at 0 and is ${lenText(l2, unit)} long${l2 < want2 ? " (shortened to fit the ruler)" : ""}. ${d === 0 ? "The two objects are the same length." : `The ${l1 > l2 ? "first" : "second"} object is longer by ${lenText(d, unit)}.`}`;
       ex = box(svgNode({ kind: "ruler", unit, length: len, objectFrom: 0, objectTo: at(l2) }, "Second object"));
     }
     showControls(ex, ["ruler", "start", "whole", unit === "cm" ? "mm" : "eighths", "compare", ...(s.compare ? ["second"] : [])]);

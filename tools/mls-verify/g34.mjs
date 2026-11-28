@@ -29,7 +29,8 @@ const SA = {
   muldiv(s) {
     if (s.type === "eq") {
       const [a, b, c] = [s.a, s.b, s.c].map((v) => (v == null ? null : R(v)));
-      if (s.op === "mul") return S(s.unknown === "c" ? a.mul(b) : s.unknown === "a" ? c.div(b) : c.div(a));
+      if (s.op === "mul")
+        return S(s.unknown === "c" ? a.mul(b) : s.unknown === "a" ? c.div(b) : c.div(a));
       return S(s.unknown === "c" ? a.div(b) : s.unknown === "a" ? c.mul(b) : a.div(c));
     }
     if (s.type === "groups") {
@@ -56,11 +57,20 @@ const SA = {
   properties(s) {
     if (s.type === "name") {
       let m = /^(\d+) × (\d+) = (\d+) × (\d+)$/.exec(s.eq);
-      if (m && R(m[1]).mul(R(m[2])).eq(R(m[3]).mul(R(m[4]))) && m[1] === m[4] && m[2] === m[3]) return "commutative property";
+      if (
+        m &&
+        R(m[1])
+          .mul(R(m[2]))
+          .eq(R(m[3]).mul(R(m[4]))) &&
+        m[1] === m[4] &&
+        m[2] === m[3]
+      )
+        return "commutative property";
       m = /^\((\d+) × (\d+)\) × (\d+) = (\d+) × \((\d+) × (\d+)\)$/.exec(s.eq);
       if (m && m[1] === m[4] && m[2] === m[5] && m[3] === m[6]) return "associative property";
       m = /^(\d+) × \((\d+) \+ (\d+)\) = (\d+) × (\d+) \+ (\d+) × (\d+)$/.exec(s.eq);
-      if (m && m[1] === m[4] && m[1] === m[6] && m[2] === m[5] && m[3] === m[7]) return "distributive property";
+      if (m && m[1] === m[4] && m[1] === m[6] && m[2] === m[5] && m[3] === m[7])
+        return "distributive property";
       if (/^\d+ × 1 = \d+$/.test(s.eq)) return "identity property";
       throw new Error(`unrecognised property equation ${s.eq}`);
     }
@@ -75,7 +85,10 @@ const SA = {
     if (s.type === "tens") return S(R(s.a).mul(R(s.t)).mul(R(10)));
     if (s.type === "compare") {
       const target = R(s.a).mul(R(s.b));
-      const value = (st) => R(st.k).mul(sum(st.terms.map((term) => prod(term.map((v) => R(v)))))).add(R(st.add));
+      const value = (st) =>
+        R(st.k)
+          .mul(sum(st.terms.map((term) => prod(term.map((v) => R(v))))))
+          .add(R(st.add));
       const ok = s.strategies.map((st) => value(st).eq(target));
       if (ok[0] && ok[1]) return "Both strategies work";
       if (ok[0]) return `Only ${s.names[0]}'s strategy works`;
@@ -102,7 +115,10 @@ const SA = {
     if (s.type === "cmp") {
       let best = s.fracs[0];
       for (const f of s.fracs) {
-        const better = s.pick === "max" ? lt(R(best[0], best[1]), R(f[0], f[1])) : lt(R(f[0], f[1]), R(best[0], best[1]));
+        const better =
+          s.pick === "max"
+            ? lt(R(best[0], best[1]), R(f[0], f[1]))
+            : lt(R(f[0], f[1]), R(best[0], best[1]));
         if (better) best = f;
       }
       return `${best[0]}/${best[1]}`;
@@ -116,7 +132,10 @@ const SA = {
   areaperim(s) {
     if (s.type === "area") return S(R(s.w).mul(R(s.h)));
     if (s.type === "perim") return S(R(2).mul(R(s.w).add(R(s.h))));
-    if (s.type === "missing") return S(s.kind === "area" ? R(s.total).div(R(s.known)) : R(s.total).div(R(2)).sub(R(s.known)));
+    if (s.type === "missing")
+      return S(
+        s.kind === "area" ? R(s.total).div(R(s.known)) : R(s.total).div(R(2)).sub(R(s.known)),
+      );
     if (s.type === "samearea") {
       const area = R(s.w1).mul(R(s.h1));
       const h2 = area.div(R(s.w2));
@@ -130,7 +149,15 @@ const SA = {
   elapsed(s) {
     if (s.type === "meas") {
       const [a, b] = [R(s.a), R(s.b)];
-      return S(s.op === "add" ? a.add(b) : s.op === "sub" ? a.sub(b) : s.op === "mul" ? a.mul(b) : a.div(b));
+      return S(
+        s.op === "add"
+          ? a.add(b)
+          : s.op === "sub"
+            ? a.sub(b)
+            : s.op === "mul"
+              ? a.mul(b)
+              : a.div(b),
+      );
     }
     if (s.type === "time") {
       const minutes = ([h, m]) => (h % 12) * 60 + m;
@@ -145,7 +172,6 @@ const SA = {
     throw new Error("unknown elapsed spec");
   },
 };
-
 
 const SB = {
   // ------------------------------------------------------------------------------------------------ multidigit
@@ -168,7 +194,12 @@ const SB = {
     if (s.type === "factor") return S(R(s.b).div(R(s.s)));
     if (s.type === "more") return S(R(s.s).add(R(s.n)));
     if (s.type === "eq") return `${s.k} × ${s.s} = ${R(s.s).mul(R(s.k))}`;
-    if (s.type === "contrast") return S(R(s.s).mul(R(s.k)).sub(R(s.s).add(R(s.n))));
+    if (s.type === "contrast")
+      return S(
+        R(s.s)
+          .mul(R(s.k))
+          .sub(R(s.s).add(R(s.n))),
+      );
     throw new Error("unknown multcompare spec");
   },
 
@@ -185,7 +216,12 @@ const SB = {
     if (s.type === "nextmult") return String((Math.floor(s.above / s.k) + 1) * s.k);
     if (s.type === "countmult") return String(Math.floor(s.upto / s.k));
     if (s.type === "pick") {
-      const test = { factor: (x) => s.n % x === 0, multiple: (x) => x % s.n === 0, prime, composite: (x) => x > 1 && !prime(x) }[s.prop];
+      const test = {
+        factor: (x) => s.n % x === 0,
+        multiple: (x) => x % s.n === 0,
+        prime,
+        composite: (x) => x > 1 && !prime(x),
+      }[s.prop];
       const hits = s.options.filter(test);
       if (hits.length !== 1) throw new Error(`${hits.length} options satisfy ${s.prop}`);
       return String(hits[0]);
@@ -195,7 +231,8 @@ const SB = {
 
   // ------------------------------------------------------------------------------------------------ fracequiv
   fracequiv(s) {
-    if (s.type === "eqm") return s.x == null ? S(R(s.n).mul(R(s.y)).div(R(s.d))) : S(R(s.d).mul(R(s.x)).div(R(s.n)));
+    if (s.type === "eqm")
+      return s.x == null ? S(R(s.n).mul(R(s.y)).div(R(s.d))) : S(R(s.d).mul(R(s.x)).div(R(s.n)));
     if (s.type === "eqw") {
       const x = R(s.n).mul(R(s.D)).div(R(s.d));
       if (x.d !== 1n) throw new Error("equivalent fraction is not whole-numbered");
@@ -210,7 +247,10 @@ const SB = {
     if (s.type === "cmp") {
       let best = s.fracs[0];
       for (const f of s.fracs) {
-        const better = s.pick === "max" ? lt(R(best[0], best[1]), R(f[0], f[1])) : lt(R(f[0], f[1]), R(best[0], best[1]));
+        const better =
+          s.pick === "max"
+            ? lt(R(best[0], best[1]), R(f[0], f[1]))
+            : lt(R(f[0], f[1]), R(best[0], best[1]));
         if (better) best = f;
       }
       return `${best[0]}/${best[1]}`;
@@ -223,4 +263,156 @@ const SB = {
   },
 };
 
-export const SOLVERS = { ...SA, ...SB };
+const UN = {
+  km: ["len", 1000000],
+  m: ["len", 1000],
+  cm: ["len", 10],
+  mm: ["len", 1],
+  in: ["clen", 1],
+  ft: ["clen", 12],
+  yd: ["clen", 36],
+  g: ["mass", 1],
+  kg: ["mass", 1000],
+  oz: ["cmass", 1],
+  lb: ["cmass", 16],
+  mL: ["cap", 1],
+  L: ["cap", 1000],
+  c: ["ccap", 1],
+  pt: ["ccap", 2],
+  qt: ["ccap", 4],
+  gal: ["ccap", 16],
+  s: ["time", 1],
+  min: ["time", 60],
+  hr: ["time", 3600],
+};
+const unitRatio = (from, to) => {
+  const [fa, fs] = UN[from];
+  const [ta, ts] = UN[to];
+  if (fa !== ta) throw new Error(`units ${from} and ${to} are not in one system`);
+  return R(fs).div(R(ts));
+};
+const floorDiv = (n, d) => (n >= 0n ? n / d : -((-n + d - 1n) / d));
+const roundHalfUp = (x) => {
+  const t = x.add(R(1, 2));
+  return R(floorDiv(t.n, t.d));
+};
+
+const SC = {
+  // ------------------------------------------------------------------------------------------------ fracops
+  fracops(s) {
+    if (s.type === "calc") {
+      const X = R(s.x[0], s.x[1]);
+      const Y = R(s.y[0], s.y[1]);
+      return S(
+        s.op === "add"
+          ? X.add(Y)
+          : s.op === "sub"
+            ? X.sub(Y)
+            : s.op === "mul"
+              ? X.mul(Y)
+              : X.div(Y),
+      );
+    }
+    if (s.type === "scalecmp") {
+      const diff = R(s.m[0], s.m[1]).sub(R(1));
+      const rel = diff.n > 0n ? "greater than" : diff.n < 0n ? "less than" : "equal to";
+      return `${rel} ${s.baseText}`;
+    }
+    if (s.type === "ratio") return S(R(s.to, s.from));
+    if (s.type === "scale2") {
+      const [a, b] = [P(s.m1), P(s.m2)];
+      const first = s.pick === "greater" ? lt(b, a) : lt(a, b);
+      return `${s.base} × ${first ? s.m1 : s.m2}`;
+    }
+    throw new Error("unknown fracops spec");
+  },
+
+  // ------------------------------------------------------------------------------------------------ decimals
+  decimals(s) {
+    const placeIndex = { tenths: 1, hundredths: 2, thousandths: 3 };
+    if (s.type === "placename") return s.x.split(".")[1][placeIndex[s.place] - 1];
+    if (s.type === "placevalue") {
+      const [whole, frac] = s.x.split(".");
+      if (s.digitPlace === "tens") return S(R(whole[whole.length - 2]).mul(R(10)));
+      if (s.digitPlace === "ones") return whole[whole.length - 1];
+      const k = placeIndex[s.digitPlace];
+      return S(R(frac[k - 1]).div(R(10n ** BigInt(k))));
+    }
+    if (s.type === "cmp") {
+      let best = s.vals[0];
+      for (const v of s.vals)
+        if (s.pick === "max" ? lt(P(best), P(v)) : lt(P(v), P(best))) best = v;
+      return best;
+    }
+    if (s.type === "round") {
+      const k = { ones: 0, tenths: 1, hundredths: 2 }[s.place];
+      const scale = R(10n ** BigInt(k));
+      return S(roundHalfUp(P(s.x).mul(scale)).div(scale));
+    }
+    if (s.type === "f2d") return S(R(s.n, s.d));
+    if (s.type === "d2f") return `${S(P(s.x).mul(R(s.d)))}/${s.d}`;
+    if (s.type === "fsum") return S(R(s.n1, s.d1).add(R(s.n2, s.d2)));
+    if (s.type === "op") {
+      const [x, y] = [P(s.x), P(s.y)];
+      return S(
+        s.op === "add"
+          ? x.add(y)
+          : s.op === "sub"
+            ? x.sub(y)
+            : s.op === "mul"
+              ? x.mul(y)
+              : x.div(y),
+      );
+    }
+    if (s.type === "scale10") {
+      const m = R(10n ** BigInt(s.p));
+      return S(s.dir === "mul" ? P(s.x).mul(m) : P(s.x).div(m));
+    }
+    throw new Error("unknown decimals spec");
+  },
+
+  // ------------------------------------------------------------------------------------------------ convert
+  convert(s) {
+    if (s.type === "conv") return S(P(s.x).mul(unitRatio(s.from, s.to)));
+    if (s.type === "mixed") return S(R(s.a).mul(unitRatio(s.big, s.small)).add(R(s.b)));
+    throw new Error("unknown convert spec");
+  },
+
+  // ------------------------------------------------------------------------------------------------ angles
+  angles(s) {
+    if (s.type === "classify")
+      return s.deg < 90 ? "acute" : s.deg === 90 ? "right" : s.deg < 180 ? "obtuse" : "straight";
+    if (s.type === "measure") return String(s.deg);
+    if (s.type === "line") return S(R(180).sub(R(s.a)));
+    if (s.type === "around") return S(R(360).sub(sum(s.known.map((v) => R(v)))));
+    if (s.type === "adjacent")
+      return S(s.find === "whole" ? R(s.p1).add(R(s.p2)) : R(s.whole).sub(R(s.p1)));
+    if (s.type === "circfrac") return S(R(360).mul(R(s.n, s.d)));
+    throw new Error("unknown angles spec");
+  },
+
+  // ------------------------------------------------------------------------------------------------ lineplot
+  lineplot(s) {
+    const vals = s.values.map(P);
+    const distinct = [];
+    for (const v of vals) if (!distinct.some((d) => d.eq(v))) distinct.push(v);
+    const count = (t) => vals.filter((v) => v.eq(t)).length;
+    if (s.type === "howmany") return String(count(P(s.t)));
+    if (s.type === "more") return String(vals.filter((v) => lt(P(s.t), v)).length);
+    if (s.type === "diffcount") return String(count(P(s.t)) - count(P(s.t2)));
+    if (s.type === "most") {
+      const top = Math.max(...distinct.map(count));
+      const hits = distinct.filter((d) => count(d) === top);
+      if (hits.length !== 1) throw new Error("the most common value is not unique");
+      return S(hits[0]);
+    }
+    const lo = vals.reduce((m, v) => (lt(v, m) ? v : m), vals[0]);
+    const hi = vals.reduce((m, v) => (lt(m, v) ? v : m), vals[0]);
+    if (s.type === "range") return S(hi.sub(lo));
+    if (s.type === "total") return S(sum(vals));
+    if (s.type === "mean") return S(sum(vals).div(R(vals.length)));
+    throw new Error("unknown lineplot spec");
+  },
+};
+
+export const SOLVERS = { ...SA, ...SB, ...SC };

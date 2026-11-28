@@ -302,6 +302,13 @@ function helpBlock(label, on, make) {
   paint();
   return h("div", { class: "mlea-help" }, h("label", { class: "mlea-toggle" }, input, h("span", {}, label)), box);
 }
+/** After a right answer: show the confirmation and let the learner choose when to move on (no timers, focus goes to the button). */
+function holdNext(fb, fn, label = "Next step") {
+  if (fb.parentElement?.querySelector("[data-mlea-next]")) return;
+  const b = h("button", { type: "button", class: "btn primary", "data-mlea-next": "", onclick: fn }, label);
+  fb.after(h("div", { class: "mlea-row" }, b));
+  b.focus({ preventScroll: true });
+}
 const workedNode = (E, p) => {
   const q = E.parallel(p);
   if (!q) return h("p", { class: "fine" }, "Read the problem again slowly, or ask for a new problem.");
@@ -571,7 +578,7 @@ function readingLab(el, opts) {
         const g = choiceGroup("Choose the sentence that asks the question", opts, (i) => {
           if (opts[i].correct) {
             co.ok("That sentence is the question.");
-            setTimeout(() => done(`"${noEnd(askText)}?"`), 0);
+            holdNext(fb, () => done(`"${noEnd(askText)}?"`));
             return true;
           }
           co.miss(/\?/.test(opts[i].label) ? "That asks about a different problem." : "That sentence tells something we know.");
@@ -606,7 +613,7 @@ function readingLab(el, opts) {
           const extra = segs.filter((s) => s.k === "detail" && s.on).length;
           if (!missed && !extra) {
             co.ok("You marked every quantity and no extra details.");
-            done(`Quantities: ${qtys.map((s) => s.t).join(", ")}`);
+            holdNext(fb, () => done(`Quantities: ${qtys.map((s) => s.t).join(", ")}`));
             return;
           }
           co.miss([missed ? `${missed} quantity ${missed === 1 ? "is" : "are"} not marked yet.` : "", extra ? `${extra} marked ${extra === 1 ? "part is a detail" : "parts are details"} the mathematics does not need.` : ""].filter(Boolean).join(" "));
@@ -638,7 +645,7 @@ function readingLab(el, opts) {
             if (r.opts[i].correct) {
               n += 1;
               co.ok(`${r.q.value} measures ${r.q.label}.`);
-              if (n === rows.length) setTimeout(() => done(rows.map((x) => `${x.q.value} = ${x.q.label}`).join("; ")), 0);
+              if (n === rows.length) holdNext(fb, () => done(rows.map((x) => `${x.q.value} = ${x.q.label}`).join("; ")));
               return true;
             }
             co.miss(`Check where ${r.q.value} appears in the problem.`);
@@ -667,7 +674,7 @@ function readingLab(el, opts) {
         const g = choiceGroup("Choose the relationship", opts, (i) => {
           if (opts[i].correct) {
             co.ok("That is how the quantities relate.");
-            setTimeout(() => done(cap(right)), 0);
+            holdNext(fb, () => done(cap(right)));
             return true;
           }
           co.miss("That statement is a common mix-up, not how these quantities relate.");
@@ -693,7 +700,7 @@ function readingLab(el, opts) {
           const g = choiceGroup("Choose the picture that matches the problem", opts, (i) => {
             if (opts[i].correct) {
               co.ok("That picture matches the problem.");
-              setTimeout(() => done("The picture that matches the problem."), 0);
+              holdNext(fb, () => done("The picture that matches the problem."));
               return true;
             }
             co.miss(numberDiff(srcNums, numerals(opts[i].v.summary), "the problem", "that picture") || "That picture has the right numbers but a different arrangement. Check what each part stands for.");
@@ -707,7 +714,7 @@ function readingLab(el, opts) {
         const g = choiceGroup("Choose a model that fits", opts, (i) => {
           if (opts[i].correct) {
             co.ok("That model fits what is happening.");
-            setTimeout(() => done(cap(model)), 0);
+            holdNext(fb, () => done(cap(model)));
             return true;
           }
           co.miss("That model shows a different kind of situation.");
@@ -734,7 +741,7 @@ function readingLab(el, opts) {
           if (opts[i].correct) {
             feedback(fb, "ok", "That number sentence matches what is happening.");
             E.say("Yes. That number sentence matches.");
-            setTimeout(() => done(p.expr), 0);
+            holdNext(fb, () => done(p.expr));
             return true;
           }
           E.touched = true;
@@ -809,7 +816,6 @@ function readingLab(el, opts) {
       id: "explain",
       title: "Explain your thinking",
       build(done) {
-        const fb = fbBox();
         const fk = BAND_KEYS[Math.min(fade, 2)];
         const frames = fade >= 3 ? [] : framesFor(skill, fk, 3);
         const w = writer(E, {
@@ -826,9 +832,7 @@ function readingLab(el, opts) {
             w.node.append(b);
           },
         });
-        const orig = w.area;
-        orig.addEventListener("input", () => {});
-        return panel("explain", "Explain your thinking", h("p", { class: "mlea-instr" }, fade >= 3 ? "Frames are gone now: use your own words. Open the frame only if you need it." : fade > 0 && round > 0 ? "The frames are lighter this time." : "Say what you did and why."), w.node, helpWords("explain"), fb);
+        return panel("explain", "Explain your thinking", h("p", { class: "mlea-instr" }, fade >= 3 ? "Frames are gone now: use your own words. Open the frame only if you need it." : fade > 0 && round > 0 ? "The frames are lighter this time." : "Say what you did and why."), w.node, helpWords("explain"));
       },
     },
     {
