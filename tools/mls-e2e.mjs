@@ -510,6 +510,7 @@ const scenarios = {
     await page.locator(".ml-concern", { hasText: "word problems" }).click();
     await page.locator(".ml-grade", { hasText: "4" }).first().click();
     await page.locator(".ml-skill-link").first().click();
+    await page.locator("h2", { hasText: "What to look for" }).first().waitFor({ timeout: 15000 });
     for (const h of ["What to look for", "A short check", "Resources", "A short plan", "Follow up"])
       ok((await page.locator("h2", { hasText: h }).count()) === 1, `plan has "${h}"`);
     const hrefs = await page
