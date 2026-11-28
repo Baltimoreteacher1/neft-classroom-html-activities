@@ -2019,7 +2019,8 @@ const lnSolve = {
     if (l.c.n !== 0) {
       work.push(`${l.c.n > 0 ? `Subtract ${T(l.c)}` : `Add ${T(negF(l.c))}`} ${l.c.n > 0 ? "from" : "to"} both sides: ${mx(dM)} = ${T(dC)}.`);
     }
-    work.push(eqF(dM, fr(1)) ? `So x = ${T(x)}.` : `Divide both sides by ${T(dM)}: ${E(`${pf(dC)} ${DIVIDE} ${pf(dM)}`, x)}.`);
+    if (!eqF(dM, fr(1))) work.push(`Divide both sides by ${T(dM)}: ${E(`${pf(dC)} ${DIVIDE} ${pf(dM)}`, x)}.`);
+    if (!work.length) work.push(`So x = ${T(x)}.`);
     const wrongs = [
       [solveX(l.m, negF(l.c), r.m, r.c), "adds-the-constants-instead-of-subtracting"],
       [solveX(l.m, l.c, negF(r.m), r.c), "adds-the-x-terms-instead-of-subtracting"],
@@ -2236,7 +2237,7 @@ const subTxt = (p, q) => `${par(num(p))} ${MINUS} ${par(num(q))}`;
 const mulTxt = (p, q) => `${par(num(p))} ${TIMES} ${par(num(q))}`;
 const divTxt = (p, q) => `${par(num(p))} ${DIVIDE} ${par(num(q))}`;
 /** "Divide both sides by q: p ÷ q = res", or just the result when q is 1. */
-const divStep = (v, p, q, res) => (q === 1 ? `So ${v} = ${num(res)}.` : `Divide both sides by ${num(q)}: ${E(divTxt(p, q), res)}.`);
+const divStep = (v, p, q, res) => (q === 1 ? "" : `Divide both sides by ${num(q)}: ${E(divTxt(p, q), res)}.`);
 const pairStr = (x, y) => `(${x},${y})`;
 function pairDist(x0, y0) {
   const ans = pairStr(x0, y0);
@@ -2262,7 +2263,7 @@ function solveLines(l, r, x) {
   const w = [];
   if (r.m.n !== 0) w.push(`${opText(r.m, (v) => mx(v))}: ${linText(dM, l.c)} = ${T(r.c)}.`);
   if (l.c.n !== 0) w.push(`${l.c.n > 0 ? `Subtract ${T(l.c)}` : `Add ${T(negF(l.c))}`} ${l.c.n > 0 ? "from" : "to"} both sides: ${mx(dM)} = ${T(dC)}.`);
-  w.push(eqF(dM, fr(1)) ? `So x = ${T(x)}.` : `Divide both sides by ${T(dM)}: ${E(`${pf(dC)} ${DIVIDE} ${pf(dM)}`, x)}.`);
+  if (!eqF(dM, fr(1))) w.push(`Divide both sides by ${T(dM)}: ${E(`${pf(dC)} ${DIVIDE} ${pf(dM)}`, x)}.`);
   return w;
 }
 
@@ -2321,7 +2322,7 @@ const sySub = {
         divStep(Q, c - cc, cm, Q0),
         `Now find ${P}: ${E(mulTxt(m, Q0), m * Q0)}, and ${E(sumTxt(m * Q0, k), P0)}.`,
         `The solution is x = ${num(x0)} and y = ${num(y0)}.`,
-      ],
+      ].filter(Boolean),
       visual: null,
       distractors: pairDist(x0, y0),
       hints: sysHints,
@@ -2396,7 +2397,7 @@ const syElim = {
       ask: ST(`${how} Write the solution as (x,y).`, `Solve the system by elimination. Write the solution as (x,y).`, `Solve the system by elimination. Express the solution as an ordered pair (x,y).`),
       expr: null,
       answer: { value: pairStr(x0, y0), kind: "pair" },
-      work,
+      work: work.filter(Boolean),
       visual: null,
       distractors: pairDist(x0, y0),
       hints: sysHints,
@@ -2449,11 +2450,11 @@ const syGraph = {
 
 const pl = (v, one, many) => (v === 1 ? one : many);
 const DUELS = [
-  { x: ["week", "weeks"], y: ["dollar", "dollars"], down: true, q: "have the same amount of money", line: (n, s, r) => (r > 0 ? `${n} has ${s} ${pl(s, "dollar", "dollars")} and saves ${r} ${pl(r, "dollar", "dollars")} each week.` : `${n} has ${s} ${pl(s, "dollar", "dollars")} and spends ${-r} ${pl(-r, "dollar", "dollars")} each week.`) },
-  { x: ["day", "days"], y: ["page", "pages"], down: false, q: "have read the same number of pages", line: (n, s, r) => `${n} has read ${s} ${pl(s, "page", "pages")} and reads ${r} more ${pl(r, "page", "pages")} each day.` },
-  { x: ["minute", "minutes"], y: ["liter", "liters"], down: true, q: "have the same amount of water", line: (n, s, r) => (r > 0 ? `${n}'s tank has ${s} ${pl(s, "liter", "liters")} of water and fills by ${r} ${pl(r, "liter", "liters")} each minute.` : `${n}'s tank has ${s} ${pl(s, "liter", "liters")} of water and drains by ${-r} ${pl(-r, "liter", "liters")} each minute.`) },
-  { x: ["week", "weeks"], y: ["centimeter", "centimeters"], down: false, q: "be the same height", line: (n, s, r) => `${n}'s plant is ${s} ${pl(s, "centimeter", "centimeters")} tall and grows ${r} ${pl(r, "centimeter", "centimeters")} each week.` },
-  { x: ["minute", "minutes"], y: ["meter", "meters"], down: true, q: "be the same distance from the start", line: (n, s, r) => (r > 0 ? `${n} is ${s} ${pl(s, "meter", "meters")} from the start and runs away from it at ${r} ${pl(r, "meter", "meters")} each minute.` : `${n} is ${s} ${pl(s, "meter", "meters")} from the start and runs back toward it at ${-r} ${pl(-r, "meter", "meters")} each minute.`) },
+  { x: ["week", "weeks"], y: ["dollar", "dollars"], down: true, q: "have the same amount of money", qNow: "have the same amount of money", line: (n, s, r) => (r > 0 ? `${n} has ${s} ${pl(s, "dollar", "dollars")} and saves ${r} ${pl(r, "dollar", "dollars")} each week.` : `${n} has ${s} ${pl(s, "dollar", "dollars")} and spends ${-r} ${pl(-r, "dollar", "dollars")} each week.`) },
+  { x: ["day", "days"], y: ["page", "pages"], down: false, q: "have read the same number of pages", qNow: "have read the same number of pages", line: (n, s, r) => `${n} has read ${s} ${pl(s, "page", "pages")} and reads ${r} more ${pl(r, "page", "pages")} each day.` },
+  { x: ["minute", "minutes"], y: ["liter", "liters"], down: true, q: "have the same amount of water", qNow: "have the same amount of water", line: (n, s, r) => (r > 0 ? `${n}'s tank has ${s} ${pl(s, "liter", "liters")} of water and fills by ${r} ${pl(r, "liter", "liters")} each minute.` : `${n}'s tank has ${s} ${pl(s, "liter", "liters")} of water and drains by ${-r} ${pl(-r, "liter", "liters")} each minute.`) },
+  { x: ["week", "weeks"], y: ["centimeter", "centimeters"], down: false, q: "be the same height", qNow: "are the same height", line: (n, s, r) => `${n}'s plant is ${s} ${pl(s, "centimeter", "centimeters")} tall and grows ${r} ${pl(r, "centimeter", "centimeters")} each week.` },
+  { x: ["minute", "minutes"], y: ["meter", "meters"], down: true, q: "be the same distance from the start", qNow: "are the same distance from the start", line: (n, s, r) => (r > 0 ? `${n} is ${s} ${pl(s, "meter", "meters")} from the start and runs away from it at ${r} ${pl(r, "meter", "meters")} each minute.` : `${n} is ${s} ${pl(s, "meter", "meters")} from the start and runs back toward it at ${-r} ${pl(-r, "meter", "meters")} each minute.`) },
 ];
 const syWord = {
   lv: [1, 2, 3],
@@ -2492,7 +2493,7 @@ const syWord = {
     return {
       spec: { type: "word", ask: askY ? "y" : "x", ...sysSpec({ a: -r1, b: 1, c: s1 }, { a: -r2, b: 1, c: s2 }) },
       stem,
-      ask: askY ? ST(`Find when ${n1} and ${n2} will ${duel.q}. What is the amount, in ${duel.y[1]}, at that time?`, `When ${n1} and ${n2} ${duel.q.replace(/^(have|be)/, (m) => `will ${m}`)}, what is the amount, in ${duel.y[1]}, at that time?`, `Determine the amount, in ${duel.y[1]}, at the moment when ${n1} and ${n2} will ${duel.q}.`) : ST(`After how many ${duel.x[1]} will ${n1} and ${n2} ${duel.q}?`, `After how many ${duel.x[1]} will ${n1} and ${n2} ${duel.q}?`, `Determine after how many ${duel.x[1]} ${n1} and ${n2} will ${duel.q}.`),
+      ask: askY ? ST(`Find when ${n1} and ${n2} will ${duel.q}. What is the amount, in ${duel.y[1]}, at that time?`, `At the moment when ${n1} and ${n2} ${duel.qNow}, what is the amount, in ${duel.y[1]}?`, `Determine the amount, in ${duel.y[1]}, at the moment when ${n1} and ${n2} ${duel.qNow}.`) : ST(`After how many ${duel.x[1]} will ${n1} and ${n2} ${duel.q}?`, `After how many ${duel.x[1]} will ${n1} and ${n2} ${duel.q}?`, `Determine after how many ${duel.x[1]} ${n1} and ${n2} will ${duel.q}.`),
       expr: null,
       answer: A(fr(ans), { unit: askY ? duel.y[1] : duel.x[1] }),
       work: [`Let x be the number of ${duel.x[1]} and y the amount, in ${duel.y[1]}.`, `${n1}: ${eqA}. ${n2}: ${eqB}.`, `We want the time when the two amounts are equal: ${linText(L.m, L.c)} = ${linText(Rr.m, Rr.c)}.`, ...solveLines(L, Rr, fr(x0)), ...(askY ? [`Now put x = ${x0} in the first equation: ${E(mulTxt(r1, x0), r1 * x0)}, and ${E(`${r1 * x0} + ${s1}`, y0)}.`] : [])],
