@@ -632,6 +632,92 @@ for (const [path, lang, max] of PRINT) {
   await ins.close();
 }
 
+// ---------------- optional bilingual math models ----------------
+{
+  const cases = [
+    ["2-8", "family-guide", [7], [12]],
+    ["3-3", "practice", [4], [5]],
+    ["4-2", "family-guide", [40], [75]],
+    ["5-2", "practice", [6, 4], [6, 6]],
+    ["6-6", "family-guide", [4, 4], [4, 5]],
+    ["7-1", "practice", [4], [-5]],
+    ["8-2", "family-guide", [6, 9], [9, 12]],
+    ["9-1", "practice", [4, 3], [4, 4]],
+  ];
+  for (const [id, pageType, answer, second] of cases) {
+    const family = pageType === "family-guide";
+    const page = await newPage({ width: family ? 390 : 1280, reduced: family });
+    await page.goto(`${BASE}/lessons/${id}/${pageType}?lang=${family ? "es" : "en"}`);
+    const studio = page.locator("#math-model");
+    const summary = studio.locator(".studio-opening");
+    const check = studio.locator('[data-studio-action="check"]');
+    const result = studio.locator("[data-studio-result]");
+    const sliders = studio.getByRole("slider");
+    await summary.focus({ timeout: 5000 });
+    await page.keyboard.press("Enter");
+    await check.click({ timeout: 5000 });
+    if ((await result.getAttribute("data-correct")) !== "false")
+      fail("studio", `${id}: initial state passed the challenge`);
+    const setValues = async (numbers) => {
+      for (const [i, value] of numbers.entries()) {
+        await sliders.nth(i).evaluate((slider, n) => {
+          slider.value = n;
+          slider.dispatchEvent(new Event("input", { bubbles: true }));
+          slider.dispatchEvent(new Event("change", { bubbles: true }));
+        }, value);
+      }
+    };
+    await setValues(answer);
+    await check.click();
+    const feedback = await result.innerText();
+    if (!(family ? /Llegaste a la meta/ : /You reached the target/).test(feedback))
+      fail("studio", `${id}: expected success in active language, got ${feedback}`);
+    await studio.locator('[data-studio-action="next"]').click();
+    await setValues(second);
+    await check.click();
+    if ((await result.getAttribute("data-correct")) !== "true")
+      fail("studio", `${id}: second challenge failed`);
+    if (id === "9-1") {
+      await studio.locator(".studio-table summary").click();
+      const row = await studio.locator("tr.studio-current").innerText();
+      if (!/^4\s+16$/.test(row.trim())) fail("studio", `graph and table disagreed: ${row}`);
+    }
+    if (id === "4-2") {
+      if ((await studio.locator(".studio-graphic .studio-teal").count()) !== 75)
+        fail("studio", "the hundredths grid did not update");
+      await studio.evaluate((node) => node.scrollIntoView({ block: "start" }));
+      await axe(page, "open math model Spanish mobile");
+    }
+    if (id === "9-1") {
+      await studio.evaluate((node) => node.scrollIntoView({ block: "start" }));
+      await axe(page, "open math model English desktop");
+    }
+    await studio.locator('[data-studio-action="reset"]').click();
+    const first = sliders.first();
+    const value = Number(await first.inputValue());
+    await first.focus();
+    await page.keyboard.press("ArrowRight");
+    if (Number(await first.inputValue()) !== value + 1)
+      fail("studio", `${id}: keyboard range adjustment failed`);
+    await studio.locator('[data-delta="-1"]').first().click();
+    if (Number(await first.inputValue()) !== value) fail("studio", `${id}: step button failed`);
+    await noOverflow(page, `open model ${id}`);
+    if (page._errors.length) fail("studio", `${id}: ${page._errors.join(" | ")}`);
+    await page.close();
+  }
+  const landing = await newPage({ width: 390 });
+  await landing.goto(`${BASE}/practice-hub/family/`);
+  const links = landing.locator(".studio-gallery li a");
+  if ((await links.count()) !== cases.length) fail("studio", "family gallery is missing models");
+  await links.first().click({ timeout: 5000 });
+  if (!(await landing.locator("#math-model").evaluate((node) => node.open)))
+    fail("studio", "family gallery link did not open its model");
+  await landing.close();
+  ok(
+    "math models: both challenges on all eight models, keyboard ranges, step buttons, graph table, family deep link and bilingual layouts",
+  );
+}
+
 // ---------------- live: every hub link for one unit, and the curriculum entry points ----------------
 if (LIVE) {
   const hub = await (await fetch(`${BASE}/practice-hub/`)).text();

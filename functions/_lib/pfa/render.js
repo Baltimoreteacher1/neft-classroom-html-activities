@@ -20,11 +20,14 @@ import {
   FAMILY,
   MAP,
   PRACTICE,
+  STUDIO_JS,
 } from "./generated/bundle.generated.js";
 import { generate, lineTask, tableTask } from "./generators.js";
 import { guide, icon, scene, sceneFor, unitArt } from "./illustrations.js";
 import { encodeInsight, TAG_LIST } from "./insight-code.js";
 import { renderVisual } from "./math-visuals.js";
+import { MODEL_BY_LESSON, STUDIO_COPY } from "./model-studio.js";
+import { renderModelGallery, renderModelStudio } from "./model-studio-view.js";
 import {
   familyPlan,
   medalShelf,
@@ -91,6 +94,7 @@ function shell({
   page,
   canonical,
   noindex = false,
+  model,
 }) {
   const pre = `(function(){var d=document.documentElement;try{var l=JSON.parse(localStorage.getItem("ewl_pfa_lang"));var q=new URLSearchParams(location.search).get("lang");l=q==="es"||q==="en"?q:l;if(l==="es"||l==="en")d.lang=l;var s=JSON.parse(localStorage.getItem("ewl_pfa_size"));if(s===1)d.classList.add("text-lg");if(s===2)d.classList.add("text-xl");if(JSON.parse(localStorage.getItem("ewl_pfa_motion")))d.classList.add("reduce-motion")}catch(e){}d.classList.add("js");d.classList.remove("no-js")})();`;
   return `<!doctype html>
@@ -114,7 +118,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : ""}
 ${body}
 <div id="pfa-live" class="sr" aria-live="polite" aria-atomic="true"></div>
 ${data ? `<script type="application/json" id="pfa-data">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>` : ""}
-<script type="module">${page === "pfa-homework" ? CLIENT_JS : CLIENT_LITE}</script>
+<script type="module">${page === "pfa-homework" ? CLIENT_JS : CLIENT_LITE}${model ? `\n${STUDIO_JS}` : ""}</script>
 </body>
 </html>`;
 }
@@ -317,6 +321,7 @@ function tipsFor(checks, specs) {
 export function renderHomework(id) {
   const d = PRACTICE[id];
   if (!d) return null;
+  const model = MODEL_BY_LESSON[id];
   const cards = [];
   const checks = {};
   let n = 0;
@@ -390,6 +395,7 @@ ${trail(stops)}${medalShelf(present)}`;
   const body = `${topBar()}<main id="main">${hero(d, "homework", goal + meta)}
 <noscript><p class="section">${bi("noJs")}</p></noscript>
 <section class="section print-hide" aria-labelledby="ref-h"><h2 id="ref-h">${icon("play")}${bi("refresher")}</h2><p class="tier-note">${bi("refresherNote")}</p><h3>${bi(d.refresher.title)}</h3>${player(d.refresher, "refresher")}</section>
+${model ? renderModelStudio(model, false) : ""}
 ${cards.join("")}${vocab}${reflect}${finish}</main>
 <footer class="foot"><p>${bi("savedHere")} · ${h(d.standard)}</p></footer>`;
   return shell({
@@ -397,6 +403,7 @@ ${cards.join("")}${vocab}${reflect}${finish}</main>
     description: `Homework practice for Lesson ${id}, ${d.title.en}: worked example, ${n} problems with hints, English and Spanish.`,
     body,
     page: "pfa-homework",
+    model,
     canonical: `/lessons/${id}/practice`,
     data: {
       lessonId: id,
@@ -415,6 +422,7 @@ export function renderFamily(id) {
   const f = FAMILY[id];
   const d = PRACTICE[id];
   if (!f || !d) return null;
+  const model = MODEL_BY_LESSON[id];
   const doDont =
     f.doThis && f.notThat
       ? `<div class="do-dont"><div class="do"><h3>${icon("check")} ${bi("famDo")}</h3><p>${biMath(f.doThis)}</p>${f.doWhy ? `<p>${biMath(f.doWhy)}</p>` : ""}</div><div class="dont"><h3>${bi("famDont")}</h3><p>${biMath(f.notThat)}</p></div></div>`
@@ -433,6 +441,7 @@ export function renderFamily(id) {
 ${familyPlan()}
 <section class="section" aria-labelledby="learn-h"><h2 id="learn-h">${icon("book")}${bi("famLearning")}</h2><p>${biMath(f.learning)}</p><h3>${bi("famWhy")}</h3><p>${biMath(f.whyItMatters)}</p></section>
 <section class="section" aria-labelledby="how-h"><h2 id="how-h">${icon("play")}${bi("famHow")}</h2>${player(d.refresher, "family-example")}${doDont}</section>
+${model ? renderModelStudio(model, true) : ""}
 <section class="section" aria-labelledby="words-h"><h2 id="words-h">${icon("lang")}${bi("famWords")}</h2>${words}</section>
 <section class="section try-section" aria-labelledby="try-h"><h2 id="try-h">${icon("family")}${bi("famTry")}</h2><p class="tried-meter no-print" aria-live="polite" hidden></p>${tryIt}<p class="print-only fam-answers"><strong>${bi({ en: "Answers for the grown-up:", es: "Respuestas para el adulto:" })}</strong> ${f.tryIt.map((q, i) => `${i + 1}) ${biMath(q.answer)}`).join(" · ")}</p></section>
 <section class="section" aria-labelledby="talk-h"><h2 id="talk-h">${icon("explain")}${bi("famTalk")}</h2><p class="tier-note">${bi("famTalkNote")}</p><ul class="talk" data-deck>${f.conversation.map((c) => `<li>${icon("explain")}<span>${biMath(c)}</span></li>`).join("")}</ul></section>
@@ -444,6 +453,7 @@ ${familyPlan()}
     description: `Family guide for Lesson ${id}, ${f.title.en}, in English and Spanish: what your child is learning, an example, words to know, and problems to try together.`,
     body,
     page: "pfa-family",
+    model,
     canonical: `/lessons/${id}/family-guide`,
     data: { lessonId: id, similar: d.similar, problems: {} },
   });
@@ -710,7 +720,7 @@ export function renderFamilyHub(n, letter = false) {
     )
     .join("");
   const body = `${topBar("/curriculum/units/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi("forFamilies")}</p><h1 id="title">${bi("famHubTitle", "span", { n })}</h1><p class="goal">${bi(ut)}</p></div><div>${unitArt(n)}</div></section>
-<section class="section" aria-labelledby="howto"><h2 id="howto">${icon("hint")}${bi("famHubHow")}</h2><p>${bi("famHubHowBody")}</p><p><a class="btn amber" href="/practice-hub/family/unit-${n}/letter">${icon("print")}<span>${bi("famLetter")}</span></a></p></section>${unitPath(items.map(({ lid, f }) => ({ lid, title: { en: f.title.en, es: f.title.es || f.title.en } })))}${cards}</main>`;
+<section class="section" aria-labelledby="howto"><h2 id="howto">${icon("hint")}${bi("famHubHow")}</h2><p>${bi("famHubHowBody")}</p><p><a class="btn amber" href="/practice-hub/family/unit-${n}/letter">${icon("print")}<span>${bi("famLetter")}</span></a></p></section>${unitPath(items.map(({ lid, f }) => ({ lid, title: { en: f.title.en, es: f.title.es || f.title.en } })))}${renderModelGallery(n)}${cards}</main>`;
   return shell({
     title: `Unit ${n} family practice · EduWonderLab`,
     description: `Family pages for every lesson in Unit ${n}, English and Spanish, plus a printable unit letter.`,
@@ -728,7 +738,7 @@ export function renderFamilyIndex() {
         `<article class="section unit-card"><div class="unit-card-art">${unitArt(u.number)}</div><div><p class="eyebrow">${bi("unit")} ${u.number}</p><h2>${bi(unitTitle(u))}</h2>${unitMeter(u.lessons.filter((lid) => FAMILY[lid]))}<div class="row"><a class="btn primary" href="${u.familyHub}">${icon("family")}<span>${bi("famHubTitle", "span", { n: u.number })}</span></a><a class="btn quiet" href="${u.familyHub}/letter">${icon("print")}<span>${bi("famLetter")}</span></a></div></div></article>`,
     )
     .join("");
-  const body = `${topBar("/curriculum/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi("forFamilies")}</p><h1 id="title">${bi({ en: "Family practice at home", es: "Práctica en familia en casa" })}</h1><p class="goal">${bi("famOptional")}</p><p>${bi("famHubHowBody")}</p></div><div>${scene("home")}</div></section><div class="unit-grid">${cards}</div></main>`;
+  const body = `${topBar("/curriculum/")}<main id="main"><section class="hero" aria-labelledby="title"><div><p class="eyebrow">${bi("forFamilies")}</p><h1 id="title">${bi({ en: "Family practice at home", es: "Práctica en familia en casa" })}</h1><p class="goal">${bi("famOptional")}</p><p>${bi("famHubHowBody")}</p><p class="no-print"><a class="btn quiet" href="#studio-gallery-heading">${bi(STUDIO_COPY.explore)}</a></p></div><div>${scene("home")}</div></section><div class="unit-grid">${cards}</div>${renderModelGallery()}</main>`;
   return shell({
     title: "Family practice at home · EduWonderLab",
     description: "Bilingual family pages for every Grade 6 math unit, with printable unit letters.",
