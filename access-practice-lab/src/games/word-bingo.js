@@ -67,7 +67,7 @@ export default {
       </div>
       <p class="bg-score${wins ? " is-bingo" : ""}" role="status" aria-live="polite">${icon(wins ? "medal" : "sparkle")}${line}</p>
       <p class="cg-instruction">${I.T("Tap the word on your card that fits the clue.", "Toca la palabra de tu tarjeta que encaja con la pista.")}</p>
-      <ul class="bg-card" role="group" aria-label="${I.S("Your bingo card", "Tu tarjeta de bingo")}">${cells}</ul>
+      <ul class="bg-card" aria-label="${I.S("Your bingo card", "Tu tarjeta de bingo")}">${cells}</ul>
       ${hintHTML(row.rs, [I.T(row.hint.en, row.hint.es), I.T(`It starts with “${I.S(word.en, word.es)[0]}”.`, `Empieza con “${I.S(word.en, word.es)[0]}”.`), I.T(`It has ${word.en.length} letters.`, `Tiene ${word.es.length} letras.`)], env, { disabled: locked })}
       ${feedbackHTML(row.rs, { I, right: I.T("Stamped! That word fits the clue.", "¡Sellada! Esa palabra encaja con la pista."), retry: I.T("Not that one. Read the clue again, then try another word.", "Esa no. Lee la pista otra vez y prueba otra palabra."), answer: I.T(`The word was: ${word.en}`, `La palabra era: ${word.es}`), explain: I.T(row.explain.en, row.explain.es), hint: "" })}
       ${locked ? html`<div class="gs-actions"><button type="button" class="btn btn-primary btn-big" data-g-next>${icon("arrow-right")}${s.i + 1 === s.rounds.length ? I.T("Finish my card", "Terminar mi tarjeta") : I.T("Call the next word", "Cantar la siguiente palabra")}</button></div>` : ""}

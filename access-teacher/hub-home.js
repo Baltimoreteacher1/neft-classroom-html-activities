@@ -6,8 +6,6 @@
 // and keeps every link's ?grades= in step with the band chosen above (the `th:band` event from command-center.js).
 import { rememberAudience } from "/access-practice-lab/src/audience.js";
 import { DESTINATIONS } from "/access-practice-lab/src/sitemap.js";
-import { LAB_KEY, loadLab } from "/access-practice-lab/src/lab/store.js";
-import { topPatternsCardHTML } from "/access-practice-lab/src/lab/progress-ui.js";
 import {
   BASE,
   announce,
@@ -145,7 +143,6 @@ function render() {
           )}
         </ul>
       </section>
-      ${topPatternsCardHTML(loadLab(), { band })}
       <section class="th-workspace" id="saved" aria-labelledby="thWorkspaceTitle">
         ${workspaceHTML()}
       </section>`,
@@ -184,12 +181,7 @@ document.addEventListener("th:band", (e) => {
 });
 // A save anywhere on the page (Plan a Lesson, the activity list) shows up here without a reload.
 storage.subscribe?.((key) => {
-  if (/savedPathways|v1:saved$/.test(String(key)) || key === LAB_KEY) render();
-});
-
-// The Language Lab record is written by the student tab; the browser's own storage event reaches this tab.
-window.addEventListener("storage", (e) => {
-  if (e.key === LAB_KEY) render();
+  if (/savedPathways|v1:saved$/.test(String(key))) render();
 });
 
 render();

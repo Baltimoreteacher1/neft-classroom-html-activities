@@ -79,7 +79,7 @@ function stepTrack(row, I) {
     ${STEPS.map((k, n) => {
       const [en, es] = STEP_NAMES[k];
       const state = n < now ? "is-done" : n === now ? "is-now" : "";
-      return html`<li class="${state}" ${n === now ? 'aria-current="step"' : ""}>
+      return html`<li class="${state}" aria-current="${n === now ? "step" : "false"}">
         <span class="fe-step-n" aria-hidden="true">${n < now ? "✓" : n + 1}</span
         >${I.T(en, es)}${n < now ? html`<span class="visually-hidden">${I.S(" (done)", " (hecho)")}</span>` : ""}
       </li>`;

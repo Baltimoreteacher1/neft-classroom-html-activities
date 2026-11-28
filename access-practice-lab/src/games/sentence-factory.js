@@ -6,6 +6,7 @@ import {
   audioBtn,
   feedbackHTML,
   glossHTML,
+  glossInline,
   hintHTML,
   html,
   icon,
@@ -219,7 +220,7 @@ export default {
                   ${isPicked ? html`<span class="sf-dock-pill">${I.T("DOCKED", "ACOPLADO")}</span>` : ""}
                 </span>
                 <span class="sf-block-body">${c.label}</span>
-                ${I.mode === "en" && env.sup.gloss !== "off" && c.es ? glossHTML(c.es, env) : ""}
+                ${I.mode === "en" && env.sup.gloss !== "off" && c.es ? glossInline(c.es, env) : ""}
               </button>
             `;
           })}

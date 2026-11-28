@@ -6,7 +6,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { WORLDS } from "../access-practice-lab/src/adventures/worlds/index.js";
 import { GAMES } from "../access-practice-lab/src/games/registry.js";
-import { gameMeta, tierOfSupport } from "../access-practice-lab/src/lab/meta.js";
+import { gameMeta } from "../access-practice-lab/src/lab/meta.js";
 
 const lab = join(process.cwd(), "access-practice-lab");
 const read = (p) => (existsSync(p) ? readFileSync(p, "utf8") : "");
@@ -15,10 +15,32 @@ const sources = (g) => {
   const files = [`${base}.js`, `${base}-view.js`, `${base}-art.js`].filter(existsSync);
   return { files, text: files.map(read).join("\n") };
 };
+// A Spanish gap is a bilingual pair with one half missing: an object that has `es` but no `en`, or a sibling in an
+// array of `{ en, es }` pairs that lacks its `es`. A lone `{ en }` (an English answer choice, a passage sentence) is
+// practice text and is not a gap.
 const missingEs = (node, path = "", out = []) => {
-  if (Array.isArray(node)) node.forEach((v, i) => missingEs(v, `${path}[${i}]`, out));
-  else if (node && typeof node === "object") {
-    if (typeof node.en === "string" && typeof node.es !== "string") out.push(path || "$");
+  if (Array.isArray(node)) {
+    const paired = node.some(
+      (v) => v && typeof v === "object" && typeof v.en === "string" && typeof v.es === "string",
+    );
+    node.forEach((v, i) => {
+      if (
+        paired &&
+        v &&
+        typeof v === "object" &&
+        typeof v.en === "string" &&
+        typeof v.es !== "string"
+      )
+        out.push(`${path}[${i}]`);
+      missingEs(v, `${path}[${i}]`, out);
+    });
+  } else if (node && typeof node === "object") {
+    if (
+      typeof node.es === "string" &&
+      typeof node.en !== "string" &&
+      Object.keys(node).length === 1
+    )
+      out.push(path || "$");
     for (const [k, v] of Object.entries(node)) missingEs(v, `${path}.${k}`, out);
   }
   return out;
@@ -116,5 +138,4 @@ else {
   console.log(
     `lab-inventory: ${rows.length} games, ${WORLDS.length} worlds -> access-practice-lab/LAB-INVENTORY.md`,
   );
-  void tierOfSupport;
 }

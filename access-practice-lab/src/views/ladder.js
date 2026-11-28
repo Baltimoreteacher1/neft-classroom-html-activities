@@ -90,7 +90,7 @@ const rungs = (state) =>
       (n) =>
         html`<li
           class="${n === state.step ? "is-here" : ""} ${n <= state.best ? "is-reached" : ""}"
-          ${n === state.step ? 'aria-current="step"' : ""}
+          aria-current="${n === state.step ? "step" : "false"}"
         >
           <span class="gm-rung-n">${n}</span
           ><span class="gm-rung-label"

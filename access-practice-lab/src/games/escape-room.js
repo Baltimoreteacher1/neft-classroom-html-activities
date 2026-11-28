@@ -8,6 +8,7 @@ import {
   audioBtn,
   feedbackHTML,
   glossHTML,
+  glossInline,
   hintHTML,
   html,
   icon,
@@ -206,7 +207,7 @@ export default {
                 </span>
                 <span class="er-key-code">KEY-0${idx + 1}</span>
                 <span class="er-key-text">${c.label}</span>
-                ${env.sup.gloss !== "off" && c.es ? glossHTML(c.es, env) : ""}
+                ${env.sup.gloss !== "off" && c.es ? glossInline(c.es, env) : ""}
               </button>
             `;
           })}

@@ -193,6 +193,56 @@ for (const path of [
   await ctx.close();
 }
 
+// 4. Teachers hub: paste two student codes, see the recurring pattern and a link to its game; no name appears.
+{
+  const lab = (events) => ({
+    schemaVersion: 2,
+    createdAt: "2026-11-22T10:00:00.000Z",
+    updatedAt: "2026-11-22T10:00:00.000Z",
+    events,
+    migrated: { gamesV1: true },
+  });
+  const round = (tag) => ({
+    kind: "round",
+    gameId: "sentence-factory",
+    gradeBand: "6-8",
+    widaDomain: "Writing",
+    widaContentArea: "LoELA",
+    scaffoldTier: "guided",
+    languageErrorTag: tag,
+    ok: false,
+    timestamp: "2026-11-22T10:00:00.000Z",
+  });
+  const code = (state) =>
+    `ACCESS1.${Buffer.from(JSON.stringify({ v: 1, data: { "accessPracticeLab:v1:tlp_lab_v2": JSON.stringify(state), "accessPracticeLab:v1:studentName": "Maria Lopez" } })).toString("base64")}`;
+  const { ctx, page } = await fresh({ width: 1366, height: 768 });
+  await page.goto(`${base}/access-teacher/`, { waitUntil: "domcontentloaded" });
+  await page.click("#tab-review");
+  await page.waitForSelector("#cpCodes", { state: "visible", timeout: 15000 }).catch(() => {});
+  if (await page.$("#cpCodes")) {
+    await page.fill(
+      "#cpCodes",
+      [
+        code(lab([round("MISSING_SUBJECT")])),
+        code(lab([round("MISSING_SUBJECT"), round("CONNECTOR_MISSING")])),
+      ].join("\n"),
+    );
+    await page.click("[data-cp-run]");
+    await page.waitForSelector(".lp-class .lp-pattern-list", { timeout: 5000 }).catch(() => {});
+    const text = await page.$eval(".lp-class", (n) => n.textContent).catch(() => "");
+    check(
+      /Missing subject/.test(text) && /2 students/.test(text),
+      "class view ranks the pattern shared by two students",
+    );
+    check(!/Maria|Lopez/.test(text), "class view never shows a student name");
+    const href = await page
+      .$eval(".lp-class .lp-pattern-list a", (a) => a.getAttribute("href"))
+      .catch(() => "");
+    check(/games\/sentence-factory/.test(href), "class view links to the remediation game");
+  } else check(false, "Teachers hub renders the class patterns panel");
+  await ctx.close();
+}
+
 await browser.close();
 server.close();
 if (failures.length) {

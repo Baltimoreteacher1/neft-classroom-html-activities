@@ -5,6 +5,7 @@ import {
   audioBtn,
   feedbackHTML,
   glossHTML,
+  glossInline,
   hintHTML,
   html,
   icon,
@@ -146,7 +147,7 @@ export default {
               >
                 <span class="sst-move-marker">#0${idx + 1}</span>
                 <span class="sst-move-label">${c.label}</span>
-                ${I.mode === "en" && env.sup.gloss !== "off" && c.es ? glossHTML(c.es, env) : ""}
+                ${I.mode === "en" && env.sup.gloss !== "off" && c.es ? glossInline(c.es, env) : ""}
               </button>
             `;
           })}

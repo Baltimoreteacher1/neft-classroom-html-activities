@@ -11,6 +11,7 @@ import {
   feedbackHTML,
   frameBox,
   glossHTML,
+  glossInline,
   hintHTML,
   html,
   icon,
@@ -671,7 +672,7 @@ function wordTask(ps, t, env) {
     role="group"
     aria-label="${I.S("Word cards", "Tarjetas de palabras")}"
   >
-    ${ps.order.map((k) => html`<button type="button" class="gs-choice rat-prop${ps.pick === k ? " is-sel" : ""}${st && k === t.answer ? " is-right" : ""}" data-g-opt="${k}" aria-pressed="${ps.pick === k}" ${st ? "disabled" : ""}>${t.options[k].en}${glossHTML(t.options[k].es, env)}</button>`)}
+    ${ps.order.map((k) => html`<button type="button" class="gs-choice rat-prop${ps.pick === k ? " is-sel" : ""}${st && k === t.answer ? " is-right" : ""}" data-g-opt="${k}" aria-pressed="${ps.pick === k}" ${st ? "disabled" : ""}>${t.options[k].en}${glossInline(t.options[k].es, env)}</button>`)}
   </div>`;
 }
 function moodTask(s, env, play) {
@@ -690,7 +691,7 @@ function moodTask(s, env, play) {
         aria-pressed="${ps.hold === id}"
         ${gone ? "disabled" : ""}
       >
-        ${c.en}${glossHTML(c.es, env)}
+        ${c.en}${glossInline(c.es, env)}
       </button>
     </li>`;
   });

@@ -222,8 +222,8 @@ export function stickersHTML(s, I) {
           : r.rs.status === "revealed"
             ? '<path d="M12 14h16v14H12zM20 14v14" fill="none" stroke="currentColor" stroke-width="2.4"/>'
             : `<text x="20" y="26" text-anchor="middle" font-size="15" font-weight="800">${i + 1}</text>`;
-      return html`<li class="mw-sticker ${st}" role="img" aria-label="${label}">
-        ${raw(`<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/>${face}</svg>`)}
+      return html`<li class="mw-sticker ${st}">
+        <span role="img" aria-label="${label}">${raw(`<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18"/>${face}</svg>`)}</span>
       </li>`;
     })}
   </ul>`;

@@ -126,6 +126,16 @@ export function glossHTML(es, env) {
   return html`<details class="gs-gloss-tap"><summary>${env.I.T("Español", "Español")}</summary><span lang="es">${es}</span></details>`;
 }
 
+/**
+ * The Spanish gloss as plain text, for use INSIDE a button or a link. glossHTML's tap form is a <details> with a
+ * <summary>, which would be a focusable control nested in another control (WCAG 4.1.2), so a button label shows the
+ * gloss as text in every mode except "off".
+ */
+export function glossInline(es, env) {
+  if (!es || env.sup.gloss === "off") return "";
+  return html`<span class="gs-gloss" lang="es">${es}</span>`;
+}
+
 export function feedbackHTML(rs, { right, retry, explain, answer, hint, I }) {
   if (!rs || rs.status === "open") return "";
   const tone = rs.status === "right" ? "right" : rs.status === "retry" ? "retry" : "reveal";

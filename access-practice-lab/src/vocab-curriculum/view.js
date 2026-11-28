@@ -30,7 +30,7 @@ function hubHTML(I, progress) {
 function stepRail(I, stage, completed) {
   const here = STAGES.indexOf(stage);
   return html`<ol class="vc-rail" aria-label="${I.S("Lesson stages", "Etapas de la lección")}">${STAGES.map((id, index) =>
-    html`<li class="${index === here ? "is-current" : ""} ${index < here || completed ? "is-done" : ""}" ${index === here ? 'aria-current="step"' : ""}>${index + 1}. ${I.T(...LABELS[id])}</li>`)}</ol>`;
+    html`<li class="${index === here ? "is-current" : ""} ${index < here || completed ? "is-done" : ""}" aria-current="${index === here ? "step" : "false"}">${index + 1}. ${I.T(...LABELS[id])}</li>`)}</ol>`;
 }
 
 const feedbackHTML = (state) => state.feedback ? html`<p class="vc-feedback" role="status">${state.feedback}</p>` : "";
