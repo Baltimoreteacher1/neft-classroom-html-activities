@@ -46,17 +46,4 @@ if (draft)
   }
 form.addEventListener("input", render);
 form.addEventListener("change", render);
-const projectBtn = $("[data-project]");
-projectBtn.addEventListener("click", async () => {
-  const root = document.documentElement;
-  const on = !root.classList.contains("project-mode");
-  root.classList.toggle("project-mode", on);
-  try {
-    if (on) await out.requestFullscreen?.();
-    else if (document.fullscreenElement) await document.exitFullscreen();
-  } catch {}
-});
-document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement) document.documentElement.classList.remove("project-mode");
-});
 render();

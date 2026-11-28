@@ -11,15 +11,15 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "95351265437f";
+const BUILD_HASH = "f5440f2d29da";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=45d1c12f",
-  "/access-practice-lab/home.css?v=2c8320b3",
+  "/access-practice-lab/home.css?v=9edfb6eb",
   "/access-practice-lab/home-start.css?v=e7027a07",
   "/access-practice-lab/progress.css?v=99d710a3",
   "/access-practice-lab/studios.css?v=3f3a7021",
   "/access-practice-lab/journey.css?v=806a13ec",
-  "/access-practice-lab/acc.css?v=5f19a73c",
+  "/access-practice-lab/acc.css?v=e5cd389c",
   "/access-practice-lab/studios.css?v=3f3a7021",
   "/access-practice-lab/src/main.js?v=8a58a1bc",
   "/access-practice-lab/src/brand.js?v=af5de68e",
@@ -185,7 +185,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/intro-tour.css?v=adf9a063",
   "/access-practice-lab/students.css?v=bfa9e9f8",
   "/access-practice-lab/family-hub.css?v=b21c3ab7",
-  "/access-practice-lab/readiness-plan.css?v=9413a522",
+  "/access-practice-lab/readiness-plan.css?v=bd821a75",
   "/access-practice-lab/finder.css?v=3c0c92e5",
   "/access-practice-lab/guided.css?v=d0ca007d",
   "/access-practice-lab/tour.css?v=b46cb2cd",
@@ -254,7 +254,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/language-games.css?v=2625edcd",
   "/access-practice-lab/book-collab.css?v=ed2f261e",
   "/access-practice-lab/wayfinding.css?v=93a53a71",
-  "/access-practice-lab/arcade.css?v=b911b396",
+  "/access-practice-lab/arcade.css?v=72271d64",
   "/access-practice-lab/arcade-od.css?v=39ca38bf",
   "/access-practice-lab/play-arcade.css?v=5943ef9f",
   "/access-practice-lab/registers.css?v=d2d2d58b",
@@ -313,7 +313,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/adventures/worlds/science-island.js?v=58a3b4ea",
   "/access-practice-lab/src/adventures/worlds/storyverse.js?v=ab484c43",
   "/access-practice-lab/src/arcade/games.js?v=11828316",
-  "/access-practice-lab/src/arcade/host.js?v=8b11e4d0",
+  "/access-practice-lab/src/arcade/host.js?v=53059781",
   "/access-practice-lab/src/arcade/hub-card.js?v=9908e85a",
   "/access-practice-lab/src/arcade/odyssey/art-avatar.js?v=93bdb9f1",
   "/access-practice-lab/src/arcade/odyssey/art-bg.js?v=177d8447",

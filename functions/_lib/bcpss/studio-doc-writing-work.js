@@ -218,6 +218,27 @@ export function buildWritingWork(detail, opts) {
   const u = detail.unit;
   const name = text(work.pub?.name);
   const draft = paras(work.draft?.text, { size: "lg" });
+  // "writing-published": the finished piece alone, laid out like the Lab's published page (wl-coach-ui.js
+  // publishedPiece): kicker, title, byline, the paragraph, then unit, length and the task in small type.
+  if (opts.published) {
+    const words = text(work.draft?.text).split(/\s+/).filter(Boolean).length;
+    const piece = [
+      B.hero({
+        tone: subjectTone(u.subject),
+        kicker: `${GENRE[w.genre]} writing · ${u.subject} · ${gradeLabel(u)}`,
+        title: w.title,
+        subtitle: name ? `by ${name}` : "",
+        chips: [],
+        nameDate: !name,
+      }),
+      ...(draft.length ? draft : [B.lines(10, { label: "Write your paragraph" })]),
+      B.para([i(`${u.unit_title} · ${words} words · ${LEVEL_NAME[level]} level`)], { size: "sm" }),
+      B.para([b("Task: "), t(w.prompt[level])], { size: "sm" }),
+    ];
+    return newDoc(detail, opts, [section(piece, { tone: "Writing" })], {
+      titleSuffix: " · Published",
+    });
+  }
   const blocks = [
     B.hero({
       tone: subjectTone(u.subject),

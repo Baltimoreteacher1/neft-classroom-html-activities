@@ -2,7 +2,9 @@
    Scoped under .ax-* so nothing leaks into the rest of the lab. Reading surfaces are Warm Alabaster with
    near-black type; game worlds use their own palettes. Fonts: the lab's self-hosted faces with system fallbacks
    (no external font request). No purple, violet or magenta. */
-.ax-root {
+/* Tokens live on the host too: the launcher, resume and results screens render before .ax-root is added
+   (ArcadeUI adds it only while a run is live), and without them every primary button was white on transparent. */
+.ax-root, .ax-host {
   --ax-ink: #161614; --ax-ink-2: #3a3a36; --ax-alabaster: #faf9f6; --ax-line: #d9d6cc;
   --ax-navy: #0f1b3d; --ax-navy-2: #17294f; --ax-blue: #1f4fd8; --ax-teal: #0f766e; --ax-green: #15803d; --ax-gold: #e2a72e; --ax-coral: #c2410c;
   --ax-font: 1;

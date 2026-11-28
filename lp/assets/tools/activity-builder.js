@@ -107,6 +107,7 @@ function renderEditor() {
     .join("");
   $("#ab-title").value = state.title;
   $("#ab-accent").value = state.accent;
+  paintSwatches();
 }
 blocksEl.addEventListener("input", (e) => {
   const li = e.target.closest("[data-i]");
@@ -201,10 +202,23 @@ $("#ab-title").addEventListener("input", (e) => {
   state.title = e.target.value;
   changed();
 });
+function paintSwatches() {
+  for (const b of document.querySelectorAll("[data-swatch]")) b.setAttribute("aria-pressed", String(b.dataset.swatch.toLowerCase() === String(state.accent).toLowerCase()));
+}
 $("#ab-accent").addEventListener("input", (e) => {
   state.accent = e.target.value.trim();
+  paintSwatches();
   changed();
 });
+for (const b of document.querySelectorAll("[data-swatch]")) {
+  b.style.background = b.dataset.swatch; // CSSOM, not an inline style attribute: the page CSP is style-src 'self'
+  b.addEventListener("click", () => {
+    state.accent = b.dataset.swatch;
+    $("#ab-accent").value = state.accent;
+    paintSwatches();
+    changed();
+  });
+}
 $("[data-ab-example]").addEventListener("click", () => {
   state = structuredClone(EXAMPLE);
   renderEditor();

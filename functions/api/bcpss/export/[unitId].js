@@ -33,7 +33,8 @@ const VALID_WIDA = new Set(["1_2", "3_4", "5_6"]);
 // It is never cached and nothing is stored.
 const PARTS_HELP =
   "packet, book, activity-<n>, key, cards, bingo, wall, poster, strips, talk, family, writing, writing-key, rt-<routine block>";
-const WRITING_PARTS = new Set(["writing", "writing-key", "writing-work"]);
+const WORK_PARTS = new Set(["writing-work", "writing-published"]);
+const WRITING_PARTS = new Set(["writing", "writing-key", ...WORK_PARTS]);
 // Student files are rendered on demand (PDF uses Browser Rendering), so POST is rate-limited per client.
 const workRateLimited = createRateLimiter({ max: 12, windowMs: 60_000 });
 const MAX_WORK_BODY_BYTES = 200_000;
@@ -71,12 +72,15 @@ export const onRequest = handler({
       return badRequest('Invalid wida parameter. Expected "1_2", "3_4", or "5_6".');
     }
 
+    // POST = the student's own work: "writing-work" (everything) or "writing-published" (the finished piece only).
     const part = isWork
-      ? "writing-work"
+      ? url.searchParams.get("part") === "writing-published"
+        ? "writing-published"
+        : "writing-work"
       : String(url.searchParams.get("part") || "packet")
           .trim()
           .toLowerCase();
-    if (!isKnownPart(part) || (!isWork && part === "writing-work")) {
+    if (!isKnownPart(part) || (!isWork && WORK_PARTS.has(part))) {
       return badRequest(`Invalid part parameter. Expected one of: ${PARTS_HELP}.`);
     }
 

@@ -35,8 +35,9 @@ function currentWork(doneChecks) {
   return { ...work, revise };
 }
 
-async function download(format, doneChecks) {
-  const url = `/api/bcpss/export/${encodeURIComponent(wl.unitId)}?format=${format}&wida=${wl.level.slice(1)}`;
+async function download(format, doneChecks, published) {
+  const part = published ? "&part=writing-published" : "";
+  const url = `/api/bcpss/export/${encodeURIComponent(wl.unitId)}?format=${format}&wida=${wl.level.slice(1)}${part}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json", ...anonTokenHeaders() },
@@ -55,8 +56,9 @@ async function download(format, doneChecks) {
 /**
  * Two buttons (Word, PDF) and a status line for the student's own work.
  * doneChecks: () => string[] — the revise checks the student ticked.
+ * published: true downloads only the finished piece (title, byline, paragraph), laid out like the published page.
  */
-export function workDownloads(doneChecks = () => []) {
+export function workDownloads(doneChecks = () => [], { published = false } = {}) {
   const fb = feedback();
   const button = (format, label, primary) => {
     const btn = h("button", { type: "button", class: `st-btn st-btn--sm${primary ? " st-btn--primary" : ""}` }, label);
@@ -65,7 +67,7 @@ export function workDownloads(doneChecks = () => []) {
       for (const b of row.querySelectorAll("button")) b.disabled = true;
       fb.set("Making your file…", "hint");
       try {
-        fb.set(await download(format, doneChecks), "ok");
+        fb.set(await download(format, doneChecks, published), "ok");
       } catch (err) {
         fb.set(err.message, "no");
       } finally {
@@ -80,8 +82,8 @@ export function workDownloads(doneChecks = () => []) {
     h(
       "div",
       { class: "wl-publish" },
-      button("docx", "Download my writing (Word)", true),
-      button("pdf", "Download my writing (PDF)"),
+      button("docx", published ? "Published piece (Word)" : "Download my writing (Word)", !published),
+      button("pdf", published ? "Published piece (PDF)" : "Download my writing (PDF)"),
     ),
     fb,
   );
