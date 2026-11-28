@@ -785,7 +785,11 @@ export function applyEdits(resource, edits = {}) {
           }
         }
   }
-  if (edits.directions) for (const s of r.sections) for (const b of s.blocks) if (b.t === "p" && b.style === "directions") b.text = edits.directions;
+  if (edits.directions) {
+    // The teacher's directions are their own section at the top; they never overwrite the activity's own prompts ("Now you try...").
+    r.sections = r.sections.filter((x) => x.heading !== "Directions from your teacher");
+    r.sections.unshift({ heading: "Directions from your teacher", blocks: [{ t: "p", text: edits.directions, style: "directions" }] });
+  }
   return r;
 }
 
