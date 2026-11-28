@@ -15,14 +15,14 @@ Run by `node tools/mls-e2e.mjs` (Playwright, Chromium, axe-core via `@axe-core/p
 | Activities: 7 engines, games and manipulatives sampled | none | see below | none |
 | Collections, Family view | none | yes | none |
 
-Counts for the last full run: 177 checks across 11 scenarios, all passing.
+Counts for the last full run: 176 checks across 11 scenarios, all passing.
 
 - **Manipulatives (30):** `tools/mls-manips-a-check.mjs` (249 checks) and `tools/mls-manips-b-check.mjs` (409 checks) drive each one with Tab, typed values, Space and Enter only, and assert that every operation changes a live-region summary and that Reset is reachable.
 - **Games (12) and engines (12):** `mls-games-check.mjs` (28 checks) and `mls-engines-a/b-check.mjs` (24,620 checks in A) cover answer checking, hints that never reveal the answer, no timers, and the reasoning check.
 - **Visuals (30 kinds):** `mls-visuals-check.mjs` renders 934 specs (31,667 property checks): palette only, text at least 12 units, every svg has a title and a description, and a hidden value never appears in svg text, alt or summary.
 - **No timers, no scores:** the activities scenario asserts no countdown text; the UI says so.
 
-Axe cannot enter the preview frames (`sandbox` without `allow-scripts`, on purpose). The preview document is the same HTML the print and HTML export produce; it was not separately audited with axe.
+Axe cannot enter the preview frames (`sandbox` without `allow-scripts`, on purpose), so the page scan excludes them and the document each frame shows is scanned on its own (`axeDocument` in `tools/mls-e2e.mjs`).
 
 ## Decision: picture descriptions are always available to assistive technology
 

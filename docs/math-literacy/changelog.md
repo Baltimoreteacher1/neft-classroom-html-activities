@@ -14,7 +14,7 @@ Grades 1 to 8, reached from the Teachers area at `/access-practice-lab/math-lite
 
 - A resource's teacher edits (directions, replaced questions) were lost when a question was regenerated, hidden or the compare view toggled, because the page unmounted on every re-render. Edits now carry across re-renders of the same resource only. Found by the builder scenario.
 - The in-page preview frame carried the Print button's script, which its sandbox blocks. The preview now omits the button and script.
-- A game's Back button did nothing useful inside the studio; the host now returns to the skill page.
+- A game's Back button did nothing useful inside the studio; the host now returns to the skill page (`onBack`).
 - The Studio had no "you are here" entry in the lab sitemap (`locate()` returned nothing); fixed, and the generated site directory guide was regenerated.
 - Check harnesses made portable (macOS select keys and select-all, font lookup, browser path, Python path).
 

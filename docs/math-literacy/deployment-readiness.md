@@ -15,7 +15,7 @@ Status at 2026-11-28: gates green on the source tree; shipping is a separate, au
 | --- | --- |
 | `npm run validate:mls` (inventory lock, index, 60 families x 30 seeds, coverage, model tests) | pass |
 | `node tools/mls-coverage.mjs`: 85 of 85 skills, 2,550 of 2,550 role cells, 5,865 resources, 10,777 answers keyed; language band never changes an answer | pass |
-| `node tools/mls-e2e.mjs`: 11 scenarios | 177 of 177 |
+| `node tools/mls-e2e.mjs`: 11 scenarios | 176 of 176 |
 | Check scripts: visuals 31,667; export 492; engines A 24,620; engines B pass; games 28; manipulatives A 249 and B 409 | pass |
 | `npm run validate:access-lab` | pass |
 | `validate:gate-coverage`, `validate:quest` (Language Quest regression), `validate:route-contract`, `validate:js-syntax`, `validate:css-integrity`, `validate:no-purple`, `validate:dist-file-budget`, `npm run build` | pass |
@@ -24,6 +24,7 @@ Status at 2026-11-28: gates green on the source tree; shipping is a separate, au
 ## Not verified or known to fail elsewhere
 
 - Run on macOS Chromium. The check scripts that press ArrowDown on a closed select emulate the change on macOS (the native popup captures the key); on Linux they press the key.
+- A game's Back button (end screen) returns to the skill through `opts.onBack` in `math-literacy-play.js`; the games check confirms the end screen offers Back, but no browser check clicks it through the router.
 - Browser coverage is Chromium only; no Safari, Firefox or real device.
 - Exports were opened with python-docx, python-pptx and LibreOffice, not Word or PowerPoint.
 - Known unrelated failures in `qa:fast` and `qa:loop` on main (save-resume on two fluency-lab pages, telemetry honesty needing sqlite3) were not part of this change.

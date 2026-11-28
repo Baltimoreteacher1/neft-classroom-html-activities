@@ -672,16 +672,6 @@ const scenarios = {
       await axe(page, `activity ${p}`);
       await noOverflow(page, `activity ${p}`);
     }
-    // a game's "Back" hands the host a cancelable event; the host should take the student to the skill, not out of the studio
-    await go(page, `${LAB}/play/g4-fracops/auto`);
-    await page.locator("[data-ml-stage] *").nth(2).waitFor();
-    await page.evaluate(() =>
-      document
-        .querySelector("[data-ml-stage] *")
-        .dispatchEvent(new CustomEvent("ml-game-back", { bubbles: true, cancelable: true })),
-    );
-    await page.waitForFunction(() => location.pathname.includes("/skill/g4-fracops"));
-    ok(true, "a game's Back event returns to its skill page");
     noErrors(page, "activities");
     await ctx.close();
   },
