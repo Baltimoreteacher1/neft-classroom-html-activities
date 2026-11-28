@@ -1460,7 +1460,7 @@ function sentenceStudio(el, opts) {
 }
 
 // ================================================================================================================ 4. Representation Translator
-const REP_NAMES = { story: "the story", retell: "the retelling", expr: "the expression", visual: "the picture", desc: "the description" };
+const REP_NAMES = { story: "the story", words: "the problem", retell: "the other wording", expr: "the expression", visual: "the picture", desc: "the description" };
 const MODES = [
   { id: "story-expr", from: "story", to: "expr", label: "Story to expression", q: "Which expression matches the story?" },
   { id: "expr-story", from: "expr", to: "story", label: "Expression to story", q: "Which story matches the expression?" },
@@ -1469,7 +1469,7 @@ const MODES = [
   { id: "expr-visual", from: "expr", to: "visual", label: "Expression to picture", q: "Which picture matches the expression?" },
   { id: "visual-expr", from: "visual", to: "expr", label: "Picture to expression", q: "Which expression matches the picture?" },
   { id: "visual-desc", from: "visual", to: "desc", label: "Picture or table to description", q: "Which description matches the picture?" },
-  { id: "story-retell", from: "story", to: "retell", label: "Story to a retelling", q: "Which retelling says the same thing with different words?" },
+  { id: "story-retell", from: "words", to: "retell", label: "Problem in different words", q: "Which one says the same thing with different words?" },
 ];
 const BUILD = {
   tenframe: { args: [{ k: "n", label: "dots", min: 0, max: (s) => 10 * (s.frames || 1) }], fixed: ["frames"] },
@@ -1492,9 +1492,10 @@ const numSet = (text) => {
 function repOf(p, kind, W, W2) {
   switch (kind) {
     case "story":
+    case "words":
     case "retell": {
-      const lv = kind === "story" ? W : W2;
-      if (!p.stem[lv]) return null;
+      const lv = kind === "retell" ? W2 : W;
+      if (kind === "story" && !p.stem[lv]) return null;
       const t = textOf(p, lv);
       return { text: t, nums: numerals(t), key: t };
     }
@@ -1534,7 +1535,7 @@ function translator(el, opts) {
       const r = repOf(q, mode.to, W, W2);
       if (!r || r.key === cor.key) return false;
       if (cor.nums.length && keyN(r) === keyN(cor)) return false;
-      if (mode.to === "retell" && r.key === repOf(q, "story", W, W2)?.key) return false;
+      if (mode.to === "retell" && r.key === repOf(q, "words", W, W2)?.key) return false;
       const s = mode.from === "visual" || mode.from === "story" ? repOf(q, mode.from, W, W2) : null;
       return !s || s.key !== src.key;
     }, (p.seed || 1) + 1, 24);
@@ -1619,7 +1620,7 @@ function translator(el, opts) {
       return false;
     }, { visual: mode.to === "visual" });
     return h("section", { class: "mlea-panel", "data-mlea-stage": "translate", "aria-labelledby": "mlea-tr-h" }, h("h3", { id: "mlea-tr-h", tabindex: "-1" }, mode.label),
-      h("div", { class: "mlea-source" }, h("p", { class: "mlea-label" }, `Start with ${REP_NAMES[mode.from]}:`), h("div", { class: "mlea-src" }, repNode(mode.from, src)), mode.from === "story" || mode.from === "visual" ? h("div", { class: "mlea-row" }, hearButton(mode.from === "story" ? src.text : repOf(p, "desc", W, W2)?.text || "", "Hear it")) : null),
+      h("div", { class: "mlea-source" }, h("p", { class: "mlea-label" }, `Start with ${REP_NAMES[mode.from]}:`), h("div", { class: "mlea-src" }, repNode(mode.from, src)), mode.from === "story" || mode.from === "words" || mode.from === "visual" ? h("div", { class: "mlea-row" }, hearButton(mode.from !== "visual" ? src.text : repOf(p, "desc", W, W2)?.text || "", "Hear it")) : null),
       h("p", { class: "mlea-instr" }, mode.q), g.el, fb, holder);
   }
   const allReps = (reps) => h("div", { class: "mlea-allreps" }, h("p", { class: "mlea-worked-h" }, "The same situation, shown more than one way"), ["story", "expr", "visual"].filter((k) => reps[k]).map((k) => h("div", { class: "mlea-rep" }, h("p", { class: "fine" }, cap(REP_NAMES[k].replace("the ", ""))), repNode(k, reps[k]))));

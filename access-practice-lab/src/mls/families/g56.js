@@ -3409,7 +3409,7 @@ function idRole2(rng, L) {
     work: [`The ${S_.sc.xn} is the quantity that can be chosen freely`, `The ${S_.sc.yn} is found from it`, `So the ${target} is the ${text} variable`],
     visual: null,
     distractors: ds,
-    hints: { conceptual: "Independent means it does not rely on the other quantity. Dependent means its value is decided by the other quantity.", procedural: "Ask: if I pick a value for this quantity, does that decide the other one, or the other way around?" },
+    hints: { conceptual: "One quantity can be chosen or changed freely. The other quantity gets its value from that choice.", procedural: "Ask: if I pick a value for this quantity, does that decide the other one, or the other way around?" },
   });
 }
 function idEqTable(rng, L) {
