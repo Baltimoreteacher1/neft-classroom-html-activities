@@ -159,7 +159,8 @@ Block =
 | { t:"list", items:[..], ordered? }
 | { t:"table", headers:[..], rows:[[..]..], caption? }
 | { t:"visual", spec:{kind,...}, alt }          // rasterised by exporters that need it
-| { t:"problem", n, ask, stem?, expr?, visual?, choices?:[text..], workspace:{ kind:"lines"|"grid"|"box"|"none", size:1-6 }, frames?:[..] }
+| { t:"problem", n, ask, stem?, expr?, visual?, choices?:[text..], workspace:{ kind:"lines"|"grid"|"box"|"none", size:1-6 }, frames?:[..],
+    answer?, correct?, explain?, hint? }   // answer (canonical value), correct (index in choices), explain and hint are for the interactive HTML export and engines ONLY; print, DOCX and PPTX never show them (they appear in the key)
 | { t:"frames", level:"1-2"|"3-4"|"5-6", items:[..] }
 | { t:"wordbank", words:[..] }
 | { t:"cards", items:[{ front, back?, visual? }], cols:2|3 }

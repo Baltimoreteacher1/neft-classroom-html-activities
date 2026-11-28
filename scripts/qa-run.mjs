@@ -667,6 +667,13 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // MATH LITERACY STUDIO (docs/math-literacy/architecture.md): the skill content, problem generators, independent solvers, exports and the teacher
+  // view. `validate:mls` locks the inventory, validates every authored skill, re-solves every generated problem with exact arithmetic, and checks the
+  // machine-readable coverage report. The browser suites (e2e:mls and the per-module checks in tools/mls-*-check.mjs) need a browser and a server.
+  [
+    /^(access-practice-lab\/(content\/mls\/|src\/mls\/|src\/views\/math-literacy[a-z-]*\.js$|mls[a-z-]*\.css$)|docs\/math-literacy\/|tools\/(validate-mls|build-mls-index|mls-[a-z-]+(\.test)?)\.mjs$|tools\/mls-verify\/|tools\/fixtures\/mls-)/,
+    ["validate:mls", "validate:js-syntax", "check", "test"],
+  ],
   // VOCABULARY ACADEMY — K-8 content (access-practice-lab/content/vocab-academy), its docs and its validator tooling.
   // `validate:vocab-academy` self-tests every detector against mutations of docs/vocab-academy/reference-unit.json and
   // then sweeps all grade.json + unit files; the tools' own tests run in `test`. Content, docs and tools cannot affect
